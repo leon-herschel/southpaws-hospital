@@ -1,0 +1,72 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+.modal-header {
+    background-color: #f2f2f2;
+    color: #333;
+    border-bottom: 1px solid #ccc;
+}
+
+.modal-title {
+    font-weight: bold;
+}
+
+.sticky-button {
+    position: sticky; /* This makes the button stay in view while scrolling */
+    top: 10px; /* Adjust this value to give space from the top */
+    z-index: 1000; /* Ensures the button stays on top of other elements */
+    background-color: #28a745; /* Optional: Keep the button color distinct */
+}
+
+/* Keep the overall form control gray */
+.form-control {
+    font-weight: 300;
+    background-color: #D9D9D9;
+    border: solid 1.5px #D9D9D9;
+    border-radius: 100px;
+    padding: 12px 15px;
+    margin: 8px 0;
+    width: 100%;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+/* Ensure only actual input fields remain white */
+.form-control:focus, 
+.form-control:not([readonly]) {
+    background-color: #FFFFFF !important; /* White background when user can type */
+    color: #000000; /* Text color */
+}
+
+/* Keep read-only inputs or display fields gray */
+.form-control[readonly], 
+.form-control:disabled {
+    background-color: #D9D9D9 !important;
+    color: #000000;
+    opacity: 1;
+}
+
+
+.form-label{
+    font-weight: 500;
+}
+
+.button {
+    margin-top: 20px;
+    width: 70%;
+    font-size: 18px;
+    font-weight: 500;
+    height: 50px;
+    border: none;
+    border-radius: 50px;
+    background-image: linear-gradient(to right, #006cb6, #31b44b);
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    color: white;
+}
+
+.button-container {
+    text-align: center;
+}

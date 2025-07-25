@@ -1,0 +1,16 @@
+/* Make checkboxes more visible with a black border */
+input[type="checkbox"] {
+    width: 18px; /* Adjust size */
+    height: 18px; /* Adjust size */
+    border: 1px solid black; /* Add black border */
+    appearance: none; /* Remove default styling */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    outline: none;
+    cursor: pointer;
+    background-color: white;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+

@@ -1,0 +1,58 @@
+.receipt-container {
+  font-family: Arial, sans-serif;
+  width: 50%;
+  margin: 0 auto;
+  border: 1px solid #ddd;
+  padding: 20px;
+  background-color: #fff;
+}
+
+.receipt-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.receipt-info p {
+  margin: 0;
+}
+
+.receipt-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.receipt-table th, .receipt-table td {
+  border: 1px solid #ddd;
+  text-align: left;
+  padding: 8px;
+}
+
+.receipt-summary p {
+  margin: 5px 0;
+}
+
+.receipt-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.cancel-button, .print-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+}
+
+.cancel-button {
+  background-color: #1abc9c;
+  color: white;
+}
+
+.print-button {
+  background-color: #3498db;
+  color: white;
+}

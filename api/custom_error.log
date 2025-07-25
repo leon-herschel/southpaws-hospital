@@ -1,0 +1,1146 @@
+[24-Mar-2025 00:14:50 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:14:50 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:14:50 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:14:50 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:14:50 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:14:50 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:14:50 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:14:50 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:14:50 Europe/Berlin] Parsed Values - id: , client_id: , patient_id: , signature: 
+[24-Mar-2025 00:16:35 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:16:35 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:16:35 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:16:35 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:16:35 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:16:35 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:16:35 Europe/Berlin] Raw Input: ------WebKitFormBoundaryg9QtAuDvwAk9Ssq6
+Content-Disposition: form-data; name="id"
+
+8
+------WebKitFormBoundaryg9QtAuDvwAk9Ssq6
+Content-Disposition: form-data; name="client_id"
+
+1
+------WebKitFormBoundaryg9QtAuDvwAk9Ssq6
+Content-Disposition: form-data; name="patient_id"
+
+11,13
+------WebKitFormBoundaryg9QtAuDvwAk9Ssq6
+Content-Disposition: form-data; name="signature"
+
+1
+------WebKitFormBoundaryg9QtAuDvwAk9Ssq6--
+
+[24-Mar-2025 00:16:35 Europe/Berlin] Parsed Data: Array
+(
+    [------WebKitFormBoundaryg9QtAuDvwAk9Ssq6
+Content-Disposition:_form-data;_name] => "id"
+
+8
+------WebKitFormBoundaryg9QtAuDvwAk9Ssq6
+Content-Disposition: form-data; name="client_id"
+
+1
+------WebKitFormBoundaryg9QtAuDvwAk9Ssq6
+Content-Disposition: form-data; name="patient_id"
+
+11,13
+------WebKitFormBoundaryg9QtAuDvwAk9Ssq6
+Content-Disposition: form-data; name="signature"
+
+1
+------WebKitFormBoundaryg9QtAuDvwAk9Ssq6--
+
+)
+
+[24-Mar-2025 00:16:35 Europe/Berlin] Parsed Values - id: , client_id: , patient_id: , signature: 
+[24-Mar-2025 00:17:54 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:17:54 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:17:54 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:17:54 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:17:54 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:17:54 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:17:54 Europe/Berlin] Raw Input: ------WebKitFormBoundary34CB2uNBxf29ARA6
+Content-Disposition: form-data; name="id"
+
+8
+------WebKitFormBoundary34CB2uNBxf29ARA6
+Content-Disposition: form-data; name="client_id"
+
+1
+------WebKitFormBoundary34CB2uNBxf29ARA6
+Content-Disposition: form-data; name="patient_id"
+
+11,13
+------WebKitFormBoundary34CB2uNBxf29ARA6
+Content-Disposition: form-data; name="signature"
+
+1
+------WebKitFormBoundary34CB2uNBxf29ARA6--
+
+[24-Mar-2025 00:17:54 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to undefined function parseMultipartFormData() in C:\xampp\htdocs\api\immunization.php:168
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\api\immunization.php on line 168
+[24-Mar-2025 00:18:18 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:18:18 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:18:18 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:18:18 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:18:18 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:18:18 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:18:18 Europe/Berlin] Raw Input: ------WebKitFormBoundaryCQRtm3jTJE4tsGHP
+Content-Disposition: form-data; name="id"
+
+8
+------WebKitFormBoundaryCQRtm3jTJE4tsGHP
+Content-Disposition: form-data; name="client_id"
+
+1
+------WebKitFormBoundaryCQRtm3jTJE4tsGHP
+Content-Disposition: form-data; name="patient_id"
+
+11,13
+------WebKitFormBoundaryCQRtm3jTJE4tsGHP
+Content-Disposition: form-data; name="signature"
+
+1
+------WebKitFormBoundaryCQRtm3jTJE4tsGHP--
+
+[24-Mar-2025 00:18:18 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to undefined function parseMultipartFormData() in C:\xampp\htdocs\api\immunization.php:203
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\api\immunization.php on line 203
+[24-Mar-2025 00:18:31 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:18:31 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:18:31 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:18:31 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:18:31 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:18:31 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:18:31 Europe/Berlin] Raw Input: ------WebKitFormBoundaryDFzmZzSUrR3B5j51
+Content-Disposition: form-data; name="id"
+
+8
+------WebKitFormBoundaryDFzmZzSUrR3B5j51
+Content-Disposition: form-data; name="client_id"
+
+1
+------WebKitFormBoundaryDFzmZzSUrR3B5j51
+Content-Disposition: form-data; name="patient_id"
+
+11,13
+------WebKitFormBoundaryDFzmZzSUrR3B5j51
+Content-Disposition: form-data; name="signature"
+
+1
+------WebKitFormBoundaryDFzmZzSUrR3B5j51--
+
+[24-Mar-2025 00:18:31 Europe/Berlin] Parsed Data: Array
+(
+    [id] => 8
+    [client_id] => 1
+    [patient_id] => 11,13
+    [signature] => 1
+)
+
+[24-Mar-2025 00:18:31 Europe/Berlin] Parsed Values - id: 8, client_id: 1, patient_id: 11,13, signature: 1
+[24-Mar-2025 00:18:40 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:18:40 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:18:40 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:18:40 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:18:40 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:18:40 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:18:40 Europe/Berlin] Raw Input: ------WebKitFormBoundaryTM3xvo5KaPZKiR0t
+Content-Disposition: form-data; name="id"
+
+8
+------WebKitFormBoundaryTM3xvo5KaPZKiR0t
+Content-Disposition: form-data; name="client_id"
+
+1
+------WebKitFormBoundaryTM3xvo5KaPZKiR0t
+Content-Disposition: form-data; name="patient_id"
+
+11,13
+------WebKitFormBoundaryTM3xvo5KaPZKiR0t
+Content-Disposition: form-data; name="signature"
+
+1
+------WebKitFormBoundaryTM3xvo5KaPZKiR0t--
+
+[24-Mar-2025 00:18:40 Europe/Berlin] Parsed Data: Array
+(
+    [id] => 8
+    [client_id] => 1
+    [patient_id] => 11,13
+    [signature] => 1
+)
+
+[24-Mar-2025 00:18:40 Europe/Berlin] Parsed Values - id: 8, client_id: 1, patient_id: 11,13, signature: 1
+[24-Mar-2025 00:18:48 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:18:48 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:18:48 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:18:48 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:18:48 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:18:48 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:18:48 Europe/Berlin] Raw Input: ------WebKitFormBoundaryk9lw3AyyIGhyOYXP
+Content-Disposition: form-data; name="id"
+
+8
+------WebKitFormBoundaryk9lw3AyyIGhyOYXP
+Content-Disposition: form-data; name="client_id"
+
+1
+------WebKitFormBoundaryk9lw3AyyIGhyOYXP
+Content-Disposition: form-data; name="patient_id"
+
+11,13
+------WebKitFormBoundaryk9lw3AyyIGhyOYXP
+Content-Disposition: form-data; name="signature"
+
+1
+------WebKitFormBoundaryk9lw3AyyIGhyOYXP--
+
+[24-Mar-2025 00:18:48 Europe/Berlin] Parsed Data: Array
+(
+    [id] => 8
+    [client_id] => 1
+    [patient_id] => 11,13
+    [signature] => 1
+)
+
+[24-Mar-2025 00:18:48 Europe/Berlin] Parsed Values - id: 8, client_id: 1, patient_id: 11,13, signature: 1
+[24-Mar-2025 00:20:32 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:20:32 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:20:32 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:20:32 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:20:32 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:20:32 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:20:32 Europe/Berlin] Raw Input: ------WebKitFormBoundarykPgSZUNvMbyuMtRH
+Content-Disposition: form-data; name="id"
+
+8
+------WebKitFormBoundarykPgSZUNvMbyuMtRH
+Content-Disposition: form-data; name="client_id"
+
+1
+------WebKitFormBoundarykPgSZUNvMbyuMtRH
+Content-Disposition: form-data; name="patient_id"
+
+11,13
+------WebKitFormBoundarykPgSZUNvMbyuMtRH
+Content-Disposition: form-data; name="signature"
+
+1
+------WebKitFormBoundarykPgSZUNvMbyuMtRH--
+
+[24-Mar-2025 00:20:32 Europe/Berlin] Parsed Data: Array
+(
+    [id] => 8
+    [client_id] => 1
+    [patient_id] => 11,13
+    [signature] => 1
+)
+
+[24-Mar-2025 00:20:32 Europe/Berlin] Parsed Values - id: 8, client_id: 1, patient_id: 11,13, signature: 1
+[24-Mar-2025 00:20:40 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:20:40 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:20:40 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:20:40 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:20:40 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:20:40 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:20:40 Europe/Berlin] Raw Input: ------WebKitFormBoundaryP9DIF6EnsA9kNs4K
+Content-Disposition: form-data; name="id"
+
+8
+------WebKitFormBoundaryP9DIF6EnsA9kNs4K
+Content-Disposition: form-data; name="client_id"
+
+1
+------WebKitFormBoundaryP9DIF6EnsA9kNs4K
+Content-Disposition: form-data; name="patient_id"
+
+11,13
+------WebKitFormBoundaryP9DIF6EnsA9kNs4K
+Content-Disposition: form-data; name="signature"
+
+1
+------WebKitFormBoundaryP9DIF6EnsA9kNs4K--
+
+[24-Mar-2025 00:20:40 Europe/Berlin] Parsed Data: Array
+(
+    [id] => 8
+    [client_id] => 1
+    [patient_id] => 11,13
+    [signature] => 1
+)
+
+[24-Mar-2025 00:20:40 Europe/Berlin] Parsed Values - id: 8, client_id: 1, patient_id: 11,13, signature: 1
+[24-Mar-2025 00:21:40 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:21:40 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:21:40 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:21:40 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:21:40 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:21:40 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:21:40 Europe/Berlin] Raw Input: ------WebKitFormBoundaryIF0i0glBRn2fDuNg
+Content-Disposition: form-data; name="id"
+
+8
+------WebKitFormBoundaryIF0i0glBRn2fDuNg
+Content-Disposition: form-data; name="client_id"
+
+1
+------WebKitFormBoundaryIF0i0glBRn2fDuNg
+Content-Disposition: form-data; name="patient_id"
+
+11
+------WebKitFormBoundaryIF0i0glBRn2fDuNg
+Content-Disposition: form-data; name="signature"
+
+1
+------WebKitFormBoundaryIF0i0glBRn2fDuNg
+Content-Disposition: form-data; name="pet_image"; filename="captured_image.jpg"
+Content-Type: image/jpeg
+
+ÿØÿà
+[24-Mar-2025 00:21:40 Europe/Berlin] Parsed Data: Array
+(
+    [id] => 8
+    [client_id] => 1
+    [patient_id] => 11
+    [signature] => 1
+    [pet_image] => ÿØÿà
+[24-Mar-2025 00:21:40 Europe/Berlin] Parsed Values - id: 8, client_id: 1, patient_id: 11, signature: 1
+[24-Mar-2025 00:23:35 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:23:35 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:23:35 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:23:35 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:23:35 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:23:35 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:23:35 Europe/Berlin] Raw Input: ------WebKitFormBoundaryMYh9DXft4CaLlzTV
+Content-Disposition: form-data; name="id"
+
+8
+------WebKitFormBoundaryMYh9DXft4CaLlzTV
+Content-Disposition: form-data; name="client_id"
+
+1
+------WebKitFormBoundaryMYh9DXft4CaLlzTV
+Content-Disposition: form-data; name="patient_id"
+
+11,13
+------WebKitFormBoundaryMYh9DXft4CaLlzTV
+Content-Disposition: form-data; name="signature"
+
+1
+------WebKitFormBoundaryMYh9DXft4CaLlzTV
+Content-Disposition: form-data; name="pet_image"; filename="captured_image.jpg"
+Content-Type: image/jpeg
+
+ÿØÿà
+[24-Mar-2025 00:23:35 Europe/Berlin] Parsed Data: Array
+(
+    [id] => 8
+    [client_id] => 1
+    [patient_id] => 11,13
+    [signature] => 1
+    [pet_image] => ÿØÿà
+[24-Mar-2025 00:23:35 Europe/Berlin] Parsed Values - id: 8, client_id: 1, patient_id: 11,13, signature: 1
+[24-Mar-2025 00:24:06 Europe/Berlin] Request Method: GET
+[24-Mar-2025 00:24:06 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:24:06 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:24:06 Europe/Berlin] Request Method: GET
+[24-Mar-2025 00:24:06 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:24:06 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:24:13 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:24:13 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:24:13 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:24:13 Europe/Berlin] Request Method: DELETE
+[24-Mar-2025 00:24:13 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:24:13 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:24:13 Europe/Berlin] Request Method: GET
+[24-Mar-2025 00:24:13 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:24:13 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:25:30 Europe/Berlin] Request Method: GET
+[24-Mar-2025 00:25:30 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:25:30 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:25:38 Europe/Berlin] Request Method: POST
+[24-Mar-2025 00:25:38 Europe/Berlin] POST Data: Array
+(
+    [client_id] => 1
+    [patient_id] => 13
+    [signature] => 1
+    [created_by] => 1
+    [created_at] => 2025-03-23
+)
+
+[24-Mar-2025 00:25:38 Europe/Berlin] FILES Data: Array
+(
+    [pet_image] => Array
+        (
+            [name] => captured_image.jpg
+            [full_path] => captured_image.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php27E7.tmp
+            [error] => 0
+            [size] => 50706
+        )
+
+)
+
+[24-Mar-2025 00:25:38 Europe/Berlin] Request Method: GET
+[24-Mar-2025 00:25:38 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:25:38 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:25:49 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:25:49 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:25:49 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:25:49 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:25:49 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:25:49 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:25:49 Europe/Berlin] Raw Input: ------WebKitFormBoundarySRBUJO2RhqFh6uzY
+Content-Disposition: form-data; name="id"
+
+9
+------WebKitFormBoundarySRBUJO2RhqFh6uzY
+Content-Disposition: form-data; name="client_id"
+
+1
+------WebKitFormBoundarySRBUJO2RhqFh6uzY
+Content-Disposition: form-data; name="patient_id"
+
+13,11
+------WebKitFormBoundarySRBUJO2RhqFh6uzY
+Content-Disposition: form-data; name="signature"
+
+1
+------WebKitFormBoundarySRBUJO2RhqFh6uzY--
+
+[24-Mar-2025 00:25:49 Europe/Berlin] Parsed Data: Array
+(
+    [id] => 9
+    [client_id] => 1
+    [patient_id] => 13,11
+    [signature] => 1
+)
+
+[24-Mar-2025 00:25:49 Europe/Berlin] Parsed Values - id: 9, client_id: 1, patient_id: 13,11, signature: 1
+[24-Mar-2025 00:27:32 Europe/Berlin] Request Method: GET
+[24-Mar-2025 00:27:32 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:27:32 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:27:41 Europe/Berlin] Request Method: POST
+[24-Mar-2025 00:27:41 Europe/Berlin] POST Data: Array
+(
+    [client_id] => 1
+    [patient_id] => 11
+    [signature] => 1
+    [created_by] => 1
+    [created_at] => 2025-03-23
+)
+
+[24-Mar-2025 00:27:41 Europe/Berlin] FILES Data: Array
+(
+    [pet_image] => Array
+        (
+            [name] => captured_image.jpg
+            [full_path] => captured_image.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php563.tmp
+            [error] => 0
+            [size] => 53643
+        )
+
+)
+
+[24-Mar-2025 00:27:41 Europe/Berlin] Request Method: GET
+[24-Mar-2025 00:27:41 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:27:41 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:28:06 Europe/Berlin] Request Method: GET
+[24-Mar-2025 00:28:06 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:28:06 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:28:09 Europe/Berlin] Request Method: GET
+[24-Mar-2025 00:28:09 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:28:09 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:28:09 Europe/Berlin] Request Method: GET
+[24-Mar-2025 00:28:09 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:28:09 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:28:51 Europe/Berlin] Request Method: GET
+[24-Mar-2025 00:28:51 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:28:51 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:28:51 Europe/Berlin] Request Method: GET
+[24-Mar-2025 00:28:51 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:28:51 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:28:51 Europe/Berlin] Request Method: GET
+[24-Mar-2025 00:28:51 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:28:51 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:28:54 Europe/Berlin] Request Method: POST
+[24-Mar-2025 00:28:54 Europe/Berlin] POST Data: Array
+(
+    [client_id] => 1
+    [patient_id] => 11
+    [signature] => 1
+    [created_by] => 1
+    [created_at] => 2025-03-23
+)
+
+[24-Mar-2025 00:28:54 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:29:04 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:29:04 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:29:04 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:29:04 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:29:04 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:29:04 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:29:04 Europe/Berlin] Raw Input: ------WebKitFormBoundary0eaA1hI4Sn02BeBp
+Content-Disposition: form-data; name="id"
+
+9
+------WebKitFormBoundary0eaA1hI4Sn02BeBp
+Content-Disposition: form-data; name="client_id"
+
+1
+------WebKitFormBoundary0eaA1hI4Sn02BeBp
+Content-Disposition: form-data; name="patient_id"
+
+13,11
+------WebKitFormBoundary0eaA1hI4Sn02BeBp
+Content-Disposition: form-data; name="signature"
+
+1
+------WebKitFormBoundary0eaA1hI4Sn02BeBp--
+
+[24-Mar-2025 00:29:04 Europe/Berlin] Parsed Data: Array
+(
+    [id] => 9
+    [client_id] => 1
+    [patient_id] => 13,11
+    [signature] => 1
+)
+
+[24-Mar-2025 00:29:04 Europe/Berlin] Parsed Values - id: 9, client_id: 1, patient_id: 13,11, signature: 1
+[24-Mar-2025 00:32:34 Europe/Berlin] Request Method: GET
+[24-Mar-2025 00:32:34 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:32:34 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:34:51 Europe/Berlin] Request Method: GET
+[24-Mar-2025 00:34:51 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:34:51 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:35:00 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:35:00 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:35:00 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:35:00 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:35:00 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:35:00 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:35:00 Europe/Berlin] Raw Input: ------WebKitFormBoundary6QdBvE4eg5E3PJA6
+Content-Disposition: form-data; name="id"
+
+10
+------WebKitFormBoundary6QdBvE4eg5E3PJA6
+Content-Disposition: form-data; name="client_id"
+
+1
+------WebKitFormBoundary6QdBvE4eg5E3PJA6
+Content-Disposition: form-data; name="patient_id"
+
+11,13
+------WebKitFormBoundary6QdBvE4eg5E3PJA6
+Content-Disposition: form-data; name="signature"
+
+1
+------WebKitFormBoundary6QdBvE4eg5E3PJA6--
+
+[24-Mar-2025 00:35:00 Europe/Berlin] Parsed Data: Array
+(
+    [id] => 10
+    [client_id] => 1
+    [patient_id] => 11,13
+    [signature] => 1
+)
+
+[24-Mar-2025 00:35:00 Europe/Berlin] Parsed Values - id: 10, client_id: 1, patient_id: 11,13, signature: 1
+[24-Mar-2025 00:39:14 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:39:14 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:39:14 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:39:14 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:39:14 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:39:14 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:39:14 Europe/Berlin] Raw Input: ------WebKitFormBoundarykPwCGAooCnFL5qnE
+Content-Disposition: form-data; name="id"
+
+10
+------WebKitFormBoundarykPwCGAooCnFL5qnE
+Content-Disposition: form-data; name="client_id"
+
+1
+------WebKitFormBoundarykPwCGAooCnFL5qnE
+Content-Disposition: form-data; name="patient_id"
+
+11,13
+------WebKitFormBoundarykPwCGAooCnFL5qnE
+Content-Disposition: form-data; name="signature"
+
+1
+------WebKitFormBoundarykPwCGAooCnFL5qnE--
+
+[24-Mar-2025 00:39:14 Europe/Berlin] Parsed Data: Array
+(
+    [id] => 10
+    [client_id] => 1
+    [patient_id] => 11,13
+    [signature] => 1
+)
+
+[24-Mar-2025 00:39:14 Europe/Berlin] Parsed Values - id: , client_id: , patient_id: , signature: 
+[24-Mar-2025 00:39:59 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:39:59 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:39:59 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:39:59 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:39:59 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:39:59 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:39:59 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:39:59 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:39:59 Europe/Berlin] Parsed Values - id: , client_id: , patient_id: , signature: 
+[24-Mar-2025 00:40:56 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:40:56 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:40:56 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:40:56 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:40:56 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:40:56 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:40:56 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:40:56 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:40:56 Europe/Berlin] Parsed Values - id: , client_id: , patient_id: , signature: 
+[24-Mar-2025 00:42:32 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:42:32 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:42:32 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:42:32 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:42:32 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:42:32 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:42:32 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:42:32 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:42:32 Europe/Berlin] Parsed Values - id: , client_id: , patient_id: , signature: 
+[24-Mar-2025 00:43:05 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:43:05 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:43:05 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:43:05 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:43:05 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:43:05 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:43:05 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:43:05 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:43:05 Europe/Berlin] Parsed Values - id: , client_id: , patient_id: , signature: 
+[24-Mar-2025 00:43:39 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:43:39 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:43:39 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:43:39 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:43:39 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:43:39 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:43:39 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:43:39 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:43:39 Europe/Berlin] Parsed Values - id: , client_id: , patient_id: , signature: 
+[24-Mar-2025 00:44:33 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:44:33 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:44:33 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:44:33 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:44:33 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:44:33 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:44:33 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:44:33 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:44:33 Europe/Berlin] Parsed Values - id: , client_id: , patient_id: , signature: 
+[24-Mar-2025 00:44:47 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:44:47 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:44:47 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:44:47 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:44:47 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:44:47 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:44:47 Europe/Berlin] Raw Input: ------WebKitFormBoundaryQI5zJhj1q4RkTZ4W
+Content-Disposition: form-data; name="id"
+
+10
+------WebKitFormBoundaryQI5zJhj1q4RkTZ4W
+Content-Disposition: form-data; name="client_id"
+
+1
+------WebKitFormBoundaryQI5zJhj1q4RkTZ4W
+Content-Disposition: form-data; name="patient_id"
+
+11,13
+------WebKitFormBoundaryQI5zJhj1q4RkTZ4W
+Content-Disposition: form-data; name="signature"
+
+1
+------WebKitFormBoundaryQI5zJhj1q4RkTZ4W--
+
+[24-Mar-2025 00:44:47 Europe/Berlin] Parsed Data: Array
+(
+    [------WebKitFormBoundaryQI5zJhj1q4RkTZ4W
+Content-Disposition:_form-data;_name] => "id"
+
+10
+------WebKitFormBoundaryQI5zJhj1q4RkTZ4W
+Content-Disposition: form-data; name="client_id"
+
+1
+------WebKitFormBoundaryQI5zJhj1q4RkTZ4W
+Content-Disposition: form-data; name="patient_id"
+
+11,13
+------WebKitFormBoundaryQI5zJhj1q4RkTZ4W
+Content-Disposition: form-data; name="signature"
+
+1
+------WebKitFormBoundaryQI5zJhj1q4RkTZ4W--
+
+)
+
+[24-Mar-2025 00:44:47 Europe/Berlin] Parsed Values - id: , client_id: , patient_id: , signature: 
+[24-Mar-2025 00:45:01 Europe/Berlin] Request Method: OPTIONS
+[24-Mar-2025 00:45:01 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:45:01 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:45:01 Europe/Berlin] Request Method: PUT
+[24-Mar-2025 00:45:01 Europe/Berlin] POST Data: Array
+(
+)
+
+[24-Mar-2025 00:45:01 Europe/Berlin] FILES Data: Array
+(
+)
+
+[24-Mar-2025 00:45:01 Europe/Berlin] Raw Input: ------WebKitFormBoundaryPIoFWZmRm3g1BFl3
+Content-Disposition: form-data; name="id"
+
+10
+------WebKitFormBoundaryPIoFWZmRm3g1BFl3
+Content-Disposition: form-data; name="client_id"
+
+1
+------WebKitFormBoundaryPIoFWZmRm3g1BFl3
+Content-Disposition: form-data; name="patient_id"
+
+11,13
+------WebKitFormBoundaryPIoFWZmRm3g1BFl3
+Content-Disposition: form-data; name="signature"
+
+1
+------WebKitFormBoundaryPIoFWZmRm3g1BFl3--
+
+[24-Mar-2025 00:45:01 Europe/Berlin] Parsed Data: Array
+(
+    [id] => 10
+    [client_id] => 1
+    [patient_id] => 11,13
+    [signature] => 1
+)
+
+[24-Mar-2025 00:45:01 Europe/Berlin] Parsed Values - id: 10, client_id: 1, patient_id: 11,13, signature: 1

@@ -1,0 +1,225 @@
+.App {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+}
+
+
+body {
+  display: block; /* Change this if it was previously set to flex */
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  margin-left: 250px;
+}
+
+nav ul {
+  list-style: none;
+}
+
+nav ul li {
+  display: inline-block;
+  padding: 10px;
+}
+
+.Sidebar {
+  position: fixed;  /* Keep the sidebar fixed */
+  top: 0;  /* Align with the top */
+  height: 100vh;  /* Full viewport height */
+  width: 250px;  /* Sidebar width */
+  background-color: #f7f7f7;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  overflow-y: auto;  /* Enable vertical scrolling */
+  overflow-x: hidden;  /* Prevent horizontal scrolling */
+  padding-bottom: 20px;  /* Some padding at the bottom */
+}
+
+.Sidebar #logo{
+  width: 100%;
+  height: auto;
+}
+
+.Sidebar .divider {
+  width: 100%;
+  height: 1px;
+  background-color: black;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.SidebarList {
+  height: auto;
+  padding: 0;
+  width: 100%;
+  margin: 0%;
+}
+
+.SidebarList .row {
+  width: 100%;
+  height: 60px;
+  list-style-type: none;
+  display: flex;
+  flex-direction: row;
+  color: black;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.SidebarList .row:hover {
+  cursor: pointer;
+  background-color: #d9d9d9
+}
+
+.SidebarList #active {
+  background-color: #d9d9d9;
+  border-radius: 25px;
+  
+}
+
+.row #icon {
+  flex: 30%;
+  display: grid;
+  place-items: center;
+}
+
+.row #title {
+  flex: 70%;
+}
+
+.Users {
+  border: 1px solid;
+}
+
+thead {
+  background-color: green !important;
+  border: 1px solid;
+}
+
+.UsersHead {
+  border: 1px solid;
+}
+
+
+.UsersBody {
+  border: 1px solid;
+}
+
+.Pets {
+  border: 1px solid;
+}
+
+.PetsHead {
+  border: 1px solid;
+}
+
+.PetsBody {
+  border: 1px solid;
+}
+
+.Users, .Pets {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    .Users th, .Pets th {
+        background-color: #f2f2f2;
+        padding: 8px;
+        text-align: left;
+    }
+    .Users td, .Pets td {
+        border: 1px solid #dddddd;
+        padding: 8px;
+    }
+    .Users tr:nth-child(even), .Pets tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    .Users tr:hover, .Pets tr:hover {
+        background-color: #e2e2e2;
+    }
+    .action-buttons {
+        display: flex;
+        flex-direction: row;
+    }
+    .action-buttons a, .action-buttons button {
+        margin-right: 10px;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        color: #fff;
+    }
+    .action-buttons a {
+        background-color: #007bff; /* blue */
+    }
+    .action-buttons button {
+        background-color: #dc3545; /* red */
+        border: none;
+    }
+
+    .clientsHead {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .content-container{
+      width: 100%;
+      height: 6vh;
+      background-image: linear-gradient(to right, #006cb6, #31b44b);
+      display: flex;
+      justify-content: flex-end;
+      align-items: center; /* Vertically center items */
+      background-color: #f0f0f0;
+    }
+
+
+/* App.css or a dedicated TopBar.css */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  z-index: 1;
+  display: none; /* Initially hidden */
+}
+
+.dropdown-menu.show {
+  display: block; /* Show when `show` class is added */
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 10px;
+  color: black;
+  text-decoration: none;
+  font-weight: normal;
+}
+
+.dropdown-menu a:hover {
+  background-color: #f0f0f0;
+}
+
+
+
+
+    
+
+    
+    
+    
+    

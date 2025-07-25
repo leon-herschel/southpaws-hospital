@@ -1,0 +1,39 @@
+/* Print-specific styles */
+@media print {
+    body * {
+      visibility: hidden;
+    }
+  
+    .receipt, .receipt * {
+      visibility: visible;
+    }
+  
+    .receipt {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+  
+    .receipt-header, .receipt-footer {
+      margin-bottom: 20px;
+    }
+  
+    .receipt-body table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+  
+    .receipt-body th, .receipt-body td {
+      padding: 8px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+  
+    .receipt-print-button {
+      display: none;
+    }
+  }
+  

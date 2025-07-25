@@ -1,0 +1,65 @@
+.card {
+  width: 24rem;
+  border: none;
+  margin-right: 1rem; /* Adjust the spacing between cards as needed */
+  margin-bottom: 1rem;
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.card-green{
+  background-color: #31B44C;
+}
+
+.card-blue{
+  background-color: #006CB7;
+}
+
+.card-title {
+  font-size: 24px;
+  color: white;
+  font-weight: bold;
+}
+
+.card-text {
+  font-size: 24px;
+  color: white;
+  font-weight: bold;
+}
+
+.icon-svg {
+  fill: #fff; /* Default fill color for all SVG icons */
+}
+
+.btn-dashboard {
+  font-size: 0.9rem !important;
+  padding: 0.375rem 0.75rem !important; /* Adjust padding as needed */
+  margin-right: 0.5rem !important; /* Adjust margin between buttons */
+}
+
+.btn-dashboard-primary-green {
+  color: #ffffff !important; /* Primary button text color */
+}
+
+.btn-dashboard-primary-blue {
+  color: #ffffff !important; /* Primary button text color */
+}
+
+.btn-green {
+  background-color: #279F40 !important; /* Override button color */
+}
+
+.btn-blue {
+  background-color: #025A97 !important; /* Override button color */
+}
+
+
+.btn-dashboard-primary > svg {
+  position: absolute;
+  left: 75%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
