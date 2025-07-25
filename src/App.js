@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify'; // ✅ Import ToastContainer
 import 'react-toastify/dist/ReactToastify.css'; // ✅ Import toast styles
 
 import './App.css';
+import Appointment from './components/AppointmentModule/Appointment';
 import Topbar from './components/Topbar'; 
 import Sidebar from './components/Sidebar';
 import Login from './components/Login';
@@ -76,9 +77,7 @@ function App() {
                 <Route path="archived-suppliers" element={<ArchivedSupplierManagement />} />
                 <Route path="report-generation" element={<ReportGeneration />} />
                 <Route path="forecasting" element={<Forecasting/>} />
-
-
-              
+                <Route path="appointment" element={<Appointment />} />
               </Routes>
             </div>
           </>

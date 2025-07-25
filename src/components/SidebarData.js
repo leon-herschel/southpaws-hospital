@@ -119,6 +119,11 @@ export const SidebarData = [
         link: "/information/clients"
     },
     {
+        title: "Appointments",
+        icon: <AssignmentIndIcon />,
+        link: "/appointment"
+    },
+    {
         title: "User Management",
         icon: <PersonAddIcon />,
         link: "/usermanagement"

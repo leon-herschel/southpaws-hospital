@@ -1,110 +1,127 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: *");
-header("Access-Control-Allow-Methods: *");
-
+header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS");
 
 include 'DbConnect.php';
 $objDB = new DbConnect;
-
 $conn = $objDB->connect();
 
 $method = $_SERVER['REQUEST_METHOD'];
-switch ($method) {
 
+switch ($method) {
     case 'GET':
-        // Counting total appointments
-        $sqlCount = "SELECT COUNT(*) AS total_appointments FROM appointments";
-        $stmtCount = $conn->prepare($sqlCount);
-        $stmtCount->execute();
-        $resultCount = $stmtCount->fetch(PDO::FETCH_ASSOC);
-        $total_appointments = $resultCount['total_appointments'];
-    
-        // Fetching appointments data
-        $sqlAppointments = "SELECT * FROM appointments";
-        $path = explode('/', $_SERVER['REQUEST_URI']);
-        if (isset($path[3]) && is_numeric($path[3])) {
-            $sqlAppointments .= " WHERE id = :id";
-            $stmtAppointments = $conn->prepare($sqlAppointments);
-            $stmtAppointments->bindParam(':id', $path[3]);
-            $stmtAppointments->execute();
-            $appointments = array($stmtAppointments->fetch(PDO::FETCH_ASSOC)); // Wrap single appointment in an array
-        } else {
-            $stmtAppointments = $conn->prepare($sqlAppointments);
-            $stmtAppointments->execute();
-            $appointments = $stmtAppointments->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $sql = "SELECT id, service, date, time, end_time, name, contact FROM appointments ORDER BY date DESC, time DESC";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+            $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            echo json_encode([
+                'status' => 1,
+                'appointments' => $appointments
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'status' => 0,
+                'message' => 'Failed to fetch appointments.',
+                'error' => $e->getMessage()
+            ]);
         }
-    
-        // Constructing response
-        $response = array(
-            'total_appointments' => $total_appointments,
-            'appointments' => $appointments
-        );
-    
-        // Encode the response as JSON and send it to the client
-        echo json_encode($response);
         break;
-        
 
     case 'POST':
-        $client = json_decode(file_get_contents('php://input'));
-        $sql = "INSERT INTO clients(id, name, address, cellnumber, email, age, gender, created_at, created_by) VALUES (null, :name, :address, :cellnumber, :email, :age, :gender, :created_at, :created_by)";
-        $stmt = $conn->prepare($sql);
-        date_default_timezone_set('Asia/Manila'); // ✅ Ensures Philippine Time (PHT)
-        $created_at = date('Y-m-d H:i:s');
-        $created_by = "1";
-        $stmt->bindParam(':name', $client->name);
-        $stmt->bindParam(':address', $client->address);
-        $stmt->bindParam(':cellnumber', $client->cellnumber);
-        $stmt->bindParam(':email', $client->email);
-        $stmt->bindParam(':age', $client->age);
-        $stmt->bindParam(':gender', $client->gender);
-        $stmt->bindParam(':created_at', $created_at);
-        $stmt->bindParam(':created_by', $created_by);
+        $data = json_decode(file_get_contents('php://input'), true);
 
-        if($stmt->execute()) {
-            $response = ['status' => 1, 'message' => 'Record created successfully.'];
-        } else {
-            $response = ['status' => 0, 'message' => 'Failed to create record.'];
+        if (
+            !isset($data['service']) || 
+            !isset($data['date']) || 
+            !isset($data['time']) || 
+            !isset($data['end_time']) || // ✅ make sure end_time is included
+            !isset($data['name']) || 
+            !isset($data['contact'])
+        ) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Missing required fields.'
+            ]);
+            exit;
         }
-        echo json_encode($response);
-        break;
 
-    case 'PUT':
-        $user = json_decode(file_get_contents('php://input'));
-        $sql = "UPDATE users SET name = :name, email =:email, mobile = :mobile, updated_at = :updated_at WHERE id = :id";
-        $stmt = $conn->prepare($sql);
-        $created_at = date('Y-m-d H:i:s');
-        $stmt->bindParam(':id', $user->id);
-        $stmt->bindParam(':name', $user->name);
-        $stmt->bindParam(':email', $user->email);
-        $stmt->bindParam(':mobile', $user->mobile);
-        $stmt->bindParam(':updated_at', $updated_at);
-        if($stmt->execute()) {
-            $response = ['status' => 1, 'message' => 'Record updated successfully.'];
-        } else {
-            $response = ['status' => 0, 'message' => 'Failed to edit record.'];
+        try {
+            $sql = "INSERT INTO appointments (service, date, time, end_time, name, contact) 
+                    VALUES (:service, :date, :time, :end_time, :name, :contact)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':service', $data['service']);
+            $stmt->bindParam(':date', $data['date']);
+            $stmt->bindParam(':time', $data['time']);
+            $stmt->bindParam(':end_time', $data['end_time']); // ✅ bind end_time
+            $stmt->bindParam(':name', $data['name']);
+            $stmt->bindParam(':contact', $data['contact']);
+
+            if ($stmt->execute()) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Appointment created successfully.'
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Failed to create appointment.'
+                ]);
+            }
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Server error: ' . $e->getMessage()
+            ]);
         }
-        echo json_encode($response);
         break;
-
 
     case 'DELETE':
-        $sql = "DELETE FROM users WHERE id = :id";
-        $path = explode('/', $_SERVER['REQUEST_URI']);
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':id', $path[3]);
-        if($stmt->execute()) {
-            $response = ['status' => 1, 'message' => 'Record deleted successfully.'];
-        } else {
-            $response = ['status' => 0, 'message' => 'Failed to delete record.'];
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if (!isset($data['id'])) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Missing appointment ID.'
+            ]);
+            exit;
         }
-        echo json_encode($response);
+
+        try {
+            $sql = "DELETE FROM appointments WHERE id = :id";
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':id', $data['id']);
+
+            if ($stmt->execute()) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Appointment deleted successfully.'
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Failed to delete appointment.'
+                ]);
+            }
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Server error: ' . $e->getMessage()
+            ]);
+        }
         break;
 
+    case 'OPTIONS':
+        http_response_code(200);
+        break;
 
-
+    default:
+        http_response_code(405);
+        echo json_encode([
+            'status' => 0,
+            'message' => 'Method not allowed.'
+        ]);
+        break;
 }
-
-
-?>
