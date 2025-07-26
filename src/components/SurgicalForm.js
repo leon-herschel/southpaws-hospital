@@ -246,8 +246,8 @@ const SurgicalForm = () => {
     };
 
     return (
-        <div className='container mt-4'>
-            <h1>Surgical Forms</h1>
+        <div className='container mt-2'>
+            <h1 style={{ textAlign: 'left', fontWeight: 'bold' }}>Surgical Forms</h1>
             <div className='d-flex justify-content-between align-items-center'>
                 <input type="text" className="form-control w-25" onChange={handleFilter} placeholder="Search" />
                 {userRole !== 1 && (

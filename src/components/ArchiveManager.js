@@ -7,7 +7,7 @@ const ArchiveManager = () => {
     const [showArchived, setShowArchived] = useState(true); // Default to archived view
 
     return (
-        <div className="container mt-4">
+        <div className="container mt-2">
             {/* Show Archived or Restore View */}
             {showArchived ? <ArchivedRecords /> : <ArchivedRestore />}
 

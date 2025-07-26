@@ -119,7 +119,7 @@ const History = () => {
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     return (
-        <div className='container mt-4'>
+        <div className='container mt-2'>
             <h1 style={{ textAlign: 'left', fontWeight: 'bold' }}>History</h1>
 
             {/* Search Input */}

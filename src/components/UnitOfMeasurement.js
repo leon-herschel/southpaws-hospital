@@ -239,7 +239,7 @@ const handleShowDeleteModal = (unitId) => {
     
 
     return (
-        <div className='container mt-4'>
+        <div className='container mt-2'>
             <h1 style={{ textAlign: 'left', fontWeight: 'bold' }}>Unit of Measurement</h1>
             <div className='d-flex justify-content-between align-items-center'>
                 <div className="input-group" style={{ width: '25%', marginBottom: '10px' }}>

@@ -115,7 +115,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-2">
       <h1 style={{ textAlign: "left", fontWeight: "bold" }}>Dashboard</h1>
 
       <div className="card-container" style={{ display: "flex", flexWrap: "wrap" }}>

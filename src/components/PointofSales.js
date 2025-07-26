@@ -524,7 +524,7 @@ const PointofSales = () => {
     };
 
     return (
-        <div className='container mt-4'>
+        <div className='container mt-2'>
 <div className="d-flex justify-content-between align-items-center">
 
     <h1 style={{ fontWeight: 'bold' }}>Point of Sales</h1>
