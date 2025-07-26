@@ -2,7 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-function AddAppointments() {
+const AddAppointments = ({ onClose }) => {
   const [formData, setFormData] = useState({
     service: "",
     date: "",
@@ -74,6 +74,7 @@ function AddAppointments() {
           contact: "",
           end_time: "",
         });
+        if (onClose) onClose();
       } else {
         setMessage(res.data.error || "Something went wrong.");
       }
@@ -189,6 +190,6 @@ function AddAppointments() {
       </form>
     </div>
   );
-}
+};
 
 export default AddAppointments;
