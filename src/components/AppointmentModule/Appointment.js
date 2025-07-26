@@ -2,17 +2,12 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import {
-  Calendar,
-  dateFnsLocalizer,
-} from "react-big-calendar";
-
+import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import enUS from "date-fns/locale/en-US";
+import AddAppointments from "./AddAppointments"; // Make sure path is correct
 
-const locales = {
-  "en-US": enUS,
-};
+const locales = { "en-US": enUS };
 
 const localizer = dateFnsLocalizer({
   format,
@@ -25,6 +20,7 @@ const localizer = dateFnsLocalizer({
 const Appointment = () => {
   const [appointments, setAppointments] = useState([]);
   const [events, setEvents] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
   const statuses = ["Pending", "Confirmed", "Cancelled", "Done"];
   const cardColors = {
@@ -52,7 +48,6 @@ const Appointment = () => {
     const formatted = data.map((appt) => {
       const start = new Date(`${appt.date}T${appt.time}`);
       const end = new Date(`${appt.date}T${appt.end_time}`);
-
       return {
         title: appt.name || "Appointment",
         start,
@@ -92,16 +87,16 @@ const Appointment = () => {
     let backgroundColor;
     switch (event.status) {
       case "Confirmed":
-        backgroundColor = "#0d6efd"; 
+        backgroundColor = "#0d6efd";
         break;
       case "Cancelled":
-        backgroundColor = "#dc3545"; 
+        backgroundColor = "#dc3545";
         break;
       case "Done":
-        backgroundColor = "#198754"; 
+        backgroundColor = "#198754";
         break;
       default:
-        backgroundColor = "#6c757d"; 
+        backgroundColor = "#6c757d";
     }
 
     return {
@@ -117,7 +112,12 @@ const Appointment = () => {
 
   return (
     <div className="container mt-4">
-      <h1 className="mb-4" style={{ fontWeight: "bold" }}>Appointments</h1>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h1 style={{ fontWeight: "bold" }}>Appointments</h1>
+        <button className="btn btn-success" onClick={() => setShowModal(true)}>
+          + Add Appointment
+        </button>
+      </div>
 
       {renderStatusBoxes()}
 
@@ -132,16 +132,45 @@ const Appointment = () => {
             views={["month", "week", "day"]}
             step={30}
             timeslots={2}
-            min={new Date(2025, 0, 1, 8, 0)} // 8:00 AM
-            max={new Date(2025, 0, 1, 18, 0)} // 6:00 PM
+            min={new Date(2025, 0, 1, 8, 0)}
+            max={new Date(2025, 0, 1, 18, 0)}
             style={{ height: "100%" }}
             messages={{
               noEventsInRange: "No appointments to show.",
             }}
-            eventPropGetter={eventPropGetter} 
+            eventPropGetter={eventPropGetter}
           />
         </div>
       </div>
+
+      {showModal && (
+        <div
+          className="modal show fade d-block"
+          tabIndex="-1"
+          role="dialog"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <div className="modal-dialog modal-lg" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <AddAppointments
+                  onClose={() => {
+                    setShowModal(false);
+                    fetchAppointments();
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
