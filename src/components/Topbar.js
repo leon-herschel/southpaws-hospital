@@ -96,12 +96,24 @@ const TopBar = () => {
   const topbarData = TopbarData(firstName);
 
   return (
-    <div className="top-bar">
+    <div className="top-bar" style={{
+        height: '50px',
+        backgroundImage: 'linear-gradient(to right, #006cb6, #31b44b)',
+        color: '#fff',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        padding: '0 24px',
+        boxSizing: 'border-box',
+        flexShrink: 0, 
+        width: '100%',
+        position: 'relative',
+        zIndex: 1000,
+      }}
+    >
       <div className="container">
         <section className="custom-section">
-          <div className="row">
-            <div className="col-lg-6">
-              <nav className="top-bar-nav">
+          <nav className="top-bar-nav d-flex justify-content-end align-items-center" style={{ height: '50px' }}>
                 <div
                   className="d-flex justify-content-end align-items-center"
                   style={{ height: '100%' }}
@@ -156,8 +168,6 @@ const TopBar = () => {
                   </div>
                 </div>
               </nav>
-            </div>
-          </div>
         </section>
       </div>
     </div>
