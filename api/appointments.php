@@ -37,7 +37,7 @@ switch ($method) {
             !isset($data['service']) || 
             !isset($data['date']) || 
             !isset($data['time']) || 
-            !isset($data['end_time']) || // ✅ make sure end_time is included
+            !isset($data['end_time']) || 
             !isset($data['name']) || 
             !isset($data['contact'])
         ) {
@@ -55,7 +55,7 @@ switch ($method) {
             $stmt->bindParam(':service', $data['service']);
             $stmt->bindParam(':date', $data['date']);
             $stmt->bindParam(':time', $data['time']);
-            $stmt->bindParam(':end_time', $data['end_time']); // ✅ bind end_time
+            $stmt->bindParam(':end_time', $data['end_time']); 
             $stmt->bindParam(':name', $data['name']);
             $stmt->bindParam(':contact', $data['contact']);
 

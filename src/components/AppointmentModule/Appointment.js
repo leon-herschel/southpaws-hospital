@@ -51,7 +51,7 @@ const Appointment = () => {
   const formatEvents = (data) => {
     const formatted = data.map((appt) => {
       const start = new Date(`${appt.date}T${appt.time}`);
-      const end = new Date(`${appt.date}T${appt.end_time}`); // Uses end_time from backend
+      const end = new Date(`${appt.date}T${appt.end_time}`);
 
       return {
         title: appt.name || "Appointment",
