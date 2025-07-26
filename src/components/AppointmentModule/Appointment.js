@@ -5,7 +5,8 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import enUS from "date-fns/locale/en-US";
-import AddAppointments from "./AddAppointments"; // Make sure path is correct
+import AddAppointments from "./AddAppointments"; 
+import { Modal } from "react-bootstrap";
 
 const locales = { "en-US": enUS };
 
@@ -59,7 +60,7 @@ const Appointment = () => {
   };
 
   const renderStatusBoxes = () => (
-    <div className="d-flex justify-content-between mb-4">
+    <div className="d-flex justify-content-between mt-4 mb-4">
       {statuses.map((status, idx) => (
         <div
           className={`card text-white text-center mx-1 ${cardColors[status]}`}
@@ -112,15 +113,20 @@ const Appointment = () => {
 
   return (
     <div className="container mt-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 style={{ fontWeight: "bold" }}>Appointments</h1>
-        <button className="btn btn-success" onClick={() => setShowModal(true)}>
-          + Add Appointment
-        </button>
-      </div>
+      <h1 style={{ textAlign: 'left', fontWeight: "bold" }}>Appointments</h1>
 
       {renderStatusBoxes()}
 
+      <div className="d-flex justify-content-end align-items-center mb-4">
+        <button className='btn btn-primary' onClick={() => setShowModal(true)} style={{
+                                backgroundImage: 'linear-gradient(to right, #006cb6, #31b44b)',
+                                color: '#ffffff',
+                                borderColor: '#006cb6',
+                                fontWeight: 'bold'
+                            }}>
+          Add Appointment 
+        </button>
+      </div>
       <div className="card">
         <div className="card-body" style={{ height: "80vh" }}>
           <Calendar
@@ -144,32 +150,26 @@ const Appointment = () => {
       </div>
 
       {showModal && (
-        <div
-          className="modal show fade d-block"
-          tabIndex="-1"
-          role="dialog"
-          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        <Modal
+          show={showModal}
+          onHide={() => setShowModal(false)}
+          size="md"
+          backdrop="static"
+          keyboard={false}
         >
-          <div className="modal-dialog modal-lg" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setShowModal(false)}
-                ></button>
-              </div>
-              <div className="modal-body">
-                <AddAppointments
-                  onClose={() => {
-                    setShowModal(false);
-                    fetchAppointments();
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+          <Modal.Header closeButton>
+            <Modal.Title>Add Appointment</Modal.Title>
+          </Modal.Header>
+
+          <Modal.Body>
+            <AddAppointments
+              onClose={() => {
+                setShowModal(false);
+                fetchAppointments();
+              }}
+            />
+          </Modal.Body>
+        </Modal>
       )}
     </div>
   );
