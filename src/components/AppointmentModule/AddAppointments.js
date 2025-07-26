@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 function AddAppointments() {
@@ -9,11 +9,22 @@ function AddAppointments() {
     time: "",
     name: "",
     contact: "",
-    created_at: "",
     end_time: "",
   });
 
   const [message, setMessage] = useState("");
+  const [services, setServices] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost/api/get_services.php")
+      .then((res) => {
+        setServices(res.data);
+      })
+      .catch((err) => {
+        console.error("Failed to load services:", err);
+      });
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,6 +35,28 @@ function AddAppointments() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const { time, name, contact, end_time } = formData;
+
+    //contact number must be 11-digit
+    if (!/^\d{11}$/.test(contact)) {
+      setMessage("Contact number must be exactly 11 digits.");
+      return;
+    }
+
+    //No special characters for name
+    if (!/^[A-Za-z\s]+$/.test(name)) {
+      setMessage("Name should only contain letters and spaces.");
+      return;
+    }
+
+    //End time must be later than the set time
+    const start = new Date(`1970-01-01T${time}`);
+    const end = new Date(`1970-01-01T${end_time}`);
+    if (end <= start) {
+      setMessage("End time must be later than the start time");
+      return;
+    }
 
     try {
       const res = await axios.post(
@@ -39,7 +72,6 @@ function AddAppointments() {
           time: "",
           name: "",
           contact: "",
-          created_at: "",
           end_time: "",
         });
       } else {
@@ -60,17 +92,22 @@ function AddAppointments() {
       {message && <div className="alert alert-info">{message}</div>}
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="service"> Service: </label>
-          <input
-            type="text"
+          <label htmlFor="service">Service:</label>
+          <select
             id="service"
             name="service"
             className="form-control"
             value={formData.service}
             onChange={handleChange}
-            autoComplete="on"
             required
-          />
+          >
+            <option value="">-- Select a service --</option>
+            {services.map((s) => (
+              <option key={s.id} value={s.name}>
+                {s.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
@@ -131,20 +168,6 @@ function AddAppointments() {
               WebkitAppearance: "none",
               margin: 0,
             }}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="created_at">Time Created:</label>
-          <input
-            type="time"
-            id="created_at"
-            name="created_at"
-            className="form-control"
-            value={formData.created_at}
-            onChange={handleChange}
-            autoComplete="off"
-            required
           />
         </div>
 
