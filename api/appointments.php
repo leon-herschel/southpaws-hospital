@@ -1,7 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: *");
-header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS");
+header("Access-Control-Allow-Methods: GET, DELETE, OPTIONS");
 
 include 'DbConnect.php';
 $objDB = new DbConnect;
@@ -12,7 +12,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 switch ($method) {
     case 'GET':
         try {
-            $sql = "SELECT id, service, date, time, end_time, name, contact FROM appointments ORDER BY date DESC, time DESC";
+            $sql = "SELECT id, service, date, time, end_time, name, contact, status FROM appointments";
             $stmt = $conn->prepare($sql);
             $stmt->execute();
             $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -26,54 +26,6 @@ switch ($method) {
                 'status' => 0,
                 'message' => 'Failed to fetch appointments.',
                 'error' => $e->getMessage()
-            ]);
-        }
-        break;
-
-    case 'POST':
-        $data = json_decode(file_get_contents('php://input'), true);
-
-        if (
-            !isset($data['service']) || 
-            !isset($data['date']) || 
-            !isset($data['time']) || 
-            !isset($data['end_time']) || 
-            !isset($data['name']) || 
-            !isset($data['contact'])
-        ) {
-            echo json_encode([
-                'success' => false,
-                'message' => 'Missing required fields.'
-            ]);
-            exit;
-        }
-
-        try {
-            $sql = "INSERT INTO appointments (service, date, time, end_time, name, contact) 
-                    VALUES (:service, :date, :time, :end_time, :name, :contact)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bindParam(':service', $data['service']);
-            $stmt->bindParam(':date', $data['date']);
-            $stmt->bindParam(':time', $data['time']);
-            $stmt->bindParam(':end_time', $data['end_time']); 
-            $stmt->bindParam(':name', $data['name']);
-            $stmt->bindParam(':contact', $data['contact']);
-
-            if ($stmt->execute()) {
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Appointment created successfully.'
-                ]);
-            } else {
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Failed to create appointment.'
-                ]);
-            }
-        } catch (Exception $e) {
-            echo json_encode([
-                'success' => false,
-                'message' => 'Server error: ' . $e->getMessage()
             ]);
         }
         break;

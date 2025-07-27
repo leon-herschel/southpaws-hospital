@@ -22,6 +22,8 @@ const Appointment = () => {
   const [appointments, setAppointments] = useState([]);
   const [events, setEvents] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [serviceColors, setServiceColors] = useState({});
+
 
   const statuses = ["Pending", "Confirmed", "Cancelled", "Done"];
   const cardColors = {
@@ -30,10 +32,6 @@ const Appointment = () => {
     Cancelled: "bg-danger",
     Done: "bg-success",
   };
-
-  useEffect(() => {
-    fetchAppointments();
-  }, []);
 
   const fetchAppointments = async () => {
     try {
@@ -45,6 +43,21 @@ const Appointment = () => {
     }
   };
 
+  const fetchServiceColors = async () => {
+    try {
+      const res = await axios.get("http://localhost/api/service-colors.php");
+      setServiceColors(res.data); 
+    } catch (err) {
+      console.error("Failed to fetch service colors", err);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchAppointments();
+    fetchServiceColors();    
+  }, []);
+
   const formatEvents = (data) => {
     const formatted = data.map((appt) => {
       const start = new Date(`${appt.date}T${appt.time}`);
@@ -54,6 +67,7 @@ const Appointment = () => {
         start,
         end,
         status: appt.status || "Pending",
+        service: appt.service || "", 
       };
     });
     setEvents(formatted);
@@ -85,31 +99,20 @@ const Appointment = () => {
   );
 
   const eventPropGetter = (event) => {
-    let backgroundColor;
-    switch (event.status) {
-      case "Confirmed":
-        backgroundColor = "#0d6efd";
-        break;
-      case "Cancelled":
-        backgroundColor = "#dc3545";
-        break;
-      case "Done":
-        backgroundColor = "#198754";
-        break;
-      default:
-        backgroundColor = "#6c757d";
-    }
+    const firstService = (event.service || "").split(",")[0].trim().toLowerCase();
+    const backgroundColor = serviceColors[firstService] || "#6c757d";
 
     return {
       style: {
         backgroundColor,
-        color: "white",
+        color: "black", 
         borderRadius: "5px",
         padding: "2px",
         border: "none",
       },
     };
   };
+
 
   return (
     <div className="container mt-2">
