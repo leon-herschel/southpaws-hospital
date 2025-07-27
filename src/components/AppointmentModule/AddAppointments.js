@@ -1,7 +1,7 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "react-bootstrap";
+import { AiOutlineDelete } from 'react-icons/ai';
 
 const AddAppointments = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -16,7 +16,6 @@ const AddAppointments = ({ onClose }) => {
 
   const [message, setMessage] = useState("");
   const [services, setServices] = useState([]);
-  const [serviceSelectRef, setServiceSelectRef] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -103,7 +102,6 @@ const AddAppointments = ({ onClose }) => {
     };
 
     try {
-      console.log("Submitting data:", formData);
       const res = await axios.post(
         "http://localhost/api/add_appointments.php",
         formToSend
@@ -112,7 +110,7 @@ const AddAppointments = ({ onClose }) => {
       if (res.data.success) {
         setMessage("Appointment submitted successfully!");
         setFormData({
-          service: [],
+          service: [""],
           date: "",
           time: "",
           name: "",
@@ -139,14 +137,13 @@ const AddAppointments = ({ onClose }) => {
     <div>
       {message && <div className="alert alert-info">{message}</div>}
       <form onSubmit={handleSubmit}>
-        <div>
+        {/* SERVICES */}
+        <div className="mb-3">
           <label>Services:</label>
           {formData.service.map((selected, idx) => {
-            const alreadySelected = formData.service.filter(
-              (_, i) => i !== idx
-            );
+            const alreadySelected = formData.service.filter((_, i) => i !== idx);
             return (
-              <div key={idx} className="d-flex mb-2 align-items-center gap-2">
+              <div key={idx} className="d-flex align-items-center mb-2 gap-2">
                 <select
                   name="service"
                   className="form-control"
@@ -172,7 +169,7 @@ const AddAppointments = ({ onClose }) => {
                     className="btn btn-outline-danger btn-sm"
                     onClick={() => removeService(idx)}
                   >
-                    X
+                    <AiOutlineDelete />
                   </button>
                 )}
               </div>
@@ -181,88 +178,95 @@ const AddAppointments = ({ onClose }) => {
 
           <button
             type="button"
-            className="btn btn-outline-primary btn-sm"
+            className="btn btn-outline-primary btn-sm mb-2"
             onClick={addAnotherService}
           >
             + Add Another Service
           </button>
         </div>
 
-        <div>
-          <label htmlFor="date"> Date:</label>
-          <input
-            type="date"
-            id="date"
-            name="date"
-            className="form-control"
-            value={formData.date}
-            onChange={handleChange}
-            autoComplete="off"
-            required
-          />
+        <div className="row">
+          <div className="col-md-6">
+            <div className="mb-3">
+              <label htmlFor="date">Date:</label>
+              <input
+                type="date"
+                id="date"
+                name="date"
+                className="form-control"
+                value={formData.date}
+                onChange={handleChange}
+                autoComplete="off"
+                required
+              />
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="time">From:</label>
+              <input
+                type="time"
+                id="time"
+                name="time"
+                className="form-control"
+                value={formData.time}
+                onChange={handleChange}
+                autoComplete="off"
+                required
+              />
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="end_time">To:</label>
+              <input
+                type="time"
+                id="end_time"
+                name="end_time"
+                className="form-control"
+                value={formData.end_time}
+                onChange={handleChange}
+                autoComplete="off"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="col-md-6">
+            <div className="mb-3">
+              <label htmlFor="name">Name:</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                className="form-control"
+                value={formData.name}
+                onChange={handleChange}
+                autoComplete="on"
+                required
+              />
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="contact">Contact Number:</label>
+              <input
+                type="number"
+                id="contact"
+                name="contact"
+                className="form-control"
+                value={formData.contact}
+                onChange={handleChange}
+                autoComplete="off"
+                required
+                style={{
+                  MozAppearance: "textfield",
+                  WebkitAppearance: "none",
+                  margin: 0,
+                }}
+              />
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label htmlFor="time">From:</label>
-          <input
-            type="time"
-            id="time"
-            name="time"
-            className="form-control"
-            value={formData.time}
-            onChange={handleChange}
-            autoComplete="off"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="end_time">To:</label>
-          <input
-            type="time"
-            id="end_time"
-            name="end_time"
-            className="form-control"
-            value={formData.end_time}
-            onChange={handleChange}
-            autoComplete="off"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="name">Name:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            className="form-control"
-            value={formData.name}
-            onChange={handleChange}
-            autoComplete="on"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="contact">Contact Number:</label>
-          <input
-            type="number"
-            id="contact"
-            name="contact"
-            className="form-control"
-            value={formData.contact}
-            onChange={handleChange}
-            autoComplete="off"
-            required
-            style={{
-              MozAppearance: "textfield",
-              WebkitAppearance: "none",
-              margin: 0,
-            }}
-          />
-        </div>
-
+        {/* SUBMIT BUTTON */}
         <div className="button-container">
           <Button
             variant="primary"
