@@ -5,7 +5,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import enUS from "date-fns/locale/en-US";
-import AddAppointments from "./AddAppointments"; 
+import AddAppointments from "./AddAppointments";
 import { Modal } from "react-bootstrap";
 
 const locales = { "en-US": enUS };
@@ -113,18 +113,22 @@ const Appointment = () => {
 
   return (
     <div className="container mt-2">
-      <h1 style={{ textAlign: 'left', fontWeight: "bold" }}>Appointments</h1>
+      <h1 style={{ textAlign: "left", fontWeight: "bold" }}>Appointments</h1>
 
       {renderStatusBoxes()}
 
       <div className="d-flex justify-content-end align-items-center mb-4">
-        <button className='btn btn-primary' onClick={() => setShowModal(true)} style={{
-                                backgroundImage: 'linear-gradient(to right, #006cb6, #31b44b)',
-                                color: '#ffffff',
-                                borderColor: '#006cb6',
-                                fontWeight: 'bold'
-                            }}>
-          Add Appointment 
+        <button
+          className="btn btn-primary"
+          onClick={() => setShowModal(true)}
+          style={{
+            backgroundImage: "linear-gradient(to right, #006cb6, #31b44b)",
+            color: "#ffffff",
+            borderColor: "#006cb6",
+            fontWeight: "bold",
+          }}
+        >
+          Add Appointment
         </button>
       </div>
       <div className="card">

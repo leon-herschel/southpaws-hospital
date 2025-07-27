@@ -39,6 +39,15 @@ if (!$service || !$date || !$time || !$name || !$contact || !$end_time) {
     exit();
 }
 
+$endDateTime = strtotime("1970-01-01 $end_time");
+$latestEnd = strtotime("1970-01-01 17:00");
+
+if ($endDateTime > $latestEnd) {
+    http_response_code(400);
+    echo json_encode(["error" => "End time must not be later than 5:00 PM"]);
+    exit();
+}
+
 try {
     $stmt = $conn->prepare("INSERT INTO appointments (service, date, time, name, contact, end_time) VALUES (?, ?, ?, ?, ?, ?)");
     $success = $stmt->execute([
