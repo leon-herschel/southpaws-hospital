@@ -234,7 +234,7 @@ const Forecasting = () => {
     const productVariants = getProductVariants();
 
     return (
-        <div className='container mt-4'>
+        <div className='container mt-2'>
             <h2 className="text-center text-white bg-dark p-3 rounded">Product Inventory Forecast</h2>
             <div className="table-responsive mt-3">
                 <Table striped bordered hover className="text-center">

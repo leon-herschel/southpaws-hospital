@@ -1,6 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Button } from "react-bootstrap";
 
 const AddAppointments = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ const AddAppointments = ({ onClose }) => {
 
   const [message, setMessage] = useState("");
   const [services, setServices] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     axios
@@ -35,26 +37,27 @@ const AddAppointments = ({ onClose }) => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     const { time, name, contact, end_time } = formData;
 
-    //contact number must be 11-digit
     if (!/^\d{11}$/.test(contact)) {
       setMessage("Contact number must be exactly 11 digits.");
+      setIsLoading(false);
       return;
     }
 
-    //No special characters for name
     if (!/^[A-Za-z\s]+$/.test(name)) {
       setMessage("Name should only contain letters and spaces.");
+      setIsLoading(false);
       return;
     }
 
-    //End time must be later than the set time
     const start = new Date(`1970-01-01T${time}`);
     const end = new Date(`1970-01-01T${end_time}`);
     if (end <= start) {
       setMessage("End time must be later than the start time");
+      setIsLoading(false);
       return;
     }
 
@@ -84,12 +87,14 @@ const AddAppointments = ({ onClose }) => {
         error.response?.data?.error ||
           "Failed to submit. Please check your server."
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
+
   return (
     <div>
-      <h2> ADD APPOINTMENT </h2>
       {message && <div className="alert alert-info">{message}</div>}
       <form onSubmit={handleSubmit}>
         <div>
@@ -186,7 +191,11 @@ const AddAppointments = ({ onClose }) => {
           />
         </div>
 
-        <button type="submit">Submit </button>
+        <div className="button-container">
+                        <Button variant="primary" type="submit" className='button' disabled={isLoading}>
+                            {isLoading ? 'Adding...' : 'Add'}
+                        </Button>
+                    </div>
       </form>
     </div>
   );

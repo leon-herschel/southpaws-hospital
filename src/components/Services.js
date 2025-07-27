@@ -174,7 +174,7 @@ const Services = () => {
     }, [showEditModal, serviceIdToEdit]);
 
     return (
-        <div className='container mt-4'>
+        <div className='container mt-2'>
             <h1 style={{ textAlign: 'left', fontWeight: 'bold' }}>Services</h1>
             <div className='d-flex justify-content-between align-items-center'>
                 <div className="input-group-prepend" style={{ width: '25%' }}>

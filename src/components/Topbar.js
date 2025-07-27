@@ -99,9 +99,7 @@ const TopBar = () => {
     <div className="top-bar">
       <div className="container">
         <section className="custom-section">
-          <div className="row">
-            <div className="col-lg-6">
-              <nav className="top-bar-nav">
+          <nav className="top-bar-nav d-flex justify-content-end align-items-center" style={{ height: '50px' }}>
                 <div
                   className="d-flex justify-content-end align-items-center"
                   style={{ height: '100%' }}
@@ -156,8 +154,6 @@ const TopBar = () => {
                   </div>
                 </div>
               </nav>
-            </div>
-          </div>
         </section>
       </div>
     </div>

@@ -254,7 +254,7 @@ const formatDate = (dateStr) => {
     
 
     return (
-        <div className='container mt-4'>
+        <div className='container mt-2'>
             <h1 style={{ textAlign: 'left', fontWeight: 'bold' }}>Report Generation</h1>
             
 

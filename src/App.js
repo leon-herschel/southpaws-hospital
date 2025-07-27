@@ -51,9 +51,7 @@ function App() {
           <>
             <Sidebar />
             <div className="content">
-              <div className="content-container">
                 <Topbar />
-              </div>
               <Routes>
                 <Route path="information/clients" element={<ListClients />} />
                 <Route path="home" element={<Dashboard />} />
