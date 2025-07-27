@@ -11,6 +11,7 @@ const AddAppointments = ({ onClose }) => {
     name: "",
     contact: "",
     end_time: "",
+    status: "Confirmed",
   });
 
   const [message, setMessage] = useState("");
@@ -62,6 +63,7 @@ const AddAppointments = ({ onClose }) => {
     }
 
     try {
+      console.log("Submitting data:", formData);
       const res = await axios.post(
         "http://localhost/api/add_appointments.php",
         formData
@@ -76,6 +78,7 @@ const AddAppointments = ({ onClose }) => {
           name: "",
           contact: "",
           end_time: "",
+          status: "Confirmed",
         });
         if (onClose) onClose();
       } else {
@@ -131,13 +134,27 @@ const AddAppointments = ({ onClose }) => {
         </div>
 
         <div>
-          <label htmlFor="time">Time:</label>
+          <label htmlFor="time">From:</label>
           <input
             type="time"
             id="time"
             name="time"
             className="form-control"
             value={formData.time}
+            onChange={handleChange}
+            autoComplete="off"
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor="end_time">To:</label>
+          <input
+            type="time"
+            id="end_time"
+            name="end_time"
+            className="form-control"
+            value={formData.end_time}
             onChange={handleChange}
             autoComplete="off"
             required
@@ -174,20 +191,6 @@ const AddAppointments = ({ onClose }) => {
               WebkitAppearance: "none",
               margin: 0,
             }}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="end_time">End Time:</label>
-          <input
-            type="time"
-            id="end_time"
-            name="end_time"
-            className="form-control"
-            value={formData.end_time}
-            onChange={handleChange}
-            autoComplete="off"
-            required
           />
         </div>
 

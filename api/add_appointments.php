@@ -31,6 +31,7 @@ $time = $data["time"] ?? '';
 $name = $data["name"] ?? '';
 $contact = $data["contact"] ?? '';
 $end_time = $data["end_time"] ?? '';
+$status = $data["status"] ?? 'Pending';
 
 
 if (!$service || !$date || !$time || !$name || !$contact || !$end_time) {
@@ -40,14 +41,15 @@ if (!$service || !$date || !$time || !$name || !$contact || !$end_time) {
 }
 
 try {
-    $stmt = $conn->prepare("INSERT INTO appointments (service, date, time, name, contact, end_time) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO appointments (service, date, time, name, contact, end_time, status) VALUES (?, ?, ?, ?, ?, ?, ?)");
     $success = $stmt->execute([
         $service,
         $date,
         $time,
         $name,
         $contact,
-        $end_time
+        $end_time,
+        $status 
     ]);
 
     if ($success) {
