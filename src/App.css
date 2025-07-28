@@ -224,6 +224,18 @@ thead {
   background-color: #f0f0f0;
 }
 
+.btn-gradient {
+  background-image: linear-gradient(to right, #006cb6, #31b44b);
+  color: #ffffff;
+  border-color: #006cb6;
+  font-weight: bold;
+  transition: filter 0.2s ease-in-out;
+}
+
+.btn-gradient:hover {
+  filter: brightness(90%);
+}
+
 
 
 
