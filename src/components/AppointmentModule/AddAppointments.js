@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "react-bootstrap";
-import { AiOutlineDelete } from 'react-icons/ai';
+import { AiOutlineDelete } from "react-icons/ai";
 
 const AddAppointments = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -12,6 +12,7 @@ const AddAppointments = ({ onClose }) => {
     contact: "",
     end_time: "",
     status: "Confirmed",
+    reference_number: "",
   });
 
   const [message, setMessage] = useState("");
@@ -27,7 +28,18 @@ const AddAppointments = ({ onClose }) => {
       .catch((err) => {
         console.error("Failed to load services:", err);
       });
+    setFormData((prevData) => ({
+      ...prevData,
+      reference_number: generateReferenceNumber(),
+    }));
   }, []);
+
+  const generateReferenceNumber = () => {
+    const prefix = "REF";
+    const timestamp = Date.now().toString(36);
+    const randomPart = Math.random().toString(36).substring(2, 6).toUpperCase();
+    return `${prefix}-${timestamp}-${randomPart}`;
+  };
 
   const handleChange = (e, index = null) => {
     const { name, value } = e.target;
@@ -82,7 +94,14 @@ const AddAppointments = ({ onClose }) => {
 
     const start = new Date(`1970-01-01T${time}`);
     const end = new Date(`1970-01-01T${end_time}`);
+    const latestAllowedStart = new Date(`1970-01-01T08:00`);
     const latestAllowedEnd = new Date(`1970-01-01T17:00`);
+
+    if (start < latestAllowedStart) {
+      setMessage("Start time must not be earlier than 8AM");
+      setIsLoading(false);
+      return;
+    }
 
     if (end <= start) {
       setMessage("End time must be later than the start time");
@@ -91,7 +110,7 @@ const AddAppointments = ({ onClose }) => {
     }
 
     if (end > latestAllowedEnd) {
-      setMessage("End time must not be later than 5pm");
+      setMessage("End time must not be later than 5PM");
       setIsLoading(false);
       return;
     }
@@ -99,6 +118,7 @@ const AddAppointments = ({ onClose }) => {
     const formToSend = {
       ...formData,
       service: formData.service.filter((s) => s !== "").join(", "),
+      reference_number: formData.reference_number,
     };
 
     try {
@@ -117,6 +137,7 @@ const AddAppointments = ({ onClose }) => {
           contact: "",
           end_time: "",
           status: "Confirmed",
+          reference_number: generateReferenceNumber(),
         });
         if (onClose) onClose();
       } else {
@@ -141,7 +162,9 @@ const AddAppointments = ({ onClose }) => {
         <div className="mb-3">
           <label>Services:</label>
           {formData.service.map((selected, idx) => {
-            const alreadySelected = formData.service.filter((_, i) => i !== idx);
+            const alreadySelected = formData.service.filter(
+              (_, i) => i !== idx
+            );
             return (
               <div key={idx} className="d-flex align-items-center mb-2 gap-2">
                 <select
@@ -261,6 +284,18 @@ const AddAppointments = ({ onClose }) => {
                   WebkitAppearance: "none",
                   margin: 0,
                 }}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="reference_code">Reference Number:</label>
+              <input
+                type="text"
+                id="reference_number"
+                name="reference_number"
+                className="form-control"
+                value={formData.reference_number}
+                readOnly
               />
             </div>
           </div>
