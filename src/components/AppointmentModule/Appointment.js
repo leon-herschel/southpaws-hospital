@@ -6,6 +6,7 @@ import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import enUS from "date-fns/locale/en-US";
 import AddAppointments from "./AddAppointments";
+import TagArrived from "./TagArrived";
 import { Modal } from "react-bootstrap";
 
 const locales = { "en-US": enUS };
@@ -22,8 +23,8 @@ const Appointment = () => {
   const [appointments, setAppointments] = useState([]);
   const [events, setEvents] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showTagModal, setShowTagModal] = useState(false);
   const [serviceColors, setServiceColors] = useState({});
-
 
   const statuses = ["Pending", "Confirmed", "Cancelled", "Done"];
   const cardColors = {
@@ -46,16 +47,15 @@ const Appointment = () => {
   const fetchServiceColors = async () => {
     try {
       const res = await axios.get("http://localhost/api/service-colors.php");
-      setServiceColors(res.data); 
+      setServiceColors(res.data);
     } catch (err) {
       console.error("Failed to fetch service colors", err);
     }
   };
 
-
   useEffect(() => {
     fetchAppointments();
-    fetchServiceColors();    
+    fetchServiceColors();
   }, []);
 
   const formatEvents = (data) => {
@@ -67,7 +67,7 @@ const Appointment = () => {
         start,
         end,
         status: appt.status || "Pending",
-        service: appt.service || "", 
+        service: appt.service || "",
       };
     });
     setEvents(formatted);
@@ -99,13 +99,16 @@ const Appointment = () => {
   );
 
   const eventPropGetter = (event) => {
-    const firstService = (event.service || "").split(",")[0].trim().toLowerCase();
+    const firstService = (event.service || "")
+      .split(",")[0]
+      .trim()
+      .toLowerCase();
     const backgroundColor = serviceColors[firstService] || "#6c757d";
 
     return {
       style: {
         backgroundColor,
-        color: "black", 
+        color: "black",
         borderRadius: "5px",
         padding: "2px",
         border: "none",
@@ -113,12 +116,26 @@ const Appointment = () => {
     };
   };
 
-
   return (
     <div className="container mt-2">
       <h1 style={{ textAlign: "left", fontWeight: "bold" }}>Appointments</h1>
 
       {renderStatusBoxes()}
+
+      <div className="d-flex justify-content-end align-items-center mb-4">
+        <button
+          className="btn btn-primary"
+          onClick={() => setShowTagModal(true)}
+          style={{
+            backgroundImage: "linear-gradient(to right, #006cb6, #31b44b)",
+            color: "#ffffff",
+            borderColor: "#006cb6",
+            fontWeight: "bold",
+          }}
+        >
+          Tag as Arrived
+        </button>
+      </div>
 
       <div className="d-flex justify-content-end align-items-center mb-4">
         <button
@@ -134,6 +151,7 @@ const Appointment = () => {
           Add Appointment
         </button>
       </div>
+
       <div className="card">
         <div className="card-body" style={{ height: "80vh" }}>
           <Calendar
@@ -172,6 +190,29 @@ const Appointment = () => {
             <AddAppointments
               onClose={() => {
                 setShowModal(false);
+                fetchAppointments();
+              }}
+            />
+          </Modal.Body>
+        </Modal>
+      )}
+
+      {showTagModal && (
+        <Modal
+          show={showTagModal}
+          onHide={() => setShowTagModal(false)}
+          size="md"
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Tag Arrived</Modal.Title>
+          </Modal.Header>
+
+          <Modal.Body>
+            <TagArrived
+              onClose={() => {
+                setShowTagModal(false);
                 fetchAppointments();
               }}
             />
