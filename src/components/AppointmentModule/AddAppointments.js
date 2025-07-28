@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "react-bootstrap";
 import { AiOutlineDelete } from "react-icons/ai";
+import { toast } from "react-toastify";
+
 
 const AddAppointments = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -15,7 +17,6 @@ const AddAppointments = ({ onClose }) => {
     reference_number: "",
   });
 
-  const [message, setMessage] = useState("");
   const [services, setServices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -83,13 +84,13 @@ const AddAppointments = ({ onClose }) => {
     const { time, name, contact, end_time } = formData;
 
     if (!/^\d{11}$/.test(contact)) {
-      setMessage("Contact number must be exactly 11 digits.");
+      toast.error("Contact number must be exactly 11 digits.");
       setIsLoading(false);
       return;
     }
 
     if (!/^[A-Za-z\s]+$/.test(name)) {
-      setMessage("Name should only contain letters and spaces.");
+      toast.error("Name should only contain letters and spaces.");
       setIsLoading(false);
       return;
     }
@@ -100,19 +101,19 @@ const AddAppointments = ({ onClose }) => {
     const latestAllowedEnd = new Date(`1970-01-01T17:00`);
 
     if (start < latestAllowedStart) {
-      setMessage("Start time must not be earlier than 8AM");
+      toast.error("Start time must not be earlier than 8AM");
       setIsLoading(false);
       return;
     }
 
     if (end <= start) {
-      setMessage("End time must be later than the start time");
+      toast.error("End time must be later than the start time");
       setIsLoading(false);
       return;
     }
 
     if (end > latestAllowedEnd) {
-      setMessage("End time must not be later than 5PM");
+      toast.error("End time must not be later than 5PM");
       setIsLoading(false);
       return;
     }
@@ -130,7 +131,7 @@ const AddAppointments = ({ onClose }) => {
       );
 
       if (res.data.success) {
-        setMessage("Appointment submitted successfully!");
+        toast.success("Appointment submitted successfully!");
         setFormData({
           service: [""],
           date: "",
@@ -143,11 +144,11 @@ const AddAppointments = ({ onClose }) => {
         });
         if (onClose) onClose();
       } else {
-        setMessage(res.data.error || "Something went wrong.");
+        toast.error(res.data.error || "Something went wrong.");
       }
     } catch (error) {
       console.error("Submission Error:", error.response?.data || error.message);
-      setMessage(
+      toast.error(
         error.response?.data?.error ||
           "Failed to submit. Please check your server."
       );
@@ -156,9 +157,9 @@ const AddAppointments = ({ onClose }) => {
     }
   };
 
+
   return (
     <div>
-      {message && <div className="alert alert-info">{message}</div>}
       <form onSubmit={handleSubmit}>
         {/* SERVICES */}
         <div className="mb-3">

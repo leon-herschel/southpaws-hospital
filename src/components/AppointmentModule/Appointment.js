@@ -8,7 +8,7 @@ import enUS from "date-fns/locale/en-US";
 import AddAppointments from "./AddAppointments";
 import TagArrived from "./TagArrived";
 import { Modal } from "react-bootstrap";
-
+import {  toast } from "react-toastify";
 
 const locales = { "en-US": enUS };
 
@@ -131,15 +131,16 @@ const Appointment = () => {
 
   const handleStatusUpdate = async (eventData) => {
     try {
-      console.log("Updating status with:", eventData); 
       await axios.put("http://localhost/api/appointments.php", {
         id: eventData.id,
         status: eventData.status,
       });
-      setShowEventModal(false); 
-      fetchAppointments(); 
+      toast.success("Appointment status updated!");
+      setShowEventModal(false);
+      fetchAppointments();
     } catch (err) {
       console.error("Update failed", err);
+      toast.error("Failed to update status. Please try again.");
     }
   };
 
