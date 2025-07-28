@@ -122,31 +122,17 @@ const Appointment = () => {
 
       {renderStatusBoxes()}
 
-      <div className="d-flex justify-content-end align-items-center mb-4">
+      <div className="d-flex justify-content-end align-items-center mb-4 gap-2">
         <button
-          className="btn btn-primary"
+          className="btn btn-primary me-2 btn-gradient"
           onClick={() => setShowTagModal(true)}
-          style={{
-            backgroundImage: "linear-gradient(to right, #006cb6, #31b44b)",
-            color: "#ffffff",
-            borderColor: "#006cb6",
-            fontWeight: "bold",
-          }}
         >
           Tag as Arrived
         </button>
-      </div>
 
-      <div className="d-flex justify-content-end align-items-center mb-4">
         <button
-          className="btn btn-primary"
+          className="btn btn-primary btn-gradient"
           onClick={() => setShowModal(true)}
-          style={{
-            backgroundImage: "linear-gradient(to right, #006cb6, #31b44b)",
-            color: "#ffffff",
-            borderColor: "#006cb6",
-            fontWeight: "bold",
-          }}
         >
           Add Appointment
         </button>
