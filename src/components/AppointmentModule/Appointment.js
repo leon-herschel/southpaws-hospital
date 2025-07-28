@@ -9,6 +9,7 @@ import AddAppointments from "./AddAppointments";
 import TagArrived from "./TagArrived";
 import { Modal } from "react-bootstrap";
 
+
 const locales = { "en-US": enUS };
 
 const localizer = dateFnsLocalizer({
@@ -25,6 +26,8 @@ const Appointment = () => {
   const [showModal, setShowModal] = useState(false);
   const [showTagModal, setShowTagModal] = useState(false);
   const [serviceColors, setServiceColors] = useState({});
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showEventModal, setShowEventModal] = useState(false);
 
   const statuses = ["Pending", "Confirmed", "Cancelled", "Done"];
   const cardColors = {
@@ -32,6 +35,11 @@ const Appointment = () => {
     Confirmed: "bg-primary",
     Cancelled: "bg-danger",
     Done: "bg-success",
+  };
+
+  const handleEventClick = (event) => {
+    setSelectedEvent(event);
+    setShowEventModal(true);
   };
 
   const fetchAppointments = async () => {
@@ -63,15 +71,20 @@ const Appointment = () => {
       const start = new Date(`${appt.date}T${appt.time}`);
       const end = new Date(`${appt.date}T${appt.end_time}`);
       return {
+        id: appt.id,
         title: appt.name || "Appointment",
         start,
         end,
         status: appt.status || "Pending",
         service: appt.service || "",
+        reference_number: appt.reference_number || "",
+        name: appt.name || "",
+        contact: appt.contact || "",
       };
     });
     setEvents(formatted);
   };
+
 
   const renderStatusBoxes = () => (
     <div className="d-flex justify-content-between mt-4 mb-4">
@@ -116,6 +129,21 @@ const Appointment = () => {
     };
   };
 
+  const handleStatusUpdate = async (eventData) => {
+    try {
+      console.log("Updating status with:", eventData); 
+      await axios.put("http://localhost/api/appointments.php", {
+        id: eventData.id,
+        status: eventData.status,
+      });
+      setShowEventModal(false); 
+      fetchAppointments(); 
+    } catch (err) {
+      console.error("Update failed", err);
+    }
+  };
+
+
   return (
     <div className="container mt-2">
       <h1 style={{ textAlign: "left", fontWeight: "bold" }}>Appointments</h1>
@@ -156,6 +184,7 @@ const Appointment = () => {
               noEventsInRange: "No appointments to show.",
             }}
             eventPropGetter={eventPropGetter}
+            onSelectEvent={handleEventClick}
           />
         </div>
       </div>
@@ -205,6 +234,57 @@ const Appointment = () => {
           </Modal.Body>
         </Modal>
       )}
+
+      {selectedEvent && (<Modal show={showEventModal} onHide={() => setShowEventModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Appointment Info</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p><strong>Reference #:</strong> {selectedEvent.reference_number}</p>
+          <p><strong>Service:</strong> {selectedEvent.service}</p>
+          <p><strong>Date:</strong> {format(selectedEvent.start, 'MMMM dd, yyyy')}</p>
+          <p><strong>Time:</strong> {format(selectedEvent.start, 'hh:mm a')} to {format(selectedEvent.end, 'hh:mm a')}</p>
+          <p><strong>Name:</strong> {selectedEvent.name}</p>
+          <p><strong>Contact:</strong> {selectedEvent.contact}</p>
+
+          <div className="mt-3">
+            <label><strong>Status:</strong></label>
+            <select
+              className="form-control"
+              value={selectedEvent.status}
+              onChange={(e) =>
+                setSelectedEvent({ ...selectedEvent, status: e.target.value })
+              }
+              disabled={selectedEvent.status === "Done"}
+            >
+              {selectedEvent.status === "Done" && (
+                <option value="Done" disabled>
+                  Done
+                </option>
+              )}
+              <option value="Pending">Pending</option>
+              <option value="Confirmed">Confirmed</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowEventModal(false)}
+          >
+            Close
+          </button>
+          <button
+            className="btn btn-primary"
+            onClick={() => handleStatusUpdate(selectedEvent)}
+          >
+            Save Changes
+          </button>
+        </Modal.Footer>
+      </Modal>
+    )}
+
     </div>
   );
 };

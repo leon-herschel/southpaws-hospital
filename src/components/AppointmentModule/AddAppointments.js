@@ -35,10 +35,12 @@ const AddAppointments = ({ onClose }) => {
   }, []);
 
   const generateReferenceNumber = () => {
-    const prefix = "REF";
-    const timestamp = Date.now().toString(36);
-    const randomPart = Math.random().toString(36).substring(2, 6).toUpperCase();
-    return `${prefix}-${timestamp}-${randomPart}`;
+    const now = new Date();
+    const yy = now.getFullYear().toString().slice(-2);
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const random = Math.floor(1000 + Math.random() * 9000); 
+    return `REF-${yy}${mm}${dd}-${random}`;
   };
 
   const handleChange = (e, index = null) => {

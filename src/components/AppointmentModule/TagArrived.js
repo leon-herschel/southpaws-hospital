@@ -3,7 +3,7 @@ import axios from "axios";
 import { Alert, Button } from "react-bootstrap";
 
 function TagArrived({ onClose }) {
-  const [referenceNumber, setReferenceNumber] = useState("");
+  const [referenceNumber, setReferenceNumber] = useState("REF-");
   const [error, setError] = useState("");
   const [promptVisible, setPromptVisible] = useState(false);
   const [clientInfo, setClientInfo] = useState(null);
