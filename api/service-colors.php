@@ -12,14 +12,15 @@ $stmt->execute();
 $services = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
 $presetColors = [
-    "#f8b195", "#f67280", "#f6c2b0", "#f4a261", "#fcd5ce",
-    "#ffe5d9", "#f9dcc4", "#fec89a", "#fcbf49", "#ffdfba",
-    "#f0efeb", "#e0e1dd", "#d8e2dc", "#cddafd", "#d0f4de",
-    "#c3f0ca", "#caf0f8", "#ade8f4", "#a0c4ff", "#bdb2ff",
-    "#ffc6ff", "#ffadad", "#ffd6a5", "#fdffb6", "#caffbf",
-    "#9bf6ff", "#a3c4f3", "#d5a6bd", "#c9ada7", "#d6ccc2",
-    "#c3bef0", "#e2f0cb", "#f1faee", "#dcedc1", "#f0ead2",
-    "#f6f7d7", "#e2c2b9", "#d2d4dc", "#f9f9f9", "#e4fde1"
+    "#df7c7eff", "#f3722c", "#f8961e", "#f9844a", "#90be6d",
+    "#43aa8b", "#577590", "#277da1", "#4d908e", "#577590",
+    "#ffb703", "#8ecae6", "#219ebc", "#a2d2ff", "#b5ead7",
+    "#e4c1f9", "#ff99c8", "#fcf6bd", "#cdb4db", "#d0f4de",
+    "#ffafcc", "#ffc8dd", "#caffbf", "#b9fbc0", "#a0c4ff",
+    "#9bf6ff", "#ffd6a5", "#e9c46a", "#ffcad4", "#d8e2dc",
+    "#cce3de", "#e29578", "#f0efeb", "#adb5bd", "#ffdab9",
+    "#ffee93", "#e2ece9", "#bbd0ff", "#ffc09f", "#ffe066",
+    "#e4c1f9", "#f6bd60", "#84a59d", "#9d8189", "#e8dab2"
 ];
 
 $colorMap = [];
