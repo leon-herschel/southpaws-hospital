@@ -28,6 +28,7 @@ const Appointment = () => {
   const [serviceColors, setServiceColors] = useState({});
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const statuses = ["Pending", "Confirmed", "Cancelled", "Done"];
   const cardColors = {
@@ -112,6 +113,17 @@ const Appointment = () => {
   );
 
   const eventPropGetter = (event) => {
+    if (event.status === "Cancelled") {
+      return {
+        style: {
+          backgroundColor: "#dc3545",
+          color: "white",
+          borderRadius: "5px",
+          padding: "2px",
+          border: "none",
+        },
+      };
+    }
     const firstService = (event.service || "")
       .split(",")[0]
       .trim()
@@ -144,6 +156,20 @@ const Appointment = () => {
     }
   };
 
+  const handleDeleteAppointment = async () => {
+    try {
+      await axios.delete("http://localhost/api/appointments.php", {
+        data: { id: selectedEvent.id },
+      });
+      toast.success("Appointment deleted successfully!");
+      setShowEventModal(false);
+      setShowDeleteConfirm(false); 
+      fetchAppointments();
+    } catch (err) {
+      console.error("Delete failed", err);
+      toast.error("Failed to delete appointment. Please try again.");
+    }
+};
 
   return (
     <div className="container mt-2">
@@ -270,6 +296,14 @@ const Appointment = () => {
           </div>
         </Modal.Body>
         <Modal.Footer>
+          {selectedEvent?.status === "Cancelled" && (
+            <button
+              className="btn btn-danger me-auto"
+              onClick={() => setShowDeleteConfirm(true)}
+            >
+              Delete
+            </button>
+          )}
           <button
             className="btn btn-secondary"
             onClick={() => setShowEventModal(false)}
@@ -277,7 +311,7 @@ const Appointment = () => {
             Close
           </button>
           <button
-            className="btn btn-primary"
+            className="btn btn-success"
             onClick={() => handleStatusUpdate(selectedEvent)}
           >
             Save Changes
@@ -285,6 +319,23 @@ const Appointment = () => {
         </Modal.Footer>
       </Modal>
     )}
+
+    <Modal show={showDeleteConfirm} onHide={() => setShowDeleteConfirm(false)} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>Confirm Deletion</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <p>Are you sure you want to delete this appointment?</p>
+      </Modal.Body>
+      <Modal.Footer>
+        <button className="btn btn-secondary" onClick={() => setShowDeleteConfirm(false)}>
+          Cancel
+        </button>
+        <button className="btn btn-danger" onClick={handleDeleteAppointment}>
+          Yes, Delete
+        </button>
+      </Modal.Footer>
+    </Modal>
 
     </div>
   );
