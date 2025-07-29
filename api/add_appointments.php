@@ -9,7 +9,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-// Connect to DB
 include 'DbConnect.php';
 $objDB = new DbConnect;
 
@@ -30,12 +29,13 @@ $date = $data["date"] ?? '';
 $time = $data["time"] ?? '';
 $name = $data["name"] ?? '';
 $contact = $data["contact"] ?? '';
+$email = isset($data["email"]) ? filter_var($data["email"], FILTER_SANITIZE_EMAIL) : '';
 $end_time = $data["end_time"] ?? '';
 $status = $data["status"] ?? 'Pending';
 $reference_number = $data["reference_number"] ?? "";
 
 
-if (!$service || !$date || !$time || !$name || !$contact || !$end_time) {
+if (!$service || !$date || !$time || !$name || !$contact || !$end_time || !$email) {
     http_response_code(400);
     echo json_encode(["error" => "Missing required fields"]);
     exit();
@@ -51,7 +51,7 @@ if ($endDateTime > $latestEnd) {
 }
 
 try {
-    $stmt = $conn->prepare("INSERT INTO appointments (service, date, time, name, contact, end_time, status, reference_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO appointments (service, date, time, name, contact, end_time, status, reference_number, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $success = $stmt->execute([
         $service,
         $date,
@@ -60,8 +60,10 @@ try {
         $contact,
         $end_time,
         $status,
-        $reference_number
+        $reference_number,
+        $email
     ]);
+
 
     if ($success) {
         echo json_encode(["success" => true, "message" => "Appointment added"]);

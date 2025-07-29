@@ -12,7 +12,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 switch ($method) {
     case 'GET':
         try {
-            $sql = "SELECT id, reference_number, service, date, time, end_time, name, contact, status FROM appointments";
+            $sql = "SELECT id, reference_number, service, date, time, end_time, name, contact, email, status FROM appointments";
             $stmt = $conn->prepare($sql);
             $stmt->execute();
             $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -72,6 +72,7 @@ switch ($method) {
             !isset($data['id']) ||
             !isset($data['name']) ||
             !isset($data['contact']) ||
+            !isset($data['email']) ||
             !isset($data['service']) ||
             !isset($data['date']) ||
             !isset($data['time']) ||
@@ -89,6 +90,7 @@ switch ($method) {
             $sql = "UPDATE appointments 
                     SET name = :name, 
                         contact = :contact, 
+                        email = :email, 
                         service = :service, 
                         date = :date, 
                         time = :time, 
@@ -99,6 +101,7 @@ switch ($method) {
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':name', $data['name']);
             $stmt->bindParam(':contact', $data['contact']);
+            $stmt->bindParam(':email', $data['email']);
             $stmt->bindParam(':service', $data['service']);
             $stmt->bindParam(':date', $data['date']);
             $stmt->bindParam(':time', $data['time']);

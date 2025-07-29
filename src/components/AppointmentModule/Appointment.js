@@ -82,6 +82,7 @@ const Appointment = () => {
         reference_number: appt.reference_number || "",
         name: appt.name || "",
         contact: appt.contact || "",
+        email: appt.email || "",
       };
     });
     setEvents(formatted);
@@ -273,7 +274,8 @@ const Appointment = () => {
           <p><strong>Date:</strong> {format(selectedEvent.start, 'MMMM dd, yyyy')}</p>
           <p><strong>Time:</strong> {format(selectedEvent.start, 'hh:mm a')} to {format(selectedEvent.end, 'hh:mm a')}</p>
           <p><strong>Name:</strong> {selectedEvent.name}</p>
-          <p><strong>Contact:</strong> {selectedEvent.contact}</p>
+          <p><strong>Contact #:</strong> {selectedEvent.contact}</p>
+          <p><strong>Email:</strong> {selectedEvent.email}</p>
           <p><strong>Status:</strong> {selectedEvent.status}</p>
         </Modal.Body>
         <Modal.Footer>

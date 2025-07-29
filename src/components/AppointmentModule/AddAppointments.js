@@ -12,10 +12,12 @@ const AddAppointments = ({ onClose }) => {
     time: "",
     name: "",
     contact: "",
+    email: "",
     end_time: "",
     status: "Confirmed",
     reference_number: "",
   });
+
 
   const [services, setServices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -118,8 +120,11 @@ const AddAppointments = ({ onClose }) => {
       return;
     }
 
+    const finalEmail = formData.email?.trim() || "no_email@noemail.com";
+
     const formToSend = {
       ...formData,
+      email: finalEmail,
       service: formData.service.filter((s) => s !== "").join(", "),
       reference_number: formData.reference_number,
     };
@@ -138,6 +143,7 @@ const AddAppointments = ({ onClose }) => {
           time: "",
           name: "",
           contact: "",
+          email: "",
           end_time: "",
           status: "Confirmed",
           reference_number: generateReferenceNumber(),
@@ -254,6 +260,18 @@ const AddAppointments = ({ onClose }) => {
                 required
               />
             </div>
+
+            <div className="mb-3">
+              <label htmlFor="reference_code">Reference Number:</label>
+              <input
+                type="text"
+                id="reference_number"
+                name="reference_number"
+                className="form-control"
+                value={formData.reference_number}
+                readOnly
+              />
+            </div>
           </div>
 
           <div className="col-md-6">
@@ -291,14 +309,15 @@ const AddAppointments = ({ onClose }) => {
             </div>
 
             <div className="mb-3">
-              <label htmlFor="reference_code">Reference Number:</label>
+              <label htmlFor="email">Email (optional):</label>
               <input
-                type="text"
-                id="reference_number"
-                name="reference_number"
+                type="email"
+                id="email"
+                name="email"
                 className="form-control"
-                value={formData.reference_number}
-                readOnly
+                value={formData.email}
+                onChange={handleChange}
+                autoComplete="off"
               />
             </div>
           </div>

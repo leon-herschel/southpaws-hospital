@@ -10,6 +10,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
     id: "",
     name: "",
     contact: "",
+    email: "",
     service: [""],
     date: "",
     time: "",
@@ -33,6 +34,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
       id: eventData.id,
       name: eventData.name,
       contact: eventData.contact,
+      email: eventData.email || "",
       service: eventData.service ? eventData.service.split(", ").map((s) => s.trim()) : [""],
       date: eventData.start.toISOString().split("T")[0],
       time: eventData.start.toTimeString().substring(0, 5),
@@ -101,6 +103,11 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
     if (end > latestAllowedEnd) {
         toast.error("End time must not be later than 5PM");
         return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      toast.error("Please enter a valid email address.");
+      return;
     }
 
     const updatedData = {
@@ -208,6 +215,22 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
                   required
                 />
               </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Status:</Form.Label>
+                <select
+                    name="status"
+                    className="form-control"
+                    value={formData.status}
+                    onChange={handleChange}
+                    required
+                >
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Cancelled">Cancelled</option>
+                    <option value="Done">Done</option>
+                </select>
+            </Form.Group>
             </div>
 
             <div className="col-md-6">
@@ -238,20 +261,15 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>Status:</Form.Label>
-                <select
-                    name="status"
-                    className="form-control"
-                    value={formData.status}
-                    onChange={handleChange}
-                    required
-                >
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Cancelled">Cancelled</option>
-                    <option value="Done">Done</option>
-                </select>
-            </Form.Group>
+                <Form.Label>Email:</Form.Label>
+                <Form.Control
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </Form.Group>
             </div>
           </div>
         </Form>
