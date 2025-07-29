@@ -9,6 +9,7 @@ import AddAppointments from "./AddAppointments";
 import TagArrived from "./TagArrived";
 import { Modal } from "react-bootstrap";
 import {  toast } from "react-toastify";
+import EditAppointment from "./EditAppointment";
 
 const locales = { "en-US": enUS };
 
@@ -21,6 +22,13 @@ const localizer = dateFnsLocalizer({
 });
 
 const Appointment = () => {
+  const statuses = ["Pending", "Confirmed", "Cancelled", "Done"];
+  const cardColors = {
+    Pending: "bg-secondary",
+    Confirmed: "bg-primary",
+    Cancelled: "bg-danger",
+    Done: "bg-success",
+  };
   const [appointments, setAppointments] = useState([]);
   const [events, setEvents] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -29,14 +37,7 @@ const Appointment = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
-  const statuses = ["Pending", "Confirmed", "Cancelled", "Done"];
-  const cardColors = {
-    Pending: "bg-secondary",
-    Confirmed: "bg-primary",
-    Cancelled: "bg-danger",
-    Done: "bg-success",
-  };
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const handleEventClick = (event) => {
     setSelectedEvent(event);
@@ -273,27 +274,7 @@ const Appointment = () => {
           <p><strong>Time:</strong> {format(selectedEvent.start, 'hh:mm a')} to {format(selectedEvent.end, 'hh:mm a')}</p>
           <p><strong>Name:</strong> {selectedEvent.name}</p>
           <p><strong>Contact:</strong> {selectedEvent.contact}</p>
-
-          <div className="mt-3">
-            <label><strong>Status:</strong></label>
-            <select
-              className="form-control"
-              value={selectedEvent.status}
-              onChange={(e) =>
-                setSelectedEvent({ ...selectedEvent, status: e.target.value })
-              }
-              disabled={selectedEvent.status === "Done"}
-            >
-              {selectedEvent.status === "Done" && (
-                <option value="Done" disabled>
-                  Done
-                </option>
-              )}
-              <option value="Pending">Pending</option>
-              <option value="Confirmed">Confirmed</option>
-              <option value="Cancelled">Cancelled</option>
-            </select>
-          </div>
+          <p><strong>Status:</strong> {selectedEvent.status}</p>
         </Modal.Body>
         <Modal.Footer>
           {selectedEvent?.status === "Cancelled" && (
@@ -311,13 +292,25 @@ const Appointment = () => {
             Close
           </button>
           <button
-            className="btn btn-success"
-            onClick={() => handleStatusUpdate(selectedEvent)}
+            className="btn btn-primary me-2"
+            onClick={() => {
+              setShowEditModal(true);
+              setShowEventModal(false);
+            }}
           >
-            Save Changes
+            Edit
           </button>
         </Modal.Footer>
       </Modal>
+    )}
+
+    {selectedEvent && (
+      <EditAppointment
+        show={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        eventData={selectedEvent}
+        onUpdated={fetchAppointments}
+      />
     )}
 
     <Modal show={showDeleteConfirm} onHide={() => setShowDeleteConfirm(false)} centered>
