@@ -10,6 +10,7 @@ import TagArrived from "./TagArrived";
 import { Modal } from "react-bootstrap";
 import {  toast } from "react-toastify";
 import EditAppointment from "./EditAppointment";
+import { useNavigate } from "react-router-dom";
 
 const locales = { "en-US": enUS };
 
@@ -38,6 +39,7 @@ const Appointment = () => {
   const [showEventModal, setShowEventModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const navigate = useNavigate();
 
   const handleEventClick = (event) => {
     setSelectedEvent(event);
@@ -69,24 +71,27 @@ const Appointment = () => {
   }, []);
 
   const formatEvents = (data) => {
-    const formatted = data.map((appt) => {
-      const start = new Date(`${appt.date}T${appt.time}`);
-      const end = new Date(`${appt.date}T${appt.end_time}`);
-      return {
-        id: appt.id,
-        title: appt.name || "Appointment",
-        start,
-        end,
-        status: appt.status || "Pending",
-        service: appt.service || "",
-        reference_number: appt.reference_number || "",
-        name: appt.name || "",
-        contact: appt.contact || "",
-        email: appt.email || "",
-      };
-    });
+    const formatted = data
+      .filter((appt) => appt.status !== "Pending") // HIDE PENDING
+      .map((appt) => {
+        const start = new Date(`${appt.date}T${appt.time}`);
+        const end = new Date(`${appt.date}T${appt.end_time}`);
+        return {
+          id: appt.id,
+          title: appt.name || "Appointment",
+          start,
+          end,
+          status: appt.status || "Pending",
+          service: appt.service || "",
+          reference_number: appt.reference_number || "",
+          name: appt.name || "",
+          contact: appt.contact || "",
+          email: appt.email || "",
+        };
+      });
     setEvents(formatted);
   };
+
 
 
   const renderStatusBoxes = () => (
@@ -94,8 +99,11 @@ const Appointment = () => {
       {statuses.map((status, idx) => (
         <div
           className={`card text-white text-center mx-1 ${cardColors[status]}`}
-          style={{ flex: 1 }}
+          style={{ flex: 1, cursor: status === "Pending" ? "pointer" : "default" }}
           key={idx}
+          onClick={() => {
+            if (status === "Pending") navigate("/appointment/pending");
+          }}
         >
           <div className="card-body">
             <h5 className="card-title">{status}</h5>
