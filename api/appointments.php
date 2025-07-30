@@ -1,7 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: *");
-header("Access-Control-Allow-Methods: GET, DELETE, OPTIONS");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 
 include 'DbConnect.php';
 $objDB = new DbConnect;
@@ -12,7 +12,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 switch ($method) {
     case 'GET':
         try {
-            $sql = "SELECT id, service, date, time, end_time, name, contact, status FROM appointments";
+            $sql = "SELECT id, reference_number, service, date, time, end_time, name, contact, email, status FROM appointments";
             $stmt = $conn->prepare($sql);
             $stmt->execute();
             $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -64,6 +64,70 @@ switch ($method) {
             ]);
         }
         break;
+
+    case 'PUT':
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if (
+            !isset($data['id']) ||
+            !isset($data['name']) ||
+            !isset($data['contact']) ||
+            !isset($data['email']) ||
+            !isset($data['service']) ||
+            !isset($data['date']) ||
+            !isset($data['time']) ||
+            !isset($data['end_time']) ||
+            !isset($data['status'])
+        ) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Missing required fields.'
+            ]);
+            exit;
+        }
+
+        try {
+            $sql = "UPDATE appointments 
+                    SET name = :name, 
+                        contact = :contact, 
+                        email = :email, 
+                        service = :service, 
+                        date = :date, 
+                        time = :time, 
+                        end_time = :end_time, 
+                        status = :status 
+                    WHERE id = :id";
+
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':name', $data['name']);
+            $stmt->bindParam(':contact', $data['contact']);
+            $stmt->bindParam(':email', $data['email']);
+            $stmt->bindParam(':service', $data['service']);
+            $stmt->bindParam(':date', $data['date']);
+            $stmt->bindParam(':time', $data['time']);
+            $stmt->bindParam(':end_time', $data['end_time']);
+            $stmt->bindParam(':status', $data['status']);
+            $stmt->bindParam(':id', $data['id']);
+
+            if ($stmt->execute()) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Appointment updated successfully.'
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Failed to update appointment.'
+                ]);
+            }
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Server error: ' . $e->getMessage()
+            ]);
+        }
+    break;
+
 
     case 'OPTIONS':
         http_response_code(200);

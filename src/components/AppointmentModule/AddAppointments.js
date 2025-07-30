@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "react-bootstrap";
 import { AiOutlineDelete } from "react-icons/ai";
+import { toast } from "react-toastify";
 
 const AddAppointments = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -10,12 +11,12 @@ const AddAppointments = ({ onClose }) => {
     time: "",
     name: "",
     contact: "",
+    email: "",
     end_time: "",
     status: "Confirmed",
     reference_number: "",
   });
 
-  const [message, setMessage] = useState("");
   const [services, setServices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -35,10 +36,12 @@ const AddAppointments = ({ onClose }) => {
   }, []);
 
   const generateReferenceNumber = () => {
-    const prefix = "REF";
-    const timestamp = Date.now().toString(36);
-    const randomPart = Math.random().toString(36).substring(2, 6).toUpperCase();
-    return `${prefix}-${timestamp}-${randomPart}`;
+    const now = new Date();
+    const yy = now.getFullYear().toString().slice(-2);
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const dd = String(now.getDate()).padStart(2, "0");
+    const random = Math.floor(1000 + Math.random() * 9000);
+    return `REF-${yy}${mm}${dd}-${random}`;
   };
 
   const handleChange = (e, index = null) => {
@@ -81,13 +84,13 @@ const AddAppointments = ({ onClose }) => {
     const { time, name, contact, end_time } = formData;
 
     if (!/^\d{11}$/.test(contact)) {
-      setMessage("Contact number must be exactly 11 digits.");
+      toast.error("Contact number must be exactly 11 digits.");
       setIsLoading(false);
       return;
     }
 
     if (!/^[A-Za-z\s]+$/.test(name)) {
-      setMessage("Name should only contain letters and spaces.");
+      toast.error("Name should only contain letters and spaces.");
       setIsLoading(false);
       return;
     }
@@ -98,25 +101,28 @@ const AddAppointments = ({ onClose }) => {
     const latestAllowedEnd = new Date(`1970-01-01T17:00`);
 
     if (start < latestAllowedStart) {
-      setMessage("Start time must not be earlier than 8AM");
+      toast.error("Start time must not be earlier than 8AM");
       setIsLoading(false);
       return;
     }
 
     if (end <= start) {
-      setMessage("End time must be later than the start time");
+      toast.error("End time must be later than the start time");
       setIsLoading(false);
       return;
     }
 
     if (end > latestAllowedEnd) {
-      setMessage("End time must not be later than 5PM");
+      toast.error("End time must not be later than 5PM");
       setIsLoading(false);
       return;
     }
 
+    const finalEmail = formData.email?.trim() || "no_email@noemail.com";
+
     const formToSend = {
       ...formData,
+      email: finalEmail,
       service: formData.service.filter((s) => s !== "").join(", "),
       reference_number: formData.reference_number,
     };
@@ -128,24 +134,25 @@ const AddAppointments = ({ onClose }) => {
       );
 
       if (res.data.success) {
-        setMessage("Appointment submitted successfully!");
+        toast.success("Appointment submitted successfully!");
         setFormData({
           service: [""],
           date: "",
           time: "",
           name: "",
           contact: "",
+          email: "",
           end_time: "",
           status: "Confirmed",
           reference_number: generateReferenceNumber(),
         });
         if (onClose) onClose();
       } else {
-        setMessage(res.data.error || "Something went wrong.");
+        toast.error(res.data.error || "Something went wrong.");
       }
     } catch (error) {
       console.error("Submission Error:", error.response?.data || error.message);
-      setMessage(
+      toast.error(
         error.response?.data?.error ||
           "Failed to submit. Please check your server."
       );
@@ -156,7 +163,6 @@ const AddAppointments = ({ onClose }) => {
 
   return (
     <div>
-      {message && <div className="alert alert-info">{message}</div>}
       <form onSubmit={handleSubmit}>
         {/* SERVICES */}
         <div className="mb-3">
@@ -251,6 +257,18 @@ const AddAppointments = ({ onClose }) => {
                 required
               />
             </div>
+
+            <div className="mb-3">
+              <label htmlFor="reference_code">Reference Number:</label>
+              <input
+                type="text"
+                id="reference_number"
+                name="reference_number"
+                className="form-control"
+                value={formData.reference_number}
+                readOnly
+              />
+            </div>
           </div>
 
           <div className="col-md-6">
@@ -288,14 +306,15 @@ const AddAppointments = ({ onClose }) => {
             </div>
 
             <div className="mb-3">
-              <label htmlFor="reference_code">Reference Number:</label>
+              <label htmlFor="email">Email (optional):</label>
               <input
-                type="text"
-                id="reference_number"
-                name="reference_number"
+                type="email"
+                id="email"
+                name="email"
                 className="form-control"
-                value={formData.reference_number}
-                readOnly
+                value={formData.email}
+                onChange={handleChange}
+                autoComplete="off"
               />
             </div>
           </div>
@@ -306,7 +325,7 @@ const AddAppointments = ({ onClose }) => {
           <Button
             variant="primary"
             type="submit"
-            className="button"
+            className="button btn-gradient"
             disabled={isLoading}
           >
             {isLoading ? "Adding..." : "Add"}

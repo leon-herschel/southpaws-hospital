@@ -8,6 +8,8 @@ import enUS from "date-fns/locale/en-US";
 import AddAppointments from "./AddAppointments";
 import TagArrived from "./TagArrived";
 import { Modal } from "react-bootstrap";
+import { toast } from "react-toastify";
+import EditAppointment from "./EditAppointment";
 
 const locales = { "en-US": enUS };
 
@@ -20,18 +22,26 @@ const localizer = dateFnsLocalizer({
 });
 
 const Appointment = () => {
-  const [appointments, setAppointments] = useState([]);
-  const [events, setEvents] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [showTagModal, setShowTagModal] = useState(false);
-  const [serviceColors, setServiceColors] = useState({});
-
   const statuses = ["Pending", "Confirmed", "Cancelled", "Done"];
   const cardColors = {
     Pending: "bg-secondary",
     Confirmed: "bg-primary",
     Cancelled: "bg-danger",
     Done: "bg-success",
+  };
+  const [appointments, setAppointments] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [showTagModal, setShowTagModal] = useState(false);
+  const [serviceColors, setServiceColors] = useState({});
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showEventModal, setShowEventModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+
+  const handleEventClick = (event) => {
+    setSelectedEvent(event);
+    setShowEventModal(true);
   };
 
   const fetchAppointments = async () => {
@@ -63,11 +73,16 @@ const Appointment = () => {
       const start = new Date(`${appt.date}T${appt.time}`);
       const end = new Date(`${appt.date}T${appt.end_time}`);
       return {
+        id: appt.id,
         title: appt.name || "Appointment",
         start,
         end,
         status: appt.status || "Pending",
         service: appt.service || "",
+        reference_number: appt.reference_number || "",
+        name: appt.name || "",
+        contact: appt.contact || "",
+        email: appt.email || "",
       };
     });
     setEvents(formatted);
@@ -99,6 +114,17 @@ const Appointment = () => {
   );
 
   const eventPropGetter = (event) => {
+    if (event.status === "Cancelled") {
+      return {
+        style: {
+          backgroundColor: "#dc3545",
+          color: "white",
+          borderRadius: "5px",
+          padding: "2px",
+          border: "none",
+        },
+      };
+    }
     const firstService = (event.service || "")
       .split(",")[0]
       .trim()
@@ -116,37 +142,53 @@ const Appointment = () => {
     };
   };
 
+  const handleStatusUpdate = async (eventData) => {
+    try {
+      await axios.put("http://localhost/api/appointments.php", {
+        id: eventData.id,
+        status: eventData.status,
+      });
+      toast.success("Appointment status updated!");
+      setShowEventModal(false);
+      fetchAppointments();
+    } catch (err) {
+      console.error("Update failed", err);
+      toast.error("Failed to update status. Please try again.");
+    }
+  };
+
+  const handleDeleteAppointment = async () => {
+    try {
+      await axios.delete("http://localhost/api/appointments.php", {
+        data: { id: selectedEvent.id },
+      });
+      toast.success("Appointment deleted successfully!");
+      setShowEventModal(false);
+      setShowDeleteConfirm(false);
+      fetchAppointments();
+    } catch (err) {
+      console.error("Delete failed", err);
+      toast.error("Failed to delete appointment. Please try again.");
+    }
+  };
+
   return (
     <div className="container mt-2">
       <h1 style={{ textAlign: "left", fontWeight: "bold" }}>Appointments</h1>
 
       {renderStatusBoxes()}
 
-      <div className="d-flex justify-content-end align-items-center mb-4">
+      <div className="d-flex justify-content-end align-items-center mb-4 gap-2">
         <button
-          className="btn btn-primary"
+          className="btn btn-primary me-2 btn-gradient"
           onClick={() => setShowTagModal(true)}
-          style={{
-            backgroundImage: "linear-gradient(to right, #006cb6, #31b44b)",
-            color: "#ffffff",
-            borderColor: "#006cb6",
-            fontWeight: "bold",
-          }}
         >
           Tag as Arrived
         </button>
-      </div>
 
-      <div className="d-flex justify-content-end align-items-center mb-4">
         <button
-          className="btn btn-primary"
+          className="btn btn-primary btn-gradient"
           onClick={() => setShowModal(true)}
-          style={{
-            backgroundImage: "linear-gradient(to right, #006cb6, #31b44b)",
-            color: "#ffffff",
-            borderColor: "#006cb6",
-            fontWeight: "bold",
-          }}
         >
           Add Appointment
         </button>
@@ -170,6 +212,7 @@ const Appointment = () => {
               noEventsInRange: "No appointments to show.",
             }}
             eventPropGetter={eventPropGetter}
+            onSelectEvent={handleEventClick}
           />
         </div>
       </div>
@@ -219,6 +262,100 @@ const Appointment = () => {
           </Modal.Body>
         </Modal>
       )}
+
+      {selectedEvent && (
+        <Modal show={showEventModal} onHide={() => setShowEventModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Appointment Info</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>
+              <strong>Reference #:</strong> {selectedEvent.reference_number}
+            </p>
+            <p>
+              <strong>Service:</strong> {selectedEvent.service}
+            </p>
+            <p>
+              <strong>Date:</strong>{" "}
+              {format(selectedEvent.start, "MMMM dd, yyyy")}
+            </p>
+            <p>
+              <strong>Time:</strong> {format(selectedEvent.start, "hh:mm a")} to{" "}
+              {format(selectedEvent.end, "hh:mm a")}
+            </p>
+            <p>
+              <strong>Name:</strong> {selectedEvent.name}
+            </p>
+            <p>
+              <strong>Contact #:</strong> {selectedEvent.contact}
+            </p>
+            <p>
+              <strong>Email:</strong> {selectedEvent.email}
+            </p>
+            <p>
+              <strong>Status:</strong> {selectedEvent.status}
+            </p>
+          </Modal.Body>
+          <Modal.Footer>
+            {selectedEvent?.status === "Cancelled" && (
+              <button
+                className="btn btn-danger me-auto"
+                onClick={() => setShowDeleteConfirm(true)}
+              >
+                Delete
+              </button>
+            )}
+            <button
+              className="btn btn-secondary"
+              onClick={() => setShowEventModal(false)}
+            >
+              Close
+            </button>
+            <button
+              className="btn btn-primary me-2"
+              onClick={() => {
+                setShowEditModal(true);
+                setShowEventModal(false);
+              }}
+            >
+              Edit
+            </button>
+          </Modal.Footer>
+        </Modal>
+      )}
+
+      {selectedEvent && (
+        <EditAppointment
+          show={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          eventData={selectedEvent}
+          onUpdated={fetchAppointments}
+        />
+      )}
+
+      <Modal
+        show={showDeleteConfirm}
+        onHide={() => setShowDeleteConfirm(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Deletion</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Are you sure you want to delete this appointment?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowDeleteConfirm(false)}
+          >
+            Cancel
+          </button>
+          <button className="btn btn-danger" onClick={handleDeleteAppointment}>
+            Yes, Delete
+          </button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
