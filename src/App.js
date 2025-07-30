@@ -53,6 +53,7 @@ function App() {
             <div className="content">
                 <Topbar />
               <Routes>
+                <Route path="/" element={<Navigate to="/home" />} />
                 <Route path="information/clients" element={<ListClients />} />
                 <Route path="home" element={<Dashboard />} />
                 <Route path="category" element={<Category />} />
