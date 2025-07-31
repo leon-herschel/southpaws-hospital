@@ -1,7 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: *");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Content-Type: application/json");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-include 'DbConnect.php';
+include('../DbConnect.php');
 $objDB = new DbConnect;
 
 try {
@@ -30,15 +30,17 @@ if (!$reference_number) {
 }
 
 try {
-    $stmt = $conn->prepare("UPDATE appointments SET status = 'Done' WHERE reference_number = ?");
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM appointments WHERE reference_number = ?");
     $stmt->execute([$reference_number]);
+    $count = $stmt->fetchColumn();
 
-    if ($stmt->rowCount() > 0) {
-        echo json_encode(["success" => true, "message" => "Appointment marked as done."]);
-    } else {
-        echo json_encode(["success" => false, "message" => "No matching record found."]);
-    }
+    echo json_encode(["valid" => $count > 0]);
 } catch (PDOException $e) {
     http_response_code(500);
-    echo json_encode(["error" => "Update error: " . $e->getMessage()]);
+    echo json_encode(["error" => "Query error: " . $e->getMessage()]);
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    http_response_code(200);
+    exit();
 }

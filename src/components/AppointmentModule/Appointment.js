@@ -6,7 +6,7 @@ import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import enUS from "date-fns/locale/en-US";
 import AddAppointments from "./AddAppointments";
-import TagArrived from "./TagArrived";
+import TagArrived from "./TagArrived/TagArrived";
 import { Modal } from "react-bootstrap";
 import { toast } from "react-toastify";
 import EditAppointment from "./EditAppointment";
