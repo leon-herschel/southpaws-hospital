@@ -1,7 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: *");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Content-Type: application/json");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-include 'DbConnect.php';
+include('../DbConnect.php');
 $objDB = new DbConnect;
 
 try {
@@ -30,8 +30,8 @@ if (!$reference_number) {
 }
 
 try {
-    // Step 1: Get appointment info
-    $stmt = $conn->prepare("SELECT name, contact, service FROM appointments WHERE reference_number = ? LIMIT 1");
+    // Get appointment info
+    $stmt = $conn->prepare("SELECT name, contact, email, service FROM appointments WHERE reference_number = ? LIMIT 1");
     $stmt->execute([$reference_number]);
     $appointment = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -41,9 +41,9 @@ try {
         exit();
     }
 
-    // Step 2: Use the name (or contact) to find the client in clients table
-    $stmt2 = $conn->prepare("SELECT * FROM clients WHERE name = ? LIMIT 1");
-    $stmt2->execute([$appointment['name']]);
+    // Get client by name adn contact
+    $stmt2 = $conn->prepare("SELECT * FROM clients WHERE LOWER(name) = LOWER(?) AND cellnumber = ? LIMIT 1");
+    $stmt2->execute([$appointment['name'], $appointment['contact']]);
     $client = $stmt2->fetch(PDO::FETCH_ASSOC);
 
     if (!$client) {
@@ -54,17 +54,30 @@ try {
 
     $client_id = $client['id'];
 
-    // Step 3: Get all pets for this client
-    $stmt3 = $conn->prepare("SELECT * FROM patients WHERE owner_id = ?");
+    // Get pets by client ID
+    $stmt3 = $conn->prepare("SELECT name, species, breed FROM patients WHERE owner_id = ?");
     $stmt3->execute([$client_id]);
     $pets = $stmt3->fetchAll(PDO::FETCH_ASSOC);
 
+    // prepare response (strip unwanted fields if needed)
+    $filteredClient = [
+        'name' => $client['name'],
+        'contact' => $client['cellnumber'],
+        'email' => $client['email'] ?? null
+    ];
+
     echo json_encode([
-        "client" => $client,
+        "client" => $filteredClient,
         "appointment_service" => $appointment['service'],
         "pets" => $pets
     ]);
+
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(["error" => "Query error: " . $e->getMessage()]);
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    http_response_code(200);
+    exit();
 }

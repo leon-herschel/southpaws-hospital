@@ -3,8 +3,14 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import axios from 'axios';
 import '../../assets/add.css';
 
-const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded }) => {
-    const [clientInputs, setClientInputs] = useState({});
+const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillData }) => {
+    const [clientInputs, setClientInputs] = useState({
+        name: '',
+        email: '',
+        cellnumber: '',
+        address: '',
+        gender: ''
+    });
     const [patients, setPatients] = useState([{
         name: '',
         species: '',
@@ -19,7 +25,13 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded }) => {
     const clientNameRef = useRef(null);
 
     const resetForm = () => {
-        setClientInputs({}); // Clear client input fields
+        setClientInputs({
+            name: '',
+            email: '',
+            cellnumber: '',
+            address: '',
+            gender: ''
+        });
         setPatients([{
             name: '',
             species: '',
@@ -29,7 +41,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded }) => {
             birthdate: '',
             distinct_features: '',
             other_details: ''
-        }]); // Reset to a single empty pet form
+        }]);
     };
     
     useEffect(() => {
@@ -41,6 +53,17 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded }) => {
     useEffect(() => {
         fetchClients();
     }, []);
+
+    useEffect(() => {
+        if (show && prefillData) {
+            setClientInputs(prev => ({
+                ...prev,
+                name: prefillData.name || '',
+                email: prefillData.email || '',
+                cellnumber: prefillData.contact || ''
+            }));
+        }
+    }, [show, prefillData]);
 
     const fetchClients = () => {
         axios.get('http://localhost:80/api/clients.php')
@@ -188,196 +211,198 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded }) => {
             alert("An error occurred while saving the data. Please try again.");
         }
     };
-    
-    
-    
-    
-
 
     return (
-<Modal show={show} onHide={handleCloseAndReset} className="custom-modal" size="lg">
-    <Modal.Header closeButton>
-                <Modal.Title>Add Client and Pet</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form onSubmit={handleSubmit}>
-                    <h4>Client Information</h4>
-                    <div className="row">
-                        <div className="col-md-6">
-                            <Form.Group>
-                                <Form.Label>Name</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    name="name"
-                                    ref={clientNameRef} // ✅ Attach ref to input field
-                                    onChange={handleClientChange}
-                                    placeholder="Enter name"
-                                    required
-                                />
-                            </Form.Group>
-                            <Form.Group>
-                                <Form.Label>Address</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    name="address"
-                                    onChange={handleClientChange}
-                                    placeholder="Enter address"
-                                    required
-                                />
-                            </Form.Group>
-                            <Form.Group>
-                                <Form.Label>Mobile Number</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    name="cellnumber"
-                                    onChange={handleClientChange}
-                                    placeholder="Enter mobile number"
-                                    required
-                                />
-                            </Form.Group>
-                        </div>
-                        <div className="col-md-6">
-                            <Form.Group>
-                                <Form.Label>Email</Form.Label>
-                                <Form.Control
-                                    type="email"
-                                    name="email"
-                                    onChange={handleClientChange}
-                                    placeholder="Enter email"
-                                    required
-                                />
-                            </Form.Group>
-                            <Form.Group>
-                                <Form.Label>Gender</Form.Label>
-                                <Form.Control
-                                    as="select"
-                                    name="gender"
-                                    onChange={handleClientChange}
-                                    required
-                                >
-                                    <option value="">Select Gender</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="other">Other</option>
-                                </Form.Control>
-                            </Form.Group>
-                        </div>
-                    </div>
-
-                    <hr />
-
-                    <h4 className="d-flex justify-content-between align-items-center">
-                        Pet Information
-                        <Button variant="success" onClick={addNewPatient} className="sticky-button">Add Another Patient</Button>
-                    </h4>
-                    {patients.map((patient, index) => (
-                        <div className="row" key={index}>
+    <Modal show={show} onHide={handleCloseAndReset} className="custom-modal" size="lg">
+        <Modal.Header closeButton>
+                    <Modal.Title>Add Client and Pet</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form onSubmit={handleSubmit}>
+                        <h4>Client Information</h4>
+                        <div className="row">
                             <div className="col-md-6">
                                 <Form.Group>
                                     <Form.Label>Name</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="name"
-                                        value={patient.name}
-                                        onChange={(event) => handlePatientChange(event, index)}
+                                        ref={clientNameRef}
+                                        value={clientInputs.name || ''}
+                                        onChange={handleClientChange}
                                         placeholder="Enter name"
                                         required
                                     />
                                 </Form.Group>
                                 <Form.Group>
-                                    <Form.Label>Species</Form.Label>
+                                    <Form.Label>Address</Form.Label>
                                     <Form.Control
                                         type="text"
-                                        name="species"
-                                        value={patient.species}
-                                        onChange={(event) => handlePatientChange(event, index)}
-                                        placeholder="Enter species"
+                                        name="address"
+                                        value={clientInputs.address || ''}
+                                        onChange={handleClientChange}
+                                        placeholder="Enter address"
                                         required
                                     />
                                 </Form.Group>
                                 <Form.Group>
-                                    <Form.Label>Breed</Form.Label>
+                                    <Form.Label>Mobile Number</Form.Label>
                                     <Form.Control
                                         type="text"
-                                        name="breed"
-                                        value={patient.breed}
-                                        onChange={(event) => handlePatientChange(event, index)}
-                                        placeholder="Enter breed"
-                                    />
-                                </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>Weight (in kgs.)</Form.Label>
-                                    <Form.Control
-                                        type="number"
-                                        step="0.1"
-                                        name="weight"
-                                        value={patient.weight}
-                                        onChange={(event) => handlePatientChange(event, index)}
-                                        placeholder="Enter weight"
+                                        name="cellnumber"
+                                        value={clientInputs.cellnumber || ''}
+                                        onChange={handleClientChange}
+                                        placeholder="Enter mobile number"
+                                        required
                                     />
                                 </Form.Group>
                             </div>
                             <div className="col-md-6">
-                            <Form.Group>
-                            <Form.Label>Birthdate</Form.Label>
-                            <Form.Control
-                                type="date"
-                                name="birthdate"
-                                value={patient.birthdate}
-                                onChange={(event) => handlePatientChange(event, index)}
-                                required
-                                max={new Date().toISOString().split("T")[0]} // Set max to today's date
-                            />
-                        </Form.Group>
                                 <Form.Group>
-                            <Form.Label>Age</Form.Label>
-                            <Form.Control
-                                type="text" // Change to 'text' so that it can display the full age in years and months
-                                name="age"
-                                value={patient.age}
-                                readOnly
-                                placeholder="Auto-calculated age"
-                            />
-                        </Form.Group>
-
-                                <Form.Group>
-                                    <Form.Label>Distinct Features</Form.Label>
+                                    <Form.Label>Email</Form.Label>
                                     <Form.Control
-                                        type="text"
-                                        name="distinct_features"
-                                        value={patient.distinct_features}
-                                        onChange={(event) => handlePatientChange(event, index)}
-                                        placeholder="Enter distinct features"
+                                        type="email"
+                                        name="email"
+                                        value={clientInputs.email || ''}
+                                        onChange={handleClientChange}
+                                        placeholder="Enter email"
+                                        required
                                     />
                                 </Form.Group>
                                 <Form.Group>
-                                    <Form.Label>Other Details</Form.Label>
+                                    <Form.Label>Gender</Form.Label>
                                     <Form.Control
-                                        as="textarea"
-                                        rows={3}
-                                        name="other_details"
-                                        value={patient.other_details}
-                                        onChange={(event) => handlePatientChange(event, index)}
-                                        placeholder="Enter other details"
-                                    />
+                                        as="select"
+                                        name="gender"
+                                        value={clientInputs.gender || ''}
+                                        onChange={handleClientChange}
+                                        required
+                                    >
+                                        <option value="">Select Gender</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </Form.Control>
                                 </Form.Group>
-
-                                {patients.length > 1 && (
-                                    <Button variant="danger" onClick={() => removePatient(index)} className="mt-3">
-                                        Remove Patient
-                                    </Button>
-                                )}
                             </div>
                         </div>
-                    ))}
 
-                    <div className="button-container">
-                        <Button variant="secondary" onClick={handleClose}>Close</Button>
-                        <Button variant="primary" type="submit">Save</Button>
-                    </div>
-                </Form>
-            </Modal.Body>
-        </Modal>
+                        <hr />
+
+                        <h4 className="d-flex justify-content-between align-items-center">
+                            Pet Information
+                            <Button variant="success" onClick={addNewPatient} className="sticky-button">Add Another Patient</Button>
+                        </h4>
+                        {patients.map((patient, index) => (
+                            <div className="row" key={index}>
+                                <div className="col-md-6">
+                                    <Form.Group>
+                                        <Form.Label>Name</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            name="name"
+                                            value={patient.name}
+                                            onChange={(event) => handlePatientChange(event, index)}
+                                            placeholder="Enter name"
+                                            required
+                                        />
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label>Species</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            name="species"
+                                            value={patient.species}
+                                            onChange={(event) => handlePatientChange(event, index)}
+                                            placeholder="Enter species"
+                                            required
+                                        />
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label>Breed</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            name="breed"
+                                            value={patient.breed}
+                                            onChange={(event) => handlePatientChange(event, index)}
+                                            placeholder="Enter breed"
+                                        />
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label>Weight (in kgs.)</Form.Label>
+                                        <Form.Control
+                                            type="number"
+                                            step="0.1"
+                                            name="weight"
+                                            value={patient.weight}
+                                            onChange={(event) => handlePatientChange(event, index)}
+                                            placeholder="Enter weight"
+                                        />
+                                    </Form.Group>
+                                </div>
+                                <div className="col-md-6">
+                                <Form.Group>
+                                <Form.Label>Birthdate</Form.Label>
+                                <Form.Control
+                                    type="date"
+                                    name="birthdate"
+                                    value={patient.birthdate}
+                                    onChange={(event) => handlePatientChange(event, index)}
+                                    required
+                                    max={new Date().toISOString().split("T")[0]} // Set max to today's date
+                                />
+                            </Form.Group>
+                                    <Form.Group>
+                                <Form.Label>Age</Form.Label>
+                                <Form.Control
+                                    type="text" // Change to 'text' so that it can display the full age in years and months
+                                    name="age"
+                                    value={patient.age}
+                                    readOnly
+                                    placeholder="Auto-calculated age"
+                                />
+                            </Form.Group>
+
+                                    <Form.Group>
+                                        <Form.Label>Distinct Features</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            name="distinct_features"
+                                            value={patient.distinct_features}
+                                            onChange={(event) => handlePatientChange(event, index)}
+                                            placeholder="Enter distinct features"
+                                        />
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label>Other Details</Form.Label>
+                                        <Form.Control
+                                            as="textarea"
+                                            rows={3}
+                                            name="other_details"
+                                            value={patient.other_details}
+                                            onChange={(event) => handlePatientChange(event, index)}
+                                            placeholder="Enter other details"
+                                        />
+                                    </Form.Group>
+
+                                    {patients.length > 1 && (
+                                        <div className="d-flex justify-content-end">
+                                            <Button variant="danger" onClick={() => removePatient(index)} className="mt-3 mb-3">
+                                                Remove Patient
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+
+                        <div className="flex button-container d-flex justify-content-end mt-4">
+                            <Button variant="secondary" className='me-2' onClick={handleClose}>Close</Button>
+                            <Button variant="primary" type="submit">Save</Button>
+                        </div>
+                    </Form>
+                </Modal.Body>
+            </Modal>
     );
 };
 

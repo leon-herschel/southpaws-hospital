@@ -1,7 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: *");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Content-Type: application/json");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-include 'DbConnect.php';
+include('../DbConnect.php');
 $objDB = new DbConnect;
 
 try {
@@ -30,7 +30,7 @@ if (!$reference_number) {
 }
 
 try {
-    $stmt = $conn->prepare("UPDATE appointments SET status = 'Done' WHERE reference_number = ?");
+    $stmt = $conn->prepare("UPDATE appointments SET status = 'Arrived' WHERE reference_number = ?");
     $stmt->execute([$reference_number]);
 
     if ($stmt->rowCount() > 0) {
@@ -41,4 +41,9 @@ try {
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(["error" => "Update error: " . $e->getMessage()]);
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    http_response_code(200);
+    exit();
 }
