@@ -4,7 +4,6 @@ import { Button } from "react-bootstrap";
 import { AiOutlineDelete } from "react-icons/ai";
 import { toast } from "react-toastify";
 
-
 const AddAppointments = ({ onClose }) => {
   const [formData, setFormData] = useState({
     service: [""],
@@ -17,7 +16,6 @@ const AddAppointments = ({ onClose }) => {
     status: "Confirmed",
     reference_number: "",
   });
-
 
   const [services, setServices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -40,9 +38,9 @@ const AddAppointments = ({ onClose }) => {
   const generateReferenceNumber = () => {
     const now = new Date();
     const yy = now.getFullYear().toString().slice(-2);
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-    const dd = String(now.getDate()).padStart(2, '0');
-    const random = Math.floor(1000 + Math.random() * 9000); 
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const dd = String(now.getDate()).padStart(2, "0");
+    const random = Math.floor(1000 + Math.random() * 9000);
     return `REF-${yy}${mm}${dd}-${random}`;
   };
 
@@ -162,7 +160,6 @@ const AddAppointments = ({ onClose }) => {
       setIsLoading(false);
     }
   };
-
 
   return (
     <div>

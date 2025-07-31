@@ -8,7 +8,7 @@ import enUS from "date-fns/locale/en-US";
 import AddAppointments from "./AddAppointments";
 import TagArrived from "./TagArrived";
 import { Modal } from "react-bootstrap";
-import {  toast } from "react-toastify";
+import { toast } from "react-toastify";
 import EditAppointment from "./EditAppointment";
 import { useNavigate } from "react-router-dom";
 
@@ -92,14 +92,15 @@ const Appointment = () => {
     setEvents(formatted);
   };
 
-
-
   const renderStatusBoxes = () => (
     <div className="d-flex justify-content-between mt-4 mb-4">
       {statuses.map((status, idx) => (
         <div
           className={`card text-white text-center mx-1 ${cardColors[status]}`}
-          style={{ flex: 1, cursor: status === "Pending" ? "pointer" : "default" }}
+          style={{
+            flex: 1,
+            cursor: status === "Pending" ? "pointer" : "default",
+          }}
           key={idx}
           onClick={() => {
             if (status === "Pending") navigate("/appointment/pending");
@@ -173,13 +174,13 @@ const Appointment = () => {
       });
       toast.success("Appointment deleted successfully!");
       setShowEventModal(false);
-      setShowDeleteConfirm(false); 
+      setShowDeleteConfirm(false);
       fetchAppointments();
     } catch (err) {
       console.error("Delete failed", err);
       toast.error("Failed to delete appointment. Please try again.");
     }
-};
+  };
 
   return (
     <div className="container mt-2">
@@ -272,74 +273,99 @@ const Appointment = () => {
         </Modal>
       )}
 
-      {selectedEvent && (<Modal show={showEventModal} onHide={() => setShowEventModal(false)}>
+      {selectedEvent && (
+        <Modal show={showEventModal} onHide={() => setShowEventModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Appointment Info</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>
+              <strong>Reference #:</strong> {selectedEvent.reference_number}
+            </p>
+            <p>
+              <strong>Service:</strong> {selectedEvent.service}
+            </p>
+            <p>
+              <strong>Date:</strong>{" "}
+              {format(selectedEvent.start, "MMMM dd, yyyy")}
+            </p>
+            <p>
+              <strong>Time:</strong> {format(selectedEvent.start, "hh:mm a")} to{" "}
+              {format(selectedEvent.end, "hh:mm a")}
+            </p>
+            <p>
+              <strong>Name:</strong> {selectedEvent.name}
+            </p>
+            <p>
+              <strong>Contact #:</strong> {selectedEvent.contact}
+            </p>
+            <p>
+              <strong>Email:</strong> {selectedEvent.email}
+            </p>
+            <p>
+              <strong>Status:</strong> {selectedEvent.status}
+            </p>
+          </Modal.Body>
+          <Modal.Footer>
+            {selectedEvent?.status === "Cancelled" && (
+              <button
+                className="btn btn-danger me-auto"
+                onClick={() => setShowDeleteConfirm(true)}
+              >
+                Delete
+              </button>
+            )}
+            <button
+              className="btn btn-secondary"
+              onClick={() => setShowEventModal(false)}
+            >
+              Close
+            </button>
+            <button
+              className="btn btn-primary me-2"
+              onClick={() => {
+                setShowEditModal(true);
+                setShowEventModal(false);
+              }}
+            >
+              Edit
+            </button>
+          </Modal.Footer>
+        </Modal>
+      )}
+
+      {selectedEvent && (
+        <EditAppointment
+          show={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          eventData={selectedEvent}
+          onUpdated={fetchAppointments}
+        />
+      )}
+
+      <Modal
+        show={showDeleteConfirm}
+        onHide={() => setShowDeleteConfirm(false)}
+        centered
+      >
         <Modal.Header closeButton>
-          <Modal.Title>Appointment Info</Modal.Title>
+          <Modal.Title>Confirm Deletion</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p><strong>Reference #:</strong> {selectedEvent.reference_number}</p>
-          <p><strong>Service:</strong> {selectedEvent.service}</p>
-          <p><strong>Date:</strong> {format(selectedEvent.start, 'MMMM dd, yyyy')}</p>
-          <p><strong>Time:</strong> {format(selectedEvent.start, 'hh:mm a')} to {format(selectedEvent.end, 'hh:mm a')}</p>
-          <p><strong>Name:</strong> {selectedEvent.name}</p>
-          <p><strong>Contact #:</strong> {selectedEvent.contact}</p>
-          <p><strong>Email:</strong> {selectedEvent.email}</p>
-          <p><strong>Status:</strong> {selectedEvent.status}</p>
+          <p>Are you sure you want to delete this appointment?</p>
         </Modal.Body>
         <Modal.Footer>
-          {selectedEvent?.status === "Cancelled" && (
-            <button
-              className="btn btn-danger me-auto"
-              onClick={() => setShowDeleteConfirm(true)}
-            >
-              Delete
-            </button>
-          )}
           <button
             className="btn btn-secondary"
-            onClick={() => setShowEventModal(false)}
+            onClick={() => setShowDeleteConfirm(false)}
           >
-            Close
+            Cancel
           </button>
-          <button
-            className="btn btn-primary me-2"
-            onClick={() => {
-              setShowEditModal(true);
-              setShowEventModal(false);
-            }}
-          >
-            Edit
+          <button className="btn btn-danger" onClick={handleDeleteAppointment}>
+            Yes, Delete
           </button>
         </Modal.Footer>
       </Modal>
-    )}
-
-    {selectedEvent && (
-      <EditAppointment
-        show={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        eventData={selectedEvent}
-        onUpdated={fetchAppointments}
-      />
-    )}
-
-    <Modal show={showDeleteConfirm} onHide={() => setShowDeleteConfirm(false)} centered>
-      <Modal.Header closeButton>
-        <Modal.Title>Confirm Deletion</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <p>Are you sure you want to delete this appointment?</p>
-      </Modal.Body>
-      <Modal.Footer>
-        <button className="btn btn-secondary" onClick={() => setShowDeleteConfirm(false)}>
-          Cancel
-        </button>
-        <button className="btn btn-danger" onClick={handleDeleteAppointment}>
-          Yes, Delete
-        </button>
-      </Modal.Footer>
-    </Modal>
-
     </div>
   );
 };

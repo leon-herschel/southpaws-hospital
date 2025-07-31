@@ -42,7 +42,11 @@ function TagArrived({ onClose }) {
       });
 
       if (res.data.client) {
-        setClientInfo(res.data.client);
+        setClientInfo({
+          ...res.data.client,
+          service: res.data.appointment_service,
+          pets: res.data.pets || [],
+        });
         setStep("client");
       } else {
         setError("Client info not found.");
@@ -99,6 +103,21 @@ function TagArrived({ onClose }) {
           <p>
             <strong>Service:</strong> {clientInfo.service}
           </p>
+
+          {clientInfo.pets && clientInfo.pets.length > 0 && (
+            <div className="mt-3">
+              <h6>Pet(s) Information:</h6>
+              <ul className="list-group">
+                {clientInfo.pets.map((pet, index) => (
+                  <li key={index} className="list-group-item">
+                    <strong>Name:</strong> {pet.name} <br />
+                    <strong>Species:</strong> {pet.species} <br />
+                    <strong>Breed:</strong> {pet.breed}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <Button
             variant="success"
