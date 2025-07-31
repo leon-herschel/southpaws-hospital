@@ -386,9 +386,11 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                                     </Form.Group>
 
                                     {patients.length > 1 && (
-                                        <Button variant="danger" onClick={() => removePatient(index)} className="mt-3">
-                                            Remove Patient
-                                        </Button>
+                                        <div className="d-flex justify-content-end">
+                                            <Button variant="danger" onClick={() => removePatient(index)} className="mt-3 mb-3">
+                                                Remove Patient
+                                            </Button>
+                                        </div>
                                     )}
                                 </div>
                             </div>

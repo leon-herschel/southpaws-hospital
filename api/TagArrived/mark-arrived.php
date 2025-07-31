@@ -30,7 +30,7 @@ if (!$reference_number) {
 }
 
 try {
-    $stmt = $conn->prepare("UPDATE appointments SET status = 'Done' WHERE reference_number = ?");
+    $stmt = $conn->prepare("UPDATE appointments SET status = 'Arrived' WHERE reference_number = ?");
     $stmt->execute([$reference_number]);
 
     if ($stmt->rowCount() > 0) {

@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import AddClientAndPatientModal from "../../Add/AddClientsModal";
 
 function TagArrived({ onClose }) {
-  const [referenceNumber, setReferenceNumber] = useState("REF-");
+  const [referenceNumber, setReferenceNumber] = useState("");
   const [prefillInfo, setPrefillInfo] = useState(null);
   const [step, setStep] = useState("input");
   const [clientInfo, setClientInfo] = useState(null);
@@ -53,23 +53,6 @@ function TagArrived({ onClose }) {
       }
     } catch {
       toast.error("Error fetching client information.");
-    }
-  };
-
-  const handleConfirmArrivalAfterNewClient = async () => {
-    try {
-      const res = await axios.post("http://localhost/api/TagArrived/mark-done.php", {
-        reference_number: referenceNumber,
-      });
-
-      if (res.data.success) {
-        toast.success("Arrival confirmed.");
-        setStep("done");
-      } else {
-        toast.error(res.data.message || "Failed to update status.");
-      }
-    } catch {
-      toast.error("Server error while confirming new client.");
     }
   };
 
@@ -123,64 +106,86 @@ function TagArrived({ onClose }) {
       )}
 
       {step === "client" && clientInfo && (
-        <div>
-          <h5>Client Information</h5>
-          <p><strong>Name:</strong> {clientInfo.name}</p>
-          <p><strong>Contact:</strong> {clientInfo.contact}</p>
-          <p><strong>Service:</strong> {clientInfo.service}</p>
+        <div className="mt-2">
+          <h5 className="mb-3">Client Details</h5>
+          <div className="card p-3 mb-4 shadow-sm">
+            <div className="mb-2">
+              <strong>Name:</strong>
+              <div>{clientInfo.name}</div>
+            </div>
+            <div className="mb-2">
+              <strong>Contact:</strong>
+              <div>{clientInfo.contact}</div>
+            </div>
+            <div className="mb-2">
+              <strong>Email:</strong>
+              <div>{clientInfo.email || '—'}</div>
+            </div>
+          </div>
+
+          <h5 className="mb-3">Appointment Info</h5>
+          <div className="card p-3 mb-4 shadow-sm">
+            <strong>Service:</strong> {clientInfo.service}
+          </div>
 
           {clientInfo.pets?.length > 0 && (
-            <div className="mt-3">
-              <h6>Pet(s) Information:</h6>
-              <ul className="list-group">
+            <>
+              <h5 className="mb-3">Patient(s) Information</h5>
+              <div className="row">
                 {clientInfo.pets.map((pet, index) => (
-                  <li key={index} className="list-group-item">
-                    <strong>Name:</strong> {pet.name} <br />
-                    <strong>Species:</strong> {pet.species} <br />
-                    <strong>Breed:</strong> {pet.breed}
-                  </li>
+                  <div className="col-md-6" key={index}>
+                    <div className="card mb-3 p-3 shadow-sm">
+                      <p className="mb-1"><strong>Name:</strong> {pet.name}</p>
+                      <p className="mb-1"><strong>Species:</strong> {pet.species}</p>
+                      <p className="mb-1"><strong>Breed:</strong> {pet.breed}</p>
+                    </div>
+                  </div>
                 ))}
-              </ul>
-            </div>
+              </div>
+            </>
           )}
 
-          <Button
-            variant="success"
-            className="mt-3"
-            onClick={async () => {
-              setUpdating(true);
-              try {
-                const res = await axios.post("http://localhost/api/TagArrived/mark-done.php", {
-                  reference_number: referenceNumber,
-                });
+          <div className="button-container">
+            <Button
+              variant="primary"
+              className="button btn-gradient"
+              onClick={async () => {
+                setUpdating(true);
+                try {
+                  const res = await axios.post("http://localhost/api/TagArrived/mark-arrived.php", {
+                    reference_number: referenceNumber,
+                  });
 
-                if (res.data.success) {
-                  toast.success("Arrival confirmed.");
-                  onClose();
-                } else {
-                  toast.error(res.data.message || "Failed to update status.");
+                  if (res.data.success) {
+                    toast.success("Arrival confirmed!");
+                    onClose();
+                  } else {
+                    toast.error(res.data.message || "Failed to update status.");
+                  }
+                } catch {
+                  toast.error("Server error while updating status.");
+                } finally {
+                  setUpdating(false);
                 }
-              } catch {
-                toast.error("Server error while updating status.");
-              } finally {
-                setUpdating(false);
-              }
-            }}
-            disabled={updating}
-          >
-            {updating ? "Updating..." : "Confirm Arrival"}
-          </Button>
+              }}
+              disabled={updating}
+            >
+              {updating ? "Confirming..." : "Confirm Arrival"}
+            </Button>
+          </div>
         </div>
       )}
 
       {/* New Client Modal */}
       <AddClientAndPatientModal
         show={showAddClientModal}
-        handleClose={() => {
-          setShowAddClientModal(false);
-          onClose();
+        handleClose={() => setShowAddClientModal(false)}
+        onCategoryAdded={async () => {
+          setShowAddClientModal(false); // Close modal
+
+          // Fetch client and pet info again
+          await handleExistingClient();
         }}
-        onCategoryAdded={() => {}}
         prefillData={prefillInfo}
       />
     </div>
