@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../App.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { TopbarData } from './TopbarData';
@@ -7,6 +7,7 @@ import axios from 'axios';
 const TopBar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [firstName, setFirstName] = useState(null);
+  const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,6 +29,20 @@ const TopBar = () => {
       }
     }
   }, []); // Dependency array ensures this runs only once on component mount
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleForceLogout = () => {
     // Clear local storage and navigate to login
@@ -105,6 +120,7 @@ const TopBar = () => {
                   style={{ height: '100%' }}
                 >
                   <div
+                    ref={dropdownRef}
                     className="topbarlink me-3 d-flex align-items-center"
                     style={{
                       color: 'white',

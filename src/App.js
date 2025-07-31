@@ -33,6 +33,7 @@ import ArchivedSupplierManagement from './components/Archive/ArchivedSupplierMan
 import Generic from './components/Generic';
 import ReportGeneration from './components/ReportGeneration';
 import Forecasting from './components/Forecasting';
+import PendingAppointments from './components/AppointmentModule/PendingAppointment';
 
 function App() {
   // Manage the authentication state in App.js
@@ -53,6 +54,7 @@ function App() {
             <div className="content">
                 <Topbar />
               <Routes>
+                <Route path="/" element={<Navigate to="/home" />} />
                 <Route path="information/clients" element={<ListClients />} />
                 <Route path="home" element={<Dashboard />} />
                 <Route path="category" element={<Category />} />
@@ -76,6 +78,7 @@ function App() {
                 <Route path="report-generation" element={<ReportGeneration />} />
                 <Route path="forecasting" element={<Forecasting/>} />
                 <Route path="appointment" element={<Appointment />} />
+                <Route path="appointment/pending" element={<PendingAppointments />} />
               </Routes>
             </div>
           </>
