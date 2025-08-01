@@ -4,7 +4,7 @@ import { Button } from "react-bootstrap";
 import { AiOutlineDelete } from "react-icons/ai";
 import { toast } from "react-toastify";
 
-const AddAppointments = ({ onClose }) => {
+function AddAppointments() {
   const [formData, setFormData] = useState({
     service: [""],
     date: "",
@@ -13,7 +13,7 @@ const AddAppointments = ({ onClose }) => {
     contact: "",
     email: "",
     end_time: "",
-    status: "Confirmed",
+    status: "Pending",
     reference_number: "",
     pet_name: "",
     pet_breed: "",
@@ -204,15 +204,12 @@ const AddAppointments = ({ onClose }) => {
           contact: "",
           email: "",
           end_time: "",
-          status: "Confirmed",
+          status: "Pending",
           reference_number: generateReferenceNumber(),
           pet_name: "",
           pet_breed: "",
           pet_species: "",
         });
-        if (onClose) onClose();
-      } else {
-        toast.error(res.data.error || "Something went wrong.");
       }
     } catch (error) {
       console.error("Submission Error:", error.response?.data || error.message);
@@ -443,6 +440,6 @@ const AddAppointments = ({ onClose }) => {
       </form>
     </div>
   );
-};
+}
 
 export default AddAppointments;

@@ -12,7 +12,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 switch ($method) {
     case 'GET':
         try {
-            $sql = "SELECT id, reference_number, service, date, time, end_time, name, contact, email, status FROM appointments";
+            $sql = "SELECT id, reference_number, service, date, time, end_time, name, contact, email, status, pet_breed, pet_species, pet_name FROM appointments";
             $stmt = $conn->prepare($sql);
             $stmt->execute();
             $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
