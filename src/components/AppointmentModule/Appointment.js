@@ -97,10 +97,10 @@ const Appointment = () => {
   };
 
   const statusIcons = {
-    Pending: <FaClock size={24} />,
-    Confirmed: <FaCheckCircle size={24} />,
-    Cancelled: <FaTimesCircle size={24} />,
-    Done: <FaCheckDouble size={24} />,
+    Pending: <FaClock size={34} />,
+    Confirmed: <FaCheckCircle size={34} />,
+    Cancelled: <FaTimesCircle size={34} />,
+    Done: <FaCheckDouble size={34} />,
   };
 
   const renderStatusBoxes = () => (

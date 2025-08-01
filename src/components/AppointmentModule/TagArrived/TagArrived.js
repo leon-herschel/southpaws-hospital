@@ -11,6 +11,7 @@ function TagArrived({ onClose }) {
   const [clientInfo, setClientInfo] = useState(null);
   const [updating, setUpdating] = useState(false);
   const [showAddClientModal, setShowAddClientModal] = useState(false);
+  const [selectedPet, setSelectedPet] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +29,7 @@ function TagArrived({ onClose }) {
       if (res.data.valid) {
         setStep("prompt");
       } else {
-        toast.error("Invalid reference number.");
+        toast.error(res.data.message || "Invalid reference number.");
       }
     } catch {
       toast.error("Server error while checking reference number.");
@@ -42,16 +43,37 @@ function TagArrived({ onClose }) {
       });
 
       if (res.data.client) {
+        const pets = res.data.pets || [];
+        const appointmentPet = {
+          name: (res.data.appointment_pet?.name || '').toLowerCase().trim(),
+          species: (res.data.appointment_pet?.species || '').toLowerCase().trim(),
+          breed: (res.data.appointment_pet?.breed || '').toLowerCase().trim()
+        };
+
+        console.log("Matching against appointmentPet:", appointmentPet);
+        console.log("Checking against pets array:", pets);
+
+        const matchedPet = pets.find((pet) =>
+          pet?.name?.toLowerCase().trim() === appointmentPet?.name?.toLowerCase().trim() &&
+          pet?.species?.toLowerCase().trim() === appointmentPet?.species?.toLowerCase().trim() &&
+          pet?.breed?.toLowerCase().trim() === appointmentPet?.breed?.toLowerCase().trim()
+        );
+
         setClientInfo({
           ...res.data.client,
           service: res.data.appointment_service,
           time: res.data.appointment_time,
           end_time: res.data.appointment_end_time,
-          pets: res.data.pets || [],
+          pets: pets,
         });
+
+        if (matchedPet) {
+          setSelectedPet(matchedPet); // auto-select matched pet
+        }
+
         setStep("client");
       } else {
-        toast.error("Client info not found.");
+        toast.error(res.data.message || "Client info not found.");
       }
     } catch {
       toast.error("Error fetching client information.");
@@ -113,59 +135,86 @@ function TagArrived({ onClose }) {
       )}
 
       {step === "client" && clientInfo && (
-        <div className="mt-2">
-          <h5 className="mb-3">Client Details</h5>
-          <div className="card p-3 mb-4 shadow-sm">
-            <p className="mb-1"><strong>Name:</strong> {clientInfo.name}</p>
-            <p className="mb-1"><strong>Contact:</strong> {clientInfo.contact}</p>
-            <p className="mb-1"><strong>Email:</strong> {clientInfo.email || '—'}</p>
-          </div>
+        <div className="row">
+          <div className="col-md-12">
+            <h5 className="mb-3">Client Details</h5>
+            <div className="card p-3 mb-4 shadow-sm">
+              <p className="mb-1"><strong>Name:</strong> {clientInfo.name}</p>
+              <p className="mb-1"><strong>Contact:</strong> {clientInfo.contact}</p>
+              <p className="mb-1"><strong>Email:</strong> {clientInfo.email || '—'}</p>
+            </div>
 
-          {clientInfo.pets?.length > 0 && (
-            <>
-              <h5 className="mb-3">Patient(s) Information</h5>
-              <div className="row">
-                {clientInfo.pets.map((pet, index) => (
-                  <div className="col-12" key={index}>
-                    <div className="card mb-3 p-3 shadow-sm">
-                      <p className="mb-1"><strong>Service:</strong> {clientInfo.service}</p>
-                      <p className="mb-1"><strong>Name:</strong> {pet.name}</p>
-                      <p className="mb-1"><strong>Species:</strong> {pet.species}</p>
-                      <p className="mb-1"><strong>Breed:</strong> {pet.breed}</p>
+            {clientInfo.pets?.length > 0 && (
+              <>
+                <div className="row">
+                  {clientInfo.pets.length > 1 && !selectedPet && (
+                    <>
+                      <p><strong>Select which pet is receiving the service:</strong></p>
+                      <div className="mb-3">
+                        {clientInfo.pets.map((pet, index) => (
+                          <div key={index} className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              name="selectedPet"
+                              value={index}
+                              id={`pet-${index}`}
+                              onChange={() => setSelectedPet(clientInfo.pets[index])}
+                            />
+                            <label className="form-check-label" htmlFor={`pet-${index}`}>
+                              {pet.name} — {pet.species}, {pet.breed}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+
+                  {(clientInfo.pets.length === 1 || selectedPet) && (
+                    <div className="col-md-12">
+                      <h5 className="mb-3">Patient Information</h5>
+                      <div className="card p-3 mb-4 shadow-sm">
+                        <p className="mb-1"><strong>Service:</strong> {clientInfo.service}</p>
+                        <p className="mb-1"><strong>Name:</strong> {(selectedPet || clientInfo.pets[0]).name}</p>
+                        <p className="mb-1"><strong>Species:</strong> {(selectedPet || clientInfo.pets[0]).species}</p>
+                        <p className="mb-1"><strong>Breed:</strong> {(selectedPet || clientInfo.pets[0]).breed}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )}
+                </div>
+              </>
+            )}
+
+            {(clientInfo.pets.length === 1 || selectedPet) && (
+              <div className="button-container">
+                <Button
+                  variant="primary"
+                  className="button btn-gradient"
+                  onClick={async () => {
+                    setUpdating(true);
+                    try {
+                      const res = await axios.post("http://localhost/api/TagArrived/mark-arrived.php", {
+                        reference_number: referenceNumber,
+                      });
+
+                      if (res.data.success) {
+                        toast.success("Arrival confirmed!");
+                        onClose();
+                      } else {
+                        toast.error(res.data.message || "Failed to update status.");
+                      }
+                    } catch {
+                      toast.error("Server error while updating status.");
+                    } finally {
+                      setUpdating(false);
+                    }
+                  }}
+                  disabled={updating}
+                >
+                  {updating ? "Confirming..." : "Confirm Arrival"}
+                </Button>
               </div>
-            </>
-          )}
-
-          <div className="button-container">
-            <Button
-              variant="primary"
-              className="button btn-gradient"
-              onClick={async () => {
-                setUpdating(true);
-                try {
-                  const res = await axios.post("http://localhost/api/TagArrived/mark-arrived.php", {
-                    reference_number: referenceNumber,
-                  });
-
-                  if (res.data.success) {
-                    toast.success("Arrival confirmed!");
-                    onClose();
-                  } else {
-                    toast.error(res.data.message || "Failed to update status.");
-                  }
-                } catch {
-                  toast.error("Server error while updating status.");
-                } finally {
-                  setUpdating(false);
-                }
-              }}
-              disabled={updating}
-            >
-              {updating ? "Confirming..." : "Confirm Arrival"}
-            </Button>
+            )}
           </div>
         </div>
       )}
