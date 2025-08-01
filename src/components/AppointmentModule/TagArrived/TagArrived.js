@@ -79,11 +79,11 @@ function TagArrived({ onClose }) {
 
       {step === "prompt" && (
         <div className="text-center">
-          <p>Is the client existing or new?</p>
-          <Button variant="primary" className="me-2" onClick={handleExistingClient}>
+          <p className="">Is this a new or existing client?</p>
+          <Button variant="primary" className="me-2 btn-lg" onClick={handleExistingClient}>
             Existing
           </Button>
-          <Button variant="secondary" onClick={async () => {
+          <Button variant="success" className="btn-lg" onClick={async () => {
             try {
               const res = await axios.post("http://localhost/api/TagArrived/get-appointment-info.php", {
                 reference_number: referenceNumber,

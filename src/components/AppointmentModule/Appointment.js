@@ -11,6 +11,7 @@ import { Modal } from "react-bootstrap";
 import { toast } from "react-toastify";
 import EditAppointment from "./EditAppointment";
 import { useNavigate } from "react-router-dom";
+import { FaClock, FaCheckCircle, FaTimesCircle, FaCheckDouble } from "react-icons/fa";
 
 const locales = { "en-US": enUS };
 
@@ -95,31 +96,42 @@ const Appointment = () => {
     setEvents(formatted);
   };
 
+  const statusIcons = {
+    Pending: <FaClock size={24} />,
+    Confirmed: <FaCheckCircle size={24} />,
+    Cancelled: <FaTimesCircle size={24} />,
+    Done: <FaCheckDouble size={24} />,
+  };
+
   const renderStatusBoxes = () => (
-    <div className="d-flex justify-content-between mt-4 mb-4">
+    <div className="d-flex justify-content-between mt-4 mb-4 gap-3">
       {statuses.map((status, idx) => (
         <div
-          className={`card text-white text-center mx-1 ${cardColors[status]}`}
+          className={`card text-white ${cardColors[status]}`}
           style={{
             flex: 1,
             cursor: status === "Pending" ? "pointer" : "default",
+            minWidth: "180px",
           }}
           key={idx}
           onClick={() => {
             if (status === "Pending") navigate("/appointment/pending");
           }}
         >
-          <div className="card-body">
-            <h5 className="card-title">{status}</h5>
-            <p className="card-text">
-              {
-                appointments.filter(
-                  (appt) =>
-                    appt.status &&
-                    appt.status.toLowerCase() === status.toLowerCase()
-                ).length
-              }
-            </p>
+          <div className="card-body d-flex justify-content-between align-items-center">
+            <div>
+              <h3 className="mb-0 fw-bold">
+                {
+                  appointments.filter(
+                    (appt) =>
+                      appt.status &&
+                      appt.status.toLowerCase() === status.toLowerCase()
+                  ).length
+                }
+              </h3>
+              <p className="mb-0">{status}</p>
+            </div>
+            <div className="ms-3">{statusIcons[status]}</div>
           </div>
         </div>
       ))}
