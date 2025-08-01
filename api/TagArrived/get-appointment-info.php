@@ -22,11 +22,7 @@ if (!$reference_number) {
 }
 
 try {
-<<<<<<< HEAD
     $stmt = $conn->prepare("SELECT name, contact, email, pet_name, pet_species, pet_breed FROM appointments WHERE reference_number = ? LIMIT 1");
-=======
-    $stmt = $conn->prepare("SELECT name, contact, email FROM appointments WHERE reference_number = ? LIMIT 1");
->>>>>>> main
     $stmt->execute([$reference_number]);
     $appointment = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -35,14 +31,10 @@ try {
             "success" => true,
             "name" => $appointment['name'],
             "contact" => $appointment['contact'],
-<<<<<<< HEAD
             "email" => $appointment['email'],
             "pet_name" => $appointment['pet_name'],
             "pet_species" => $appointment['pet_species'],
             "pet_breed" => $appointment['pet_breed']
-=======
-            "email" => $appointment['email']
->>>>>>> main
         ]);
     } else {
         echo json_encode(["success" => false, "message" => "Appointment not found."]);
