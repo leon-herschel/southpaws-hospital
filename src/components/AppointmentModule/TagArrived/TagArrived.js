@@ -28,7 +28,7 @@ function TagArrived({ onClose }) {
       if (res.data.valid) {
         setStep("prompt");
       } else {
-        toast.error("Invalid reference number.");
+        toast.error(res.data.message || "Invalid reference number.");
       }
     } catch {
       toast.error("Server error while checking reference number.");
