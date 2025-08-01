@@ -62,14 +62,16 @@ function TagArrived({ onClose }) {
         <form onSubmit={handleSubmit}>
           <input
             type="text"
-            className="form-control mb-3"
+            className="form-control"
             placeholder="Enter reference number"
             value={referenceNumber}
             onChange={(e) => setReferenceNumber(e.target.value)}
           />
-          <button type="submit" className="btn btn-success w-100">
-            Submit
-          </button>
+          <div className="button-container">
+            <button type="submit" className="button btn-gradient btn-success">
+              Submit
+           </button>
+          </div>  
         </form>
       )}
 
@@ -90,6 +92,9 @@ function TagArrived({ onClose }) {
                   name: res.data.name,
                   contact: res.data.contact,
                   email: res.data.email,
+                  pet_name: res.data.pet_name,
+                  pet_species: res.data.pet_species,
+                  pet_breed: res.data.pet_breed
                 });
               }
 

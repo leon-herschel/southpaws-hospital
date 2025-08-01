@@ -12,7 +12,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 switch ($method) {
     case 'GET':
         try {
-            $sql = "SELECT id, reference_number, service, date, time, end_time, name, contact, email, status FROM appointments";
+            $sql = "SELECT id, reference_number, service, date, time, end_time, name, contact, email, pet_name, pet_species, pet_breed, status FROM appointments";
             $stmt = $conn->prepare($sql);
             $stmt->execute();
             $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -77,6 +77,9 @@ switch ($method) {
             !isset($data['date']) ||
             !isset($data['time']) ||
             !isset($data['end_time']) ||
+            !isset($data['pet_name']) ||
+            !isset($data['pet_species']) ||
+            !isset($data['pet_breed']) ||
             !isset($data['status'])
         ) {
             echo json_encode([
@@ -94,7 +97,10 @@ switch ($method) {
                         service = :service, 
                         date = :date, 
                         time = :time, 
-                        end_time = :end_time, 
+                        end_time = :end_time,
+                        pet_name = :pet_name,
+                        pet_species = :pet_species,
+                        pet_breed = :pet_breed,
                         status = :status 
                     WHERE id = :id";
 
@@ -108,6 +114,9 @@ switch ($method) {
             $stmt->bindParam(':end_time', $data['end_time']);
             $stmt->bindParam(':status', $data['status']);
             $stmt->bindParam(':id', $data['id']);
+            $stmt->bindParam(':pet_name', $data['pet_name']);
+            $stmt->bindParam(':pet_species', $data['pet_species']);
+            $stmt->bindParam(':pet_breed', $data['pet_breed']);
 
             if ($stmt->execute()) {
                 echo json_encode([

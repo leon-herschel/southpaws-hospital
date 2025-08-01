@@ -16,6 +16,9 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
     time: "",
     end_time: "",
     status: "",
+    pet_name: "",
+    pet_species: "",
+    pet_breed: ""
 });
 
   useEffect(() => {
@@ -40,6 +43,9 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
       time: eventData.start.toTimeString().substring(0, 5),
       end_time: eventData.end.toTimeString().substring(0, 5),
       status: eventData.status,
+      pet_name: eventData.pet_name || "",
+      pet_species: eventData.pet_species || "",
+      pet_breed: eventData.pet_breed || ""
     });
   }
 }, [eventData]);
@@ -270,6 +276,56 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
                   required
                 />
               </Form.Group>
+            </div>
+          </div>
+
+          <h5 className="mt-3">Patient Details</h5>
+          <div className="card mb-2 mt-2">
+            <div className="card-body">
+              <div className="row">
+                <div className="col-md-6">
+                  <div className="mb-3">
+                    <label htmlFor="pet_name">Pet Name:</label>
+                    <input
+                      type="text"
+                      id="pet_name"
+                      name="pet_name"
+                      className="form-control"
+                      value={formData.pet_name}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="pet_breed">Breed:</label>
+                    <input
+                      type="text"
+                      id="pet_breed"
+                      name="pet_breed"
+                      className="form-control"
+                      value={formData.pet_breed}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="col-md-6">
+                  <div className="mb-3">
+                    <label htmlFor="pet_species">Species:</label>
+                    <input
+                      type="text"
+                      id="pet_species"
+                      name="pet_species"
+                      className="form-control"
+                      value={formData.pet_species}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </Form>
