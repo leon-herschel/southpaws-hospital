@@ -19,6 +19,7 @@ const AddAppointments = ({ onClose }) => {
 
   const [services, setServices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [availableSlots, setAvailableSlots] = useState([]);
 
   useEffect(() => {
     axios
@@ -36,16 +37,66 @@ const AddAppointments = ({ onClose }) => {
   }, []);
 
   const generateReferenceNumber = () => {
-    const now = new Date();
-    const yy = now.getFullYear().toString().slice(-2);
-    const mm = String(now.getMonth() + 1).padStart(2, "0");
-    const dd = String(now.getDate()).padStart(2, "0");
-    const random = Math.floor(1000 + Math.random() * 9000);
-    return `REF-${yy}${mm}${dd}-${random}`;
+    const letters = Array.from({ length: 3 }, () =>
+      String.fromCharCode(65 + Math.floor(Math.random() * 26))
+    ).join('');
+    const numbers = Math.floor(1000 + Math.random() * 9000);
+    return `${letters}-${numbers}`;
   };
 
-  const handleChange = (e, index = null) => {
+  const isOverlapping = (start, end) => {
+    const startTime = new Date(`1970-01-01T${start}`);
+    const endTime = new Date(`1970-01-01T${end}`);
+
+    return availableSlots.some(slot => {
+      const bookedStart = new Date(`1970-01-01T${slot.time}`);
+      const bookedEnd = new Date(`1970-01-01T${slot.end_time}`);
+
+      return startTime < bookedEnd && endTime > bookedStart;
+    });
+  };
+
+
+  const handleChange = async (e, index = null) => {
     const { name, value } = e.target;
+
+    if (name === "date") {
+      setFormData((prevData) => ({
+        ...prevData,
+        date: value,
+        time: "",
+        end_time: "",
+      }));
+
+      try {
+        const res = await axios.get(`http://localhost/api/get-booked-slots.php?date=${value}`);
+        setAvailableSlots(res.data.bookedRanges || []); 
+      } catch (err) {
+        console.error("Failed to fetch booked slots", err);
+        toast.error("Error loading booked slots.");
+        setAvailableSlots([]);
+      }
+      return;
+    }
+
+    if (name === "time" || name === "end_time") {
+      const newFormData = {
+        ...formData,
+        [name]: value,
+      };
+
+      if (newFormData.time && newFormData.end_time) {
+        const overlaps = isOverlapping(newFormData.time, newFormData.end_time);
+        if (overlaps) {
+          toast.error("This time slot overlaps with an existing booking.");
+          setFormData((prev) => ({ ...prev, time: "", end_time: "" }));
+          return;
+        }
+      }
+
+      setFormData((prev) => ({ ...prev, [name]: value }));
+      return;
+    }
 
     if (name === "service" && index !== null) {
       const updatedServices = [...formData.service];
@@ -114,6 +165,12 @@ const AddAppointments = ({ onClose }) => {
 
     if (end > latestAllowedEnd) {
       toast.error("End time must not be later than 5PM");
+      setIsLoading(false);
+      return;
+    }
+
+    if (isOverlapping(formData.time, formData.end_time)) {
+      toast.error("This time slot is already booked.");
       setIsLoading(false);
       return;
     }
@@ -239,8 +296,8 @@ const AddAppointments = ({ onClose }) => {
                 className="form-control"
                 value={formData.time}
                 onChange={handleChange}
-                autoComplete="off"
                 required
+                disabled={!formData.date}
               />
             </div>
 
@@ -255,6 +312,7 @@ const AddAppointments = ({ onClose }) => {
                 onChange={handleChange}
                 autoComplete="off"
                 required
+                disabled={!formData.date}
               />
             </div>
 

@@ -50,6 +50,16 @@ if ($endDateTime > $latestEnd) {
     exit();
 }
 
+$checkStmt = $conn->prepare("SELECT COUNT(*) FROM appointments WHERE date = ? AND time = ? AND service = ?");
+$checkStmt->execute([$date, $time, $service]);
+$existingCount = $checkStmt->fetchColumn();
+
+if ($existingCount > 0) {
+    http_response_code(409); // Conflict
+    echo json_encode(["error" => "Schedule conflict: An appointment already exists at this time."]);
+    exit();
+}
+
 try {
     $stmt = $conn->prepare("INSERT INTO appointments (service, date, time, name, contact, end_time, status, reference_number, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $success = $stmt->execute([
