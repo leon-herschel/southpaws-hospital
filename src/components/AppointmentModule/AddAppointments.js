@@ -15,10 +15,15 @@ const AddAppointments = ({ onClose }) => {
     end_time: "",
     status: "Confirmed",
     reference_number: "",
+    pet_name: "",
+    pet_breed: "",
+    pet_species: "",
   });
+
 
   const [services, setServices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [availableSlots, setAvailableSlots] = useState([]);
 
   useEffect(() => {
     axios
@@ -36,16 +41,66 @@ const AddAppointments = ({ onClose }) => {
   }, []);
 
   const generateReferenceNumber = () => {
-    const now = new Date();
-    const yy = now.getFullYear().toString().slice(-2);
-    const mm = String(now.getMonth() + 1).padStart(2, "0");
-    const dd = String(now.getDate()).padStart(2, "0");
-    const random = Math.floor(1000 + Math.random() * 9000);
-    return `REF-${yy}${mm}${dd}-${random}`;
+    const letters = Array.from({ length: 3 }, () =>
+      String.fromCharCode(65 + Math.floor(Math.random() * 26))
+    ).join('');
+    const numbers = Math.floor(1000 + Math.random() * 9000);
+    return `${letters}-${numbers}`;
   };
 
-  const handleChange = (e, index = null) => {
+  const isOverlapping = (start, end) => {
+    const startTime = new Date(`1970-01-01T${start}`);
+    const endTime = new Date(`1970-01-01T${end}`);
+
+    return availableSlots.some(slot => {
+      const bookedStart = new Date(`1970-01-01T${slot.time}`);
+      const bookedEnd = new Date(`1970-01-01T${slot.end_time}`);
+
+      return startTime < bookedEnd && endTime > bookedStart;
+    });
+  };
+
+
+  const handleChange = async (e, index = null) => {
     const { name, value } = e.target;
+
+    if (name === "date") {
+      setFormData((prevData) => ({
+        ...prevData,
+        date: value,
+        time: "",
+        end_time: "",
+      }));
+
+      try {
+        const res = await axios.get(`http://localhost/api/get-booked-slots.php?date=${value}`);
+        setAvailableSlots(res.data.bookedRanges || []); 
+      } catch (err) {
+        console.error("Failed to fetch booked slots", err);
+        toast.error("Error loading booked slots.");
+        setAvailableSlots([]);
+      }
+      return;
+    }
+
+    if (name === "time" || name === "end_time") {
+      const newFormData = {
+        ...formData,
+        [name]: value,
+      };
+
+      if (newFormData.time && newFormData.end_time) {
+        const overlaps = isOverlapping(newFormData.time, newFormData.end_time);
+        if (overlaps) {
+          toast.error("This time slot overlaps with an existing booking.");
+          setFormData((prev) => ({ ...prev, time: "", end_time: "" }));
+          return;
+        }
+      }
+
+      setFormData((prev) => ({ ...prev, [name]: value }));
+      return;
+    }
 
     if (name === "service" && index !== null) {
       const updatedServices = [...formData.service];
@@ -114,6 +169,12 @@ const AddAppointments = ({ onClose }) => {
 
     if (end > latestAllowedEnd) {
       toast.error("End time must not be later than 5PM");
+      setIsLoading(false);
+      return;
+    }
+
+    if (isOverlapping(formData.time, formData.end_time)) {
+      toast.error("This time slot is already booked.");
       setIsLoading(false);
       return;
     }
@@ -239,8 +300,8 @@ const AddAppointments = ({ onClose }) => {
                 className="form-control"
                 value={formData.time}
                 onChange={handleChange}
-                autoComplete="off"
                 required
+                disabled={!formData.date}
               />
             </div>
 
@@ -255,18 +316,7 @@ const AddAppointments = ({ onClose }) => {
                 onChange={handleChange}
                 autoComplete="off"
                 required
-              />
-            </div>
-
-            <div className="mb-3">
-              <label htmlFor="reference_code">Reference Number:</label>
-              <input
-                type="text"
-                id="reference_number"
-                name="reference_number"
-                className="form-control"
-                value={formData.reference_number}
-                readOnly
+                disabled={!formData.date}
               />
             </div>
           </div>
@@ -319,6 +369,62 @@ const AddAppointments = ({ onClose }) => {
             </div>
           </div>
         </div>
+
+        <h5 className="mt-3">Patient Details</h5>
+        <div className="card mb-2 mt-2">
+          <div className="card-body">
+            <div className="row">
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label htmlFor="pet_name">Pet Name:</label>
+                  <input
+                    type="text"
+                    id="pet_name"
+                    name="pet_name"
+                    className="form-control"
+                    value={formData.pet_name}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="pet_breed">Breed:</label>
+                  <input
+                    type="text"
+                    id="pet_breed"
+                    name="pet_breed"
+                    className="form-control"
+                    value={formData.pet_breed}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label htmlFor="pet_species">Species:</label>
+                  <input
+                    type="text"
+                    id="pet_species"
+                    name="pet_species"
+                    className="form-control"
+                    value={formData.pet_species}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <input
+          type="hidden"
+          name="reference_number"
+          value={formData.reference_number}
+        />
 
         {/* SUBMIT BUTTON */}
         <div className="button-container">
