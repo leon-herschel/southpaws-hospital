@@ -4,17 +4,19 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const PendingAppointments = () => {
-    const [pendingAppointments, setPendingAppointments] = useState([]);
-    const [selectedIds, setSelectedIds] = useState([]);
-    const navigate = useNavigate();
-    const [currentPage, setCurrentPage] = useState(1);
-    const [appointmentsPerPage, setAppointmentsPerPage] = useState(5);
-    const [sortBy, setSortBy] = useState({ key: '', order: '' });
+  const [pendingAppointments, setPendingAppointments] = useState([]);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [appointmentsPerPage, setAppointmentsPerPage] = useState(5);
+  const [sortBy, setSortBy] = useState({ key: "", order: "" });
 
   const fetchPending = async () => {
     try {
       const res = await axios.get("http://localhost/api/appointments.php");
-      setPendingAppointments(res.data.appointments.filter((a) => a.status === "Pending"));
+      setPendingAppointments(
+        res.data.appointments.filter((a) => a.status === "Pending")
+      );
     } catch (err) {
       console.error("Error fetching pending appointments", err);
     }
@@ -32,26 +34,27 @@ const PendingAppointments = () => {
 
   const confirmSelected = async () => {
     try {
-        for (let id of selectedIds) {
+      for (let id of selectedIds) {
         const appt = pendingAppointments.find((a) => a.id === id);
         await axios.put("http://localhost/api/appointments.php", {
-            ...appt,
-            status: "Confirmed",
+          ...appt,
+          status: "Confirmed",
         });
-        }
-        toast.success("Selected appointments confirmed!");
-        setSelectedIds([]);
-        fetchPending();
+      }
+      toast.success("Selected appointments confirmed!");
+      setSelectedIds([]);
+      fetchPending();
     } catch (err) {
-        toast.error("Error confirming appointments");
+      toast.error("Error confirming appointments");
     }
-    };
-
+  };
 
   const rejectSelected = async () => {
     try {
       for (let id of selectedIds) {
-        await axios.delete("http://localhost/api/appointments.php", { data: { id } });
+        await axios.delete("http://localhost/api/appointments.php", {
+          data: { id },
+        });
       }
       toast.success("Selected appointments deleted!");
       setSelectedIds([]);
@@ -62,22 +65,24 @@ const PendingAppointments = () => {
   };
 
   const confirmOne = async (id) => {
-  try {
-    const appt = pendingAppointments.find((a) => a.id === id);
-    await axios.put("http://localhost/api/appointments.php", {
-      ...appt,
-      status: "Confirmed",
-    });
-    toast.success("Appointment confirmed!");
-    fetchPending();
-  } catch (err) {
-    toast.error("Error confirming appointment");
-  }
-};
+    try {
+      const appt = pendingAppointments.find((a) => a.id === id);
+      await axios.put("http://localhost/api/appointments.php", {
+        ...appt,
+        status: "Confirmed",
+      });
+      toast.success("Appointment confirmed!");
+      fetchPending();
+    } catch (err) {
+      toast.error("Error confirming appointment");
+    }
+  };
 
   const rejectOne = async (id) => {
     try {
-      await axios.delete("http://localhost/api/appointments.php", { data: { id } });
+      await axios.delete("http://localhost/api/appointments.php", {
+        data: { id },
+      });
       toast.success("Appointment rejected!");
       fetchPending();
     } catch (err) {
@@ -86,42 +91,43 @@ const PendingAppointments = () => {
   };
 
   const handleSort = (key) => {
-    let order = 'asc';
-    if (sortBy.key === key && sortBy.order === 'asc') {
-        order = 'desc';
+    let order = "asc";
+    if (sortBy.key === key && sortBy.order === "asc") {
+      order = "desc";
     }
     setSortBy({ key, order });
 
     const sorted = [...pendingAppointments].sort((a, b) => {
-        const valA = typeof a[key] === 'string' ? a[key].toLowerCase() : a[key];
-        const valB = typeof b[key] === 'string' ? b[key].toLowerCase() : b[key];
-        if (valA < valB) return order === 'asc' ? -1 : 1;
-        if (valA > valB) return order === 'asc' ? 1 : -1;
-        return 0;
+      const valA = typeof a[key] === "string" ? a[key].toLowerCase() : a[key];
+      const valB = typeof b[key] === "string" ? b[key].toLowerCase() : b[key];
+      if (valA < valB) return order === "asc" ? -1 : 1;
+      if (valA > valB) return order === "asc" ? 1 : -1;
+      return 0;
     });
 
     setPendingAppointments(sorted);
-    };
+  };
 
-    const getSortIcon = (key) => {
+  const getSortIcon = (key) => {
     if (sortBy.key === key) {
-        return sortBy.order === 'asc' ? '▲' : '▼';
+      return sortBy.order === "asc" ? "▲" : "▼";
     }
     return null;
-};
+  };
 
-const indexOfLast = currentPage * appointmentsPerPage;
-const indexOfFirst = indexOfLast - appointmentsPerPage;
-const currentAppointments = pendingAppointments.slice(indexOfFirst, indexOfLast);
+  const indexOfLast = currentPage * appointmentsPerPage;
+  const indexOfFirst = indexOfLast - appointmentsPerPage;
+  const currentAppointments = pendingAppointments.slice(
+    indexOfFirst,
+    indexOfLast
+  );
 
-const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-const handlePerPageChange = (e) => {
-  setCurrentPage(1);
-  setAppointmentsPerPage(Number(e.target.value));
-};
-
-
+  const handlePerPageChange = (e) => {
+    setCurrentPage(1);
+    setAppointmentsPerPage(Number(e.target.value));
+  };
 
   return (
     <div className="container mt-3">
@@ -159,21 +165,54 @@ const handlePerPageChange = (e) => {
                 }
               />
             </th>
-            <th onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>
-            Name {getSortIcon('name')}
+            <th
+              onClick={() => handleSort("name")}
+              style={{ cursor: "pointer" }}
+            >
+              Name {getSortIcon("name")}
             </th>
-            <th onClick={() => handleSort('service')} style={{ cursor: 'pointer' }}>
-            Service {getSortIcon('service')}
+            <th
+              onClick={() => handleSort("service")}
+              style={{ cursor: "pointer" }}
+            >
+              Service {getSortIcon("service")}
             </th>
-            <th onClick={() => handleSort('date')} style={{ cursor: 'pointer' }}>
-            Date {getSortIcon('date')}
+            <th
+              onClick={() => handleSort("date")}
+              style={{ cursor: "pointer" }}
+            >
+              Date {getSortIcon("date")}
             </th>
             <th>Time</th>
-            <th onClick={() => handleSort('contact')} style={{ cursor: 'pointer' }}>
-            Contact {getSortIcon('contact')}
+            <th
+              onClick={() => handleSort("contact")}
+              style={{ cursor: "pointer" }}
+            >
+              Contact {getSortIcon("contact")}
             </th>
-            <th onClick={() => handleSort('email')} style={{ cursor: 'pointer' }}>
-            Email {getSortIcon('email')}
+            <th
+              onClick={() => handleSort("email")}
+              style={{ cursor: "pointer" }}
+            >
+              Email {getSortIcon("email")}
+            </th>
+            <th
+              onClick={() => handleSort("pet_name")}
+              style={{ cursor: "pointer" }}
+            >
+              Pet Name {getSortIcon("pet_name")}
+            </th>
+            <th
+              onClick={() => handleSort("pet_breed")}
+              style={{ cursor: "pointer" }}
+            >
+              Pet Breed {getSortIcon("pet_breed")}
+            </th>
+            <th
+              onClick={() => handleSort("pet_species")}
+              style={{ cursor: "pointer" }}
+            >
+              Pet Species {getSortIcon("pet_species")}
             </th>
             <th style={{ width: "15%" }}>Actions</th>
           </tr>
@@ -204,6 +243,9 @@ const handlePerPageChange = (e) => {
                 </td>
                 <td>{appt.contact}</td>
                 <td>{appt.email}</td>
+                <td>{appt.pet_name}</td>
+                <td>{appt.pet_breed}</td>
+                <td>{appt.pet_species}</td>
                 <td>
                   <button
                     className="btn btn-sm btn-success me-2"
@@ -225,32 +267,41 @@ const handlePerPageChange = (e) => {
       </table>
       <div className="d-flex justify-content-between mb-3">
         <div className="d-flex align-items-center">
-            <label className="me-2">Items per page:</label>
-            <select
+          <label className="me-2">Items per page:</label>
+          <select
             value={appointmentsPerPage}
             onChange={handlePerPageChange}
             className="form-select form-select-sm"
-            style={{ width: '80px' }}
-            >
+            style={{ width: "80px" }}
+          >
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="15">15</option>
             <option value="20">20</option>
-            </select>
+          </select>
         </div>
         <ul className="pagination mb-0">
-            {Array.from({ length: Math.ceil(pendingAppointments.length / appointmentsPerPage) }, (_, index) => (
-            <li
+          {Array.from(
+            {
+              length: Math.ceil(
+                pendingAppointments.length / appointmentsPerPage
+              ),
+            },
+            (_, index) => (
+              <li
                 key={index}
-                className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}
-                style={{ cursor: 'pointer' }}
+                className={`page-item ${
+                  currentPage === index + 1 ? "active" : ""
+                }`}
+                style={{ cursor: "pointer" }}
                 onClick={() => paginate(index + 1)}
-            >
+              >
                 <span className="page-link">{index + 1}</span>
-            </li>
-            ))}
+              </li>
+            )
+          )}
         </ul>
-        </div>
+      </div>
     </div>
   );
 };
