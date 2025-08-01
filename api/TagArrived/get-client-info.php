@@ -42,7 +42,12 @@ try {
     }
 
     // Get client by name adn contact
-    $stmt2 = $conn->prepare("SELECT * FROM clients WHERE LOWER(name) = LOWER(?) AND cellnumber = ? LIMIT 1");
+    $stmt2 = $conn->prepare("
+        SELECT * FROM clients 
+        WHERE TRIM(LOWER(name)) = TRIM(LOWER(?)) 
+        AND REPLACE(cellnumber, ' ', '') = REPLACE(?, ' ', '') 
+        LIMIT 1
+    ");
     $stmt2->execute([$appointment['name'], $appointment['contact']]);
     $client = $stmt2->fetch(PDO::FETCH_ASSOC);
 

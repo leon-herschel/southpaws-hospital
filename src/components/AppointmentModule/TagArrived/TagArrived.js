@@ -51,7 +51,7 @@ function TagArrived({ onClose }) {
         });
         setStep("client");
       } else {
-        toast.error("Client info not found.");
+        toast.error(res.data.message || "Client info not found.");
       }
     } catch {
       toast.error("Error fetching client information.");
