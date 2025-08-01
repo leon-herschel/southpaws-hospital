@@ -4,7 +4,7 @@ import { Button } from "react-bootstrap";
 import { AiOutlineDelete } from "react-icons/ai";
 import { toast } from "react-toastify";
 
-const AddAppointments = ({ onClose }) => {
+function AddAppointments() {
   const [formData, setFormData] = useState({
     service: [""],
     date: "",
@@ -13,13 +13,12 @@ const AddAppointments = ({ onClose }) => {
     contact: "",
     email: "",
     end_time: "",
-    status: "Confirmed",
+    status: "Pending",
     reference_number: "",
     pet_name: "",
     pet_breed: "",
     pet_species: "",
   });
-
 
   const [services, setServices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -43,7 +42,7 @@ const AddAppointments = ({ onClose }) => {
   const generateReferenceNumber = () => {
     const letters = Array.from({ length: 3 }, () =>
       String.fromCharCode(65 + Math.floor(Math.random() * 26))
-    ).join('');
+    ).join("");
     const numbers = Math.floor(1000 + Math.random() * 9000);
     return `${letters}-${numbers}`;
   };
@@ -52,14 +51,13 @@ const AddAppointments = ({ onClose }) => {
     const startTime = new Date(`1970-01-01T${start}`);
     const endTime = new Date(`1970-01-01T${end}`);
 
-    return availableSlots.some(slot => {
+    return availableSlots.some((slot) => {
       const bookedStart = new Date(`1970-01-01T${slot.time}`);
       const bookedEnd = new Date(`1970-01-01T${slot.end_time}`);
 
       return startTime < bookedEnd && endTime > bookedStart;
     });
   };
-
 
   const handleChange = async (e, index = null) => {
     const { name, value } = e.target;
@@ -73,8 +71,10 @@ const AddAppointments = ({ onClose }) => {
       }));
 
       try {
-        const res = await axios.get(`http://localhost/api/get-booked-slots.php?date=${value}`);
-        setAvailableSlots(res.data.bookedRanges || []); 
+        const res = await axios.get(
+          `http://localhost/api/get-booked-slots.php?date=${value}`
+        );
+        setAvailableSlots(res.data.bookedRanges || []);
       } catch (err) {
         console.error("Failed to fetch booked slots", err);
         toast.error("Error loading booked slots.");
@@ -204,15 +204,12 @@ const AddAppointments = ({ onClose }) => {
           contact: "",
           email: "",
           end_time: "",
-          status: "Confirmed",
+          status: "Pending",
           reference_number: generateReferenceNumber(),
           pet_name: "",
           pet_breed: "",
           pet_species: "",
         });
-        if (onClose) onClose();
-      } else {
-        toast.error(res.data.error || "Something went wrong.");
       }
     } catch (error) {
       console.error("Submission Error:", error.response?.data || error.message);
@@ -443,6 +440,6 @@ const AddAppointments = ({ onClose }) => {
       </form>
     </div>
   );
-};
+}
 
 export default AddAppointments;

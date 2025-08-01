@@ -45,8 +45,11 @@ function TagArrived({ onClose }) {
         setClientInfo({
           ...res.data.client,
           service: res.data.appointment_service,
+<<<<<<< HEAD
           time: res.data.appointment_time,
           end_time: res.data.appointment_end_time,
+=======
+>>>>>>> main
           pets: res.data.pets || [],
         });
         setStep("client");
@@ -64,16 +67,26 @@ function TagArrived({ onClose }) {
         <form onSubmit={handleSubmit}>
           <input
             type="text"
+<<<<<<< HEAD
             className="form-control"
+=======
+            className="form-control mb-3"
+>>>>>>> main
             placeholder="Enter reference number"
             value={referenceNumber}
             onChange={(e) => setReferenceNumber(e.target.value)}
           />
+<<<<<<< HEAD
           <div className="button-container">
             <button type="submit" className="button btn-gradient btn-success">
               Submit
            </button>
           </div>  
+=======
+          <button type="submit" className="btn btn-success w-100">
+            Submit
+          </button>
+>>>>>>> main
         </form>
       )}
 
@@ -94,9 +107,12 @@ function TagArrived({ onClose }) {
                   name: res.data.name,
                   contact: res.data.contact,
                   email: res.data.email,
+<<<<<<< HEAD
                   pet_name: res.data.pet_name,
                   pet_species: res.data.pet_species,
                   pet_breed: res.data.pet_breed
+=======
+>>>>>>> main
                 });
               }
 
@@ -116,9 +132,29 @@ function TagArrived({ onClose }) {
         <div className="mt-2">
           <h5 className="mb-3">Client Details</h5>
           <div className="card p-3 mb-4 shadow-sm">
+<<<<<<< HEAD
             <p className="mb-1"><strong>Name:</strong> {clientInfo.name}</p>
             <p className="mb-1"><strong>Contact:</strong> {clientInfo.contact}</p>
             <p className="mb-1"><strong>Email:</strong> {clientInfo.email || '—'}</p>
+=======
+            <div className="mb-2">
+              <strong>Name:</strong>
+              <div>{clientInfo.name}</div>
+            </div>
+            <div className="mb-2">
+              <strong>Contact:</strong>
+              <div>{clientInfo.contact}</div>
+            </div>
+            <div className="mb-2">
+              <strong>Email:</strong>
+              <div>{clientInfo.email || '—'}</div>
+            </div>
+          </div>
+
+          <h5 className="mb-3">Appointment Info</h5>
+          <div className="card p-3 mb-4 shadow-sm">
+            <strong>Service:</strong> {clientInfo.service}
+>>>>>>> main
           </div>
 
           {clientInfo.pets?.length > 0 && (
@@ -126,9 +162,14 @@ function TagArrived({ onClose }) {
               <h5 className="mb-3">Patient(s) Information</h5>
               <div className="row">
                 {clientInfo.pets.map((pet, index) => (
+<<<<<<< HEAD
                   <div className="col-12" key={index}>
                     <div className="card mb-3 p-3 shadow-sm">
                       <p className="mb-1"><strong>Service:</strong> {clientInfo.service}</p>
+=======
+                  <div className="col-md-6" key={index}>
+                    <div className="card mb-3 p-3 shadow-sm">
+>>>>>>> main
                       <p className="mb-1"><strong>Name:</strong> {pet.name}</p>
                       <p className="mb-1"><strong>Species:</strong> {pet.species}</p>
                       <p className="mb-1"><strong>Breed:</strong> {pet.breed}</p>
@@ -173,11 +214,17 @@ function TagArrived({ onClose }) {
       {/* New Client Modal */}
       <AddClientAndPatientModal
         show={showAddClientModal}
+<<<<<<< HEAD
         handleClose={() => {
           setShowAddClientModal(false);
         }}
         onCategoryAdded={async () => {
           setShowAddClientModal(false); 
+=======
+        handleClose={() => setShowAddClientModal(false)}
+        onCategoryAdded={async () => {
+          setShowAddClientModal(false); // Close modal
+>>>>>>> main
 
           // Fetch client and pet info again
           await handleExistingClient();
