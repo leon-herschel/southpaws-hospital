@@ -15,7 +15,11 @@ const AddAppointments = ({ onClose }) => {
     end_time: "",
     status: "Confirmed",
     reference_number: "",
+    pet_name: "",
+    pet_breed: "",
+    pet_species: "",
   });
+
 
   const [services, setServices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -315,18 +319,6 @@ const AddAppointments = ({ onClose }) => {
                 disabled={!formData.date}
               />
             </div>
-
-            <div className="mb-3">
-              <label htmlFor="reference_code">Reference Number:</label>
-              <input
-                type="text"
-                id="reference_number"
-                name="reference_number"
-                className="form-control"
-                value={formData.reference_number}
-                readOnly
-              />
-            </div>
           </div>
 
           <div className="col-md-6">
@@ -377,6 +369,62 @@ const AddAppointments = ({ onClose }) => {
             </div>
           </div>
         </div>
+
+        <h5 className="mt-3">Patient Details</h5>
+        <div className="card mb-2 mt-2">
+          <div className="card-body">
+            <div className="row">
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label htmlFor="pet_name">Pet Name:</label>
+                  <input
+                    type="text"
+                    id="pet_name"
+                    name="pet_name"
+                    className="form-control"
+                    value={formData.pet_name}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="pet_breed">Breed:</label>
+                  <input
+                    type="text"
+                    id="pet_breed"
+                    name="pet_breed"
+                    className="form-control"
+                    value={formData.pet_breed}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label htmlFor="pet_species">Species:</label>
+                  <input
+                    type="text"
+                    id="pet_species"
+                    name="pet_species"
+                    className="form-control"
+                    value={formData.pet_species}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <input
+          type="hidden"
+          name="reference_number"
+          value={formData.reference_number}
+        />
 
         {/* SUBMIT BUTTON */}
         <div className="button-container">
