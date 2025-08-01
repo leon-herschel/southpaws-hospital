@@ -56,8 +56,6 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
 
     useEffect(() => {
         if (show && prefillData) {
-            console.log("Modal prefillData:", prefillData);
-
             setClientInputs(prev => ({
                 ...prev,
                 name: prefillData.name || '',
