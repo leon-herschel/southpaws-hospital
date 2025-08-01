@@ -87,6 +87,9 @@ const Appointment = () => {
           name: appt.name || "",
           contact: appt.contact || "",
           email: appt.email || "",
+          pet_name: appt.pet_name || "",
+          pet_breed: appt.pet_breed || "",
+          pet_species: appt.pet_species || "",
         };
       });
     setEvents(formatted);
@@ -279,12 +282,8 @@ const Appointment = () => {
             <Modal.Title>Appointment Info</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>
-              <strong>Reference #:</strong> {selectedEvent.reference_number}
-            </p>
-            <p>
-              <strong>Service:</strong> {selectedEvent.service}
-            </p>
+            <p><strong>Reference #:</strong> {selectedEvent.reference_number}</p>
+            <p><strong>Service:</strong> {selectedEvent.service}</p>
             <p>
               <strong>Date:</strong>{" "}
               {format(selectedEvent.start, "MMMM dd, yyyy")}
@@ -293,18 +292,13 @@ const Appointment = () => {
               <strong>Time:</strong> {format(selectedEvent.start, "hh:mm a")} to{" "}
               {format(selectedEvent.end, "hh:mm a")}
             </p>
-            <p>
-              <strong>Name:</strong> {selectedEvent.name}
-            </p>
-            <p>
-              <strong>Contact #:</strong> {selectedEvent.contact}
-            </p>
-            <p>
-              <strong>Email:</strong> {selectedEvent.email}
-            </p>
-            <p>
-              <strong>Status:</strong> {selectedEvent.status}
-            </p>
+            <p><strong>Name:</strong> {selectedEvent.name}</p>
+            <p><strong>Contact #:</strong> {selectedEvent.contact}</p>
+            <p><strong>Email:</strong> {selectedEvent.email}</p>
+            <p><strong>Pet Name:</strong> {selectedEvent.pet_name}</p>
+            <p><strong>Species:</strong> {selectedEvent.pet_species}</p>
+            <p><strong>Breed:</strong> {selectedEvent.pet_breed}</p>
+            <p><strong>Status:</strong> {selectedEvent.status}</p>
           </Modal.Body>
           <Modal.Footer>
             {selectedEvent?.status === "Cancelled" && (

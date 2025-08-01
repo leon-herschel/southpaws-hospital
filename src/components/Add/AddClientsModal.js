@@ -46,7 +46,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
     
     useEffect(() => {
         if (show && clientNameRef.current) {
-            clientNameRef.current.focus(); // ✅ Auto-focus when modal opens
+            clientNameRef.current.focus(); // Auto-focus when modal opens
         }
     }, [show]);    
     
@@ -60,8 +60,23 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                 ...prev,
                 name: prefillData.name || '',
                 email: prefillData.email || '',
-                cellnumber: prefillData.contact || ''
+                cellnumber: prefillData.contact || '',
+                address: prefillData.address || '',
+                gender: prefillData.gender || ''
             }));
+
+            if (prefillData.pet_name || prefillData.pet_species || prefillData.pet_breed) {
+                setPatients([{
+                    name: prefillData.pet_name || '',
+                    species: prefillData.pet_species || '',
+                    breed: prefillData.pet_breed || '',
+                    weight: '',
+                    age: '',
+                    birthdate: '',
+                    distinct_features: '',
+                    other_details: ''
+                }]);
+            }
         }
     }, [show, prefillData]);
 
