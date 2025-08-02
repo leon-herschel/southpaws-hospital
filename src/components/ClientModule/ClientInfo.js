@@ -435,7 +435,7 @@ function AddAppointments() {
             className="button btn-gradient"
             disabled={isLoading}
           >
-            {isLoading ? "Adding..." : "Add"}
+            {isLoading ? "Booking..." : "Book"}
           </Button>
         </div>
       </form>

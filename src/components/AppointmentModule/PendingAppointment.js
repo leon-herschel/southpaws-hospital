@@ -220,7 +220,7 @@ const PendingAppointments = () => {
         <tbody>
           {pendingAppointments.length === 0 ? (
             <tr>
-              <td colSpan="8" className="text-center">
+              <td colSpan="11" className="text-center">
                 No pending appointments.
               </td>
             </tr>

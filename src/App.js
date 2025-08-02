@@ -34,6 +34,7 @@ import Generic from "./components/Generic";
 import ReportGeneration from "./components/ReportGeneration";
 import Forecasting from "./components/Forecasting";
 import PendingAppointments from "./components/AppointmentModule/PendingAppointment";
+import ClientAppointment from "./components/ClientModule/ClientAppointment";
 import ClientAppointmentForm from "./components/ClientModule/ClientInfo";
 import ReferenceTracking from "./components/ClientModule/ReferenceTracking";
 import ProfileSettings from "./components/Settings/ProfileSettings";
@@ -55,10 +56,17 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Public routes (client-side) */}
-          <Route path="/appointment-form" element={<ClientAppointmentForm />} />
-          <Route path="/reference-tracking" element={<ReferenceTracking />} />
+          <Route path="/southpaws-booking/*" element={<ClientAppointment />} />
+          <Route
+            path="/southpaws-booking/appointment-form"
+            element={<ClientAppointmentForm />}
+          />
+          <Route
+            path="/southpaws-booking/reference-tracking"
+            element={<ReferenceTracking />}
+          />
           <Route path="/client-booking" element={<ClientBooking />} />
-
+          =======
           {/* Authenticated routes */}
           {isAuthenticated ? (
             <>
