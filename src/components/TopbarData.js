@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import React, { useState } from "react";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 export const TopbarData = (username) => [
   {
@@ -8,12 +8,16 @@ export const TopbarData = (username) => [
     subItems: [
       {
         title: "Profile",
-        link: "/profile"
+        link: "/profile",
       },
       {
         title: "Log out",
-        link: "/login"
+        link: "/login",
       },
-    ]
-  }
+      {
+        title: "Settings",
+        link: "/settings",
+      },
+    ],
+  },
 ];
