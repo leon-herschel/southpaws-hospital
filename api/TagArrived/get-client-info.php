@@ -31,7 +31,7 @@ if (!$reference_number) {
 
 try {
     // Get appointment info
-    $stmt = $conn->prepare("SELECT name, contact, email, service FROM appointments WHERE reference_number = ? LIMIT 1");
+    $stmt = $conn->prepare("SELECT name, contact, email, service, pet_name, pet_species, pet_breed FROM appointments WHERE reference_number = ? LIMIT 1");
     $stmt->execute([$reference_number]);
     $appointment = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -42,7 +42,12 @@ try {
     }
 
     // Get client by name adn contact
-    $stmt2 = $conn->prepare("SELECT * FROM clients WHERE LOWER(name) = LOWER(?) AND cellnumber = ? LIMIT 1");
+    $stmt2 = $conn->prepare("
+        SELECT * FROM clients 
+        WHERE TRIM(LOWER(name)) = TRIM(LOWER(?)) 
+        AND REPLACE(cellnumber, ' ', '') = REPLACE(?, ' ', '') 
+        LIMIT 1
+    ");
     $stmt2->execute([$appointment['name'], $appointment['contact']]);
     $client = $stmt2->fetch(PDO::FETCH_ASSOC);
 
@@ -69,6 +74,11 @@ try {
     echo json_encode([
         "client" => $filteredClient,
         "appointment_service" => $appointment['service'],
+        "appointment_pet" => [
+            "name" => $appointment['pet_name'],
+            "species" => $appointment['pet_species'],
+            "breed" => $appointment['pet_breed']
+        ],
         "pets" => $pets
     ]);
 

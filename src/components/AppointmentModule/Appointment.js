@@ -11,6 +11,7 @@ import { Modal } from "react-bootstrap";
 import { toast } from "react-toastify";
 import EditAppointment from "./EditAppointment";
 import { useNavigate } from "react-router-dom";
+import { FaClock, FaCheckCircle, FaTimesCircle, FaCheckDouble } from "react-icons/fa";
 
 const locales = { "en-US": enUS };
 
@@ -87,36 +88,50 @@ const Appointment = () => {
           name: appt.name || "",
           contact: appt.contact || "",
           email: appt.email || "",
+          pet_name: appt.pet_name || "",
+          pet_breed: appt.pet_breed || "",
+          pet_species: appt.pet_species || "",
         };
       });
     setEvents(formatted);
   };
 
+  const statusIcons = {
+    Pending: <FaClock size={34} />,
+    Confirmed: <FaCheckCircle size={34} />,
+    Cancelled: <FaTimesCircle size={34} />,
+    Done: <FaCheckDouble size={34} />,
+  };
+
   const renderStatusBoxes = () => (
-    <div className="d-flex justify-content-between mt-4 mb-4">
+    <div className="d-flex justify-content-between mt-4 mb-4 gap-3">
       {statuses.map((status, idx) => (
         <div
-          className={`card text-white text-center mx-1 ${cardColors[status]}`}
+          className={`card text-white ${cardColors[status]}`}
           style={{
             flex: 1,
             cursor: status === "Pending" ? "pointer" : "default",
+            minWidth: "180px",
           }}
           key={idx}
           onClick={() => {
             if (status === "Pending") navigate("/appointment/pending");
           }}
         >
-          <div className="card-body">
-            <h5 className="card-title">{status}</h5>
-            <p className="card-text">
-              {
-                appointments.filter(
-                  (appt) =>
-                    appt.status &&
-                    appt.status.toLowerCase() === status.toLowerCase()
-                ).length
-              }
-            </p>
+          <div className="card-body d-flex justify-content-between align-items-center">
+            <div>
+              <h3 className="mb-0 fw-bold">
+                {
+                  appointments.filter(
+                    (appt) =>
+                      appt.status &&
+                      appt.status.toLowerCase() === status.toLowerCase()
+                  ).length
+                }
+              </h3>
+              <p className="mb-0">{status}</p>
+            </div>
+            <div className="ms-3">{statusIcons[status]}</div>
           </div>
         </div>
       ))}
@@ -279,12 +294,8 @@ const Appointment = () => {
             <Modal.Title>Appointment Info</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>
-              <strong>Reference #:</strong> {selectedEvent.reference_number}
-            </p>
-            <p>
-              <strong>Service:</strong> {selectedEvent.service}
-            </p>
+            <p><strong>Reference #:</strong> {selectedEvent.reference_number}</p>
+            <p><strong>Service:</strong> {selectedEvent.service}</p>
             <p>
               <strong>Date:</strong>{" "}
               {format(selectedEvent.start, "MMMM dd, yyyy")}
@@ -293,18 +304,13 @@ const Appointment = () => {
               <strong>Time:</strong> {format(selectedEvent.start, "hh:mm a")} to{" "}
               {format(selectedEvent.end, "hh:mm a")}
             </p>
-            <p>
-              <strong>Name:</strong> {selectedEvent.name}
-            </p>
-            <p>
-              <strong>Contact #:</strong> {selectedEvent.contact}
-            </p>
-            <p>
-              <strong>Email:</strong> {selectedEvent.email}
-            </p>
-            <p>
-              <strong>Status:</strong> {selectedEvent.status}
-            </p>
+            <p><strong>Name:</strong> {selectedEvent.name}</p>
+            <p><strong>Contact #:</strong> {selectedEvent.contact}</p>
+            <p><strong>Email:</strong> {selectedEvent.email}</p>
+            <p><strong>Pet Name:</strong> {selectedEvent.pet_name}</p>
+            <p><strong>Species:</strong> {selectedEvent.pet_species}</p>
+            <p><strong>Breed:</strong> {selectedEvent.pet_breed}</p>
+            <p><strong>Status:</strong> {selectedEvent.status}</p>
           </Modal.Body>
           <Modal.Footer>
             {selectedEvent?.status === "Cancelled" && (
