@@ -11,7 +11,7 @@ function ErrorPage() {
   return (
     <div>
       <button onClick={handleGoToClient}>Back</button>
-      <h1> Page is temporary unavailable at the moment</h1>
+      <h1>Page is temporarily unavailable at the moment.</h1>
     </div>
   );
 }

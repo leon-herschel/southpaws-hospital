@@ -11,12 +11,12 @@ export const TopbarData = (username) => [
         link: "/profile",
       },
       {
-        title: "Log out",
-        link: "/login",
-      },
-      {
         title: "Settings",
         link: "/settings",
+      },
+      {
+        title: "Log out",
+        link: "/login",
       },
     ],
   },

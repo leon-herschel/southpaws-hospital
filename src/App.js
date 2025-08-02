@@ -65,8 +65,9 @@ function App() {
             path="/southpaws-booking/reference-tracking"
             element={<ReferenceTracking />}
           />
-          <Route path="/client-booking" element={<ClientBooking />} />
-          =======
+          <Route path="/client-booking" 
+          element={<ClientBooking />} />
+
           {/* Authenticated routes */}
           {isAuthenticated ? (
             <>

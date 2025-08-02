@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaCheck, FaTimes, FaArrowLeft } from "react-icons/fa";
 
 const PendingAppointments = () => {
   const [pendingAppointments, setPendingAppointments] = useState([]);
@@ -11,6 +11,7 @@ const PendingAppointments = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [appointmentsPerPage, setAppointmentsPerPage] = useState(5);
   const [sortBy, setSortBy] = useState({ key: "", order: "" });
+  const [searchTerm, setSearchTerm] = useState("");
 
   const fetchPending = async () => {
     try {
@@ -31,6 +32,10 @@ const PendingAppointments = () => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
+  };
+
+  const handleFilter = (e) => {
+    setSearchTerm(e.target.value.toLowerCase());
   };
 
   const confirmSelected = async () => {
@@ -174,12 +179,16 @@ const PendingAppointments = () => {
     return null;
   };
 
+  const filteredAppointments = pendingAppointments.filter((a) =>
+    Object.values(a)
+      .join(" ")
+      .toLowerCase()
+      .includes(searchTerm)
+  );
+
   const indexOfLast = currentPage * appointmentsPerPage;
   const indexOfFirst = indexOfLast - appointmentsPerPage;
-  const currentAppointments = pendingAppointments.slice(
-    indexOfFirst,
-    indexOfLast
-  );
+  const currentAppointments = filteredAppointments.slice(indexOfFirst, indexOfLast);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -198,16 +207,26 @@ const PendingAppointments = () => {
     </button>
       <h2 className="mb-3">Pending Appointments</h2>
 
-      {selectedIds.length > 0 && (
-        <div className="mb-3">
-          <button className="btn btn-success me-2" onClick={confirmSelected}>
-            Confirm Selected
-          </button>
-          <button className="btn btn-danger" onClick={rejectSelected}>
-            Reject Selected
-          </button>
+      <div className="d-flex justify-content-between align-items-center">
+        <div className="input-group" style={{ width: "25%" }}>
+          <input
+            type="text"
+            className="form-control"
+            onChange={handleFilter}
+            placeholder="Search"
+          />
         </div>
-      )}
+        {selectedIds.length > 0 && (
+          <div className="d-flex gap-2">
+            <button className="btn btn-success" onClick={confirmSelected}>
+              <FaCheck className="me-1" /> Confirm
+            </button>
+            <button className="btn btn-danger" onClick={rejectSelected}>
+              <FaTimes className="me-1" /> Reject
+            </button>
+          </div>
+        )}
+      </div>
 
       <table className="table table-striped align-middle text-center">
         <thead>
@@ -232,12 +251,6 @@ const PendingAppointments = () => {
               style={{ cursor: "pointer" }}
             >
               Name {getSortIcon("name")}
-            </th>
-            <th
-              onClick={() => handleSort("service")}
-              style={{ cursor: "pointer" }}
-            >
-              Service {getSortIcon("service")}
             </th>
             <th
               onClick={() => handleSort("date")}
@@ -276,6 +289,12 @@ const PendingAppointments = () => {
             >
               Breed {getSortIcon("pet_breed")}
             </th>
+                        <th
+              onClick={() => handleSort("service")}
+              style={{ cursor: "pointer" }}
+            >
+              Service {getSortIcon("service")}
+            </th>
             <th style={{ width: "15%" }}>Actions</th>
           </tr>
         </thead>
@@ -298,7 +317,6 @@ const PendingAppointments = () => {
                   />
                 </td>
                 <td>{appt.name}</td>
-                <td>{appt.service}</td>
                 <td>{appt.date}</td>
                 <td>
                   {appt.time} - {appt.end_time}
@@ -308,18 +326,21 @@ const PendingAppointments = () => {
                 <td>{appt.pet_name}</td>
                 <td>{appt.pet_species}</td>
                 <td>{appt.pet_breed}</td>
+                <td>{appt.service}</td>
                 <td>
                   <button
-                    className="btn btn-sm btn-success me-2"
+                    className="btn btn-md btn-success me-2"
                     onClick={() => confirmOne(appt.id)}
+                    title="Confirm Appointment"
                   >
-                    Confirm
+                    <FaCheck />
                   </button>
                   <button
-                    className="btn btn-sm btn-danger"
+                    className="btn btn-md btn-danger"
                     onClick={() => rejectOne(appt.id)}
+                    title="Reject Appointment"
                   >
-                    Reject
+                    <FaTimes />
                   </button>
                 </td>
               </tr>
@@ -345,9 +366,7 @@ const PendingAppointments = () => {
         <ul className="pagination mb-0">
           {Array.from(
             {
-              length: Math.ceil(
-                pendingAppointments.length / appointmentsPerPage
-              ),
+              length: Math.ceil(filteredAppointments.length / appointmentsPerPage),
             },
             (_, index) => (
               <li
