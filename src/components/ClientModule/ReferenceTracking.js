@@ -53,7 +53,7 @@ function ReferenceTracking() {
 
   return (
     <div className="container mt-4">
-      <h2>Track Your Appointment</h2>
+      <h2 className="mb-3">Track Your Appointment</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -62,13 +62,15 @@ function ReferenceTracking() {
           value={referenceNumber}
           onChange={(e) => setReferenceNumber(e.target.value)}
         />
-        <button
-          type="submit"
-          className="btn btn-success w-100"
-          disabled={loading}
-        >
-          {loading ? "Checking..." : "Submit"}
-        </button>
+        <div className="button-container">
+          <button
+            type="submit"
+            className="button btn-gradient"
+            disabled={loading}
+          >
+            {loading ? "Checking..." : "Submit"}
+          </button>
+        </div>
       </form>
 
       {appointmentDetails && (
