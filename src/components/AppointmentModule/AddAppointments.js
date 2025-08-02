@@ -20,7 +20,6 @@ const AddAppointments = ({ onClose }) => {
     pet_species: "",
   });
 
-
   const [services, setServices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [availableSlots, setAvailableSlots] = useState([]);
@@ -43,7 +42,7 @@ const AddAppointments = ({ onClose }) => {
   const generateReferenceNumber = () => {
     const letters = Array.from({ length: 3 }, () =>
       String.fromCharCode(65 + Math.floor(Math.random() * 26))
-    ).join('');
+    ).join("");
     const numbers = Math.floor(1000 + Math.random() * 9000);
     return `${letters}-${numbers}`;
   };
@@ -52,14 +51,13 @@ const AddAppointments = ({ onClose }) => {
     const startTime = new Date(`1970-01-01T${start}`);
     const endTime = new Date(`1970-01-01T${end}`);
 
-    return availableSlots.some(slot => {
+    return availableSlots.some((slot) => {
       const bookedStart = new Date(`1970-01-01T${slot.time}`);
       const bookedEnd = new Date(`1970-01-01T${slot.end_time}`);
 
       return startTime < bookedEnd && endTime > bookedStart;
     });
   };
-
 
   const handleChange = async (e, index = null) => {
     const { name, value } = e.target;
@@ -73,8 +71,10 @@ const AddAppointments = ({ onClose }) => {
       }));
 
       try {
-        const res = await axios.get(`http://localhost/api/get-booked-slots.php?date=${value}`);
-        setAvailableSlots(res.data.bookedRanges || []); 
+        const res = await axios.get(
+          `http://localhost/api/get-booked-slots.php?date=${value}`
+        );
+        setAvailableSlots(res.data.bookedRanges || []);
       } catch (err) {
         console.error("Failed to fetch booked slots", err);
         toast.error("Error loading booked slots.");
