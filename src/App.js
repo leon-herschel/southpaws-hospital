@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify'; // ✅ Import ToastContainer
-import 'react-toastify/dist/ReactToastify.css'; // ✅ Import toast styles
+import { ToastContainer } from 'react-toastify'; 
+import 'react-toastify/dist/ReactToastify.css'; 
 
 import './App.css';
 import Appointment from './components/AppointmentModule/Appointment';
@@ -34,6 +34,10 @@ import Generic from './components/Generic';
 import ReportGeneration from './components/ReportGeneration';
 import Forecasting from './components/Forecasting';
 import PendingAppointments from './components/AppointmentModule/PendingAppointment';
+import ClientAppointment from './components/ClientModule/ClientAppointment';
+import ClientAppointmentForm from './components/ClientModule/ClientInfo';
+import ReferenceTracking from './components/ClientModule/ReferenceTracking';
+
 
 function App() {
   // Manage the authentication state in App.js
@@ -47,53 +51,64 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        {/* Routes for authenticated users */}
-        {isAuthenticated ? (
-          <>
-            <Sidebar />
-            <div className="content">
-                <Topbar />
-              <Routes>
-                <Route path="/" element={<Navigate to="/home" />} />
-                <Route path="information/clients" element={<ListClients />} />
-                <Route path="home" element={<Dashboard />} />
-                <Route path="category" element={<Category />} />
-                <Route path="brand" element={<Brand />} />
-                <Route path="generic" element={<Generic />} />
-                <Route path="unitofmeasurement" element={<Unit />} />
-                <Route path="inventory" element={<Inventory />} />
-                <Route path="products" element={<Product />} />
-                <Route path="suppliers" element={<Supplier />} />
-                <Route path="sales" element={<Sales />} />
-                <Route path="pointofsales" element={<PointofSales />} />
-                <Route path="orders" element={<Orders />} />
-                <Route path="services" element={<Services />} />
-                <Route path="profile" element={<UserProfile />} />
-                <Route path="usermanagement" element={<UserManagement />} />
-                <Route path="history" element={<LogHistory />} />
-                <Route path="ImmunizationForm" element={<ImmunizationForm />} />
-                <Route path="SurgicalForm" element={<SurgicalForm />} />
-                <Route path="archive" element={<Archive />} />
-                <Route path="archived-suppliers" element={<ArchivedSupplierManagement />} />
-                <Route path="report-generation" element={<ReportGeneration />} />
-                <Route path="forecasting" element={<Forecasting/>} />
-                <Route path="appointment" element={<Appointment />} />
-                <Route path="appointment/pending" element={<PendingAppointments />} />
-              </Routes>
-            </div>
-          </>
-        ) : (
-          // Routes for unauthenticated users
-          <Routes>
-            <Route path="login" element={<Login onLogin={handleLogin} />} /> {/* Pass handleLogin function */}
-            <Route path="verify" element={<VerificationAccount />} />
-            <Route path="forgot-password" element={<ForgotPassword />} />
-            <Route path="reset-password" element={<ResetPassword />} />  {/* Reset Password should be accessible without login */}
-            <Route path="*" element={<Navigate to="/login" />} />
-          </Routes>
-        )}
+        <Routes>
+          {/* Public routes (client-side) */}
+          
+          <Route path="/southpaws-booking/*" element={<ClientAppointment/>} />
+          <Route path="/southpaws-booking/appointment-form" element={<ClientAppointmentForm />} />
+          <Route path="/southpaws-booking/reference-tracking" element={<ReferenceTracking />} />
+
+          {/* Authenticated routes */}
+          {isAuthenticated ? (
+            <>
+              <Route path="/*" element={
+                <>
+                  <Sidebar />
+                  <div className="content">
+                    <Topbar />
+                    <Routes>
+                      <Route path="/" element={<Navigate to="/home" />} />
+                      <Route path="information/clients" element={<ListClients />} />
+                      <Route path="home" element={<Dashboard />} />
+                      <Route path="category" element={<Category />} />
+                      <Route path="brand" element={<Brand />} />
+                      <Route path="generic" element={<Generic />} />
+                      <Route path="unitofmeasurement" element={<Unit />} />
+                      <Route path="inventory" element={<Inventory />} />
+                      <Route path="products" element={<Product />} />
+                      <Route path="suppliers" element={<Supplier />} />
+                      <Route path="sales" element={<Sales />} />
+                      <Route path="pointofsales" element={<PointofSales />} />
+                      <Route path="orders" element={<Orders />} />
+                      <Route path="services" element={<Services />} />
+                      <Route path="profile" element={<UserProfile />} />
+                      <Route path="usermanagement" element={<UserManagement />} />
+                      <Route path="history" element={<LogHistory />} />
+                      <Route path="ImmunizationForm" element={<ImmunizationForm />} />
+                      <Route path="SurgicalForm" element={<SurgicalForm />} />
+                      <Route path="archive" element={<Archive />} />
+                      <Route path="archived-suppliers" element={<ArchivedSupplierManagement />} />
+                      <Route path="report-generation" element={<ReportGeneration />} />
+                      <Route path="forecasting" element={<Forecasting />} />
+                      <Route path="appointment" element={<Appointment />} />
+                      <Route path="appointment/pending" element={<PendingAppointments />} />
+                    </Routes>
+                  </div>
+                </>
+              } />
+            </>
+          ) : (
+            <>
+              <Route path="/login" element={<Login onLogin={handleLogin} />} />
+              <Route path="/verify" element={<VerificationAccount />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="*" element={<Navigate to="/login" />} />
+            </>
+          )}
+        </Routes>
       </BrowserRouter>
-        <ToastContainer/>
+      <ToastContainer/>
       
     </div>
   );
