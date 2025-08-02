@@ -295,7 +295,6 @@ const Appointment = () => {
           </Modal.Header>
           <Modal.Body>
             <p><strong>Reference #:</strong> {selectedEvent.reference_number}</p>
-            <p><strong>Service:</strong> {selectedEvent.service}</p>
             <p>
               <strong>Date:</strong>{" "}
               {format(selectedEvent.start, "MMMM dd, yyyy")}
@@ -310,6 +309,7 @@ const Appointment = () => {
             <p><strong>Pet Name:</strong> {selectedEvent.pet_name}</p>
             <p><strong>Species:</strong> {selectedEvent.pet_species}</p>
             <p><strong>Breed:</strong> {selectedEvent.pet_breed}</p>
+            <p><strong>Service:</strong> {selectedEvent.service}</p>
             <p><strong>Status:</strong> {selectedEvent.status}</p>
           </Modal.Body>
           <Modal.Footer>

@@ -228,57 +228,7 @@ const AddAppointments = ({ onClose }) => {
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        {/* SERVICES */}
-        <div className="mb-3">
-          <label>Services:</label>
-          {formData.service.map((selected, idx) => {
-            const alreadySelected = formData.service.filter(
-              (_, i) => i !== idx
-            );
-            return (
-              <div key={idx} className="d-flex align-items-center mb-2 gap-2">
-                <select
-                  name="service"
-                  className="form-control"
-                  value={selected}
-                  onChange={(e) => handleChange(e, idx)}
-                  required
-                >
-                  <option value="">-- Select a service --</option>
-                  {services.map((s) => (
-                    <option
-                      key={s.id}
-                      value={s.name}
-                      disabled={alreadySelected.includes(s.name)}
-                    >
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
-
-                {formData.service.length > 1 && (
-                  <button
-                    type="button"
-                    className="btn btn-outline-danger btn-sm"
-                    onClick={() => removeService(idx)}
-                  >
-                    <AiOutlineDelete />
-                  </button>
-                )}
-              </div>
-            );
-          })}
-
-          <button
-            type="button"
-            className="btn btn-outline-primary btn-sm mb-2"
-            onClick={addAnotherService}
-          >
-            + Add Another Service
-          </button>
-        </div>
-
-        <div className="row">
+      <div className="row">
           <div className="col-md-6">
             <div className="mb-3">
               <label htmlFor="date">Date:</label>
@@ -291,6 +241,7 @@ const AddAppointments = ({ onClose }) => {
                 onChange={handleChange}
                 autoComplete="off"
                 required
+                min={new Date().toISOString().split("T")[0]}
               />
             </div>
 
@@ -418,6 +369,57 @@ const AddAppointments = ({ onClose }) => {
                     required
                   />
                 </div>
+              </div>
+
+              <hr className="mt-3" />
+
+              <div className="mb-3">
+                <label>Services:</label>
+                {formData.service.map((selected, idx) => {
+                  const alreadySelected = formData.service.filter(
+                    (_, i) => i !== idx
+                  );
+                  return (
+                    <div key={idx} className="d-flex align-items-center mb-2 gap-2">
+                      <select
+                        name="service"
+                        className="form-control"
+                        value={selected}
+                        onChange={(e) => handleChange(e, idx)}
+                        required
+                      >
+                        <option value="">-- Select a service --</option>
+                        {services.map((s) => (
+                          <option
+                            key={s.id}
+                            value={s.name}
+                            disabled={alreadySelected.includes(s.name)}
+                          >
+                            {s.name}
+                          </option>
+                        ))}
+                      </select>
+
+                      {formData.service.length > 1 && (
+                        <button
+                          type="button"
+                          className="btn btn-outline-danger btn-sm"
+                          onClick={() => removeService(idx)}
+                        >
+                          <AiOutlineDelete />
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+
+                <button
+                  type="button"
+                  className="btn btn-outline-primary btn-sm"
+                  onClick={addAnotherService}
+                >
+                  + Add Another Service
+                </button>
               </div>
             </div>
           </div>

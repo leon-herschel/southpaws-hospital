@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { FaCheck, FaTimes, FaArrowLeft } from "react-icons/fa";
 
 const PendingAppointments = () => {
   const [pendingAppointments, setPendingAppointments] = useState([]);
@@ -10,6 +11,7 @@ const PendingAppointments = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [appointmentsPerPage, setAppointmentsPerPage] = useState(5);
   const [sortBy, setSortBy] = useState({ key: "", order: "" });
+  const [searchTerm, setSearchTerm] = useState("");
 
   const fetchPending = async () => {
     try {
@@ -32,21 +34,61 @@ const PendingAppointments = () => {
     );
   };
 
+  const handleFilter = (e) => {
+    setSearchTerm(e.target.value.toLowerCase());
+  };
+
   const confirmSelected = async () => {
-    try {
-      for (let id of selectedIds) {
-        const appt = pendingAppointments.find((a) => a.id === id);
+    const confirmedIds = [];
+    const skippedIds = [];
+
+    for (let id of selectedIds) {
+      const appt = pendingAppointments.find((a) => a.id === id);
+      try {
+        const res = await axios.get(
+          `http://localhost/api/get-booked-slots.php?date=${appt.date}`
+        );
+        const bookedSlots = res.data.bookedRanges || [];
+
+        const isConflict = bookedSlots.some((slot) => {
+          const slotStart = new Date(`1970-01-01T${slot.time}`);
+          const slotEnd = new Date(`1970-01-01T${slot.end_time}`);
+          const apptStart = new Date(`1970-01-01T${appt.time}`);
+          const apptEnd = new Date(`1970-01-01T${appt.end_time}`);
+          return (
+            (apptStart >= slotStart && apptStart < slotEnd) ||
+            (apptEnd > slotStart && apptEnd <= slotEnd) ||
+            (apptStart <= slotStart && apptEnd >= slotEnd)
+          );
+        });
+
+        if (isConflict) {
+          skippedIds.push(id);
+          continue;
+        }
+
         await axios.put("http://localhost/api/appointments.php", {
           ...appt,
           status: "Confirmed",
         });
+        confirmedIds.push(id);
+      } catch (err) {
+        skippedIds.push(id);
       }
-      toast.success("Selected appointments confirmed!");
-      setSelectedIds([]);
-      fetchPending();
-    } catch (err) {
-      toast.error("Error confirming appointments");
     }
+
+    if (confirmedIds.length > 0) {
+      toast.success(`${confirmedIds.length} appointment(s) confirmed.`);
+    }
+
+    if (skippedIds.length > 0) {
+      toast.warning(
+        `${skippedIds.length} appointment(s) skipped due to time conflicts.`
+      );
+    }
+
+    setSelectedIds([]);
+    fetchPending();
   };
 
   const rejectSelected = async () => {
@@ -65,18 +107,40 @@ const PendingAppointments = () => {
   };
 
   const confirmOne = async (id) => {
-    try {
-      const appt = pendingAppointments.find((a) => a.id === id);
-      await axios.put("http://localhost/api/appointments.php", {
-        ...appt,
-        status: "Confirmed",
-      });
-      toast.success("Appointment confirmed!");
-      fetchPending();
-    } catch (err) {
-      toast.error("Error confirming appointment");
+  try {
+    const appt = pendingAppointments.find((a) => a.id === id);
+    const res = await axios.get(
+      `http://localhost/api/get-booked-slots.php?date=${appt.date}`
+    );
+    const bookedSlots = res.data.bookedRanges || [];
+
+    const isConflict = bookedSlots.some((slot) => {
+      const slotStart = new Date(`1970-01-01T${slot.time}`);
+      const slotEnd = new Date(`1970-01-01T${slot.end_time}`);
+      const apptStart = new Date(`1970-01-01T${appt.time}`);
+      const apptEnd = new Date(`1970-01-01T${appt.end_time}`);
+      return (
+        (apptStart >= slotStart && apptStart < slotEnd) ||
+        (apptEnd > slotStart && apptEnd <= slotEnd) ||
+        (apptStart <= slotStart && apptEnd >= slotEnd)
+      );
+    });
+
+    if (isConflict) {
+      toast.error("This time slot has already been booked.");
+      return;
     }
-  };
+
+    await axios.put("http://localhost/api/appointments.php", {
+      ...appt,
+      status: "Confirmed",
+    });
+    toast.success("Appointment confirmed!");
+    fetchPending();
+  } catch (err) {
+    toast.error("Error confirming appointment");
+  }
+};
 
   const rejectOne = async (id) => {
     try {
@@ -115,12 +179,16 @@ const PendingAppointments = () => {
     return null;
   };
 
+  const filteredAppointments = pendingAppointments.filter((a) =>
+    Object.values(a)
+      .join(" ")
+      .toLowerCase()
+      .includes(searchTerm)
+  );
+
   const indexOfLast = currentPage * appointmentsPerPage;
   const indexOfFirst = indexOfLast - appointmentsPerPage;
-  const currentAppointments = pendingAppointments.slice(
-    indexOfFirst,
-    indexOfLast
-  );
+  const currentAppointments = filteredAppointments.slice(indexOfFirst, indexOfLast);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -131,21 +199,34 @@ const PendingAppointments = () => {
 
   return (
     <div className="container mt-3">
-      <button className="btn btn-primary mb-3" onClick={() => navigate(-1)}>
-        Back
-      </button>
+      <button
+      className="btn btn-outline-secondary d-inline-flex align-items-center gap-2 mb-3"
+      onClick={() => navigate(-1)}
+    >
+      <FaArrowLeft /> Back
+    </button>
       <h2 className="mb-3">Pending Appointments</h2>
 
-      {selectedIds.length > 0 && (
-        <div className="mb-3">
-          <button className="btn btn-success me-2" onClick={confirmSelected}>
-            Confirm Selected
-          </button>
-          <button className="btn btn-danger" onClick={rejectSelected}>
-            Reject Selected
-          </button>
+      <div className="d-flex justify-content-between align-items-center">
+        <div className="input-group" style={{ width: "25%" }}>
+          <input
+            type="text"
+            className="form-control"
+            onChange={handleFilter}
+            placeholder="Search"
+          />
         </div>
-      )}
+        {selectedIds.length > 0 && (
+          <div className="d-flex gap-2">
+            <button className="btn btn-success" onClick={confirmSelected}>
+              <FaCheck className="me-1" /> Confirm
+            </button>
+            <button className="btn btn-danger" onClick={rejectSelected}>
+              <FaTimes className="me-1" /> Reject
+            </button>
+          </div>
+        )}
+      </div>
 
       <table className="table table-striped align-middle text-center">
         <thead>
@@ -172,14 +253,8 @@ const PendingAppointments = () => {
               Name {getSortIcon("name")}
             </th>
             <th
-              onClick={() => handleSort("service")}
-              style={{ cursor: "pointer" }}
-            >
-              Service {getSortIcon("service")}
-            </th>
-            <th
               onClick={() => handleSort("date")}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer"}}
             >
               Date {getSortIcon("date")}
             </th>
@@ -214,6 +289,12 @@ const PendingAppointments = () => {
             >
               Breed {getSortIcon("pet_breed")}
             </th>
+                        <th
+              onClick={() => handleSort("service")}
+              style={{ cursor: "pointer" }}
+            >
+              Service {getSortIcon("service")}
+            </th>
             <th style={{ width: "15%" }}>Actions</th>
           </tr>
         </thead>
@@ -236,7 +317,6 @@ const PendingAppointments = () => {
                   />
                 </td>
                 <td>{appt.name}</td>
-                <td>{appt.service}</td>
                 <td>{appt.date}</td>
                 <td>
                   {appt.time} - {appt.end_time}
@@ -246,18 +326,21 @@ const PendingAppointments = () => {
                 <td>{appt.pet_name}</td>
                 <td>{appt.pet_species}</td>
                 <td>{appt.pet_breed}</td>
+                <td>{appt.service}</td>
                 <td>
                   <button
-                    className="btn btn-sm btn-success me-2"
+                    className="btn btn-md btn-success me-2"
                     onClick={() => confirmOne(appt.id)}
+                    title="Confirm Appointment"
                   >
-                    Confirm
+                    <FaCheck />
                   </button>
                   <button
-                    className="btn btn-sm btn-danger"
+                    className="btn btn-md btn-danger"
                     onClick={() => rejectOne(appt.id)}
+                    title="Reject Appointment"
                   >
-                    Reject
+                    <FaTimes />
                   </button>
                 </td>
               </tr>
@@ -283,9 +366,7 @@ const PendingAppointments = () => {
         <ul className="pagination mb-0">
           {Array.from(
             {
-              length: Math.ceil(
-                pendingAppointments.length / appointmentsPerPage
-              ),
+              length: Math.ceil(filteredAppointments.length / appointmentsPerPage),
             },
             (_, index) => (
               <li

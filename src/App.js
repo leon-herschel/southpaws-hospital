@@ -66,7 +66,7 @@ function App() {
             element={<ReferenceTracking />}
           />
           <Route path="/client-booking" element={<ClientBooking />} />
-          =======
+
           {/* Authenticated routes */}
           {isAuthenticated ? (
             <>
