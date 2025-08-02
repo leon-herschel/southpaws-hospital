@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { FaArrowLeft } from "react-icons/fa";
 
 const PendingAppointments = () => {
   const [pendingAppointments, setPendingAppointments] = useState([]);
@@ -33,20 +34,56 @@ const PendingAppointments = () => {
   };
 
   const confirmSelected = async () => {
-    try {
-      for (let id of selectedIds) {
-        const appt = pendingAppointments.find((a) => a.id === id);
+    const confirmedIds = [];
+    const skippedIds = [];
+
+    for (let id of selectedIds) {
+      const appt = pendingAppointments.find((a) => a.id === id);
+      try {
+        const res = await axios.get(
+          `http://localhost/api/get-booked-slots.php?date=${appt.date}`
+        );
+        const bookedSlots = res.data.bookedRanges || [];
+
+        const isConflict = bookedSlots.some((slot) => {
+          const slotStart = new Date(`1970-01-01T${slot.time}`);
+          const slotEnd = new Date(`1970-01-01T${slot.end_time}`);
+          const apptStart = new Date(`1970-01-01T${appt.time}`);
+          const apptEnd = new Date(`1970-01-01T${appt.end_time}`);
+          return (
+            (apptStart >= slotStart && apptStart < slotEnd) ||
+            (apptEnd > slotStart && apptEnd <= slotEnd) ||
+            (apptStart <= slotStart && apptEnd >= slotEnd)
+          );
+        });
+
+        if (isConflict) {
+          skippedIds.push(id);
+          continue;
+        }
+
         await axios.put("http://localhost/api/appointments.php", {
           ...appt,
           status: "Confirmed",
         });
+        confirmedIds.push(id);
+      } catch (err) {
+        skippedIds.push(id);
       }
-      toast.success("Selected appointments confirmed!");
-      setSelectedIds([]);
-      fetchPending();
-    } catch (err) {
-      toast.error("Error confirming appointments");
     }
+
+    if (confirmedIds.length > 0) {
+      toast.success(`${confirmedIds.length} appointment(s) confirmed.`);
+    }
+
+    if (skippedIds.length > 0) {
+      toast.warning(
+        `${skippedIds.length} appointment(s) skipped due to time conflicts.`
+      );
+    }
+
+    setSelectedIds([]);
+    fetchPending();
   };
 
   const rejectSelected = async () => {
@@ -65,18 +102,40 @@ const PendingAppointments = () => {
   };
 
   const confirmOne = async (id) => {
-    try {
-      const appt = pendingAppointments.find((a) => a.id === id);
-      await axios.put("http://localhost/api/appointments.php", {
-        ...appt,
-        status: "Confirmed",
-      });
-      toast.success("Appointment confirmed!");
-      fetchPending();
-    } catch (err) {
-      toast.error("Error confirming appointment");
+  try {
+    const appt = pendingAppointments.find((a) => a.id === id);
+    const res = await axios.get(
+      `http://localhost/api/get-booked-slots.php?date=${appt.date}`
+    );
+    const bookedSlots = res.data.bookedRanges || [];
+
+    const isConflict = bookedSlots.some((slot) => {
+      const slotStart = new Date(`1970-01-01T${slot.time}`);
+      const slotEnd = new Date(`1970-01-01T${slot.end_time}`);
+      const apptStart = new Date(`1970-01-01T${appt.time}`);
+      const apptEnd = new Date(`1970-01-01T${appt.end_time}`);
+      return (
+        (apptStart >= slotStart && apptStart < slotEnd) ||
+        (apptEnd > slotStart && apptEnd <= slotEnd) ||
+        (apptStart <= slotStart && apptEnd >= slotEnd)
+      );
+    });
+
+    if (isConflict) {
+      toast.error("This time slot has already been booked.");
+      return;
     }
-  };
+
+    await axios.put("http://localhost/api/appointments.php", {
+      ...appt,
+      status: "Confirmed",
+    });
+    toast.success("Appointment confirmed!");
+    fetchPending();
+  } catch (err) {
+    toast.error("Error confirming appointment");
+  }
+};
 
   const rejectOne = async (id) => {
     try {
@@ -131,9 +190,12 @@ const PendingAppointments = () => {
 
   return (
     <div className="container mt-3">
-      <button className="btn btn-primary mb-3" onClick={() => navigate(-1)}>
-        Back
-      </button>
+      <button
+      className="btn btn-outline-secondary d-inline-flex align-items-center gap-2 mb-3"
+      onClick={() => navigate(-1)}
+    >
+      <FaArrowLeft /> Back
+    </button>
       <h2 className="mb-3">Pending Appointments</h2>
 
       {selectedIds.length > 0 && (
@@ -179,7 +241,7 @@ const PendingAppointments = () => {
             </th>
             <th
               onClick={() => handleSort("date")}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer"}}
             >
               Date {getSortIcon("date")}
             </th>
