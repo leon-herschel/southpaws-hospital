@@ -37,8 +37,7 @@ import PendingAppointments from "./components/AppointmentModule/PendingAppointme
 import ClientAppointment from "./components/ClientModule/ClientAppointment";
 import ClientAppointmentForm from "./components/ClientModule/ClientInfo";
 import ReferenceTracking from "./components/ClientModule/ReferenceTracking";
-import ProfileSettings from "./components/Settings/ProfileSettings";
-import ClientBooking from "./components/ClientModule/ClientBooking";
+import GeneralSettings from "./components/Settings/GeneralSettings";
 
 function App() {
   // Manage the authentication state in App.js
@@ -65,7 +64,6 @@ function App() {
             path="/southpaws-booking/reference-tracking"
             element={<ReferenceTracking />}
           />
-          <Route path="/client-booking" element={<ClientBooking />} />
 
           {/* Authenticated routes */}
           {isAuthenticated ? (
@@ -121,7 +119,7 @@ function App() {
                           path="appointment/pending"
                           element={<PendingAppointments />}
                         />
-                        <Route path="settings" element={<ProfileSettings />} />
+                        <Route path="settings" element={<GeneralSettings />} />
                       </Routes>
                     </div>
                   </>
