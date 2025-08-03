@@ -6,6 +6,7 @@ import { AiOutlineDelete } from "react-icons/ai";
 
 const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
   const [services, setServices] = useState([]);
+  const [availableSlots, setAvailableSlots] = useState([]);
   const [formData, setFormData] = useState({
     id: "",
     name: "",
@@ -49,6 +50,21 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
     });
   }
 }, [eventData]);
+
+useEffect(() => {
+  if (formData.date) {
+    axios
+      .get(`http://localhost/api/get-booked-slots.php?date=${formData.date}`)
+      .then((res) => {
+        setAvailableSlots(res.data.bookedRanges || []);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch booked slots", err);
+        toast.error("Error loading booked slots.");
+        setAvailableSlots([]);
+      });
+  }
+}, [formData.date]);
 
   const handleChange = (e, index = null) => {
     const { name, value } = e.target;
@@ -111,6 +127,11 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
         return;
     }
 
+    if (isOverlapping(formData.time, formData.end_time)) {
+      toast.error("This time slot overlaps with another appointment.");
+      return;
+    }
+
     if (!/\S+@\S+\.\S+/.test(formData.email)) {
       toast.error("Please enter a valid email address.");
       return;
@@ -132,6 +153,17 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
     }
     };
 
+    const isOverlapping = (start, end) => {
+      const startTime = new Date(`1970-01-01T${start}`);
+      const endTime = new Date(`1970-01-01T${end}`);
+
+      return availableSlots.some((slot) => {
+        if (slot.id === formData.id) return false; // Ignore current appointment
+        const bookedStart = new Date(`1970-01-01T${slot.time}`);
+        const bookedEnd = new Date(`1970-01-01T${slot.end_time}`);
+        return startTime < bookedEnd && endTime > bookedStart;
+      });
+    };
 
   return (
     <Modal show={show} onHide={onClose} backdrop="static">
@@ -197,6 +229,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
                   value={formData.date}
                   onChange={handleChange}
                   required
+                  min={new Date().toISOString().split("T")[0]}
                 />
               </Form.Group>
 
