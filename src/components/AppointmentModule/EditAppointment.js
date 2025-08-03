@@ -158,12 +158,16 @@ useEffect(() => {
       const endTime = new Date(`1970-01-01T${end}`);
 
       return availableSlots.some((slot) => {
-        if (slot.id === formData.id) return false; // Ignore current appointment
+        if (String(slot.id) === String(formData.id)) return false;
+
         const bookedStart = new Date(`1970-01-01T${slot.time}`);
         const bookedEnd = new Date(`1970-01-01T${slot.end_time}`);
+
         return startTime < bookedEnd && endTime > bookedStart;
       });
     };
+
+    console.log("Checking overlaps against:", availableSlots, "Current ID:", formData.id);
 
   return (
     <Modal show={show} onHide={onClose} backdrop="static">
@@ -172,53 +176,6 @@ useEffect(() => {
       </Modal.Header>
       <Modal.Body>
         <Form>
-          {/* SERVICES */}
-          <Form.Group className="mb-3">
-            <Form.Label>Services:</Form.Label>
-            {formData.service.map((selected, idx) => {
-              const alreadySelected = formData.service.filter((_, i) => i !== idx);
-              return (
-                <div key={idx} className="d-flex align-items-center mb-2 gap-2">
-                  <select
-                    name="service"
-                    className="form-control dropdown-fix"
-                    value={selected}
-                    onChange={(e) => handleChange(e, idx)}
-                    required
-                    >
-                    <option value="">-- Select a service --</option>
-                    {services.map((s) => (
-                        <option
-                        key={s.id}
-                        value={s.name}
-                        disabled={alreadySelected.includes(s.name)}
-                        >
-                        {s.name}
-                        </option>
-                    ))}
-                    </select>
-
-                  {formData.service.length > 1 && (
-                    <button
-                      type="button"
-                      className="btn btn-outline-danger btn-sm"
-                      onClick={() => removeService(idx)}
-                    >
-                      <AiOutlineDelete />
-                    </button>
-                  )}
-                </div>
-              );
-            })}
-            <button
-              type="button"
-              className="btn btn-outline-primary btn-sm mb-2"
-              onClick={addAnotherService}
-            >
-              + Add Another Service
-            </button>
-          </Form.Group>
-
           <div className="row">
             <div className="col-md-6">
               <Form.Group className="mb-3">
@@ -360,6 +317,57 @@ useEffect(() => {
                 </div>
               </div>
             </div>
+
+            <hr className="mt-3" />
+
+              <div className="mb-3 px-3">
+                <label>Services:</label>
+                {formData.service.map((selected, idx) => {
+                  const alreadySelected = formData.service.filter(
+                    (_, i) => i !== idx
+                  );
+                  return (
+                    <div key={idx} className="d-flex align-items-center mb-2 gap-2">
+                      <select
+                        name="service"
+                        className="form-control"
+                        value={selected}
+                        onChange={(e) => handleChange(e, idx)}
+                        required
+                      >
+                        <option value="">-- Select a service --</option>
+                        {services.map((s) => (
+                          <option
+                            key={s.id}
+                            value={s.name}
+                            disabled={alreadySelected.includes(s.name)}
+                          >
+                            {s.name}
+                          </option>
+                        ))}
+                      </select>
+
+                      {formData.service.length > 1 && (
+                        <button
+                          type="button"
+                          className="btn btn-outline-danger btn-sm"
+                          onClick={() => removeService(idx)}
+                        >
+                          <AiOutlineDelete />
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+
+                <button
+                  type="button"
+                  className="btn btn-outline-primary btn-sm"
+                  onClick={addAnotherService}
+                >
+                  + Add Another Service
+                </button>
+              </div>
           </div>
         </Form>
       </Modal.Body>
