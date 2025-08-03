@@ -3,7 +3,7 @@ import axios from "axios";
 import { Button } from "react-bootstrap";
 import { AiOutlineDelete } from "react-icons/ai";
 import { toast } from "react-toastify";
-import ErrorPage from "../Settings/ErrorPage";
+import ErrorPage from "./ErrorPage";
 
 function AddAppointments() {
   const [formData, setFormData] = useState({
