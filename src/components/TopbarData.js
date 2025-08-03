@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 export const TopbarData = (username) => [
