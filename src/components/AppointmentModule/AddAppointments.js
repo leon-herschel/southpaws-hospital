@@ -228,7 +228,7 @@ const AddAppointments = ({ onClose }) => {
   return (
     <div>
       <form onSubmit={handleSubmit}>
-      <div className="row">
+        <div className="row">
           <div className="col-md-6">
             <div className="mb-3">
               <label htmlFor="date">Date:</label>
@@ -379,8 +379,15 @@ const AddAppointments = ({ onClose }) => {
                   const alreadySelected = formData.service.filter(
                     (_, i) => i !== idx
                   );
+                  const selectedService = services.find(
+                    (s) => s.name === selected
+                  );
+
                   return (
-                    <div key={idx} className="d-flex align-items-center mb-2 gap-2">
+                    <div
+                      key={idx}
+                      className="d-flex align-items-center mb-2 gap-2"
+                    >
                       <select
                         name="service"
                         className="form-control"
@@ -395,7 +402,7 @@ const AddAppointments = ({ onClose }) => {
                             value={s.name}
                             disabled={alreadySelected.includes(s.name)}
                           >
-                            {s.name}
+                            {s.name} - ₱{s.price}
                           </option>
                         ))}
                       </select>
@@ -420,6 +427,18 @@ const AddAppointments = ({ onClose }) => {
                 >
                   + Add Another Service
                 </button>
+
+                {formData.service.filter(Boolean).length > 0 && (
+                  <div className="mt-3">
+                    <strong>Total Price:</strong> ₱
+                    {formData.service.reduce((total, serviceName) => {
+                      const service = services.find(
+                        (s) => s.name === serviceName
+                      );
+                      return total + (service?.price || 0);
+                    }, 0)}
+                  </div>
+                )}
               </div>
             </div>
           </div>

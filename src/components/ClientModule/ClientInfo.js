@@ -3,7 +3,6 @@ import axios from "axios";
 import { Button } from "react-bootstrap";
 import { AiOutlineDelete } from "react-icons/ai";
 import { toast } from "react-toastify";
-import ErrorPage from "./ErrorPage";
 
 function AddAppointments() {
   const [formData, setFormData] = useState({
@@ -378,7 +377,10 @@ function AddAppointments() {
                     (_, i) => i !== idx
                   );
                   return (
-                    <div key={idx} className="d-flex align-items-center mb-2 gap-2">
+                    <div
+                      key={idx}
+                      className="d-flex align-items-center mb-2 gap-2"
+                    >
                       <select
                         name="service"
                         className="form-control"
