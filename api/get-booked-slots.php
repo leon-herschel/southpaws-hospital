@@ -14,7 +14,7 @@ if (!$date) {
     exit();
 }
 
-$stmt = $conn->prepare("SELECT time, end_time FROM appointments WHERE date = ? AND status != 'Pending'");
+$stmt = $conn->prepare("SELECT id, time, end_time FROM appointments WHERE date = ? AND status != 'Pending'");
 $stmt->execute([$date]);
 $booked = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

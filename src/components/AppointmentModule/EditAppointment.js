@@ -6,6 +6,7 @@ import { AiOutlineDelete } from "react-icons/ai";
 
 const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
   const [services, setServices] = useState([]);
+  const [availableSlots, setAvailableSlots] = useState([]);
   const [formData, setFormData] = useState({
     id: "",
     name: "",
@@ -49,6 +50,21 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
     });
   }
 }, [eventData]);
+
+useEffect(() => {
+  if (formData.date) {
+    axios
+      .get(`http://localhost/api/get-booked-slots.php?date=${formData.date}`)
+      .then((res) => {
+        setAvailableSlots(res.data.bookedRanges || []);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch booked slots", err);
+        toast.error("Error loading booked slots.");
+        setAvailableSlots([]);
+      });
+  }
+}, [formData.date]);
 
   const handleChange = (e, index = null) => {
     const { name, value } = e.target;
@@ -111,6 +127,11 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
         return;
     }
 
+    if (isOverlapping(formData.time, formData.end_time)) {
+      toast.error("This time slot overlaps with another appointment.");
+      return;
+    }
+
     if (!/\S+@\S+\.\S+/.test(formData.email)) {
       toast.error("Please enter a valid email address.");
       return;
@@ -132,6 +153,21 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
     }
     };
 
+    const isOverlapping = (start, end) => {
+      const startTime = new Date(`1970-01-01T${start}`);
+      const endTime = new Date(`1970-01-01T${end}`);
+
+      return availableSlots.some((slot) => {
+        if (String(slot.id) === String(formData.id)) return false;
+
+        const bookedStart = new Date(`1970-01-01T${slot.time}`);
+        const bookedEnd = new Date(`1970-01-01T${slot.end_time}`);
+
+        return startTime < bookedEnd && endTime > bookedStart;
+      });
+    };
+
+    console.log("Checking overlaps against:", availableSlots, "Current ID:", formData.id);
 
   return (
     <Modal show={show} onHide={onClose} backdrop="static">
@@ -140,53 +176,6 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
       </Modal.Header>
       <Modal.Body>
         <Form>
-          {/* SERVICES */}
-          <Form.Group className="mb-3">
-            <Form.Label>Services:</Form.Label>
-            {formData.service.map((selected, idx) => {
-              const alreadySelected = formData.service.filter((_, i) => i !== idx);
-              return (
-                <div key={idx} className="d-flex align-items-center mb-2 gap-2">
-                  <select
-                    name="service"
-                    className="form-control dropdown-fix"
-                    value={selected}
-                    onChange={(e) => handleChange(e, idx)}
-                    required
-                    >
-                    <option value="">-- Select a service --</option>
-                    {services.map((s) => (
-                        <option
-                        key={s.id}
-                        value={s.name}
-                        disabled={alreadySelected.includes(s.name)}
-                        >
-                        {s.name}
-                        </option>
-                    ))}
-                    </select>
-
-                  {formData.service.length > 1 && (
-                    <button
-                      type="button"
-                      className="btn btn-outline-danger btn-sm"
-                      onClick={() => removeService(idx)}
-                    >
-                      <AiOutlineDelete />
-                    </button>
-                  )}
-                </div>
-              );
-            })}
-            <button
-              type="button"
-              className="btn btn-outline-primary btn-sm mb-2"
-              onClick={addAnotherService}
-            >
-              + Add Another Service
-            </button>
-          </Form.Group>
-
           <div className="row">
             <div className="col-md-6">
               <Form.Group className="mb-3">
@@ -197,6 +186,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
                   value={formData.date}
                   onChange={handleChange}
                   required
+                  min={new Date().toISOString().split("T")[0]}
                 />
               </Form.Group>
 
@@ -327,6 +317,57 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
                 </div>
               </div>
             </div>
+
+            <hr className="mt-3" />
+
+              <div className="mb-3 px-3">
+                <label>Services:</label>
+                {formData.service.map((selected, idx) => {
+                  const alreadySelected = formData.service.filter(
+                    (_, i) => i !== idx
+                  );
+                  return (
+                    <div key={idx} className="d-flex align-items-center mb-2 gap-2">
+                      <select
+                        name="service"
+                        className="form-control"
+                        value={selected}
+                        onChange={(e) => handleChange(e, idx)}
+                        required
+                      >
+                        <option value="">-- Select a service --</option>
+                        {services.map((s) => (
+                          <option
+                            key={s.id}
+                            value={s.name}
+                            disabled={alreadySelected.includes(s.name)}
+                          >
+                            {s.name}
+                          </option>
+                        ))}
+                      </select>
+
+                      {formData.service.length > 1 && (
+                        <button
+                          type="button"
+                          className="btn btn-outline-danger btn-sm"
+                          onClick={() => removeService(idx)}
+                        >
+                          <AiOutlineDelete />
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+
+                <button
+                  type="button"
+                  className="btn btn-outline-primary btn-sm"
+                  onClick={addAnotherService}
+                >
+                  + Add Another Service
+                </button>
+              </div>
           </div>
         </Form>
       </Modal.Body>

@@ -45,7 +45,7 @@ function Settings() {
               placement="right"
               overlay={
                 <Tooltip>
-                  Toggle this to enable or disable on the client appointment website.
+                  Toggle this to enable or disable the client appointment website.
                 </Tooltip>
               }
             >
