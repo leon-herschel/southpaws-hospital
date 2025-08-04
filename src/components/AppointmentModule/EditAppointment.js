@@ -167,8 +167,6 @@ useEffect(() => {
       });
     };
 
-    console.log("Checking overlaps against:", availableSlots, "Current ID:", formData.id);
-
   return (
     <Modal show={show} onHide={onClose} backdrop="static">
       <Modal.Header closeButton>

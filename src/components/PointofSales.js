@@ -65,19 +65,70 @@ const PointofSales = () => {
         toast.success("Client added successfully!");
     };
 
+    const handleReferenceSelect = async (clientId) => {
+        try {
+            // Find the selected pet name from clientPets
+            const selectedPetName = clientPets.find(pet =>
+                selectedPets.includes(pet.pet_id)
+            )?.pet_name;
+
+            if (!selectedPetName) {
+                console.warn("No pet name matched, skipping appointment service fetch.");
+                return;
+            }
+
+            // Build the URL with optional pet_name
+            const baseUrl = `http://localhost/api/POS-Integration/getAppointmentServices.php?client_id=${clientId}`;
+            const url = selectedPetName
+                ? `${baseUrl}&pet_name=${encodeURIComponent(selectedPetName)}`
+                : baseUrl;
+
+            const res = await axios.get(url);
+
+            if (res.data.status === 1) {
+                const fetchedServices = res.data.services;
+
+                const newCartItems = fetchedServices.map(service => ({
+                    id: service.id || service.name,
+                    name: service.name,
+                    price: parseFloat(service.price),
+                    quantity: 1,
+                    isService: true,
+                    selectedPets: selectedPets, // Use selected pets if available
+                }));
+
+                setCartItems(prevCart => [...prevCart, ...newCartItems]);
+            } else {
+                console.warn("No arrived appointment found:", res.data.message || res.data);
+            }
+        } catch (err) {
+            console.error("Error fetching appointment services", err);
+        }
+    };
+
     const handleClientChange = (e) => {
         const selectedClientId = e.target.value;
         setSelectedClient(selectedClientId);
-        localStorage.setItem("selectedClient", selectedClientId); // ✅ Save selected client
-    
+        localStorage.setItem("selectedClient", selectedClientId);
+
         if (selectedClientId) {
-            fetchPets(selectedClientId); // Fetch pets for the selected client
+            fetchPets(selectedClientId);
         } else {
-            setClientPets([]); // Reset pet list when no client is selected
-            setSelectedPets([]); // Clear selected pets
-            localStorage.removeItem("selectedPets"); // Remove pets from storage
+            // Reset all when client is cleared
+            setClientPets([]);
+            setSelectedPets([]);
+            setCartItems([]); // 🧼 Clear cart
+            localStorage.removeItem("selectedPets");
         }
     };
+
+    useEffect(() => {
+    if (selectedClient && selectedPets.length > 0) {
+        handleReferenceSelect(selectedClient);
+    } else {
+        setCartItems([]); // Clear cart if no pets are selected
+    }
+    }, [selectedPets, selectedClient]);
     
     
     const fetchPets = (clientId) => {
@@ -99,19 +150,17 @@ const PointofSales = () => {
     };
     
     const handlePetSelection = (event, petId) => {
-        setSelectedPets((prevSelectedPets) => {
-            let updatedPets;
-            if (event.target.checked) {
-                updatedPets = [...prevSelectedPets, petId]; // Add pet to selection
-            } else {
-                updatedPets = prevSelectedPets.filter(id => id !== petId); // Remove pet
-            }
-    
-            localStorage.setItem("selectedPets", JSON.stringify(updatedPets)); // ✅ Save to localStorage
-            return updatedPets;
-        });
+        const isChecked = event.target.checked;
+
+        if (isChecked) {
+            setSelectedPets([petId]); // Only allow one pet
+            localStorage.setItem("selectedPets", JSON.stringify([petId]));
+        } else {
+            setSelectedPets([]);
+            localStorage.removeItem("selectedPets");
+            setCartItems([]); // Clear cart
+        }
     };
-    
     
     useEffect(() => {
         const savedClient = localStorage.getItem('selectedClient');
@@ -476,6 +525,24 @@ const PointofSales = () => {
     
             if (response.data.status === 1) {
                 const generatedReceiptNumber = response.data.receipt_number || "Unknown";
+
+                // UPDATE APPOINTMENT STATUS TO DONE
+                const selectedPetName = clientPets.find(pet =>
+                    selectedPets.includes(pet.pet_id)
+                )?.pet_name;
+
+                if (selectedPetName && clientId) {
+                    try {
+                        await axios.post('http://localhost/api/POS-Integration/updateAppointmentStatus.php', {
+                            client_id: clientId,
+                            pet_name: selectedPetName,
+                            status: 'Done'
+                        });
+                        console.log("Appointment status updated to Done.");
+                    } catch (err) {
+                        console.error("Failed to update appointment status", err);
+                    }
+                }
     
                 setReceiptData({
                     receiptNumber: generatedReceiptNumber,
@@ -509,8 +576,6 @@ const PointofSales = () => {
             setErrorMessage("An error occurred while placing the order. Please try again.");
         }
     };
-    
-    
 
     const handleConfirmNo = () => {
         setShowConfirmModal(false);
