@@ -1,12 +1,6 @@
 {
-    "name": "impas/api",
-    "require": {
-        "phpmailer/phpmailer": "^6.9"
-    },
-    "authors": [
-        {
-            "name": "Sleepyyyzzz",
-            "email": "impasalbert@gmail.com"
-        }
-    ]
+  "name": "southpaws/api",
+  "require": {
+    "phpmailer/phpmailer": "^6.10"
+  }
 }
