@@ -13,6 +13,9 @@ const PendingAppointments = () => {
   const [sortBy, setSortBy] = useState({ key: "", order: "" });
   const [searchTerm, setSearchTerm] = useState("");
 
+  const currentUserID = localStorage.getItem("userID");
+  const currentUserEmail = localStorage.getItem("userEmail");
+
   const fetchPending = async () => {
     try {
       const res = await axios.get("http://localhost/api/appointments.php");
@@ -70,6 +73,8 @@ const PendingAppointments = () => {
         await axios.put("http://localhost/api/appointments.php", {
           ...appt,
           status: "Confirmed",
+          user_id: currentUserID,
+          user_email: currentUserEmail,
         });
         confirmedIds.push(id);
       } catch (err) {
@@ -95,7 +100,12 @@ const PendingAppointments = () => {
     try {
       for (let id of selectedIds) {
         await axios.delete("http://localhost/api/appointments.php", {
-          data: { id },
+          data: {
+            id,
+            name: pendingAppointments.find((a) => a.id === id)?.name,
+            user_id: currentUserID,
+            user_email: currentUserEmail,
+          },
         });
       }
       toast.success("Selected appointments deleted!");
@@ -107,45 +117,52 @@ const PendingAppointments = () => {
   };
 
   const confirmOne = async (id) => {
-  try {
-    const appt = pendingAppointments.find((a) => a.id === id);
-    const res = await axios.get(
-      `http://localhost/api/get-booked-slots.php?date=${appt.date}`
-    );
-    const bookedSlots = res.data.bookedRanges || [];
-
-    const isConflict = bookedSlots.some((slot) => {
-      const slotStart = new Date(`1970-01-01T${slot.time}`);
-      const slotEnd = new Date(`1970-01-01T${slot.end_time}`);
-      const apptStart = new Date(`1970-01-01T${appt.time}`);
-      const apptEnd = new Date(`1970-01-01T${appt.end_time}`);
-      return (
-        (apptStart >= slotStart && apptStart < slotEnd) ||
-        (apptEnd > slotStart && apptEnd <= slotEnd) ||
-        (apptStart <= slotStart && apptEnd >= slotEnd)
+    try {
+      const appt = pendingAppointments.find((a) => a.id === id);
+      const res = await axios.get(
+        `http://localhost/api/get-booked-slots.php?date=${appt.date}`
       );
-    });
+      const bookedSlots = res.data.bookedRanges || [];
 
-    if (isConflict) {
-      toast.error("This time slot has already been booked.");
-      return;
+      const isConflict = bookedSlots.some((slot) => {
+        const slotStart = new Date(`1970-01-01T${slot.time}`);
+        const slotEnd = new Date(`1970-01-01T${slot.end_time}`);
+        const apptStart = new Date(`1970-01-01T${appt.time}`);
+        const apptEnd = new Date(`1970-01-01T${appt.end_time}`);
+        return (
+          (apptStart >= slotStart && apptStart < slotEnd) ||
+          (apptEnd > slotStart && apptEnd <= slotEnd) ||
+          (apptStart <= slotStart && apptEnd >= slotEnd)
+        );
+      });
+
+      if (isConflict) {
+        toast.error("This time slot has already been booked.");
+        return;
+      }
+
+      await axios.put("http://localhost/api/appointments.php", {
+        ...appt,
+        status: "Confirmed",
+        user_id: currentUserID,
+        user_email: currentUserEmail,
+      });
+      toast.success("Appointment confirmed!");
+      fetchPending();
+    } catch (err) {
+      toast.error("Error confirming appointment");
     }
-
-    await axios.put("http://localhost/api/appointments.php", {
-      ...appt,
-      status: "Confirmed",
-    });
-    toast.success("Appointment confirmed!");
-    fetchPending();
-  } catch (err) {
-    toast.error("Error confirming appointment");
-  }
-};
+  };
 
   const rejectOne = async (id) => {
     try {
       await axios.delete("http://localhost/api/appointments.php", {
-        data: { id },
+        data: {
+          id,
+          name: pendingAppointments.find((a) => a.id === id)?.name,
+          user_id: currentUserID,
+          user_email: currentUserEmail,
+        },
       });
       toast.success("Appointment rejected!");
       fetchPending();
@@ -180,15 +197,15 @@ const PendingAppointments = () => {
   };
 
   const filteredAppointments = pendingAppointments.filter((a) =>
-    Object.values(a)
-      .join(" ")
-      .toLowerCase()
-      .includes(searchTerm)
+    Object.values(a).join(" ").toLowerCase().includes(searchTerm)
   );
 
   const indexOfLast = currentPage * appointmentsPerPage;
   const indexOfFirst = indexOfLast - appointmentsPerPage;
-  const currentAppointments = filteredAppointments.slice(indexOfFirst, indexOfLast);
+  const currentAppointments = filteredAppointments.slice(
+    indexOfFirst,
+    indexOfLast
+  );
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -200,11 +217,11 @@ const PendingAppointments = () => {
   return (
     <div className="container mt-3">
       <button
-      className="btn btn-outline-secondary d-inline-flex align-items-center gap-2 mb-3"
-      onClick={() => navigate(-1)}
-    >
-      <FaArrowLeft /> Back
-    </button>
+        className="btn btn-outline-secondary d-inline-flex align-items-center gap-2 mb-3"
+        onClick={() => navigate(-1)}
+      >
+        <FaArrowLeft /> Back
+      </button>
       <h2 className="mb-3">Pending Appointments</h2>
 
       <div className="d-flex justify-content-between align-items-center">
@@ -254,7 +271,7 @@ const PendingAppointments = () => {
             </th>
             <th
               onClick={() => handleSort("date")}
-              style={{ cursor: "pointer"}}
+              style={{ cursor: "pointer" }}
             >
               Date {getSortIcon("date")}
             </th>
@@ -289,7 +306,7 @@ const PendingAppointments = () => {
             >
               Breed {getSortIcon("pet_breed")}
             </th>
-                        <th
+            <th
               onClick={() => handleSort("service")}
               style={{ cursor: "pointer" }}
             >
@@ -366,7 +383,9 @@ const PendingAppointments = () => {
         <ul className="pagination mb-0">
           {Array.from(
             {
-              length: Math.ceil(filteredAppointments.length / appointmentsPerPage),
+              length: Math.ceil(
+                filteredAppointments.length / appointmentsPerPage
+              ),
             },
             (_, index) => (
               <li

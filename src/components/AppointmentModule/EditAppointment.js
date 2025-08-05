@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Modal, Form } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -7,6 +7,24 @@ import { AiOutlineDelete } from "react-icons/ai";
 const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
   const [services, setServices] = useState([]);
   const [availableSlots, setAvailableSlots] = useState([]);
+  const currentUserID = localStorage.getItem("userID");
+  const currentUserEmail = localStorage.getItem("userEmail");
+
+  const [showServiceDropdown, setShowServiceDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowServiceDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const [formData, setFormData] = useState({
     id: "",
     name: "",
@@ -19,8 +37,8 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
     status: "",
     pet_name: "",
     pet_species: "",
-    pet_breed: ""
-});
+    pet_breed: "",
+  });
 
   useEffect(() => {
     axios
@@ -33,38 +51,40 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
   }, []);
 
   useEffect(() => {
-  if (eventData && eventData.id) {
-    setFormData({
-      id: eventData.id,
-      name: eventData.name,
-      contact: eventData.contact,
-      email: eventData.email || "",
-      service: eventData.service ? eventData.service.split(", ").map((s) => s.trim()) : [""],
-      date: eventData.start.toISOString().split("T")[0],
-      time: eventData.start.toTimeString().substring(0, 5),
-      end_time: eventData.end.toTimeString().substring(0, 5),
-      status: eventData.status,
-      pet_name: eventData.pet_name || "",
-      pet_species: eventData.pet_species || "",
-      pet_breed: eventData.pet_breed || ""
-    });
-  }
-}, [eventData]);
-
-useEffect(() => {
-  if (formData.date) {
-    axios
-      .get(`http://localhost/api/get-booked-slots.php?date=${formData.date}`)
-      .then((res) => {
-        setAvailableSlots(res.data.bookedRanges || []);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch booked slots", err);
-        toast.error("Error loading booked slots.");
-        setAvailableSlots([]);
+    if (eventData && eventData.id) {
+      setFormData({
+        id: eventData.id,
+        name: eventData.name,
+        contact: eventData.contact,
+        email: eventData.email || "",
+        service: eventData.service
+          ? eventData.service.split(", ").map((s) => s.trim())
+          : [""],
+        date: eventData.start.toISOString().split("T")[0],
+        time: eventData.start.toTimeString().substring(0, 5),
+        end_time: eventData.end.toTimeString().substring(0, 5),
+        status: eventData.status,
+        pet_name: eventData.pet_name || "",
+        pet_species: eventData.pet_species || "",
+        pet_breed: eventData.pet_breed || "",
       });
-  }
-}, [formData.date]);
+    }
+  }, [eventData]);
+
+  useEffect(() => {
+    if (formData.date) {
+      axios
+        .get(`http://localhost/api/get-booked-slots.php?date=${formData.date}`)
+        .then((res) => {
+          setAvailableSlots(res.data.bookedRanges || []);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch booked slots", err);
+          toast.error("Error loading booked slots.");
+          setAvailableSlots([]);
+        });
+    }
+  }, [formData.date]);
 
   const handleChange = (e, index = null) => {
     const { name, value } = e.target;
@@ -78,32 +98,19 @@ useEffect(() => {
     }
   };
 
-  const addAnotherService = () => {
-    setFormData((prev) => ({
-      ...prev,
-      service: [...prev.service, ""],
-    }));
-  };
-
-  const removeService = (index) => {
-    const updated = [...formData.service];
-    updated.splice(index, 1);
-    setFormData((prev) => ({ ...prev, service: updated }));
-  };
-
   const handleUpdate = async () => {
     const { name, contact, time, end_time } = formData;
 
     // Contact validation
     if (!/^\d{11}$/.test(contact)) {
-        toast.error("Contact number must be exactly 11 digits.");
-        return;
+      toast.error("Contact number must be exactly 11 digits.");
+      return;
     }
 
     // Name validation
     if (!/^[A-Za-z\s]+$/.test(name)) {
-        toast.error("Name should only contain letters and spaces.");
-        return;
+      toast.error("Name should only contain letters and spaces.");
+      return;
     }
 
     // Time range validation
@@ -113,18 +120,18 @@ useEffect(() => {
     const latestAllowedEnd = new Date(`1970-01-01T17:00`);
 
     if (start < latestAllowedStart) {
-        toast.error("Start time must not be earlier than 8AM");
-        return;
+      toast.error("Start time must not be earlier than 8AM");
+      return;
     }
 
     if (end <= start) {
-        toast.error("End time must be later than the start time");
-        return;
+      toast.error("End time must be later than the start time");
+      return;
     }
 
     if (end > latestAllowedEnd) {
-        toast.error("End time must not be later than 5PM");
-        return;
+      toast.error("End time must not be later than 5PM");
+      return;
     }
 
     if (isOverlapping(formData.time, formData.end_time)) {
@@ -138,34 +145,36 @@ useEffect(() => {
     }
 
     const updatedData = {
-        ...formData,
-        service: formData.service.filter((s) => s !== "").join(", "),
+      ...formData,
+      service: formData.service.filter((s) => s !== "").join(", "),
+      user_id: currentUserID,
+      user_email: currentUserEmail,
     };
 
     try {
-        await axios.put("http://localhost/api/appointments.php", updatedData);
-        toast.success("Appointment updated successfully!");
-        onUpdated();
-        onClose();
+      await axios.put("http://localhost/api/appointments.php", updatedData);
+      toast.success("Appointment updated successfully!");
+      onUpdated();
+      onClose();
     } catch (err) {
-        console.error("Update failed", err);
-        toast.error("Failed to update appointment.");
+      console.error("Update failed", err);
+      toast.error("Failed to update appointment.");
     }
-    };
+  };
 
-    const isOverlapping = (start, end) => {
-      const startTime = new Date(`1970-01-01T${start}`);
-      const endTime = new Date(`1970-01-01T${end}`);
+  const isOverlapping = (start, end) => {
+    const startTime = new Date(`1970-01-01T${start}`);
+    const endTime = new Date(`1970-01-01T${end}`);
 
-      return availableSlots.some((slot) => {
-        if (String(slot.id) === String(formData.id)) return false;
+    return availableSlots.some((slot) => {
+      if (String(slot.id) === String(formData.id)) return false;
 
-        const bookedStart = new Date(`1970-01-01T${slot.time}`);
-        const bookedEnd = new Date(`1970-01-01T${slot.end_time}`);
+      const bookedStart = new Date(`1970-01-01T${slot.time}`);
+      const bookedEnd = new Date(`1970-01-01T${slot.end_time}`);
 
-        return startTime < bookedEnd && endTime > bookedStart;
-      });
-    };
+      return startTime < bookedEnd && endTime > bookedStart;
+    });
+  };
 
   return (
     <Modal show={show} onHide={onClose} backdrop="static">
@@ -213,18 +222,18 @@ useEffect(() => {
               <Form.Group className="mb-3">
                 <Form.Label>Status:</Form.Label>
                 <select
-                    name="status"
-                    className="form-control"
-                    value={formData.status}
-                    onChange={handleChange}
-                    required
+                  name="status"
+                  className="form-control"
+                  value={formData.status}
+                  onChange={handleChange}
+                  required
                 >
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Cancelled">Cancelled</option>
-                    <option value="Done">Done</option>
+                  <option value="Confirmed">Confirmed</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Cancelled">Cancelled</option>
+                  <option value="Done">Done</option>
                 </select>
-            </Form.Group>
+              </Form.Group>
             </div>
 
             <div className="col-md-6">
@@ -242,16 +251,16 @@ useEffect(() => {
               <Form.Group className="mb-3">
                 <Form.Label>Contact Number:</Form.Label>
                 <Form.Control
-                    type="text"
-                    name="contact"
-                    value={formData.contact}
-                    onChange={(e) => {
-                        // Prevent non-digits from being typed
-                        const value = e.target.value.replace(/\D/g, "");
-                        setFormData((prev) => ({ ...prev, contact: value }));
-                    }}
-                    required
-                    />
+                  type="text"
+                  name="contact"
+                  value={formData.contact}
+                  onChange={(e) => {
+                    // Prevent non-digits from being typed
+                    const value = e.target.value.replace(/\D/g, "");
+                    setFormData((prev) => ({ ...prev, contact: value }));
+                  }}
+                  required
+                />
               </Form.Group>
 
               <Form.Group className="mb-3">
@@ -318,54 +327,134 @@ useEffect(() => {
 
             <hr className="mt-3" />
 
-              <div className="mb-3 px-3">
-                <label>Services:</label>
-                {formData.service.map((selected, idx) => {
-                  const alreadySelected = formData.service.filter(
-                    (_, i) => i !== idx
-                  );
-                  return (
-                    <div key={idx} className="d-flex align-items-center mb-2 gap-2">
-                      <select
-                        name="service"
-                        className="form-control"
-                        value={selected}
-                        onChange={(e) => handleChange(e, idx)}
-                        required
-                      >
-                        <option value="">-- Select a service --</option>
-                        {services.map((s) => (
-                          <option
-                            key={s.id}
-                            value={s.name}
-                            disabled={alreadySelected.includes(s.name)}
-                          >
-                            {s.name}
-                          </option>
-                        ))}
-                      </select>
-
-                      {formData.service.length > 1 && (
-                        <button
-                          type="button"
-                          className="btn btn-outline-danger btn-sm"
-                          onClick={() => removeService(idx)}
-                        >
-                          <AiOutlineDelete />
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
-
-                <button
-                  type="button"
-                  className="btn btn-outline-primary btn-sm"
-                  onClick={addAnotherService}
+            <div
+              className="form-floating mb-3 position-relative"
+              ref={dropdownRef}
+            >
+              {/* INPUT that opens the dropdown */}
+              <input
+                type="text"
+                className="form-control"
+                id="floatingServices"
+                onClick={() => setShowServiceDropdown(!showServiceDropdown)}
+                readOnly
+                placeholder="Select Services"
+                value=""
+              />
+              <label htmlFor="floatingServices">Select Services</label>
+              {/* DROPDOWN */}
+              {showServiceDropdown && (
+                <div
+                  className="border rounded p-2 position-absolute bg-white shadow"
+                  style={{
+                    zIndex: 10,
+                    top: "100%",
+                    left: 0,
+                    right: 0,
+                    maxHeight: "200px",
+                    overflowY: "auto",
+                  }}
                 >
-                  + Add Another Service
-                </button>
-              </div>
+                  {services.map((service) => (
+                    <div className="form-check" key={service.id}>
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id={`service-${service.id}`}
+                        value={service.name}
+                        checked={formData.service.includes(service.name)}
+                        onChange={(e) => {
+                          const isChecked = e.target.checked;
+                          const updated = isChecked
+                            ? [...formData.service, service.name]
+                            : formData.service.filter(
+                                (s) => s !== service.name
+                              );
+
+                          setFormData((prev) => ({
+                            ...prev,
+                            service: updated,
+                          }));
+                        }}
+                      />
+                      <label
+                        className="form-check-label"
+                        htmlFor={`service-${service.id}`}
+                      >
+                        {service.name} - ₱{service.price}
+                      </label>
+                    </div>
+                  ))}
+
+                  <div className="text-end mt-2">
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-secondary"
+                      onClick={() => setShowServiceDropdown(false)}
+                    >
+                      Done
+                    </button>
+                  </div>
+                </div>
+              )}
+              {/* BADGES for selected services */}
+              {formData.service.length > 0 && (
+                <div className="mt-2 d-flex flex-wrap gap-2">
+                  {formData.service
+                    .filter((serviceName) => {
+                      return (
+                        serviceName &&
+                        services.some((s) => s.name === serviceName)
+                      );
+                    })
+                    .map((serviceName) => {
+                      const service = services.find(
+                        (s) => s.name === serviceName
+                      );
+
+                      return (
+                        <span
+                          key={serviceName}
+                          className="badge bg-dark d-flex align-items-center"
+                          style={{ gap: "6px" }}
+                        >
+                          {service.name} -₱{service.price}
+                          <button
+                            type="button"
+                            className="btn-close btn-close-white btn-sm"
+                            aria-label="Remove"
+                            style={{
+                              fontSize: "0.7rem",
+                              padding: 0,
+                              marginLeft: "4px",
+                            }}
+                            onClick={() => {
+                              setFormData((prev) => ({
+                                ...prev,
+                                service: prev.service.filter(
+                                  (s) => s !== serviceName
+                                ),
+                              }));
+                            }}
+                          ></button>
+                        </span>
+                      );
+                    })}
+                </div>
+              )}
+              {/* TOTAL PRICE */}
+              {formData.service.length > 0 && (
+                <div className="mt-2">
+                  <strong>Total Price:</strong> ₱
+                  {formData.service.reduce((total, serviceName) => {
+                    const service = services.find(
+                      (s) => s.name === serviceName
+                    );
+                    return total + (service?.price || 0);
+                  }, 0)}
+                </div>
+              )}
+            </div>
           </div>
         </Form>
       </Modal.Body>

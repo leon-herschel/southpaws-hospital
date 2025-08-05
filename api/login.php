@@ -22,19 +22,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $adminEmail = 'citeadmin-Pw';
         $adminPassword = 'citeadmin';
 
+
         // Check if email and password match the hardcoded admin credentials
         if ($email === $adminEmail && $password === $adminPassword) {
             // Return the 'Super Admin' information for the hardcoded admin
             $_SESSION['user_id'] = 1;
             $_SESSION['first_name'] = 'Super Admin';  // Include first name for hardcoded admin
             $_SESSION['user_role'] = 4; // Set role to 4 for Super Admin
+             $_SESSION['email'] = $adminEmail;
 
             $response = [
                 'status' => 1,
                 'message' => 'Admin login successful.',
                 'id' => 1,
                 'first_name' => 'Super Admin',  // Ensure the first name is included
-                'user_role' => 4 // Role is 4 for Super Admin
+                'user_role' => 4, // Role is 4 for Super Admin
+                 'email' => $adminEmail
             ];
         } else {
             // Check database for other users
@@ -54,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['first_name'] = $userData['first_name'];
                     $_SESSION['last_name'] = $userData['last_name'];
                     $_SESSION['user_role'] = $userData['user_role'];
+                    $_SESSION['email'] = $email;
 
                     $response = [
                         'status' => 1,
@@ -61,7 +65,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'id' => $userData['id'],
                         'first_name' => $userData['first_name'],
                         'last_name' => $userData['last_name'],
-                        'user_role' => $userData['user_role']
+                        'user_role' => $userData['user_role'],
+                        'email' => $email
                     ];
                 } else {
                     $response = ['status' => 0, 'message' => 'Invalid email or password.'];
