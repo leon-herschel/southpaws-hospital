@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Button } from "react-bootstrap";
-import { AiOutlineDelete } from "react-icons/ai";
 import { toast } from "react-toastify";
 
 const AddAppointments = ({ onClose }) => {
@@ -28,6 +27,7 @@ const AddAppointments = ({ onClose }) => {
   const [showServiceDropdown, setShowServiceDropdown] = useState(false);
   const currentUserID = localStorage.getItem("userID");
   const currentUserEmail = localStorage.getItem("userEmail");
+  const servicesInputRef = useRef(null);
 
   const dropdownRef = useRef(null);
 
@@ -238,116 +238,72 @@ const AddAppointments = ({ onClose }) => {
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <div className="row">
-          <div className="col-md-6">
-            <div className="mb-3">
-              <label htmlFor="date">Appointment Date:</label>
-              <input
-                type="date"
-                id="date"
-                name="date"
-                className="form-control"
-                value={formData.date}
-                onChange={handleChange}
-                autoComplete="off"
-                required
-                min={new Date().toISOString().split("T")[0]}
-              />
-            </div>
+        <h5>Client Details</h5>
+          <div className="card mb-2 mt-2">
+            <div className="card-body">
+              <div className="row">
+                <div className="col-md-6">
+                  <div className="mb-3">
+                    <label htmlFor="firstName">First Name:</label>
+                    <input
+                      type="text"
+                      id="firstName"
+                      name="firstName"
+                      className="form-control"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      autoComplete="on"
+                      required
+                    />
+                  </div>
 
-            <div className="mb-3">
-              <label htmlFor="time">From:</label>
-              <input
-                type="time"
-                id="time"
-                name="time"
-                className="form-control"
-                value={formData.time}
-                onChange={handleChange}
-                required
-                disabled={!formData.date}
-              />
-            </div>
+                  <div className="mb-3">
+                    <label htmlFor="lastName">Last Name:</label>
+                    <input
+                      type="text"
+                      id="lastName"
+                      name="lastName"
+                      className="form-control"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      autoComplete="family-name"
+                      required
+                    />
+                  </div>
+                </div>
 
-            <div className="mb-3">
-              <label htmlFor="end_time">To:</label>
-              <input
-                type="time"
-                id="end_time"
-                name="end_time"
-                className="form-control"
-                value={formData.end_time}
-                onChange={handleChange}
-                autoComplete="off"
-                required
-                disabled={!formData.date}
-              />
-            </div>
-          </div>
+                <div className="col-md-6">
+                  <div className="mb-3">
+                    <label htmlFor="contact">Contact Number:</label>
+                    <input
+                      type="number"
+                      id="contact"
+                      name="contact"
+                      className="form-control"
+                      value={formData.contact}
+                      onChange={handleChange}
+                      autoComplete="off"
+                      required
+                    />
+                  </div>
 
-          <div className="col-md-6">
-            <div className="mb-3">
-              <label htmlFor="firstName">First Name:</label>
-              <input
-                type="text"
-                id="firstName"
-                name="firstName"
-                className="form-control"
-                value={formData.firstName}
-                onChange={handleChange}
-                autoComplete="on"
-                required
-              />
-            </div>
-
-            <div className="mb-3">
-              <label htmlFor="lastName">Last Name:</label>
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                className="form-control"
-                value={formData.lastName}
-                onChange={handleChange}
-                autoComplete="family-name"
-                required
-              />
-            </div>
-
-            <div className="mb-3">
-              <label htmlFor="contact">Contact Number:</label>
-              <input
-                type="number"
-                id="contact"
-                name="contact"
-                className="form-control"
-                value={formData.contact}
-                onChange={handleChange}
-                autoComplete="off"
-                required
-                style={{
-                  MozAppearance: "textfield",
-                  WebkitAppearance: "none",
-                  margin: 0,
-                }}
-              />
-            </div>
-
-            <div className="mb-3">
-              <label htmlFor="email">Email (optional):</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                className="form-control"
-                value={formData.email}
-                onChange={handleChange}
-                autoComplete="off"
-              />
+                  <div className="mb-3">
+                    <label htmlFor="email">Email (optional):</label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      className="form-control"
+                      value={formData.email}
+                      onChange={handleChange}
+                      autoComplete="off"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-
+          
         <h5 className="mt-3">Patient Details</h5>
         <div className="card mb-2 mt-2">
           <div className="card-body">
@@ -391,14 +347,22 @@ const AddAppointments = ({ onClose }) => {
                     value={formData.pet_species}
                     onChange={handleChange}
                     required
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault(); 
+                        servicesInputRef.current?.focus(); 
+                        setShowServiceDropdown(true); 
+                      }
+                    }}
                   />
                 </div>
               </div>
 
               <hr className="mt-3" />
 
+              <label htmlFor="floatingServices">Services:</label>
               <div
-                className="form-floating mb-3 position-relative"
+                className="mb-3 position-relative"
                 ref={dropdownRef}
               >
                 {/* INPUT that opens the dropdown */}
@@ -406,12 +370,12 @@ const AddAppointments = ({ onClose }) => {
                   type="text"
                   className="form-control"
                   id="floatingServices"
+                  ref={servicesInputRef}
                   onClick={() => setShowServiceDropdown(!showServiceDropdown)}
                   readOnly
-                  placeholder="Select Services"
+                  placeholder="Click to select services"
                   value=""
                 />
-                <label htmlFor="floatingServices">Select Services</label>
                 {/* DROPDOWN */}
                 {showServiceDropdown && (
                   <div
@@ -485,8 +449,15 @@ const AddAppointments = ({ onClose }) => {
                         return (
                           <span
                             key={serviceName}
-                            className="badge bg-dark d-flex align-items-center"
-                            style={{ gap: "6px" }}
+                            className="badge d-flex align-items-center"
+                            style={{
+                              gap: "6px",
+                              backgroundColor: "#2a7447ff", 
+                              fontSize: "0.9rem",
+                              padding: "8px 12px",
+                              borderRadius: "12px", 
+                              color: "#fff", 
+                            }}
                           >
                             {service.name} -₱{service.price}
                             <button
@@ -524,6 +495,61 @@ const AddAppointments = ({ onClose }) => {
                     }, 0)}
                   </div>
                 )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h5 className="mt-3">Appointment Details</h5>
+        <div className="card mb-2 mt-2">
+          <div className="card-body">
+            <div className="row">
+              <div className="col-12">
+                <div className="mb-3">
+                  <label htmlFor="date">Date:</label>
+                  <input
+                    type="date"
+                    id="date"
+                    name="date"
+                    className="form-control"
+                    value={formData.date}
+                    onChange={handleChange}
+                    autoComplete="off"
+                    required
+                    min={new Date().toISOString().split("T")[0]}
+                  />
+                </div>
+
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="time">From:</label>
+                    <input
+                      type="time"
+                      id="time"
+                      name="time"
+                      className="form-control"
+                      value={formData.time}
+                      onChange={handleChange}
+                      required
+                      disabled={!formData.date}
+                    />
+                  </div>
+
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="end_time">To:</label>
+                    <input
+                      type="time"
+                      id="end_time"
+                      name="end_time"
+                      className="form-control"
+                      value={formData.end_time}
+                      onChange={handleChange}
+                      autoComplete="off"
+                      required
+                      disabled={!formData.date}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
