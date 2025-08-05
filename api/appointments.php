@@ -7,6 +7,21 @@ include 'DbConnect.php';
 $objDB = new DbConnect;
 $conn = $objDB->connect();
 
+function logAudit($conn, $userId, $action, $table, $targetId, $desc = '', $email = '') {
+    $stmt = $conn->prepare("
+        INSERT INTO audit_logs (user_id, action, target_table, target_id, description, email)
+        VALUES (:user_id, :action, :target_table, :target_id, :description, :email)
+    ");
+    $stmt->execute([
+        ':user_id' => $userId,
+        ':action' => $action,
+        ':target_table' => $table,
+        ':target_id' => $targetId,
+        ':description' => $desc,
+        'email' => $email,
+    ]);
+}
+
 $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
@@ -33,10 +48,10 @@ switch ($method) {
     case 'DELETE':
         $data = json_decode(file_get_contents('php://input'), true);
 
-        if (!isset($data['id'])) {
+        if (!isset($data['id']) || !isset($data['user_id'])) {
             echo json_encode([
                 'success' => false,
-                'message' => 'Missing appointment ID.'
+                'message' => 'Missing appointment ID or user ID.'
             ]);
             exit;
         }
@@ -47,6 +62,15 @@ switch ($method) {
             $stmt->bindParam(':id', $data['id']);
 
             if ($stmt->execute()) {
+                logAudit(
+    $conn,
+    $data['user_id'],
+    'reject',
+    'appointments',
+    $data['id'],
+     $data['name'],
+    $data['user_email']
+);
                 echo json_encode([
                     'success' => true,
                     'message' => 'Appointment deleted successfully.'
@@ -80,7 +104,8 @@ switch ($method) {
             !isset($data['pet_name']) ||
             !isset($data['pet_species']) ||
             !isset($data['pet_breed']) ||
-            !isset($data['status'])
+            !isset($data['status']) ||
+            !isset($data['user_id']) 
         ) {
             echo json_encode([
                 'success' => false,
@@ -90,53 +115,83 @@ switch ($method) {
         }
 
         try {
-            $sql = "UPDATE appointments 
-                    SET name = :name, 
-                        contact = :contact, 
-                        email = :email, 
-                        service = :service, 
-                        date = :date, 
-                        time = :time, 
-                        end_time = :end_time,
-                        pet_name = :pet_name,
-                        pet_species = :pet_species,
-                        pet_breed = :pet_breed,
-                        status = :status 
-                    WHERE id = :id";
+    // Get old status for comparison
+    $statusStmt = $conn->prepare("SELECT status FROM appointments WHERE id = :id");
+    $statusStmt->bindParam(':id', $data['id']);
+    $statusStmt->execute();
+    $oldStatusRow = $statusStmt->fetch(PDO::FETCH_ASSOC);
+    $oldStatus = $oldStatusRow['status'] ?? null;
 
-            $stmt = $conn->prepare($sql);
-            $stmt->bindParam(':name', $data['name']);
-            $stmt->bindParam(':contact', $data['contact']);
-            $stmt->bindParam(':email', $data['email']);
-            $stmt->bindParam(':service', $data['service']);
-            $stmt->bindParam(':date', $data['date']);
-            $stmt->bindParam(':time', $data['time']);
-            $stmt->bindParam(':end_time', $data['end_time']);
-            $stmt->bindParam(':status', $data['status']);
-            $stmt->bindParam(':id', $data['id']);
-            $stmt->bindParam(':pet_name', $data['pet_name']);
-            $stmt->bindParam(':pet_species', $data['pet_species']);
-            $stmt->bindParam(':pet_breed', $data['pet_breed']);
+    // Update appointment
+    $sql = "UPDATE appointments 
+            SET name = :name, 
+                contact = :contact, 
+                email = :email, 
+                service = :service, 
+                date = :date, 
+                time = :time, 
+                end_time = :end_time,
+                pet_name = :pet_name,
+                pet_species = :pet_species,
+                pet_breed = :pet_breed,
+                status = :status 
+            WHERE id = :id";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':name', $data['name']);
+    $stmt->bindParam(':contact', $data['contact']);
+    $stmt->bindParam(':email', $data['email']);
+    $stmt->bindParam(':service', $data['service']);
+    $stmt->bindParam(':date', $data['date']);
+    $stmt->bindParam(':time', $data['time']);
+    $stmt->bindParam(':end_time', $data['end_time']);
+    $stmt->bindParam(':status', $data['status']);
+    $stmt->bindParam(':id', $data['id']);
+    $stmt->bindParam(':pet_name', $data['pet_name']);
+    $stmt->bindParam(':pet_species', $data['pet_species']);
+    $stmt->bindParam(':pet_breed', $data['pet_breed']);
 
-            if ($stmt->execute()) {
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Appointment updated successfully.'
-                ]);
-            } else {
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Failed to update appointment.'
-                ]);
-            }
-        } catch (Exception $e) {
+    if ($stmt->execute()) {
+        // Determine if status changed
+        if ($oldStatus !== $data['status'] && $data['status'] === 'Confirmed') {
+            logAudit(
+                $conn,
+                $data['user_id'],
+                'confirm',
+                'appointments',
+                $data['id'],
+                $data['name'],
+                $data['user_email']
+            );
+        } else {
+            logAudit(
+                $conn,
+                $data['user_id'],
+                'update',
+                'appointments',
+                $data['id'],
+                $data['name'],
+                $data['user_email']
+            );
+        }
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Appointment updated successfully.'
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Failed to update appointment.'
+        ]);
+    }
+}
+ catch (Exception $e) {
             echo json_encode([
                 'success' => false,
                 'message' => 'Server error: ' . $e->getMessage()
             ]);
         }
-    break;
-
+        break;
 
     case 'OPTIONS':
         http_response_code(200);

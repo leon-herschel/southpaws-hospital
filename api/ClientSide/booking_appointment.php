@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-include 'DbConnect.php';
+include '../DbConnect.php';
 $objDB = new DbConnect;
 
 try {
@@ -20,26 +20,10 @@ try {
     exit();
 }
 
-// Define the logAudit function
-function logAudit($conn, $userId, $action, $targetTable, $targetId, $recordName, $email) {
-    $stmt = $conn->prepare("
-        INSERT INTO audit_logs (user_id, action, target_table, target_id, description, email, timestamp)
-        VALUES (?, ?, ?, ?, ?, ?, NOW())
-    ");
-    $stmt->execute([
-        $userId,
-        $action,
-        $targetTable,
-        $targetId,
-        $recordName,
-        $email
-    ]);
-}
-
 // Get POST data
 $data = json_decode(file_get_contents("php://input"), true);
 
-// Extract appointment fields
+// Extract and sanitize data
 $service = $data["service"] ?? '';
 $date = $data["date"] ?? '';
 $time = $data["time"] ?? '';
@@ -53,20 +37,12 @@ $pet_name = $data["pet_name"] ?? '';
 $pet_breed = $data["pet_breed"] ?? '';
 $pet_species = $data["pet_species"] ?? '';
 
-// For audit logging
-$user_id = $data["user_id"] ?? null;
-$user_email = isset($data["user_email"]) ? filter_var($data["user_email"], FILTER_SANITIZE_EMAIL) : null;
-
-if (
-    !$service || !$date || !$time || !$name || !$contact || !$end_time || !$email ||
-    !$pet_name || !$pet_breed || !$pet_species || !$user_id || !$user_email
-) {
+if (!$service || !$date || !$time || !$name || !$contact || !$end_time || !$email || !$pet_name || !$pet_breed || !$pet_species) {
     http_response_code(400);
     echo json_encode(["error" => "Missing required fields"]);
     exit();
 }
 
-// Time validation
 $endDateTime = strtotime("1970-01-01 $end_time");
 $latestEnd = strtotime("1970-01-01 17:00");
 
@@ -76,13 +52,12 @@ if ($endDateTime > $latestEnd) {
     exit();
 }
 
-// Conflict check
 $checkStmt = $conn->prepare("SELECT COUNT(*) FROM appointments WHERE date = ? AND time = ? AND service = ?");
 $checkStmt->execute([$date, $time, $service]);
 $existingCount = $checkStmt->fetchColumn();
 
 if ($existingCount > 0) {
-    http_response_code(409);
+    http_response_code(409); // Conflict
     echo json_encode(["error" => "Schedule conflict: An appointment already exists at this time."]);
     exit();
 }
@@ -111,17 +86,6 @@ try {
     ]);
 
     if ($success) {
-        $appointmentId = $conn->lastInsertId(); // Get inserted appointment ID
-        logAudit(
-            $conn,
-            $user_id,
-            'create',       // Action type
-            'appointments', // Table name
-            $appointmentId, // Target ID
-            $name,          // Record name (client's name)
-            $user_email     // User email
-        );
-
         echo json_encode(["success" => true, "message" => "Appointment added"]);
     } else {
         http_response_code(500);

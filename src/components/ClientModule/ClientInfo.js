@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Button } from "react-bootstrap";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -9,6 +9,8 @@ function AddAppointments() {
     service: [""],
     date: "",
     time: "",
+    firstName: "",
+    lastName: "",
     name: "",
     contact: "",
     email: "",
@@ -23,6 +25,20 @@ function AddAppointments() {
   const [services, setServices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [availableSlots, setAvailableSlots] = useState([]);
+  const [showServiceDropdown, setShowServiceDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowServiceDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     axios
@@ -117,21 +133,6 @@ function AddAppointments() {
     }
   };
 
-  const addAnotherService = () => {
-    setFormData((prevData) => ({
-      ...prevData,
-      service: [...prevData.service, ""],
-    }));
-  };
-
-  const removeService = (index) => {
-    setFormData((prevData) => {
-      const updated = [...prevData.service];
-      updated.splice(index, 1);
-      return { ...prevData, service: updated };
-    });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -144,7 +145,10 @@ function AddAppointments() {
       return;
     }
 
-    if (!/^[A-Za-z\s]+$/.test(name)) {
+    if (
+      !/^[A-Za-z\s]+$/.test(formData.firstName) ||
+      !/^[A-Za-z\s]+$/.test(formData.lastName)
+    ) {
       toast.error("Name should only contain letters and spaces.");
       setIsLoading(false);
       return;
@@ -186,11 +190,12 @@ function AddAppointments() {
       email: finalEmail,
       service: formData.service.filter((s) => s !== "").join(", "),
       reference_number: formData.reference_number,
+      name: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
     };
 
     try {
       const res = await axios.post(
-        "http://localhost/api/add_appointments.php",
+        "http://localhost/api/ClientSide/booking_appointment.php",
         formToSend
       );
 
@@ -200,6 +205,8 @@ function AddAppointments() {
           service: [""],
           date: "",
           time: "",
+          firstName: "",
+          lastName: "",
           name: "",
           contact: "",
           email: "",
@@ -228,7 +235,7 @@ function AddAppointments() {
         <div className="row">
           <div className="col-md-6">
             <div className="mb-3">
-              <label htmlFor="date">Date:</label>
+              <label htmlFor="date">Appointment Date:</label>
               <input
                 type="date"
                 id="date"
@@ -274,15 +281,29 @@ function AddAppointments() {
 
           <div className="col-md-6">
             <div className="mb-3">
-              <label htmlFor="name">Name:</label>
+              <label htmlFor="firstName">First Name:</label>
               <input
                 type="text"
-                id="name"
-                name="name"
+                id="firstName"
+                name="firstName"
                 className="form-control"
-                value={formData.name}
+                value={formData.firstName}
                 onChange={handleChange}
                 autoComplete="on"
+                required
+              />
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="lastName">Last Name:</label>
+              <input
+                type="text"
+                id="lastName"
+                name="lastName"
+                className="form-control"
+                value={formData.lastName}
+                onChange={handleChange}
+                autoComplete="family-name"
                 required
               />
             </div>
@@ -370,56 +391,133 @@ function AddAppointments() {
 
               <hr className="mt-3" />
 
-              <div className="mb-3">
-                <label>Services:</label>
-                {formData.service.map((selected, idx) => {
-                  const alreadySelected = formData.service.filter(
-                    (_, i) => i !== idx
-                  );
-                  return (
-                    <div
-                      key={idx}
-                      className="d-flex align-items-center mb-2 gap-2"
-                    >
-                      <select
-                        name="service"
-                        className="form-control"
-                        value={selected}
-                        onChange={(e) => handleChange(e, idx)}
-                        required
-                      >
-                        <option value="">-- Select a service --</option>
-                        {services.map((s) => (
-                          <option
-                            key={s.id}
-                            value={s.name}
-                            disabled={alreadySelected.includes(s.name)}
-                          >
-                            {s.name}
-                          </option>
-                        ))}
-                      </select>
+              <div
+                className="form-floating mb-3 position-relative"
+                ref={dropdownRef}
+              >
+                {/* INPUT that opens the dropdown */}
+                <input
+                  type="text"
+                  className="form-control"
+                  id="floatingServices"
+                  onClick={() => setShowServiceDropdown(!showServiceDropdown)}
+                  readOnly
+                  placeholder="Select Services"
+                  value=""
+                />
+                <label htmlFor="floatingServices">Select Services</label>
+                {/* DROPDOWN */}
+                {showServiceDropdown && (
+                  <div
+                    className="border rounded p-2 position-absolute bg-white shadow"
+                    style={{
+                      zIndex: 10,
+                      top: "100%",
+                      left: 0,
+                      right: 0,
+                      maxHeight: "200px",
+                      overflowY: "auto",
+                    }}
+                  >
+                    {services.map((service) => (
+                      <div className="form-check" key={service.id}>
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id={`service-${service.id}`}
+                          value={service.name}
+                          checked={formData.service.includes(service.name)}
+                          onChange={(e) => {
+                            const isChecked = e.target.checked;
+                            const updated = isChecked
+                              ? [...formData.service, service.name]
+                              : formData.service.filter(
+                                  (s) => s !== service.name
+                                );
 
-                      {formData.service.length > 1 && (
-                        <button
-                          type="button"
-                          className="btn btn-outline-danger btn-sm"
-                          onClick={() => removeService(idx)}
+                            setFormData((prev) => ({
+                              ...prev,
+                              service: updated,
+                            }));
+                          }}
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor={`service-${service.id}`}
                         >
-                          <AiOutlineDelete />
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
+                          {service.name} - ₱{service.price}
+                        </label>
+                      </div>
+                    ))}
 
-                <button
-                  type="button"
-                  className="btn btn-outline-primary btn-sm"
-                  onClick={addAnotherService}
-                >
-                  + Add Another Service
-                </button>
+                    <div className="text-end mt-2">
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={() => setShowServiceDropdown(false)}
+                      >
+                        Done
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {/* BADGES for selected services */}
+                {formData.service.length > 0 && (
+                  <div className="mt-2 d-flex flex-wrap gap-2">
+                    {formData.service
+                      .filter((serviceName) => {
+                        return (
+                          serviceName &&
+                          services.some((s) => s.name === serviceName)
+                        );
+                      })
+                      .map((serviceName) => {
+                        const service = services.find(
+                          (s) => s.name === serviceName
+                        );
+
+                        return (
+                          <span
+                            key={serviceName}
+                            className="badge bg-dark d-flex align-items-center"
+                            style={{ gap: "6px" }}
+                          >
+                            {service.name} -₱{service.price}
+                            <button
+                              type="button"
+                              className="btn-close btn-close-white btn-sm"
+                              aria-label="Remove"
+                              style={{
+                                fontSize: "0.7rem",
+                                padding: 0,
+                                marginLeft: "4px",
+                              }}
+                              onClick={() => {
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  service: prev.service.filter(
+                                    (s) => s !== serviceName
+                                  ),
+                                }));
+                              }}
+                            ></button>
+                          </span>
+                        );
+                      })}
+                  </div>
+                )}
+                {/* TOTAL PRICE */}
+                {formData.service.length > 0 && (
+                  <div className="mt-2">
+                    <strong>Total Price:</strong> ₱
+                    {formData.service.reduce((total, serviceName) => {
+                      const service = services.find(
+                        (s) => s.name === serviceName
+                      );
+                      return total + (service?.price || 0);
+                    }, 0)}
+                  </div>
+                )}
               </div>
             </div>
           </div>
