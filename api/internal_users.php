@@ -50,7 +50,7 @@ switch ($method) {
             break;
         }
 
-        $sql = "SELECT id, email, first_name, last_name, user_role, created_at, is_verified FROM internal_users";
+        $sql = "SELECT id, email, first_name, last_name, user_role, is_doctor, created_at, is_verified FROM internal_users";
         $path = explode('/', $_SERVER['REQUEST_URI']);
         if (isset($path[3]) && is_numeric($path[3])) {
             $sql .= " WHERE id = :id";
@@ -96,8 +96,8 @@ switch ($method) {
         $verificationToken = bin2hex(random_bytes(16));
         date_default_timezone_set('Asia/Manila'); // ✅ Ensures Philippine Time (PHT)
         $verificationTokenCreatedAt = date('Y-m-d H:i:s');
-        $sql = "INSERT INTO internal_users(email, first_name, last_name, password, user_role, created_at, is_verified, verification_token, verification_token_created_at) 
-                VALUES (:email, :first_name, :last_name, :password, :user_role, :created_at, 0, :verification_token, :verification_token_created_at)";
+        $sql = "INSERT INTO internal_users(email, first_name, last_name, password, user_role, created_at, is_verified, verification_token, verification_token_created_at, is_doctor) 
+        VALUES (:email, :first_name, :last_name, :password, :user_role, :created_at, 0, :verification_token, :verification_token_created_at, :is_doctor)";
         $stmt = $conn->prepare($sql);
         $created_at = date('Y-m-d H:i:s');
         $stmt->bindParam(':email', $user->email);
@@ -108,6 +108,7 @@ switch ($method) {
         $stmt->bindParam(':created_at', $created_at);
         $stmt->bindParam(':verification_token', $verificationToken);
         $stmt->bindParam(':verification_token_created_at', $verificationTokenCreatedAt);
+        $stmt->bindParam(':is_doctor', $user->is_doctor);
 
         if ($stmt->execute()) {
             $mail = new PHPMailer(true);
@@ -161,12 +162,14 @@ switch ($method) {
         }
 
         $sql = "UPDATE internal_users SET 
-                email = :email, 
-                first_name = :first_name, 
-                last_name = :last_name, 
-                user_role = :user_role" .
-                ($hashedPassword ? ", password = :password" : "") .
-                " WHERE id = :id";
+            email = :email, 
+            first_name = :first_name, 
+            last_name = :last_name, 
+            user_role = :user_role, 
+            is_doctor = :is_doctor" .
+            ($hashedPassword ? ", password = :password" : "") .
+            " WHERE id = :id";
+
 
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':email', $user->email);
@@ -174,6 +177,7 @@ switch ($method) {
         $stmt->bindParam(':last_name', $user->last_name);
         $stmt->bindParam(':user_role', $user->user_role);
         $stmt->bindParam(':id', $user->id);
+        $stmt->bindParam(':is_doctor', $user->is_doctor);
 
         if ($hashedPassword) {
             $stmt->bindParam(':password', $hashedPassword);
