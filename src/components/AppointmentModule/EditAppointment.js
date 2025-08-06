@@ -50,28 +50,45 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
   }, []);
 
   useEffect(() => {
-    if (eventData && eventData.id) {
+    if (
+      eventData &&
+      eventData.start &&
+      eventData.end &&
+      !isNaN(new Date(eventData.start)) &&
+      !isNaN(new Date(eventData.end))
+    ) {
+      const start = new Date(eventData.start);
+      const end = new Date(eventData.end);
+
       setFormData({
         id: eventData.id,
-        name: eventData.name,
-        contact: eventData.contact,
+        name: eventData.name || "",
+        contact: eventData.contact || "",
         email: eventData.email || "",
         service: eventData.service
-        ? eventData.service.split(/\s*,\s*/).filter(Boolean)
-        : [""],
-        date: eventData.start.toISOString().split("T")[0],
-        time: eventData.start.toTimeString().substring(0, 5),
-        end_time: eventData.end.toTimeString().substring(0, 5),
-        status: eventData.status,
+          ? eventData.service.split(/\s*,\s*/).filter(Boolean)
+          : [""],
+        date: start.toISOString().split("T")[0],
+        time: start.toTimeString().substring(0, 5),
+        end_time: end.toTimeString().substring(0, 5),
+        status: eventData.status || "",
         pet_name: eventData.pet_name || "",
         pet_species: eventData.pet_species || "",
         pet_breed: eventData.pet_breed || "",
       });
+    } else {
+      console.warn("Invalid start or end time:", eventData);
     }
   }, [eventData]);
 
-  console.log("Parsed services:", eventData.service?.split(/\s*,\s*/).filter(Boolean));
-    console.log("Available service names:", services.map(s => s.name));
+  console.log(
+    "Parsed services:",
+    eventData.service?.split(/\s*,\s*/).filter(Boolean)
+  );
+  console.log(
+    "Available service names:",
+    services.map((s) => s.name)
+  );
 
   useEffect(() => {
     if (formData.date) {
@@ -148,7 +165,9 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
 
     const updatedData = {
       ...formData,
-      service: [...new Set(formData.service.map(s => s.trim()).filter(Boolean))].join(", "),
+      service: [
+        ...new Set(formData.service.map((s) => s.trim()).filter(Boolean)),
+      ].join(", "),
       user_id: currentUserID,
       user_email: currentUserEmail,
     };
@@ -331,7 +350,9 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
                           type="checkbox"
                           id={`service-${service.id}`}
                           value={service.name}
-                          checked={formData.service.includes(service.name.trim())}
+                          checked={formData.service.includes(
+                            service.name.trim()
+                          )}
                           onChange={(e) => {
                             const isChecked = e.target.checked;
                             const updated = isChecked
@@ -375,18 +396,20 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
                         services.some((s) => s.name.trim() === serviceName)
                       )
                       .map((serviceName) => {
-                        const service = services.find((s) => s.name.trim() === serviceName);
+                        const service = services.find(
+                          (s) => s.name.trim() === serviceName
+                        );
                         return (
                           <span
                             key={serviceName}
                             className="badge d-flex align-items-center"
                             style={{
                               gap: "6px",
-                              backgroundColor: "#2a7447ff", 
+                              backgroundColor: "#2a7447ff",
                               fontSize: "0.9rem",
                               padding: "8px 12px",
-                              borderRadius: "12px", 
-                              color: "#fff", 
+                              borderRadius: "12px",
+                              color: "#fff",
                             }}
                           >
                             {service.name} -₱{service.price}

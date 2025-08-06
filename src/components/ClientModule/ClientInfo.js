@@ -230,345 +230,362 @@ function AddAppointments() {
   };
 
   return (
-      <div>
-        <form onSubmit={handleSubmit}>
-          <h5>Personal Details</h5>
-            <div className="card mb-2 mt-2">
-              <div className="card-body">
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="mb-3">
-                      <label htmlFor="firstName">First Name: <span className="text-danger">*</span></label>
-                      <input
-                        type="text"
-                        id="firstName"
-                        name="firstName"
-                        className="form-control"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        autoComplete="on"
-                        required
-                      />
-                    </div>
-  
-                    <div className="mb-3">
-                      <label htmlFor="lastName">Last Name: <span className="text-danger">*</span></label>
-                      <input
-                        type="text"
-                        id="lastName"
-                        name="lastName"
-                        className="form-control"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                        autoComplete="family-name"
-                        required
-                      />
-                    </div>
-                  </div>
-  
-                  <div className="col-md-6">
-                    <div className="mb-3">
-                      <label htmlFor="contact">Contact Number: <span className="text-danger">*</span></label>
-                      <input
-                        type="number"
-                        id="contact"
-                        name="contact"
-                        className="form-control"
-                        value={formData.contact}
-                        onChange={handleChange}
-                        autoComplete="off"
-                        required
-                      />
-                    </div>
-  
-                    <div className="mb-3">
-                      <label htmlFor="email">Email:</label>
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        className="form-control"
-                        value={formData.email}
-                        onChange={handleChange}
-                        autoComplete="off"
-                      />
-                    </div>
-                  </div>
+    <div>
+      <form onSubmit={handleSubmit}>
+        <h5>Personal Details</h5>
+        <div className="card mb-2 mt-2">
+          <div className="card-body">
+            <div className="row">
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label htmlFor="firstName">
+                    First Name: <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="firstName"
+                    name="firstName"
+                    className="form-control"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    autoComplete="on"
+                    required
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="lastName">
+                    Last Name: <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    className="form-control"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    autoComplete="family-name"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label htmlFor="contact">
+                    Contact Number: <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    id="contact"
+                    name="contact"
+                    className="form-control"
+                    value={formData.contact}
+                    onChange={handleChange}
+                    autoComplete="off"
+                    required
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="email">Email:</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    className="form-control"
+                    value={formData.email}
+                    onChange={handleChange}
+                    autoComplete="off"
+                  />
                 </div>
               </div>
             </div>
-            
-          <h5 className="mt-3">Patient Details</h5>
-          <div className="card mb-2 mt-2">
-            <div className="card-body">
-              <div className="row">
-                <div className="col-md-6">
-                  <div className="mb-3">
-                    <label htmlFor="pet_name">Pet Name: <span className="text-danger">*</span></label>
-                    <input
-                      type="text"
-                      id="pet_name"
-                      name="pet_name"
-                      className="form-control"
-                      value={formData.pet_name}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-  
-                  <div className="mb-3">
-                    <label htmlFor="pet_breed">Breed: <span className="text-danger">*</span></label>
-                    <input
-                      type="text"
-                      id="pet_breed"
-                      name="pet_breed"
-                      className="form-control"
-                      value={formData.pet_breed}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-  
-                <div className="col-md-6">
-                  <div className="mb-3">
-                    <label htmlFor="pet_species">Species: <span className="text-danger">*</span></label>
-                    <input
-                      type="text"
-                      id="pet_species"
-                      name="pet_species"
-                      className="form-control"
-                      value={formData.pet_species}
-                      onChange={handleChange}
-                      required
-                      onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault(); 
-                        servicesInputRef.current?.focus(); 
-                        setShowServiceDropdown(true); 
-                      }
-                    }}
-                    />
-                  </div>
-                </div>
-  
-                <hr className="mt-3" />
-  
-                <label htmlFor="floatingServices">Services: <span className="text-danger">*</span></label>
-                <div
-                  className="mb-3 position-relative"
-                  ref={dropdownRef}
-                >
-                  {/* INPUT that opens the dropdown */}
+          </div>
+        </div>
+
+        <h5 className="mt-3">Patient Details</h5>
+        <div className="card mb-2 mt-2">
+          <div className="card-body">
+            <div className="row">
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label htmlFor="pet_name">
+                    Pet Name: <span className="text-danger">*</span>
+                  </label>
                   <input
                     type="text"
+                    id="pet_name"
+                    name="pet_name"
                     className="form-control"
-                    id="floatingServices"
-                    ref={servicesInputRef}
-                    onClick={() => setShowServiceDropdown(!showServiceDropdown)}
-                    readOnly
-                    placeholder="Click to select services"
-                    value=""
+                    value={formData.pet_name}
+                    onChange={handleChange}
+                    required
                   />
-                  {/* DROPDOWN */}
-                  {showServiceDropdown && (
-                    <div
-                      className="border rounded p-2 position-absolute bg-white shadow"
-                      style={{
-                        zIndex: 10,
-                        top: "100%",
-                        left: 0,
-                        right: 0,
-                        maxHeight: "200px",
-                        overflowY: "auto",
-                      }}
-                    >
-                      {services.map((service) => (
-                        <div className="form-check" key={service.id}>
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id={`service-${service.id}`}
-                            value={service.name}
-                            checked={formData.service.includes(service.name)}
-                            onChange={(e) => {
-                              const isChecked = e.target.checked;
-                              const updated = isChecked
-                                ? [...formData.service, service.name]
-                                : formData.service.filter(
-                                    (s) => s !== service.name
-                                  );
-  
-                              setFormData((prev) => ({
-                                ...prev,
-                                service: updated,
-                              }));
-                            }}
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor={`service-${service.id}`}
-                          >
-                            {service.name} - ₱{service.price}
-                          </label>
-                        </div>
-                      ))}
-  
-                      <div className="text-end mt-2">
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-outline-secondary"
-                          onClick={() => setShowServiceDropdown(false)}
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="pet_breed">
+                    Breed: <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="pet_breed"
+                    name="pet_breed"
+                    className="form-control"
+                    value={formData.pet_breed}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label htmlFor="pet_species">
+                    Species: <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="pet_species"
+                    name="pet_species"
+                    className="form-control"
+                    value={formData.pet_species}
+                    onChange={handleChange}
+                    required
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        servicesInputRef.current?.focus();
+                        setShowServiceDropdown(true);
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+
+              <hr className="mt-3" />
+
+              <label htmlFor="floatingServices">
+                Services: <span className="text-danger">*</span>
+              </label>
+              <div className="mb-3 position-relative" ref={dropdownRef}>
+                {/* INPUT that opens the dropdown */}
+                <input
+                  type="text"
+                  className="form-control"
+                  id="floatingServices"
+                  ref={servicesInputRef}
+                  onClick={() => setShowServiceDropdown(!showServiceDropdown)}
+                  readOnly
+                  placeholder="Click to select services"
+                  value=""
+                />
+                {/* DROPDOWN */}
+                {showServiceDropdown && (
+                  <div
+                    className="border rounded p-2 position-absolute bg-white shadow"
+                    style={{
+                      zIndex: 10,
+                      top: "100%",
+                      left: 0,
+                      right: 0,
+                      maxHeight: "200px",
+                      overflowY: "auto",
+                    }}
+                  >
+                    {services.map((service) => (
+                      <div className="form-check" key={service.id}>
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id={`service-${service.id}`}
+                          value={service.name}
+                          checked={formData.service.includes(service.name)}
+                          onChange={(e) => {
+                            const isChecked = e.target.checked;
+                            const updated = isChecked
+                              ? [...formData.service, service.name]
+                              : formData.service.filter(
+                                  (s) => s !== service.name
+                                );
+
+                            setFormData((prev) => ({
+                              ...prev,
+                              service: updated,
+                            }));
+                          }}
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor={`service-${service.id}`}
                         >
-                          Done
-                        </button>
+                          {service.name} - ₱{service.price}
+                        </label>
                       </div>
+                    ))}
+
+                    <div className="text-end mt-2">
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={() => setShowServiceDropdown(false)}
+                      >
+                        Done
+                      </button>
                     </div>
-                  )}
-                  {/* BADGES for selected services */}
-                  {formData.service.length > 0 && (
-                    <div className="mt-2 d-flex flex-wrap gap-2">
-                      {formData.service
-                        .filter((serviceName) => {
-                          return (
-                            serviceName &&
-                            services.some((s) => s.name === serviceName)
-                          );
-                        })
-                        .map((serviceName) => {
-                          const service = services.find(
-                            (s) => s.name === serviceName
-                          );
-  
-                          return (
-                            <span
-                              key={serviceName}
-                              className="badge d-flex align-items-center"
-                              style={{
-                                gap: "6px",
-                                backgroundColor: "#2a7447ff", 
-                                fontSize: "0.9rem",
-                                padding: "8px 12px",
-                                borderRadius: "12px", 
-                                color: "#fff", 
-                              }}
-                            >
-                              {service.name} -₱{service.price}
-                              <button
-                                type="button"
-                                className="btn-close btn-close-white btn-sm"
-                                aria-label="Remove"
-                                style={{
-                                  fontSize: "0.7rem",
-                                  padding: 0,
-                                  marginLeft: "4px",
-                                }}
-                                onClick={() => {
-                                  setFormData((prev) => ({
-                                    ...prev,
-                                    service: prev.service.filter(
-                                      (s) => s !== serviceName
-                                    ),
-                                  }));
-                                }}
-                              ></button>
-                            </span>
-                          );
-                        })}
-                    </div>
-                  )}
-                  {/* TOTAL PRICE */}
-                  {formData.service.length > 0 && (
-                    <div className="mt-2">
-                      <strong>Total Price:</strong> ₱
-                      {formData.service.reduce((total, serviceName) => {
+                  </div>
+                )}
+                {/* BADGES for selected services */}
+                {formData.service.length > 0 && (
+                  <div className="mt-2 d-flex flex-wrap gap-2">
+                    {formData.service
+                      .filter((serviceName) => {
+                        return (
+                          serviceName &&
+                          services.some((s) => s.name === serviceName)
+                        );
+                      })
+                      .map((serviceName) => {
                         const service = services.find(
                           (s) => s.name === serviceName
                         );
-                        return total + (service?.price || 0);
-                      }, 0)}
-                    </div>
-                  )}
-                </div>
+
+                        return (
+                          <span
+                            key={serviceName}
+                            className="badge d-flex align-items-center"
+                            style={{
+                              gap: "6px",
+                              backgroundColor: "#2a7447ff",
+                              fontSize: "0.9rem",
+                              padding: "8px 12px",
+                              borderRadius: "12px",
+                              color: "#fff",
+                            }}
+                          >
+                            {service.name} -₱{service.price}
+                            <button
+                              type="button"
+                              className="btn-close btn-close-white btn-sm"
+                              aria-label="Remove"
+                              style={{
+                                fontSize: "0.7rem",
+                                padding: 0,
+                                marginLeft: "4px",
+                              }}
+                              onClick={() => {
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  service: prev.service.filter(
+                                    (s) => s !== serviceName
+                                  ),
+                                }));
+                              }}
+                            ></button>
+                          </span>
+                        );
+                      })}
+                  </div>
+                )}
+                {/* TOTAL PRICE */}
+                {formData.service.length > 0 && (
+                  <div className="mt-2">
+                    <strong>Total Price:</strong> ₱
+                    {formData.service.reduce((total, serviceName) => {
+                      const service = services.find(
+                        (s) => s.name === serviceName
+                      );
+                      return total + (service?.price || 0);
+                    }, 0)}
+                  </div>
+                )}
               </div>
             </div>
           </div>
-  
-          <h5 className="mt-3">Appointment Details</h5>
-          <div className="card mb-2 mt-2">
-            <div className="card-body">
-              <div className="row">
-                <div className="col-12">
-                  <div className="mb-3">
-                    <label htmlFor="date">Date: <span className="text-danger">*</span></label>
+        </div>
+
+        <h5 className="mt-3">Appointment Details</h5>
+        <div className="card mb-2 mt-2">
+          <div className="card-body">
+            <div className="row">
+              <div className="col-12">
+                <div className="mb-3">
+                  <label htmlFor="date">
+                    Date: <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    id="date"
+                    name="date"
+                    className="form-control"
+                    value={formData.date}
+                    onChange={handleChange}
+                    autoComplete="off"
+                    required
+                    min={new Date().toISOString().split("T")[0]}
+                  />
+                </div>
+
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="time">
+                      From: <span className="text-danger">*</span>
+                    </label>
                     <input
-                      type="date"
-                      id="date"
-                      name="date"
+                      type="time"
+                      id="time"
+                      name="time"
                       className="form-control"
-                      value={formData.date}
+                      value={formData.time}
+                      onChange={handleChange}
+                      required
+                      disabled={!formData.date}
+                    />
+                  </div>
+
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="end_time">
+                      To: <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="time"
+                      id="end_time"
+                      name="end_time"
+                      className="form-control"
+                      value={formData.end_time}
                       onChange={handleChange}
                       autoComplete="off"
                       required
-                      min={new Date().toISOString().split("T")[0]}
+                      disabled={!formData.date}
                     />
-                  </div>
-  
-                  <div className="row">
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="time">From: <span className="text-danger">*</span></label>
-                      <input
-                        type="time"
-                        id="time"
-                        name="time"
-                        className="form-control"
-                        value={formData.time}
-                        onChange={handleChange}
-                        required
-                        disabled={!formData.date}
-                      />
-                    </div>
-  
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="end_time">To: <span className="text-danger">*</span></label>
-                      <input
-                        type="time"
-                        id="end_time"
-                        name="end_time"
-                        className="form-control"
-                        value={formData.end_time}
-                        onChange={handleChange}
-                        autoComplete="off"
-                        required
-                        disabled={!formData.date}
-                      />
-                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-  
-          <input
-            type="hidden"
-            name="reference_number"
-            value={formData.reference_number}
-          />
-  
-          {/* SUBMIT BUTTON */}
-          <div className="button-container">
-            <Button
-              variant="primary"
-              type="submit"
-              className="button btn-gradient"
-              disabled={isLoading}
-            >
-              {isLoading ? "Booking..." : "Book"}
-            </Button>
-          </div>
-        </form>
-      </div>
-    );
+        </div>
+
+        <input
+          type="hidden"
+          name="reference_number"
+          value={formData.reference_number}
+        />
+
+        {/* SUBMIT BUTTON */}
+        <div className="button-container">
+          <Button
+            variant="primary"
+            type="submit"
+            className="button btn-gradient"
+            disabled={isLoading}
+          >
+            {isLoading ? "Booking..." : "Book"}
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
 }
 
 export default AddAppointments;

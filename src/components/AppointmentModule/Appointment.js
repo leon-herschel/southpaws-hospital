@@ -11,7 +11,12 @@ import { Modal } from "react-bootstrap";
 import { toast } from "react-toastify";
 import EditAppointment from "./EditAppointment";
 import { useNavigate } from "react-router-dom";
-import { FaClock, FaCheckCircle, FaTimesCircle, FaCheckDouble } from "react-icons/fa";
+import {
+  FaClock,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaCheckDouble,
+} from "react-icons/fa";
 
 const locales = { "en-US": enUS };
 
@@ -110,12 +115,19 @@ const Appointment = () => {
           className={`card text-white ${cardColors[status]} status-card`}
           style={{
             flex: 1,
-            cursor: status === "Pending" ? "pointer" : "default",
+            cursor:
+              status === "Pending" || "Confirmed" || "Cancelled" || "Done"
+                ? "pointer"
+                : "default",
             minWidth: "180px",
           }}
           key={idx}
           onClick={() => {
-            if (status === "Pending") navigate("/appointment/pending");
+            if (
+              ["Pending", "Confirmed", "Cancelled", "Done"].includes(status)
+            ) {
+              navigate(`/appointment/${status.toLowerCase()}`);
+            }
           }}
         >
           <div className="card-body d-flex justify-content-between align-items-center">
@@ -288,7 +300,9 @@ const Appointment = () => {
             <Modal.Title>Appointment Info</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p><strong>Reference #:</strong> {selectedEvent.reference_number}</p>
+            <p>
+              <strong>Reference #:</strong> {selectedEvent.reference_number}
+            </p>
             <p>
               <strong>Date:</strong>{" "}
               {format(selectedEvent.start, "MMMM dd, yyyy")}
@@ -297,14 +311,30 @@ const Appointment = () => {
               <strong>Time:</strong> {format(selectedEvent.start, "hh:mm a")} to{" "}
               {format(selectedEvent.end, "hh:mm a")}
             </p>
-            <p><strong>Name:</strong> {selectedEvent.name}</p>
-            <p><strong>Contact #:</strong> {selectedEvent.contact}</p>
-            <p><strong>Email:</strong> {selectedEvent.email}</p>
-            <p><strong>Pet Name:</strong> {selectedEvent.pet_name}</p>
-            <p><strong>Species:</strong> {selectedEvent.pet_species}</p>
-            <p><strong>Breed:</strong> {selectedEvent.pet_breed}</p>
-            <p><strong>Service:</strong> {selectedEvent.service}</p>
-            <p><strong>Status:</strong> {selectedEvent.status}</p>
+            <p>
+              <strong>Name:</strong> {selectedEvent.name}
+            </p>
+            <p>
+              <strong>Contact #:</strong> {selectedEvent.contact}
+            </p>
+            <p>
+              <strong>Email:</strong> {selectedEvent.email}
+            </p>
+            <p>
+              <strong>Pet Name:</strong> {selectedEvent.pet_name}
+            </p>
+            <p>
+              <strong>Species:</strong> {selectedEvent.pet_species}
+            </p>
+            <p>
+              <strong>Breed:</strong> {selectedEvent.pet_breed}
+            </p>
+            <p>
+              <strong>Service:</strong> {selectedEvent.service}
+            </p>
+            <p>
+              <strong>Status:</strong> {selectedEvent.status}
+            </p>
           </Modal.Body>
           <Modal.Footer>
             {selectedEvent?.status === "Cancelled" && (

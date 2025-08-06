@@ -239,78 +239,86 @@ const AddAppointments = ({ onClose }) => {
     <div>
       <form onSubmit={handleSubmit}>
         <h5>Client Details</h5>
-          <div className="card mb-2 mt-2">
-            <div className="card-body">
-              <div className="row">
-                <div className="col-md-6">
-                  <div className="mb-3">
-                    <label htmlFor="firstName">First Name: <span className="text-danger">*</span></label>
-                    <input
-                      type="text"
-                      id="firstName"
-                      name="firstName"
-                      className="form-control"
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      autoComplete="on"
-                      required
-                    />
-                  </div>
-
-                  <div className="mb-3">
-                    <label htmlFor="lastName">Last Name: <span className="text-danger">*</span></label>
-                    <input
-                      type="text"
-                      id="lastName"
-                      name="lastName"
-                      className="form-control"
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      autoComplete="family-name"
-                      required
-                    />
-                  </div>
+        <div className="card mb-2 mt-2">
+          <div className="card-body">
+            <div className="row">
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label htmlFor="firstName">
+                    First Name: <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="firstName"
+                    name="firstName"
+                    className="form-control"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    autoComplete="on"
+                    required
+                  />
                 </div>
 
-                <div className="col-md-6">
-                  <div className="mb-3">
-                    <label htmlFor="contact">Contact Number: <span className="text-danger">*</span></label>
-                    <input
-                      type="number"
-                      id="contact"
-                      name="contact"
-                      className="form-control"
-                      value={formData.contact}
-                      onChange={handleChange}
-                      autoComplete="off"
-                      required
-                    />
-                  </div>
+                <div className="mb-3">
+                  <label htmlFor="lastName">
+                    Last Name: <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    className="form-control"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    autoComplete="family-name"
+                    required
+                  />
+                </div>
+              </div>
 
-                  <div className="mb-3">
-                    <label htmlFor="email">Email:</label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      className="form-control"
-                      value={formData.email}
-                      onChange={handleChange}
-                      autoComplete="off"
-                    />
-                  </div>
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label htmlFor="contact">
+                    Contact Number: <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    id="contact"
+                    name="contact"
+                    className="form-control"
+                    value={formData.contact}
+                    onChange={handleChange}
+                    autoComplete="off"
+                    required
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="email">Email:</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    className="form-control"
+                    value={formData.email}
+                    onChange={handleChange}
+                    autoComplete="off"
+                  />
                 </div>
               </div>
             </div>
           </div>
-          
+        </div>
+
         <h5 className="mt-3">Patient Details</h5>
         <div className="card mb-2 mt-2">
           <div className="card-body">
             <div className="row">
               <div className="col-md-6">
                 <div className="mb-3">
-                  <label htmlFor="pet_name">Pet Name: <span className="text-danger">*</span></label>
+                  <label htmlFor="pet_name">
+                    Pet Name: <span className="text-danger">*</span>
+                  </label>
                   <input
                     type="text"
                     id="pet_name"
@@ -323,7 +331,9 @@ const AddAppointments = ({ onClose }) => {
                 </div>
 
                 <div className="mb-3">
-                  <label htmlFor="pet_breed">Breed: <span className="text-danger">*</span></label>
+                  <label htmlFor="pet_breed">
+                    Breed: <span className="text-danger">*</span>
+                  </label>
                   <input
                     type="text"
                     id="pet_breed"
@@ -338,7 +348,9 @@ const AddAppointments = ({ onClose }) => {
 
               <div className="col-md-6">
                 <div className="mb-3">
-                  <label htmlFor="pet_species">Species: <span className="text-danger">*</span></label>
+                  <label htmlFor="pet_species">
+                    Species: <span className="text-danger">*</span>
+                  </label>
                   <input
                     type="text"
                     id="pet_species"
@@ -349,9 +361,9 @@ const AddAppointments = ({ onClose }) => {
                     required
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
-                        e.preventDefault(); 
-                        servicesInputRef.current?.focus(); 
-                        setShowServiceDropdown(true); 
+                        e.preventDefault();
+                        servicesInputRef.current?.focus();
+                        setShowServiceDropdown(true);
                       }
                     }}
                   />
@@ -360,11 +372,10 @@ const AddAppointments = ({ onClose }) => {
 
               <hr className="mt-3" />
 
-              <label htmlFor="floatingServices">Services: <span className="text-danger">*</span></label>
-              <div
-                className="mb-3 position-relative"
-                ref={dropdownRef}
-              >
+              <label htmlFor="floatingServices">
+                Services: <span className="text-danger">*</span>
+              </label>
+              <div className="mb-3 position-relative" ref={dropdownRef}>
                 {/* INPUT that opens the dropdown */}
                 <input
                   type="text"
@@ -452,11 +463,11 @@ const AddAppointments = ({ onClose }) => {
                             className="badge d-flex align-items-center"
                             style={{
                               gap: "6px",
-                              backgroundColor: "#2a7447ff", 
+                              backgroundColor: "#2a7447ff",
                               fontSize: "0.9rem",
                               padding: "8px 12px",
-                              borderRadius: "12px", 
-                              color: "#fff", 
+                              borderRadius: "12px",
+                              color: "#fff",
                             }}
                           >
                             {service.name} -₱{service.price}
@@ -506,7 +517,9 @@ const AddAppointments = ({ onClose }) => {
             <div className="row">
               <div className="col-12">
                 <div className="mb-3">
-                  <label htmlFor="date">Date: <span className="text-danger">*</span></label>
+                  <label htmlFor="date">
+                    Date: <span className="text-danger">*</span>
+                  </label>
                   <input
                     type="date"
                     id="date"
@@ -522,7 +535,9 @@ const AddAppointments = ({ onClose }) => {
 
                 <div className="row">
                   <div className="col-md-6 mb-3">
-                    <label htmlFor="time">From: <span className="text-danger">*</span></label>
+                    <label htmlFor="time">
+                      From: <span className="text-danger">*</span>
+                    </label>
                     <input
                       type="time"
                       id="time"
@@ -536,7 +551,9 @@ const AddAppointments = ({ onClose }) => {
                   </div>
 
                   <div className="col-md-6 mb-3">
-                    <label htmlFor="end_time">To: <span className="text-danger">*</span></label>
+                    <label htmlFor="end_time">
+                      To: <span className="text-danger">*</span>
+                    </label>
                     <input
                       type="time"
                       id="end_time"
