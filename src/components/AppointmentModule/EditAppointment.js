@@ -57,8 +57,8 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
         contact: eventData.contact,
         email: eventData.email || "",
         service: eventData.service
-          ? eventData.service.split(", ").map((s) => s.trim())
-          : [""],
+        ? eventData.service.split(/\s*,\s*/).filter(Boolean)
+        : [""],
         date: eventData.start.toISOString().split("T")[0],
         time: eventData.start.toTimeString().substring(0, 5),
         end_time: eventData.end.toTimeString().substring(0, 5),
@@ -69,6 +69,9 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
       });
     }
   }, [eventData]);
+
+  console.log("Parsed services:", eventData.service?.split(/\s*,\s*/).filter(Boolean));
+    console.log("Available service names:", services.map(s => s.name));
 
   useEffect(() => {
     if (formData.date) {
@@ -145,7 +148,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
 
     const updatedData = {
       ...formData,
-      service: formData.service.filter((s) => s !== "").join(", "),
+      service: [...new Set(formData.service.map(s => s.trim()).filter(Boolean))].join(", "),
       user_id: currentUserID,
       user_email: currentUserEmail,
     };
@@ -328,7 +331,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
                           type="checkbox"
                           id={`service-${service.id}`}
                           value={service.name}
-                          checked={formData.service.includes(service.name)}
+                          checked={formData.service.includes(service.name.trim())}
                           onChange={(e) => {
                             const isChecked = e.target.checked;
                             const updated = isChecked
@@ -369,12 +372,10 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
                   <div className="mt-2 d-flex flex-wrap gap-2">
                     {formData.service
                       .filter((serviceName) =>
-                        services.some((s) => s.name === serviceName)
+                        services.some((s) => s.name.trim() === serviceName)
                       )
                       .map((serviceName) => {
-                        const service = services.find(
-                          (s) => s.name === serviceName
-                        );
+                        const service = services.find((s) => s.name.trim() === serviceName);
                         return (
                           <span
                             key={serviceName}
