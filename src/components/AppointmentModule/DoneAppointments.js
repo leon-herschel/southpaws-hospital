@@ -93,9 +93,9 @@ function DoneAppointments() {
       >
         <FaArrowLeft /> Back
       </button>
-      <h2 className="mb-3"> Done Appointments </h2>
+      <h2 className="mb-3">Completed Appointments</h2>
 
-      <div className="d-flex justify-content-between align-items-center mb-3">
+      <div className="d-flex justify-content-between align-items-center">
         <div className="input-group" style={{ width: "25%" }}>
           <input
             type="text"
@@ -184,9 +184,9 @@ function DoneAppointments() {
                 <td>{appt.service}</td>
                 <td>
                   <button
-                    className="btn btn-md btn-danger"
+                    className="btn btn-md btn-success"
                     onClick={() => handleEventClick(appt)}
-                    title="Show Appointment"
+                    title="View Appointment Info"
                   >
                     <FaEye />
                   </button>
@@ -285,6 +285,9 @@ function DoneAppointments() {
             </p>
             <p>
               <strong>Service:</strong> {selectedEvent.service}
+            </p>
+            <p>
+              <strong>Doctor:</strong> {selectedEvent.doctor_name}
             </p>
             <p>
               <strong>Status:</strong> {selectedEvent.status}

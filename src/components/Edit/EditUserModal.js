@@ -22,8 +22,25 @@ const EditUserModal = ({ show, handleClose, editUser, handleEditChange, handleEd
 
     // Handle input changes and update local state
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setUser((prevUser) => ({ ...prevUser, [name]: value }));
+            const { name, value, type, checked } = e.target;
+            setUser((prevUser) => {
+        const updated = {
+            ...prevUser,
+            [name]: type === 'checkbox' ? (checked ? 1 : 0) : value,
+        };
+
+        if (name === 'user_role') {
+            if (parseInt(value) === 1) {
+                updated.is_doctor = 1;
+            } else if (parseInt(value) === 2) {
+                updated.is_doctor = 0;
+            }
+        }
+
+        handleEditChange({ target: { name, value: updated[name], type, checked } });
+        return updated;
+    });
+
         handleEditChange(e); // Call parent handler
     };
 
@@ -87,6 +104,19 @@ const EditUserModal = ({ show, handleClose, editUser, handleEditChange, handleEd
                                 </Form.Group>
                             </Col>
                         </Row>
+                        
+                        {(user.user_role === 1 || user.user_role === 3) && (
+                            <Form.Group className="mt-3">
+                                <Form.Check
+                                    type="checkbox"
+                                    label="Is this user a Doctor?"
+                                    name="is_doctor"
+                                    checked={user.is_doctor === 1}
+                                    onChange={handleInputChange}
+                                />
+                            </Form.Group>
+                        )}
+
                         <div className="button-container">
                             <Button variant="primary" type="submit" className="button">
                                 Update

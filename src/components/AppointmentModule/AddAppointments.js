@@ -19,6 +19,7 @@ const AddAppointments = ({ onClose }) => {
     pet_name: "",
     pet_breed: "",
     pet_species: "",
+    doctor_id: "",
   });
 
   const [services, setServices] = useState([]);
@@ -28,6 +29,7 @@ const AddAppointments = ({ onClose }) => {
   const currentUserID = localStorage.getItem("userID");
   const currentUserEmail = localStorage.getItem("userEmail");
   const servicesInputRef = useRef(null);
+  const [doctors, setDoctors] = useState([]);
 
   const dropdownRef = useRef(null);
 
@@ -56,6 +58,15 @@ const AddAppointments = ({ onClose }) => {
       ...prevData,
       reference_number: generateReferenceNumber(),
     }));
+
+    axios
+      .get("http://localhost/api/get_doctors.php")
+      .then((res) => {
+        setDoctors(res.data);
+      })
+      .catch((err) => {
+        console.error("Failed to load doctors:", err);
+      });
   }, []);
 
   const generateReferenceNumber = () => {
@@ -196,6 +207,7 @@ const AddAppointments = ({ onClose }) => {
       name: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
       user_id: currentUserID,
       user_email: currentUserEmail,
+      doctor_id: formData.doctor_id,
     };
 
     try {
@@ -516,6 +528,24 @@ const AddAppointments = ({ onClose }) => {
           <div className="card-body">
             <div className="row">
               <div className="col-12">
+                <div className="mb-3">
+                  <label htmlFor="doctor_id">Assigned Doctor: <span className="text-danger">*</span></label>
+                  <select
+                    id="doctor_id"
+                    name="doctor_id"
+                    className="form-control"
+                    value={formData.doctor_id}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select a doctor</option>
+                    {doctors.map((doc) => (
+                      <option key={doc.id} value={doc.id}>
+                        Dr. {doc.first_name} {doc.last_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <div className="mb-3">
                   <label htmlFor="date">
                     Date: <span className="text-danger">*</span>
