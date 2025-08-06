@@ -71,6 +71,15 @@ switch ($method) {
             $stmt->bindParam(':id', $data['id']);
 
             if ($stmt->execute()) {
+                logAudit(
+    $conn,
+    $data['user_id'],
+    'reject',
+    'appointments',
+    $data['id'],
+     $data['name'],
+    $data['user_email']
+);
                 echo json_encode([
                     'success' => true,
                     'message' => 'Appointment deleted successfully.'
