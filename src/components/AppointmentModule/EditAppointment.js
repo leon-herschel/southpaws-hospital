@@ -434,7 +434,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
           <div className="card mb-2 mt-2">
             <div className="card-body">
               <div className="row">
-                <div className="col-12 px-4">
+                <div className="col-12">
                   <div className="mb-3">
                     <label htmlFor="date">Appointment Date:</label>
                     <input

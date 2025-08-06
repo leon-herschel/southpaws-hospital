@@ -167,26 +167,20 @@ const Appointment = () => {
     };
   };
 
-  const handleStatusUpdate = async (eventData) => {
-    try {
-      await axios.put("http://localhost/api/appointments.php", {
-        id: eventData.id,
-        status: eventData.status,
-      });
-      toast.success("Appointment status updated!");
-      setShowEventModal(false);
-      fetchAppointments();
-    } catch (err) {
-      console.error("Update failed", err);
-      toast.error("Failed to update status. Please try again.");
-    }
-  };
-
   const handleDeleteAppointment = async () => {
     try {
+      const userId = localStorage.getItem("userID");
+      const userEmail = localStorage.getItem("userEmail");
+
       await axios.delete("http://localhost/api/appointments.php", {
-        data: { id: selectedEvent.id },
+        data: {
+          id: selectedEvent.id,
+          user_id: userId,
+          name: selectedEvent.name,
+          user_email: userEmail,
+        },
       });
+
       toast.success("Appointment deleted successfully!");
       setShowEventModal(false);
       setShowDeleteConfirm(false);

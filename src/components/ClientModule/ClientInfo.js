@@ -22,6 +22,7 @@ function AddAppointments() {
   });
 
   const [services, setServices] = useState([]);
+  const servicesInputRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [showServiceDropdown, setShowServiceDropdown] = useState(false);
@@ -340,6 +341,13 @@ function AddAppointments() {
                       value={formData.pet_species}
                       onChange={handleChange}
                       required
+                      onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault(); 
+                        servicesInputRef.current?.focus(); 
+                        setShowServiceDropdown(true); 
+                      }
+                    }}
                     />
                   </div>
                 </div>
@@ -356,6 +364,7 @@ function AddAppointments() {
                     type="text"
                     className="form-control"
                     id="floatingServices"
+                    ref={servicesInputRef}
                     onClick={() => setShowServiceDropdown(!showServiceDropdown)}
                     readOnly
                     placeholder="Click to select services"
