@@ -107,7 +107,7 @@ const Appointment = () => {
     <div className="d-flex justify-content-between mt-4 mb-4 gap-3">
       {statuses.map((status, idx) => (
         <div
-          className={`card text-white ${cardColors[status]}`}
+          className={`card text-white ${cardColors[status]} status-card`}
           style={{
             flex: 1,
             cursor: status === "Pending" ? "pointer" : "default",

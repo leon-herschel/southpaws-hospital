@@ -244,7 +244,7 @@ const AddAppointments = ({ onClose }) => {
               <div className="row">
                 <div className="col-md-6">
                   <div className="mb-3">
-                    <label htmlFor="firstName">First Name:</label>
+                    <label htmlFor="firstName">First Name: <span className="text-danger">*</span></label>
                     <input
                       type="text"
                       id="firstName"
@@ -258,7 +258,7 @@ const AddAppointments = ({ onClose }) => {
                   </div>
 
                   <div className="mb-3">
-                    <label htmlFor="lastName">Last Name:</label>
+                    <label htmlFor="lastName">Last Name: <span className="text-danger">*</span></label>
                     <input
                       type="text"
                       id="lastName"
@@ -274,7 +274,7 @@ const AddAppointments = ({ onClose }) => {
 
                 <div className="col-md-6">
                   <div className="mb-3">
-                    <label htmlFor="contact">Contact Number:</label>
+                    <label htmlFor="contact">Contact Number: <span className="text-danger">*</span></label>
                     <input
                       type="number"
                       id="contact"
@@ -288,7 +288,7 @@ const AddAppointments = ({ onClose }) => {
                   </div>
 
                   <div className="mb-3">
-                    <label htmlFor="email">Email (optional):</label>
+                    <label htmlFor="email">Email:</label>
                     <input
                       type="email"
                       id="email"
@@ -310,7 +310,7 @@ const AddAppointments = ({ onClose }) => {
             <div className="row">
               <div className="col-md-6">
                 <div className="mb-3">
-                  <label htmlFor="pet_name">Pet Name:</label>
+                  <label htmlFor="pet_name">Pet Name: <span className="text-danger">*</span></label>
                   <input
                     type="text"
                     id="pet_name"
@@ -323,7 +323,7 @@ const AddAppointments = ({ onClose }) => {
                 </div>
 
                 <div className="mb-3">
-                  <label htmlFor="pet_breed">Breed:</label>
+                  <label htmlFor="pet_breed">Breed: <span className="text-danger">*</span></label>
                   <input
                     type="text"
                     id="pet_breed"
@@ -338,7 +338,7 @@ const AddAppointments = ({ onClose }) => {
 
               <div className="col-md-6">
                 <div className="mb-3">
-                  <label htmlFor="pet_species">Species:</label>
+                  <label htmlFor="pet_species">Species: <span className="text-danger">*</span></label>
                   <input
                     type="text"
                     id="pet_species"
@@ -360,7 +360,7 @@ const AddAppointments = ({ onClose }) => {
 
               <hr className="mt-3" />
 
-              <label htmlFor="floatingServices">Services:</label>
+              <label htmlFor="floatingServices">Services: <span className="text-danger">*</span></label>
               <div
                 className="mb-3 position-relative"
                 ref={dropdownRef}
@@ -506,7 +506,7 @@ const AddAppointments = ({ onClose }) => {
             <div className="row">
               <div className="col-12">
                 <div className="mb-3">
-                  <label htmlFor="date">Date:</label>
+                  <label htmlFor="date">Date: <span className="text-danger">*</span></label>
                   <input
                     type="date"
                     id="date"
@@ -522,7 +522,7 @@ const AddAppointments = ({ onClose }) => {
 
                 <div className="row">
                   <div className="col-md-6 mb-3">
-                    <label htmlFor="time">From:</label>
+                    <label htmlFor="time">From: <span className="text-danger">*</span></label>
                     <input
                       type="time"
                       id="time"
@@ -536,7 +536,7 @@ const AddAppointments = ({ onClose }) => {
                   </div>
 
                   <div className="col-md-6 mb-3">
-                    <label htmlFor="end_time">To:</label>
+                    <label htmlFor="end_time">To: <span className="text-danger">*</span></label>
                     <input
                       type="time"
                       id="end_time"

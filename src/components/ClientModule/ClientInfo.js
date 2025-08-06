@@ -238,7 +238,7 @@ function AddAppointments() {
                 <div className="row">
                   <div className="col-md-6">
                     <div className="mb-3">
-                      <label htmlFor="firstName">First Name:</label>
+                      <label htmlFor="firstName">First Name: <span className="text-danger">*</span></label>
                       <input
                         type="text"
                         id="firstName"
@@ -252,7 +252,7 @@ function AddAppointments() {
                     </div>
   
                     <div className="mb-3">
-                      <label htmlFor="lastName">Last Name:</label>
+                      <label htmlFor="lastName">Last Name: <span className="text-danger">*</span></label>
                       <input
                         type="text"
                         id="lastName"
@@ -268,7 +268,7 @@ function AddAppointments() {
   
                   <div className="col-md-6">
                     <div className="mb-3">
-                      <label htmlFor="contact">Contact Number:</label>
+                      <label htmlFor="contact">Contact Number: <span className="text-danger">*</span></label>
                       <input
                         type="number"
                         id="contact"
@@ -282,7 +282,7 @@ function AddAppointments() {
                     </div>
   
                     <div className="mb-3">
-                      <label htmlFor="email">Email (optional):</label>
+                      <label htmlFor="email">Email:</label>
                       <input
                         type="email"
                         id="email"
@@ -304,7 +304,7 @@ function AddAppointments() {
               <div className="row">
                 <div className="col-md-6">
                   <div className="mb-3">
-                    <label htmlFor="pet_name">Pet Name:</label>
+                    <label htmlFor="pet_name">Pet Name: <span className="text-danger">*</span></label>
                     <input
                       type="text"
                       id="pet_name"
@@ -317,7 +317,7 @@ function AddAppointments() {
                   </div>
   
                   <div className="mb-3">
-                    <label htmlFor="pet_breed">Breed:</label>
+                    <label htmlFor="pet_breed">Breed: <span className="text-danger">*</span></label>
                     <input
                       type="text"
                       id="pet_breed"
@@ -332,7 +332,7 @@ function AddAppointments() {
   
                 <div className="col-md-6">
                   <div className="mb-3">
-                    <label htmlFor="pet_species">Species:</label>
+                    <label htmlFor="pet_species">Species: <span className="text-danger">*</span></label>
                     <input
                       type="text"
                       id="pet_species"
@@ -354,7 +354,7 @@ function AddAppointments() {
   
                 <hr className="mt-3" />
   
-                <label htmlFor="floatingServices">Services:</label>
+                <label htmlFor="floatingServices">Services: <span className="text-danger">*</span></label>
                 <div
                   className="mb-3 position-relative"
                   ref={dropdownRef}
@@ -500,7 +500,7 @@ function AddAppointments() {
               <div className="row">
                 <div className="col-12">
                   <div className="mb-3">
-                    <label htmlFor="date">Date:</label>
+                    <label htmlFor="date">Date: <span className="text-danger">*</span></label>
                     <input
                       type="date"
                       id="date"
@@ -516,7 +516,7 @@ function AddAppointments() {
   
                   <div className="row">
                     <div className="col-md-6 mb-3">
-                      <label htmlFor="time">From:</label>
+                      <label htmlFor="time">From: <span className="text-danger">*</span></label>
                       <input
                         type="time"
                         id="time"
@@ -530,7 +530,7 @@ function AddAppointments() {
                     </div>
   
                     <div className="col-md-6 mb-3">
-                      <label htmlFor="end_time">To:</label>
+                      <label htmlFor="end_time">To: <span className="text-danger">*</span></label>
                       <input
                         type="time"
                         id="end_time"

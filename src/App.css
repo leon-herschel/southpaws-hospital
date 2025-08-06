@@ -236,6 +236,16 @@ thead {
   filter: brightness(90%);
 }
 
+.status-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.status-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+
 
 
 
