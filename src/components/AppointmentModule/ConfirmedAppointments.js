@@ -210,7 +210,7 @@ function ConfirmedAppointments() {
                 <td>{appt.service}</td>
                 <td>
                   <button
-                    className="btn btn-md btn-success me-2"
+                    className="btn btn-md btn-primary me-2"
                     onClick={() => editSelected(appt)}
                     title="Edit Appointment"
                   >

@@ -547,24 +547,6 @@ const AddAppointments = ({ onClose }) => {
                   </select>
                 </div>
                 <div className="mb-3">
-                  <label htmlFor="doctor_id">Assigned Doctor: <span className="text-danger">*</span></label>
-                  <select
-                    id="doctor_id"
-                    name="doctor_id"
-                    className="form-control"
-                    value={formData.doctor_id}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select a doctor</option>
-                    {doctors.map((doc) => (
-                      <option key={doc.id} value={doc.id}>
-                        Dr. {doc.first_name} {doc.last_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="mb-3">
                   <label htmlFor="date">
                     Date: <span className="text-danger">*</span>
                   </label>
