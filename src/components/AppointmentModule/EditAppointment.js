@@ -50,23 +50,34 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
   }, []);
 
   useEffect(() => {
-    if (eventData && eventData.id) {
+    if (
+      eventData &&
+      eventData.start &&
+      eventData.end &&
+      !isNaN(new Date(eventData.start)) &&
+      !isNaN(new Date(eventData.end))
+    ) {
+      const start = new Date(eventData.start);
+      const end = new Date(eventData.end);
+
       setFormData({
         id: eventData.id,
-        name: eventData.name,
-        contact: eventData.contact,
+        name: eventData.name || "",
+        contact: eventData.contact || "",
         email: eventData.email || "",
         service: eventData.service
           ? eventData.service.split(/\s*,\s*/).filter(Boolean)
           : [""],
-        date: eventData.start.toISOString().split("T")[0],
-        time: eventData.start.toTimeString().substring(0, 5),
-        end_time: eventData.end.toTimeString().substring(0, 5),
-        status: eventData.status,
+        date: start.toISOString().split("T")[0],
+        time: start.toTimeString().substring(0, 5),
+        end_time: end.toTimeString().substring(0, 5),
+        status: eventData.status || "",
         pet_name: eventData.pet_name || "",
         pet_species: eventData.pet_species || "",
         pet_breed: eventData.pet_breed || "",
       });
+    } else {
+      console.warn("Invalid start or end time:", eventData);
     }
   }, [eventData]);
 

@@ -38,6 +38,9 @@ import ClientAppointment from "./components/ClientModule/ClientAppointment";
 import ClientAppointmentForm from "./components/ClientModule/ClientInfo";
 import ReferenceTracking from "./components/ClientModule/ReferenceTracking";
 import GeneralSettings from "./components/Settings/GeneralSettings";
+import ConfirmedAppointments from "./components/AppointmentModule/ConfirmedAppointments";
+import CancelledAppointment from "./components/AppointmentModule/CancelledAppointment";
+import DoneAppointments from "./components/AppointmentModule/DoneAppointments";
 
 function App() {
   // Manage the authentication state in App.js
@@ -118,6 +121,18 @@ function App() {
                         <Route
                           path="appointment/pending"
                           element={<PendingAppointments />}
+                        />
+                        <Route
+                          path="appointment/confirmed"
+                          element={<ConfirmedAppointments />}
+                        />
+                        <Route
+                          path="appointment/cancelled"
+                          element={<CancelledAppointment />}
+                        />
+                        <Route
+                          path="appointment/done"
+                          element={<DoneAppointments />}
                         />
                         <Route path="settings" element={<GeneralSettings />} />
                       </Routes>

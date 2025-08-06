@@ -1,0 +1,276 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { FaArrowLeft, FaEdit } from "react-icons/fa";
+import { format } from "date-fns";
+import EditAppointment from "./EditAppointment";
+
+function ConfirmedAppointments() {
+  const [confirmedAppointments, setConfirmedAppointments] = useState([]);
+  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [appointmentsPerPage, setAppointmentsPerPage] = useState(5);
+  const [sortBy, setSortBy] = useState({ key: "", order: "" });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editData, setEditData] = useState(null);
+
+  const currentUserID = localStorage.getItem("userID");
+  const currentUserEmail = localStorage.getItem("userEmail");
+
+  const fetchConfirmed = async () => {
+    try {
+      const res = await axios.get("http://localhost/api/appointments.php");
+      setConfirmedAppointments(
+        res.data.appointments.filter((a) => a.status === "Confirmed")
+      );
+    } catch (err) {
+      console.log("Error fetching confirmed appointments", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchConfirmed();
+  }, []);
+
+  const editSelected = (appointment) => {
+    if (!appointment) return;
+    prepareEditData(appointment);
+  };
+  const prepareEditData = (appointment) => {
+    if (
+      appointment &&
+      appointment.date &&
+      appointment.time &&
+      appointment.end_time
+    ) {
+      const start = new Date(`${appointment.date}T${appointment.time}`);
+      const end = new Date(`${appointment.date}T${appointment.end_time}`);
+      setEditData({ ...appointment, start, end });
+      setShowEditModal(true);
+    } else {
+      console.warn("Missing fields in appointment:", appointment);
+      toast.error("Selected appointment is missing date/time information.");
+    }
+  };
+
+  const handleModalClose = () => {
+    setShowEditModal(false);
+    setEditData(null);
+  };
+
+  const handleAppointmentUpdated = () => {
+    fetchConfirmed(); // Refresh data after update
+  };
+
+  const handleFilter = (e) => {
+    setSearchTerm(e.target.value.toLowerCase());
+  };
+
+  const handleSort = (key) => {
+    let order = "asc";
+    if (sortBy.key === key && sortBy.order === "asc") {
+      order = "desc";
+    }
+    setSortBy({ key, order });
+
+    const sorted = [...confirmedAppointments].sort((a, b) => {
+      const valA = typeof a[key] === "string" ? a[key].toLowerCase() : a[key];
+      const valB = typeof b[key] === "string" ? b[key].toLowerCase() : b[key];
+      if (valA < valB) return order === "asc" ? -1 : 1;
+      if (valA > valB) return order === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    setConfirmedAppointments(sorted);
+  };
+
+  const getSortIcon = (key) => {
+    if (sortBy.key === key) {
+      return sortBy.order === "asc" ? "▲" : "▼";
+    }
+    return null;
+  };
+
+  const filteredAppointments = confirmedAppointments.filter((a) =>
+    Object.values(a).join(" ").toLowerCase().includes(searchTerm)
+  );
+
+  const indexOfLast = currentPage * appointmentsPerPage;
+  const indexOfFirst = indexOfLast - appointmentsPerPage;
+  const currentAppointments = filteredAppointments.slice(
+    indexOfFirst,
+    indexOfLast
+  );
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const handlePerPageChange = (e) => {
+    setCurrentPage(1);
+    setAppointmentsPerPage(Number(e.target.value));
+  };
+
+  return (
+    <div className="container mt-3">
+      <button
+        className="btn btn-outline-secondary d-inline-flex align-items-center gap-2 mb-3"
+        onClick={() => navigate(-1)}
+      >
+        <FaArrowLeft /> Back
+      </button>
+      <h2 className="mb-3">Confirmed Appointments</h2>
+      <div className="d-flex justify-content-between align-items-center">
+        <div className="input-group" style={{ width: "25%" }}>
+          <input
+            type="text"
+            className="form-control"
+            onChange={handleFilter}
+            placeholder="Search"
+          />
+        </div>
+      </div>
+
+      <table className="table table-striped align-middle text-center">
+        <thead>
+          <tr>
+            <th
+              onClick={() => handleSort("name")}
+              style={{ cursor: "pointer" }}
+            >
+              Name {getSortIcon("name")}
+            </th>
+            <th
+              onClick={() => handleSort("date")}
+              style={{ cursor: "pointer" }}
+            >
+              Date {getSortIcon("date")}
+            </th>
+            <th>Time</th>
+            <th
+              onClick={() => handleSort("contact")}
+              style={{ cursor: "pointer" }}
+            >
+              Contact {getSortIcon("contact")}
+            </th>
+            <th
+              onClick={() => handleSort("email")}
+              style={{ cursor: "pointer" }}
+            >
+              Email {getSortIcon("email")}
+            </th>
+            <th
+              onClick={() => handleSort("pet_name")}
+              style={{ cursor: "pointer", width: "100px" }}
+            >
+              Pet Name {getSortIcon("pet_name")}
+            </th>
+            <th
+              onClick={() => handleSort("pet_species")}
+              style={{ cursor: "pointer" }}
+            >
+              Species {getSortIcon("pet_species")}
+            </th>
+            <th
+              onClick={() => handleSort("pet_breed")}
+              style={{ cursor: "pointer" }}
+            >
+              Breed {getSortIcon("pet_breed")}
+            </th>
+            <th
+              onClick={() => handleSort("service")}
+              style={{ cursor: "pointer" }}
+            >
+              Service {getSortIcon("service")}
+            </th>
+            <th style={{ width: "15%" }}>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {confirmedAppointments.length === 0 ? (
+            <tr>
+              <td colSpan="11" className="text-center">
+                No confirmed appointments.
+              </td>
+            </tr>
+          ) : (
+            currentAppointments.map((appt) => (
+              <tr key={appt.id}>
+                <td>{appt.name}</td>
+                <td>{appt.date}</td>
+                <td>
+                  {format(new Date(`1970-01-01T${appt.time}`), "hh:mm a")} -{" "}
+                  {format(new Date(`1970-01-01T${appt.end_time}`), "hh:mm a")}
+                </td>
+                <td>{appt.contact}</td>
+                <td>{appt.email}</td>
+                <td>{appt.pet_name}</td>
+                <td>{appt.pet_species}</td>
+                <td>{appt.pet_breed}</td>
+                <td>{appt.service}</td>
+                <td>
+                  <button
+                    className="btn btn-md btn-success me-2"
+                    onClick={() => editSelected(appt)}
+                    title="Edit Appointment"
+                  >
+                    <FaEdit />
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+
+      <div className="d-flex justify-content-between mb-3">
+        <div className="d-flex align-items-center">
+          <label className="me-2">Items per page:</label>
+          <select
+            value={appointmentsPerPage}
+            onChange={handlePerPageChange}
+            className="form-select form-select-sm"
+            style={{ width: "80px" }}
+          >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+        <ul className="pagination mb-0">
+          {Array.from(
+            {
+              length: Math.ceil(
+                filteredAppointments.length / appointmentsPerPage
+              ),
+            },
+            (_, index) => (
+              <li
+                key={index}
+                className={`page-item ${
+                  currentPage === index + 1 ? "active" : ""
+                }`}
+                style={{ cursor: "pointer" }}
+                onClick={() => paginate(index + 1)}
+              >
+                <span className="page-link">{index + 1}</span>
+              </li>
+            )
+          )}
+        </ul>
+      </div>
+
+      {editData && (
+        <EditAppointment
+          show={showEditModal}
+          onClose={handleModalClose}
+          eventData={editData}
+          onUpdated={handleAppointmentUpdated}
+        />
+      )}
+    </div>
+  );
+}
+
+export default ConfirmedAppointments;
