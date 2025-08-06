@@ -91,6 +91,8 @@ const Appointment = () => {
           pet_name: appt.pet_name || "",
           pet_breed: appt.pet_breed || "",
           pet_species: appt.pet_species || "",
+          doctor_id: appt.doctor_id || "",
+          doctor_name: appt.doctor_name || "",
         };
       });
     setEvents(formatted);
@@ -304,6 +306,7 @@ const Appointment = () => {
             <p><strong>Species:</strong> {selectedEvent.pet_species}</p>
             <p><strong>Breed:</strong> {selectedEvent.pet_breed}</p>
             <p><strong>Service:</strong> {selectedEvent.service}</p>
+            <p><strong>Doctor:</strong> {selectedEvent.doctor_name}</p>
             <p><strong>Status:</strong> {selectedEvent.status}</p>
           </Modal.Body>
           <Modal.Footer>

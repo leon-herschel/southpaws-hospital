@@ -52,6 +52,7 @@ $reference_number = $data["reference_number"] ?? "";
 $pet_name = $data["pet_name"] ?? '';
 $pet_breed = $data["pet_breed"] ?? '';
 $pet_species = $data["pet_species"] ?? '';
+$doctor_id = $data["doctor_id"] ?? null;
 
 // For audit logging
 $user_id = $data["user_id"] ?? null;
@@ -59,7 +60,7 @@ $user_email = isset($data["user_email"]) ? filter_var($data["user_email"], FILTE
 
 if (
     !$service || !$date || !$time || !$name || !$contact || !$end_time || !$email ||
-    !$pet_name || !$pet_breed || !$pet_species || !$user_id || !$user_email
+    !$pet_name || !$pet_breed || !$pet_species || !$user_id || !$user_email || !$doctor_id
 ) {
     http_response_code(400);
     echo json_encode(["error" => "Missing required fields"]);
@@ -91,8 +92,8 @@ try {
     $stmt = $conn->prepare("
         INSERT INTO appointments (
             service, date, time, name, contact, end_time, status, reference_number, email,
-            pet_name, pet_breed, pet_species
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            pet_name, pet_breed, pet_species, doctor_id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
     $success = $stmt->execute([
@@ -107,7 +108,8 @@ try {
         $email,
         $pet_name,
         $pet_breed,
-        $pet_species
+        $pet_species,
+        $doctor_id
     ]);
 
     if ($success) {
