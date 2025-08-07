@@ -15,9 +15,6 @@ function DoneAppointments() {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
 
-  const currentUserID = localStorage.getItem("userID");
-  const currentUserEmail = localStorage.getItem("userEmail");
-
   const handleEventClick = (event) => {
     setSelectedEvent(event);
     setShowEventModal(true);

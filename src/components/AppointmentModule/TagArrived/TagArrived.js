@@ -50,9 +50,6 @@ function TagArrived({ onClose }) {
           breed: (res.data.appointment_pet?.breed || '').toLowerCase().trim()
         };
 
-        console.log("Matching against appointmentPet:", appointmentPet);
-        console.log("Checking against pets array:", pets);
-
         const matchedPet = pets.find((pet) =>
           pet?.name?.toLowerCase().trim() === appointmentPet?.name?.toLowerCase().trim() &&
           pet?.species?.toLowerCase().trim() === appointmentPet?.species?.toLowerCase().trim() &&
