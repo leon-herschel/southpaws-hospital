@@ -31,7 +31,16 @@ if (!$reference_number) {
 
 try {
     // Get appointment info
-    $stmt = $conn->prepare("SELECT name, contact, email, service, pet_name, pet_species, pet_breed FROM appointments WHERE reference_number = ? LIMIT 1");
+    $stmt = $conn->prepare("
+        SELECT 
+            a.name, a.contact, a.email, a.time, a.end_time, a.date, a.service, a.pet_name, a.pet_species, a.pet_breed,
+            iu.first_name AS doctor_first_name, iu.last_name AS doctor_last_name
+        FROM appointments a
+        LEFT JOIN internal_users iu ON a.doctor_id = iu.id
+        WHERE a.reference_number = ?
+        LIMIT 1
+    ");
+
     $stmt->execute([$reference_number]);
     $appointment = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -74,6 +83,10 @@ try {
     echo json_encode([
         "client" => $filteredClient,
         "appointment_service" => $appointment['service'],
+        "appointment_date" => $appointment['date'],
+        "appointment_time" => $appointment['time'],
+        "appointment_end_time" => $appointment['end_time'],
+        "appointment_doctor" => trim(($appointment['doctor_first_name'] ?? '') . ' ' . ($appointment['doctor_last_name'] ?? '')),
         "appointment_pet" => [
             "name" => $appointment['pet_name'],
             "species" => $appointment['pet_species'],
@@ -81,6 +94,8 @@ try {
         ],
         "pets" => $pets
     ]);
+
+
 
 } catch (PDOException $e) {
     http_response_code(500);

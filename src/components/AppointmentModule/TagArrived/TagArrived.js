@@ -62,9 +62,11 @@ function TagArrived({ onClose }) {
         setClientInfo({
           ...res.data.client,
           service: res.data.appointment_service,
+          doctor: res.data.appointment_doctor,
           time: res.data.appointment_time,
           end_time: res.data.appointment_end_time,
           pets: pets,
+          date: res.data.appointment_date,
         });
 
         if (matchedPet) {
@@ -79,6 +81,33 @@ function TagArrived({ onClose }) {
       toast.error("Error fetching client information.");
     }
   };
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '—';
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateStr).toLocaleDateString(undefined, options);
+  };
+
+  const formatTime = (timeStr) => {
+    if (!timeStr) return '';
+    const [hours, minutes] = timeStr.split(':');
+    const date = new Date();
+    date.setHours(parseInt(hours, 10));
+    date.setMinutes(parseInt(minutes, 10));
+    return date.toLocaleTimeString([], {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+  };
+
+  const formatTimeRange = (start, end) => {
+    if (!start) return '—';
+    const formattedStart = formatTime(start);
+    const formattedEnd = end ? formatTime(end) : '';
+    return `${formattedStart} ${formattedEnd ? `- ${formattedEnd}` : ''}`;
+  };
+
 
   return (
     <div>
@@ -101,9 +130,9 @@ function TagArrived({ onClose }) {
 
       {step === "prompt" && (
         <div className="text-center">
-          <p className="">Is this a new or existing client?</p>
+          <p className="">Is this a new or regular client?</p>
           <Button variant="primary" className="me-2 btn-lg" onClick={handleExistingClient}>
-            Existing
+            Regular
           </Button>
           <Button variant="success" className="btn-lg" onClick={async () => {
             try {
@@ -172,7 +201,7 @@ function TagArrived({ onClose }) {
 
                   {(clientInfo.pets.length === 1 || selectedPet) && (
                     <div className="col-md-12">
-                      <h5 className="mb-3">Patient Information</h5>
+                      <h5 className="mb-3">Patient Details</h5>
                       <div className="card p-3 mb-4 shadow-sm">
                         <p className="mb-1"><strong>Service:</strong> {clientInfo.service}</p>
                         <p className="mb-1"><strong>Name:</strong> {(selectedPet || clientInfo.pets[0]).name}</p>
@@ -181,6 +210,19 @@ function TagArrived({ onClose }) {
                       </div>
                     </div>
                   )}
+
+                  {(clientInfo.pets.length === 1 || selectedPet) && (
+                    <div className="col-md-12">
+                      <h5 className="mb-3">Appointment Details</h5>
+                      <div className="card p-3 mb-4 shadow-sm">
+                        <p className="mb-1"><strong>Service:</strong> {clientInfo.service || '—'}</p>
+                        <p className="mb-1"><strong>Doctor:</strong> {clientInfo.doctor || '—'}</p>
+                        <p className="mb-1"><strong>Date:</strong> {formatDate(clientInfo.date)}</p>
+                        <p className="mb-1"><strong>Time:</strong> {formatTimeRange(clientInfo.time, clientInfo.end_time)}</p>
+                      </div>
+                    </div>
+                  )}
+
                 </div>
               </>
             )}
