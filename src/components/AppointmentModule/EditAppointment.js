@@ -26,7 +26,8 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
 
   const [formData, setFormData] = useState({
     id: "",
-    name: "",
+    firstName: "",
+    lastName: "",
     contact: "",
     email: "",
     service: [""],
@@ -69,9 +70,14 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
       const start = new Date(eventData.start);
       const end = new Date(eventData.end);
 
+      const [firstName, lastName] = eventData.name
+        ? eventData.name.split(" ", 2)
+        : ["", ""];
+
       setFormData({
         id: eventData.id,
-        name: eventData.name || "",
+        firstName: firstName || "",
+        lastName: lastName || "",
         contact: eventData.contact || "",
         email: eventData.email || "",
         service: eventData.service
@@ -171,6 +177,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
 
     const updatedData = {
       ...formData,
+      name: `${formData.firstName} ${formData.lastName}`.trim(),
       doctor_id: formData.doctor_id,
       service: [
         ...new Set(formData.service.map((s) => s.trim()).filter(Boolean)),
@@ -218,11 +225,22 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
               <div className="row">
                 <div className="col-md-6">
                   <Form.Group className="mb-3">
-                    <Form.Label>Name:</Form.Label>
+                    <Form.Label>First Name:</Form.Label>
                     <Form.Control
                       type="text"
-                      name="name"
-                      value={formData.name}
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      required
+                    />
+                  </Form.Group>
+
+                  <Form.Group className="mb-3">
+                    <Form.Label>Last Name:</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="lastName"
+                      value={formData.lastName}
                       onChange={handleChange}
                       required
                     />
