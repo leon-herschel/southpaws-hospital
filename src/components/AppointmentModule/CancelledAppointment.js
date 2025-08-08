@@ -62,8 +62,22 @@ function CancelledAppointment() {
     setSortBy({ key, order });
 
     const sorted = [...cancelledAppointments].sort((a, b) => {
-      const valA = typeof a[key] === "string" ? a[key].toLowerCase() : a[key];
-      const valB = typeof b[key] === "string" ? b[key].toLowerCase() : b[key];
+      let valA, valB;
+
+      if (key === "date") {
+        // Combine date + time for accurate sorting
+        valA = new Date(`${a.date}T${a.time}`);
+        valB = new Date(`${b.date}T${b.time}`);
+      } else if (key === "time") {
+        // Only compare the times, using today's date
+        valA = new Date(`1970-01-01T${a.time}`);
+        valB = new Date(`1970-01-01T${b.time}`);
+      } else {
+        // Default string/number comparison
+        valA = typeof a[key] === "string" ? a[key].toLowerCase() : a[key];
+        valB = typeof b[key] === "string" ? b[key].toLowerCase() : b[key];
+      }
+
       if (valA < valB) return order === "asc" ? -1 : 1;
       if (valA > valB) return order === "asc" ? 1 : -1;
       return 0;
@@ -158,7 +172,6 @@ function CancelledAppointment() {
     }
   };
 
-
   return (
     <div className="container mt-3">
       <button
@@ -218,7 +231,12 @@ function CancelledAppointment() {
             >
               Date {getSortIcon("date")}
             </th>
-            <th>Time</th>
+            <th
+              onClick={() => handleSort("time")}
+              style={{ cursor: "pointer" }}
+            >
+              Time {getSortIcon("time")}
+            </th>
             <th
               onClick={() => handleSort("contact")}
               style={{ cursor: "pointer" }}
@@ -376,8 +394,8 @@ function CancelledAppointment() {
         </Modal.Header>
         <Modal.Body>
           <p>
-            Are you sure you want to delete <strong>{selectedIds.length}</strong>{" "}
-            selected appointment(s)?
+            Are you sure you want to delete{" "}
+            <strong>{selectedIds.length}</strong> selected appointment(s)?
           </p>
         </Modal.Body>
         <Modal.Footer>
@@ -392,7 +410,6 @@ function CancelledAppointment() {
           </button>
         </Modal.Footer>
       </Modal>
-
     </div>
   );
 }

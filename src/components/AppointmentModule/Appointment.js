@@ -46,9 +46,10 @@ const Appointment = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState("All");
-  const doctorOptions = ["All", ...new Set(appointments.map(a => a.doctor_name).filter(Boolean))].map((name) =>
-    name === "All" ? name : `Dr. ${name}`
-  );
+  const doctorOptions = [
+    "All",
+    ...new Set(appointments.map((a) => a.doctor_name).filter(Boolean)),
+  ].map((name) => (name === "All" ? name : `Dr. ${name}`));
   const filteredEvents =
     selectedDoctor === "All"
       ? events
@@ -337,15 +338,33 @@ const Appointment = () => {
               <strong>Time:</strong> {format(selectedEvent.start, "hh:mm a")} to{" "}
               {format(selectedEvent.end, "hh:mm a")}
             </p>
-            <p><strong>Name:</strong> {selectedEvent.name}</p>
-            <p><strong>Contact #:</strong> {selectedEvent.contact}</p>
-            <p><strong>Email:</strong> {selectedEvent.email}</p>
-            <p><strong>Pet Name:</strong> {selectedEvent.pet_name}</p>
-            <p><strong>Species:</strong> {selectedEvent.pet_species}</p>
-            <p><strong>Breed:</strong> {selectedEvent.pet_breed}</p>
-            <p><strong>Service:</strong> {selectedEvent.service}</p>
-            <p><strong>Doctor:</strong> {selectedEvent.doctor_name}</p>
-            <p><strong>Status:</strong> {selectedEvent.status}</p>
+            <p>
+              <strong>Name:</strong> {selectedEvent.name}
+            </p>
+            <p>
+              <strong>Contact #:</strong> {selectedEvent.contact}
+            </p>
+            <p>
+              <strong>Email:</strong> {selectedEvent.email}
+            </p>
+            <p>
+              <strong>Pet Name:</strong> {selectedEvent.pet_name}
+            </p>
+            <p>
+              <strong>Species:</strong> {selectedEvent.pet_species}
+            </p>
+            <p>
+              <strong>Breed:</strong> {selectedEvent.pet_breed}
+            </p>
+            <p>
+              <strong>Service:</strong> {selectedEvent.service}
+            </p>
+            <p>
+              <strong>Doctor:</strong> {selectedEvent.doctor_name}
+            </p>
+            <p>
+              <strong>Status:</strong> {selectedEvent.status}
+            </p>
           </Modal.Body>
           <Modal.Footer>
             {selectedEvent?.status === "Cancelled" && (

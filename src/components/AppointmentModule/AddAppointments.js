@@ -529,7 +529,9 @@ const AddAppointments = ({ onClose }) => {
             <div className="row">
               <div className="col-12">
                 <div className="mb-3">
-                  <label htmlFor="doctor_id">Assigned Doctor: <span className="text-danger">*</span></label>
+                  <label htmlFor="doctor_id">
+                    Assigned Doctor: <span className="text-danger">*</span>
+                  </label>
                   <select
                     id="doctor_id"
                     name="doctor_id"
