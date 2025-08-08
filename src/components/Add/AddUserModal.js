@@ -5,8 +5,10 @@ import '../../assets/add.css';
 
 const AddUserModal = ({ show, handleClose, onUsersAdded }) => {
     const [inputs, setInputs] = useState({
-        user_role: 1 // Default user level
+        user_role: 1,
+        is_doctor: 0
     });
+
     const [confirmPassword, setConfirmPassword] = useState('');
     const [emailError, setEmailError] = useState(''); // State for email error
 
@@ -19,9 +21,32 @@ const AddUserModal = ({ show, handleClose, onUsersAdded }) => {
     }, [show]);
 
     const handleChange = (event) => {
-        const { name, value } = event.target;
-        setInputs((prevInputs) => ({ ...prevInputs, [name]: name === 'user_role' ? parseInt(value) : value }));
+        const { name, value, type, checked } = event.target;
+
+        let newValue;
+        if (type === 'checkbox') {
+            newValue = checked ? 1 : 0;
+        } else if (name === 'user_role') {
+            newValue = parseInt(value);
+        } else {
+            newValue = value;
+        }
+
+        setInputs((prevInputs) => {
+            const updated = { ...prevInputs, [name]: newValue };
+
+            if (name === 'user_role') {
+                if (newValue === 1) {
+                    updated.is_doctor = 1; 
+                } else if (newValue === 2) {
+                    updated.is_doctor = 0; 
+                }
+            }
+
+            return updated;
+        });
     };
+
 
     const handlePasswordChange = (event) => {
         const { value } = event.target;
@@ -137,6 +162,17 @@ const AddUserModal = ({ show, handleClose, onUsersAdded }) => {
                             </Form.Group>
                         </div>
                     </div>
+                    {(inputs.user_role === 1 || inputs.user_role === 3) && (
+                        <Form.Group className="mt-3">
+                            <Form.Check
+                                type="checkbox"
+                                label="Is this user a Doctor?"
+                                name="is_doctor"
+                                checked={inputs.is_doctor === 1}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+                    )}
                     {/* Note about required fields */}
                     <div className="text-muted mt-2">
                         <p><em>All fields are required in adding user.</em></p>

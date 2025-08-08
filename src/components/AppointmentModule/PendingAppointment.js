@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { FaCheck, FaTimes, FaArrowLeft } from "react-icons/fa";
+import { format } from "date-fns";
 
 const PendingAppointments = () => {
   const [pendingAppointments, setPendingAppointments] = useState([]);
@@ -336,7 +337,8 @@ const PendingAppointments = () => {
                 <td>{appt.name}</td>
                 <td>{appt.date}</td>
                 <td>
-                  {appt.time} - {appt.end_time}
+                  {format(new Date(`1970-01-01T${appt.time}`), "hh:mm a")} -{" "}
+                  {format(new Date(`1970-01-01T${appt.end_time}`), "hh:mm a")}
                 </td>
                 <td>{appt.contact}</td>
                 <td>{appt.email}</td>

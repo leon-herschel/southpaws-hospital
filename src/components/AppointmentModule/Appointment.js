@@ -45,6 +45,15 @@ const Appointment = () => {
   const [showEventModal, setShowEventModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState("All");
+  const doctorOptions = [
+    "All",
+    ...new Set(appointments.map((a) => a.doctor_name).filter(Boolean)),
+  ].map((name) => (name === "All" ? name : `Dr. ${name}`));
+  const filteredEvents =
+    selectedDoctor === "All"
+      ? events
+      : events.filter((e) => `Dr. ${e.doctor_name}` === selectedDoctor);
   const navigate = useNavigate();
 
   const handleEventClick = (event) => {
@@ -96,6 +105,8 @@ const Appointment = () => {
           pet_name: appt.pet_name || "",
           pet_breed: appt.pet_breed || "",
           pet_species: appt.pet_species || "",
+          doctor_id: appt.doctor_id || "",
+          doctor_name: appt.doctor_name || "",
         };
       });
     setEvents(formatted);
@@ -209,27 +220,43 @@ const Appointment = () => {
 
       {renderStatusBoxes()}
 
-      <div className="d-flex justify-content-end align-items-center mb-4 gap-2">
-        <button
-          className="btn btn-primary me-2 btn-gradient"
-          onClick={() => setShowTagModal(true)}
-        >
-          Tag as Arrived
-        </button>
+      <div className="d-flex justify-content-between align-items-center mb-4 gap-2">
+        <div>
+          <select
+            className="form-select w-auto"
+            value={selectedDoctor}
+            onChange={(e) => setSelectedDoctor(e.target.value)}
+          >
+            {doctorOptions.map((doc, index) => (
+              <option key={index} value={doc}>
+                {doc}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <button
-          className="btn btn-primary btn-gradient"
-          onClick={() => setShowModal(true)}
-        >
-          Add Appointment
-        </button>
+        <div className="d-flex gap-2">
+          <button
+            className="btn btn-primary me-2 btn-gradient"
+            onClick={() => setShowTagModal(true)}
+          >
+            Tag as Arrived
+          </button>
+
+          <button
+            className="btn btn-primary btn-gradient"
+            onClick={() => setShowModal(true)}
+          >
+            Add Appointment
+          </button>
+        </div>
       </div>
 
       <div className="card">
         <div className="card-body" style={{ height: "80vh" }}>
           <Calendar
             localizer={localizer}
-            events={events}
+            events={filteredEvents}
             startAccessor="start"
             endAccessor="end"
             defaultView="week"
@@ -331,6 +358,9 @@ const Appointment = () => {
             </p>
             <p>
               <strong>Service:</strong> {selectedEvent.service}
+            </p>
+            <p>
+              <strong>Doctor:</strong> {selectedEvent.doctor_name}
             </p>
             <p>
               <strong>Status:</strong> {selectedEvent.status}

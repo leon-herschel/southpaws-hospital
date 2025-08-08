@@ -27,7 +27,16 @@ $method = $_SERVER['REQUEST_METHOD'];
 switch ($method) {
     case 'GET':
         try {
-            $sql = "SELECT id, reference_number, service, date, time, end_time, name, contact, email, pet_name, pet_species, pet_breed, status FROM appointments";
+            $sql = "
+                SELECT 
+                    a.id, a.reference_number, a.service, a.date, a.time, a.end_time,
+                    a.name, a.contact, a.email, a.pet_name, a.pet_species, a.pet_breed, a.status,
+                    a.doctor_id,
+                    CONCAT(d.first_name, ' ', d.last_name) AS doctor_name
+                FROM appointments a
+                LEFT JOIN internal_users d ON a.doctor_id = d.id
+            ";
+
             $stmt = $conn->prepare($sql);
             $stmt->execute();
             $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -105,6 +114,7 @@ switch ($method) {
             !isset($data['pet_species']) ||
             !isset($data['pet_breed']) ||
             !isset($data['status']) ||
+            !isset($data['doctor_id']) ||
             !isset($data['user_id']) 
         ) {
             echo json_encode([
@@ -134,21 +144,24 @@ switch ($method) {
                 pet_name = :pet_name,
                 pet_species = :pet_species,
                 pet_breed = :pet_breed,
-                status = :status 
+                status = :status,
+                doctor_id = :doctor_id
             WHERE id = :id";
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':name', $data['name']);
-    $stmt->bindParam(':contact', $data['contact']);
-    $stmt->bindParam(':email', $data['email']);
-    $stmt->bindParam(':service', $data['service']);
-    $stmt->bindParam(':date', $data['date']);
-    $stmt->bindParam(':time', $data['time']);
-    $stmt->bindParam(':end_time', $data['end_time']);
-    $stmt->bindParam(':status', $data['status']);
-    $stmt->bindParam(':id', $data['id']);
-    $stmt->bindParam(':pet_name', $data['pet_name']);
-    $stmt->bindParam(':pet_species', $data['pet_species']);
-    $stmt->bindParam(':pet_breed', $data['pet_breed']);
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':name', $data['name']);
+        $stmt->bindParam(':contact', $data['contact']);
+        $stmt->bindParam(':email', $data['email']);
+        $stmt->bindParam(':service', $data['service']);
+        $stmt->bindParam(':date', $data['date']);
+        $stmt->bindParam(':time', $data['time']);
+        $stmt->bindParam(':end_time', $data['end_time']);
+        $stmt->bindParam(':status', $data['status']);
+        $stmt->bindParam(':id', $data['id']);
+        $stmt->bindParam(':pet_name', $data['pet_name']);
+        $stmt->bindParam(':pet_species', $data['pet_species']);
+        $stmt->bindParam(':pet_breed', $data['pet_breed']);
+        $stmt->bindParam(':doctor_id', $data['doctor_id']);
 
     if ($stmt->execute()) {
         // Determine if status changed

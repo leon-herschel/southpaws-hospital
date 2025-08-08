@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { FaCheck, FaTimes, FaArrowLeft } from "react-icons/fa";
+import { FaTrash, FaArrowLeft } from "react-icons/fa";
 import { format } from "date-fns";
+import { Modal } from "react-bootstrap";
 
 function CancelledAppointment() {
   const [cancelledAppointments, setCancelledAppointments] = useState([]);
@@ -13,6 +14,9 @@ function CancelledAppointment() {
   const [appointmentsPerPage, setAppointmentsPerPage] = useState(5);
   const [sortBy, setSortBy] = useState({ key: "", order: "" });
   const [searchTerm, setSearchTerm] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [appointmentToDelete, setAppointmentToDelete] = useState(null);
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
 
   const currentUserID = localStorage.getItem("userID");
   const currentUserEmail = localStorage.getItem("userEmail");
@@ -38,41 +42,12 @@ function CancelledAppointment() {
     );
   };
 
-  const deleteSelected = async () => {
+  const confirmBulkDelete = () => {
     if (selectedIds.length === 0) {
       toast.warn("Please select at least one appointment to delete.");
-      setSelectedIds([]);
-      fetchCancelled();
       return;
     }
-
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete the selected appointments?"
-    );
-    if (!confirmDelete) return;
-
-    try {
-      for (const id of selectedIds) {
-        const appointment = cancelledAppointments.find((a) => a.id === id);
-        if (!appointment) continue;
-
-        await axios.delete("http://localhost/api/appointments.php", {
-          data: {
-            id: appointment.id,
-            user_id: currentUserID,
-            user_email: currentUserEmail,
-            name: appointment.name,
-          },
-        });
-      }
-
-      toast.success("Selected appointments deleted successfully.");
-      setSelectedIds([]);
-      fetchCancelled();
-    } catch (error) {
-      console.error("Delete error:", error);
-      toast.error("An error occurred while deleting appointments.");
-    }
+    setShowBulkDeleteConfirm(true);
   };
 
   const handleFilter = (e) => {
@@ -122,31 +97,64 @@ function CancelledAppointment() {
     setAppointmentsPerPage(Number(e.target.value));
   };
 
-  const deleteSingleAppointment = async (id) => {
+  const confirmSingleAppointmentDelete = (id) => {
     const appointment = cancelledAppointments.find((a) => a.id === id);
     if (!appointment) return;
+    setAppointmentToDelete(appointment);
+    setShowDeleteConfirm(true);
+  };
 
-    const confirmDelete = window.confirm(
-      `Are you sure you want to delete the appointment for ${appointment.name}?`
-    );
-    if (!confirmDelete) return;
+  const handleDeleteAppointment = async () => {
+    if (!appointmentToDelete) return;
 
     try {
       await axios.delete("http://localhost/api/appointments.php", {
         data: {
-          id: appointment.id,
+          id: appointmentToDelete.id,
           user_id: currentUserID,
           user_email: currentUserEmail,
-          name: appointment.name,
+          name: appointmentToDelete.name,
         },
       });
 
-      toast.success(`Appointment for ${appointment.name} deleted.`);
+      toast.success(`Appointment for ${appointmentToDelete.name} deleted.`);
       fetchCancelled();
-      setSelectedIds((prev) => prev.filter((sid) => sid !== id)); // Remove if in selected
+      setSelectedIds((prev) =>
+        prev.filter((sid) => sid !== appointmentToDelete.id)
+      );
     } catch (error) {
       console.error("Error deleting appointment:", error);
       toast.error("Failed to delete appointment.");
+    } finally {
+      setShowDeleteConfirm(false);
+      setAppointmentToDelete(null);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    try {
+      for (const id of selectedIds) {
+        const appointment = cancelledAppointments.find((a) => a.id === id);
+        if (!appointment) continue;
+
+        await axios.delete("http://localhost/api/appointments.php", {
+          data: {
+            id: appointment.id,
+            user_id: currentUserID,
+            user_email: currentUserEmail,
+            name: appointment.name,
+          },
+        });
+      }
+
+      toast.success("Selected appointments deleted successfully.");
+      setSelectedIds([]);
+      fetchCancelled();
+    } catch (error) {
+      console.error("Bulk delete error:", error);
+      toast.error("An error occurred while deleting selected appointments.");
+    } finally {
+      setShowBulkDeleteConfirm(false);
     }
   };
 
@@ -158,9 +166,9 @@ function CancelledAppointment() {
       >
         <FaArrowLeft /> Back
       </button>
-      <h2 className="mb-3"> Cancelled Appointments</h2>
+      <h2 className="mb-3">Cancelled Appointments</h2>
 
-      <div className="d-flex justify-content-between align-items-center mb-3">
+      <div className="d-flex justify-content-between align-items-center">
         <div className="input-group" style={{ width: "25%" }}>
           <input
             type="text"
@@ -171,7 +179,7 @@ function CancelledAppointment() {
         </div>
 
         {selectedIds.length > 1 && (
-          <button className="btn btn-danger" onClick={deleteSelected}>
+          <button className="btn btn-danger" onClick={confirmBulkDelete}>
             Delete Selected
           </button>
         )}
@@ -282,10 +290,10 @@ function CancelledAppointment() {
                 <td>
                   <button
                     className="btn btn-md btn-danger"
-                    onClick={() => deleteSingleAppointment(appt.id)}
-                    title="Reject Appointment"
+                    onClick={() => confirmSingleAppointmentDelete(appt.id)}
+                    title="Delete Appointment"
                   >
-                    <FaTimes />
+                    <FaTrash />
                   </button>
                 </td>
               </tr>
@@ -330,6 +338,59 @@ function CancelledAppointment() {
           )}
         </ul>
       </div>
+      <Modal
+        show={showDeleteConfirm}
+        onHide={() => setShowDeleteConfirm(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Deletion</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            Are you sure you want to delete the appointment for{" "}
+            <strong>{appointmentToDelete?.name}</strong>?
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowDeleteConfirm(false)}
+          >
+            Cancel
+          </button>
+          <button className="btn btn-danger" onClick={handleDeleteAppointment}>
+            Yes, Delete
+          </button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal
+        show={showBulkDeleteConfirm}
+        onHide={() => setShowBulkDeleteConfirm(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Bulk Deletion</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            Are you sure you want to delete{" "}
+            <strong>{selectedIds.length}</strong> selected appointment(s)?
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowBulkDeleteConfirm(false)}
+          >
+            Cancel
+          </button>
+          <button className="btn btn-danger" onClick={handleBulkDelete}>
+            Yes, Delete All
+          </button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

@@ -8,7 +8,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
   const [availableSlots, setAvailableSlots] = useState([]);
   const currentUserID = localStorage.getItem("userID");
   const currentUserEmail = localStorage.getItem("userEmail");
-
+  const [doctors, setDoctors] = useState([]);
   const [showServiceDropdown, setShowServiceDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -37,6 +37,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
     pet_name: "",
     pet_species: "",
     pet_breed: "",
+    doctor_id: "",
   });
 
   useEffect(() => {
@@ -46,6 +47,14 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
       .catch((err) => {
         console.error("Failed to load services:", err);
         toast.error("Failed to load available services.");
+      });
+
+    axios
+      .get("http://localhost/api/get_doctors.php")
+      .then((res) => setDoctors(res.data))
+      .catch((err) => {
+        console.error("Failed to load doctors:", err);
+        toast.error("Failed to load doctors list.");
       });
   }, []);
 
@@ -75,20 +84,12 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
         pet_name: eventData.pet_name || "",
         pet_species: eventData.pet_species || "",
         pet_breed: eventData.pet_breed || "",
+        doctor_id: eventData.doctor_id || "",
       });
     } else {
       console.warn("Invalid start or end time:", eventData);
     }
   }, [eventData]);
-
-  console.log(
-    "Parsed services:",
-    eventData.service?.split(/\s*,\s*/).filter(Boolean)
-  );
-  console.log(
-    "Available service names:",
-    services.map((s) => s.name)
-  );
 
   useEffect(() => {
     if (formData.date) {
@@ -158,6 +159,11 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
       return;
     }
 
+    if (!formData.doctor_id) {
+      toast.error("Please assign a doctor to this appointment.");
+      return;
+    }
+
     if (!/\S+@\S+\.\S+/.test(formData.email)) {
       toast.error("Please enter a valid email address.");
       return;
@@ -165,6 +171,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
 
     const updatedData = {
       ...formData,
+      doctor_id: formData.doctor_id,
       service: [
         ...new Set(formData.service.map((s) => s.trim()).filter(Boolean)),
       ].join(", "),
@@ -459,6 +466,22 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
             <div className="card-body">
               <div className="row">
                 <div className="col-12">
+                  <Form.Group className="mb-3">
+                    <Form.Label>Assigned Doctor:</Form.Label>
+                    <select
+                      name="doctor_id"
+                      className="form-control"
+                      value={formData.doctor_id}
+                      onChange={handleChange}
+                    >
+                      <option value="">-- Select Doctor --</option>
+                      {doctors.map((doc) => (
+                        <option key={doc.id} value={doc.id}>
+                          Dr. {doc.first_name} {doc.last_name}
+                        </option>
+                      ))}
+                    </select>
+                  </Form.Group>
                   <div className="mb-3">
                     <label htmlFor="date">Appointment Date:</label>
                     <input

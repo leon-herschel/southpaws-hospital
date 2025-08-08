@@ -16,9 +16,6 @@ function ConfirmedAppointments() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editData, setEditData] = useState(null);
 
-  const currentUserID = localStorage.getItem("userID");
-  const currentUserEmail = localStorage.getItem("userEmail");
-
   const fetchConfirmed = async () => {
     try {
       const res = await axios.get("http://localhost/api/appointments.php");
@@ -210,7 +207,7 @@ function ConfirmedAppointments() {
                 <td>{appt.service}</td>
                 <td>
                   <button
-                    className="btn btn-md btn-success me-2"
+                    className="btn btn-md btn-primary me-2"
                     onClick={() => editSelected(appt)}
                     title="Edit Appointment"
                   >
