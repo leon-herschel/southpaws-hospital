@@ -132,6 +132,32 @@ switch ($method) {
     $oldStatusRow = $statusStmt->fetch(PDO::FETCH_ASSOC);
     $oldStatus = $oldStatusRow['status'] ?? null;
 
+    $conflictStmt = $conn->prepare("
+    SELECT COUNT(*) FROM appointments 
+    WHERE date = :date 
+    AND doctor_id = :doctor_id 
+    AND id != :id
+    AND (
+        (time < :end_time AND end_time > :time) -- overlaps if start is before other's end, and end is after other's start
+    )
+    ");
+    $conflictStmt->execute([
+        ':date' => $data['date'],
+        ':time' => $data['time'],
+        ':end_time' => $data['end_time'],
+        ':doctor_id' => $data['doctor_id'],
+        ':id' => $data['id']
+    ]);
+    $conflictCount = $conflictStmt->fetchColumn();
+
+    if ($conflictCount > 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Schedule conflict: The selected doctor already has an overlapping appointment at this time.'
+        ]);
+        exit;
+    }
+
     // Update appointment
     $sql = "UPDATE appointments 
             SET name = :name, 

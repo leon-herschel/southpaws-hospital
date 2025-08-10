@@ -92,9 +92,9 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
   }, [eventData]);
 
   useEffect(() => {
-    if (formData.date) {
+    if (formData.date && formData.doctor_id) {
       axios
-        .get(`http://localhost/api/get-booked-slots.php?date=${formData.date}`)
+        .get(`http://localhost/api/get-booked-slots.php?date=${formData.date}&doctor_id=${formData.doctor_id}`)
         .then((res) => {
           setAvailableSlots(res.data.bookedRanges || []);
         })
@@ -104,7 +104,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
           setAvailableSlots([]);
         });
     }
-  }, [formData.date]);
+  }, [formData.date, formData.doctor_id]);
 
   const handleChange = (e, index = null) => {
     const { name, value } = e.target;

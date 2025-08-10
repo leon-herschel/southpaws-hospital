@@ -102,7 +102,7 @@ const AddAppointments = ({ onClose }) => {
 
       try {
         const res = await axios.get(
-          `http://localhost/api/get-booked-slots.php?date=${value}`
+          `http://localhost/api/get-booked-slots.php?date=${value}&doctor_id=${formData.doctor_id}`
         );
         setAvailableSlots(res.data.bookedRanges || []);
       } catch (err) {

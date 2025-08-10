@@ -78,8 +78,8 @@ if ($endDateTime > $latestEnd) {
 }
 
 // Conflict check
-$checkStmt = $conn->prepare("SELECT COUNT(*) FROM appointments WHERE date = ? AND time = ? AND service = ?");
-$checkStmt->execute([$date, $time, $service]);
+$checkStmt = $conn->prepare("SELECT COUNT(*) FROM appointments WHERE date = ? AND time = ? AND doctor_id = ?");
+$checkStmt->execute([$date, $time, $doctor_id]);
 $existingCount = $checkStmt->fetchColumn();
 
 if ($existingCount > 0) {
