@@ -37,6 +37,7 @@ const Appointment = () => {
     Done: "bg-success",
   };
   const [appointments, setAppointments] = useState([]);
+  const [pendingAppointments, setPendingAppointments] = useState([]);
   const [events, setEvents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showTagModal, setShowTagModal] = useState(false);
@@ -70,6 +71,15 @@ const Appointment = () => {
     }
   };
 
+  const fetchPendingAppointments = async () => {
+    try {
+      const res = await axios.get("http://localhost/api/pending_appointments.php");
+      setPendingAppointments(res.data.appointments || []);
+    } catch (err) {
+      console.error("Failed to fetch pending appointments", err);
+    }
+  };
+
   const fetchServiceColors = async () => {
     try {
       const res = await axios.get("http://localhost/api/service-colors.php");
@@ -81,6 +91,7 @@ const Appointment = () => {
 
   useEffect(() => {
     fetchAppointments();
+    fetchPendingAppointments();
     fetchServiceColors();
   }, []);
 
@@ -143,13 +154,13 @@ const Appointment = () => {
           <div className="card-body d-flex justify-content-between align-items-center">
             <div>
               <h3 className="mb-0 fw-bold">
-                {
-                  appointments.filter(
-                    (appt) =>
-                      appt.status &&
-                      appt.status.toLowerCase() === status.toLowerCase()
-                  ).length
-                }
+                {status === "Pending"
+                  ? pendingAppointments.length
+                  : appointments.filter(
+                      (appt) =>
+                        appt.status &&
+                        appt.status.toLowerCase() === status.toLowerCase()
+                    ).length}
               </h3>
               <p className="mb-0">{status}</p>
             </div>

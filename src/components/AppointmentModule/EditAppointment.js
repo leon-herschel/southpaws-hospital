@@ -263,7 +263,6 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
                       required
                     >
                       <option value="Confirmed">Confirmed</option>
-                      <option value="Pending">Pending</option>
                       <option value="Cancelled">Cancelled</option>
                       <option value="Done">Done</option>
                     </select>

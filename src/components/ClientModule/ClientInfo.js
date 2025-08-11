@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { Button, ProgressBar } from "react-bootstrap";
 import { toast } from "react-toastify";
@@ -345,9 +345,8 @@ function AddAppointments() {
                     required
                   >
                     <option value="">-- Select --</option>
-                    <option value="Morning">Morning (8 AM - 12 PM)</option>
-                    <option value="Afternoon">Afternoon (12 PM - 4 PM)</option>
-                    <option value="Evening">Evening (4 PM - 8 PM)</option>
+                    <option value="Morning">Morning</option>
+                    <option value="Afternoon">Afternoon</option>
                   </select>
                 </div>
 
@@ -415,7 +414,7 @@ function AddAppointments() {
                   <div className="row">
                     <div className="col-md-6">
                       <p><strong>Preferred Date:</strong> {formData.preferred_date}</p>
-                      <p><strong>Preferred Time Range:</strong> {formData.preferred_time}</p>
+                      <p><strong>Preferred Time:</strong> {formData.preferred_time}</p>
                     </div>
                     <div className="col-md-6">
                       {formData.notes && (
@@ -424,7 +423,6 @@ function AddAppointments() {
                     </div>
                   </div>
                 </section>
-
               </div>
             </div>
           </>

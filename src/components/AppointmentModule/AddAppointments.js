@@ -3,7 +3,7 @@ import axios from "axios";
 import { Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 
-const AddAppointments = ({ onClose }) => {
+const AddAppointments = ({ onClose, prefill }) => {
   const [formData, setFormData] = useState({
     service: [],
     date: "",
@@ -68,6 +68,31 @@ const AddAppointments = ({ onClose }) => {
         console.error("Failed to load doctors:", err);
       });
   }, []);
+
+  useEffect(() => {
+    if (prefill) {
+      // Optionally split full name into first and last names if needed:
+      let firstName = "";
+      let lastName = "";
+      if (prefill.name) {
+        const parts = prefill.name.trim().split(" ");
+        firstName = parts[0];
+        lastName = parts.slice(1).join(" ");
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        name: prefill.name || "",
+        contact: prefill.contact || "",
+        email: prefill.email || "",
+        pet_name: prefill.pet_name || "",
+        pet_breed: prefill.pet_breed || "",
+        pet_species: prefill.pet_species || "",
+        firstName,
+        lastName,
+      }));
+    }
+  }, [prefill]);
 
   const generateReferenceNumber = () => {
     const letters = Array.from({ length: 3 }, () =>
