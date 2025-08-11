@@ -431,7 +431,11 @@ function AddAppointments() {
         )}
 
         {/* NAVIGATION BUTTONS */}
-        <div className="d-flex justify-content-between mt-4">
+        <div
+          className={`d-flex ${
+            currentStep === 1 ? "justify-content-end" : "justify-content-between"
+          } mt-4`}
+        >
           {currentStep > 1 && (
             <Button variant="secondary" onClick={prevStep}>
               Back
@@ -446,13 +450,14 @@ function AddAppointments() {
             <Button
               variant="primary"
               type="submit"
-              className="button btn-gradient"
+              className="btn btn-primary"
               disabled={isLoading}
             >
-              {isLoading ? "Booking..." : "Book"}
+              {isLoading ? "Booking..." : "Book Appointment"}
             </Button>
           )}
         </div>
+
       </form>
     </div>
   );
