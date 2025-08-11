@@ -1,145 +1,46 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { Button } from "react-bootstrap";
+import { Button, ProgressBar } from "react-bootstrap";
 import { toast } from "react-toastify";
 
 function AddAppointments() {
   const [formData, setFormData] = useState({
-    service: [""],
-    date: "",
-    time: "",
+    reason_for_visit: "",
+    preferred_date: "",
+    preferred_time: "",
     firstName: "",
     lastName: "",
     name: "",
     contact: "",
     email: "",
-    end_time: "",
     status: "Pending",
-    reference_number: "",
     pet_name: "",
     pet_breed: "",
     pet_species: "",
+    notes: "",
   });
 
-  const [services, setServices] = useState([]);
-  const servicesInputRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [availableSlots, setAvailableSlots] = useState([]);
-  const [showServiceDropdown, setShowServiceDropdown] = useState(false);
-  const dropdownRef = useRef(null);
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 5;
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowServiceDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
+  const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
 
-  useEffect(() => {
-    axios
-      .get("http://localhost/api/get_services.php")
-      .then((res) => {
-        setServices(res.data);
-      })
-      .catch((err) => {
-        console.error("Failed to load services:", err);
-      });
-    setFormData((prevData) => ({
-      ...prevData,
-      reference_number: generateReferenceNumber(),
-    }));
-  }, []);
-
-  const generateReferenceNumber = () => {
-    const letters = Array.from({ length: 3 }, () =>
-      String.fromCharCode(65 + Math.floor(Math.random() * 26))
-    ).join("");
-    const numbers = Math.floor(1000 + Math.random() * 9000);
-    return `${letters}-${numbers}`;
-  };
-
-  const isOverlapping = (start, end) => {
-    const startTime = new Date(`1970-01-01T${start}`);
-    const endTime = new Date(`1970-01-01T${end}`);
-
-    return availableSlots.some((slot) => {
-      const bookedStart = new Date(`1970-01-01T${slot.time}`);
-      const bookedEnd = new Date(`1970-01-01T${slot.end_time}`);
-
-      return startTime < bookedEnd && endTime > bookedStart;
-    });
-  };
-
-  const handleChange = async (e, index = null) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-
-    if (name === "date") {
-      setFormData((prevData) => ({
-        ...prevData,
-        date: value,
-        time: "",
-        end_time: "",
-      }));
-
-      try {
-        const res = await axios.get(
-          `http://localhost/api/get-booked-slots.php?date=${value}`
-        );
-        setAvailableSlots(res.data.bookedRanges || []);
-      } catch (err) {
-        console.error("Failed to fetch booked slots", err);
-        toast.error("Error loading booked slots.");
-        setAvailableSlots([]);
-      }
-      return;
-    }
-
-    if (name === "time" || name === "end_time") {
-      const newFormData = {
-        ...formData,
-        [name]: value,
-      };
-
-      if (newFormData.time && newFormData.end_time) {
-        const overlaps = isOverlapping(newFormData.time, newFormData.end_time);
-        if (overlaps) {
-          toast.error("This time slot overlaps with an existing booking.");
-          setFormData((prev) => ({ ...prev, time: "", end_time: "" }));
-          return;
-        }
-      }
-
-      setFormData((prev) => ({ ...prev, [name]: value }));
-      return;
-    }
-
-    if (name === "service" && index !== null) {
-      const updatedServices = [...formData.service];
-      updatedServices[index] = value;
-      setFormData((prevData) => ({
-        ...prevData,
-        service: updatedServices,
-      }));
-    } else {
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-    }
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    const { time, name, contact, end_time } = formData;
-
-    if (!/^\d{11}$/.test(contact)) {
+    // Basic validations
+    if (!/^\d{11}$/.test(formData.contact)) {
       toast.error("Contact number must be exactly 11 digits.");
       setIsLoading(false);
       return;
@@ -154,43 +55,29 @@ function AddAppointments() {
       return;
     }
 
-    const start = new Date(`1970-01-01T${time}`);
-    const end = new Date(`1970-01-01T${end_time}`);
-    const latestAllowedStart = new Date(`1970-01-01T08:00`);
-    const latestAllowedEnd = new Date(`1970-01-01T17:00`);
-
-    if (start < latestAllowedStart) {
-      toast.error("Start time must not be earlier than 8AM");
-      setIsLoading(false);
-      return;
-    }
-
-    if (end <= start) {
-      toast.error("End time must be later than the start time");
-      setIsLoading(false);
-      return;
-    }
-
-    if (end > latestAllowedEnd) {
-      toast.error("End time must not be later than 5PM");
-      setIsLoading(false);
-      return;
-    }
-
-    if (isOverlapping(formData.time, formData.end_time)) {
-      toast.error("This time slot is already booked.");
-      setIsLoading(false);
-      return;
+    if (formData.email.trim() !== "") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        toast.error("Please enter a valid email address.");
+        setIsLoading(false);
+        return;
+      }
     }
 
     const finalEmail = formData.email?.trim() || "no_email@noemail.com";
 
     const formToSend = {
-      ...formData,
-      email: finalEmail,
-      service: formData.service.filter((s) => s !== "").join(", "),
-      reference_number: formData.reference_number,
+      reason_for_visit: formData.reason_for_visit,
+      preferred_date: formData.preferred_date,
+      preferred_time: formData.preferred_time,
       name: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
+      contact: formData.contact,
+      email: finalEmail,
+      status: formData.status,
+      pet_name: formData.pet_name,
+      pet_breed: formData.pet_breed,
+      pet_species: formData.pet_species,
+      notes: formData.notes,
     };
 
     try {
@@ -202,21 +89,20 @@ function AddAppointments() {
       if (res.data.success) {
         toast.success("Appointment submitted successfully!");
         setFormData({
-          service: [""],
-          date: "",
-          time: "",
+          reason_for_visit: "",
+          preferred_date: "",
+          preferred_time: "",
           firstName: "",
           lastName: "",
           name: "",
           contact: "",
           email: "",
-          end_time: "",
           status: "Pending",
-          reference_number: generateReferenceNumber(),
           pet_name: "",
           pet_breed: "",
           pet_species: "",
         });
+        setCurrentStep(1);
       }
     } catch (error) {
       console.error("Submission Error:", error.response?.data || error.message);
@@ -229,359 +115,343 @@ function AddAppointments() {
     }
   };
 
+  const isStepValid = () => {
+    switch (currentStep) {
+      case 1: // Step 1: Personal Details
+        return (
+          formData.firstName.trim() !== "" &&
+          formData.lastName.trim() !== "" &&
+          /^\d{11}$/.test(formData.contact)
+        );
+      case 2: // Step 2: Patient Details
+        return (
+          formData.pet_name.trim() !== "" &&
+          formData.pet_breed.trim() !== "" &&
+          formData.pet_species.trim() !== ""
+        );
+      case 3: // Step 3: Reason for Visit
+        return formData.reason_for_visit.trim() !== "";
+      case 4: // Step 4: Appointment Preferences
+        return (
+          formData.preferred_date.trim() !== "" &&
+          formData.preferred_time.trim() !== ""
+        );
+      case 5:
+        return true;
+      default:
+        return false;
+    }
+  };
+
   return (
-    <div>
+    <div className="container mt-4">
+      <ProgressBar now={(currentStep / totalSteps) * 100} className="mb-4" />
+
       <form onSubmit={handleSubmit}>
-        <h5>Personal Details</h5>
-        <div className="card mb-2 mt-2">
-          <div className="card-body">
-            <div className="row">
-              <div className="col-md-6">
-                <div className="mb-3">
-                  <label htmlFor="firstName">
-                    First Name: <span className="text-danger">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="firstName"
-                    name="firstName"
-                    className="form-control"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    autoComplete="on"
-                    required
-                  />
-                </div>
+        {/* STEP 1 - Personal Details */}
+        {currentStep === 1 && (
+          <>
+            <h5>Personal Details</h5>
+            <div className="card mb-2 mt-2">
+              <div className="card-body">
+                <div className="row">
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label htmlFor="firstName">
+                        First Name: <span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="firstName"
+                        name="firstName"
+                        className="form-control"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        autoComplete="on"
+                        required
+                      />
+                    </div>
 
-                <div className="mb-3">
-                  <label htmlFor="lastName">
-                    Last Name: <span className="text-danger">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="lastName"
-                    name="lastName"
-                    className="form-control"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    autoComplete="family-name"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="col-md-6">
-                <div className="mb-3">
-                  <label htmlFor="contact">
-                    Contact Number: <span className="text-danger">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    id="contact"
-                    name="contact"
-                    className="form-control"
-                    value={formData.contact}
-                    onChange={handleChange}
-                    autoComplete="off"
-                    required
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <label htmlFor="email">Email:</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    className="form-control"
-                    value={formData.email}
-                    onChange={handleChange}
-                    autoComplete="off"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <h5 className="mt-3">Patient Details</h5>
-        <div className="card mb-2 mt-2">
-          <div className="card-body">
-            <div className="row">
-              <div className="col-md-6">
-                <div className="mb-3">
-                  <label htmlFor="pet_name">
-                    Pet Name: <span className="text-danger">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="pet_name"
-                    name="pet_name"
-                    className="form-control"
-                    value={formData.pet_name}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <label htmlFor="pet_breed">
-                    Breed: <span className="text-danger">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="pet_breed"
-                    name="pet_breed"
-                    className="form-control"
-                    value={formData.pet_breed}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="col-md-6">
-                <div className="mb-3">
-                  <label htmlFor="pet_species">
-                    Species: <span className="text-danger">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="pet_species"
-                    name="pet_species"
-                    className="form-control"
-                    value={formData.pet_species}
-                    onChange={handleChange}
-                    required
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        servicesInputRef.current?.focus();
-                        setShowServiceDropdown(true);
-                      }
-                    }}
-                  />
-                </div>
-              </div>
-
-              <hr className="mt-3" />
-
-              <label htmlFor="floatingServices">
-                Services: <span className="text-danger">*</span>
-              </label>
-              <div className="mb-3 position-relative" ref={dropdownRef}>
-                {/* INPUT that opens the dropdown */}
-                <input
-                  type="text"
-                  className="form-control"
-                  id="floatingServices"
-                  ref={servicesInputRef}
-                  onClick={() => setShowServiceDropdown(!showServiceDropdown)}
-                  readOnly
-                  placeholder="Click to select services"
-                  value=""
-                />
-                {/* DROPDOWN */}
-                {showServiceDropdown && (
-                  <div
-                    className="border rounded p-2 position-absolute bg-white shadow"
-                    style={{
-                      zIndex: 10,
-                      top: "100%",
-                      left: 0,
-                      right: 0,
-                      maxHeight: "200px",
-                      overflowY: "auto",
-                    }}
-                  >
-                    {services.map((service) => (
-                      <div className="form-check" key={service.id}>
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          id={`service-${service.id}`}
-                          value={service.name}
-                          checked={formData.service.includes(service.name)}
-                          onChange={(e) => {
-                            const isChecked = e.target.checked;
-                            const updated = isChecked
-                              ? [...formData.service, service.name]
-                              : formData.service.filter(
-                                  (s) => s !== service.name
-                                );
-
-                            setFormData((prev) => ({
-                              ...prev,
-                              service: updated,
-                            }));
-                          }}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor={`service-${service.id}`}
-                        >
-                          {service.name} - ₱{service.price}
-                        </label>
-                      </div>
-                    ))}
-
-                    <div className="text-end mt-2">
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={() => setShowServiceDropdown(false)}
-                      >
-                        Done
-                      </button>
+                    <div className="mb-3">
+                      <label htmlFor="lastName">
+                        Last Name: <span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="lastName"
+                        name="lastName"
+                        className="form-control"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        autoComplete="family-name"
+                        required
+                      />
                     </div>
                   </div>
-                )}
-                {/* BADGES for selected services */}
-                {formData.service.length > 0 && (
-                  <div className="mt-2 d-flex flex-wrap gap-2">
-                    {formData.service
-                      .filter((serviceName) => {
-                        return (
-                          serviceName &&
-                          services.some((s) => s.name === serviceName)
-                        );
-                      })
-                      .map((serviceName) => {
-                        const service = services.find(
-                          (s) => s.name === serviceName
-                        );
 
-                        return (
-                          <span
-                            key={serviceName}
-                            className="badge d-flex align-items-center"
-                            style={{
-                              gap: "6px",
-                              backgroundColor: "#2a7447ff",
-                              fontSize: "0.9rem",
-                              padding: "8px 12px",
-                              borderRadius: "12px",
-                              color: "#fff",
-                            }}
-                          >
-                            {service.name} -₱{service.price}
-                            <button
-                              type="button"
-                              className="btn-close btn-close-white btn-sm"
-                              aria-label="Remove"
-                              style={{
-                                fontSize: "0.7rem",
-                                padding: 0,
-                                marginLeft: "4px",
-                              }}
-                              onClick={() => {
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  service: prev.service.filter(
-                                    (s) => s !== serviceName
-                                  ),
-                                }));
-                              }}
-                            ></button>
-                          </span>
-                        );
-                      })}
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label htmlFor="contact">
+                        Contact Number: <span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="number"
+                        id="contact"
+                        name="contact"
+                        className="form-control"
+                        value={formData.contact}
+                        onChange={handleChange}
+                        autoComplete="off"
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-3">
+                      <label htmlFor="email">Email:</label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        className="form-control"
+                        value={formData.email}
+                        onChange={handleChange}
+                        autoComplete="off"
+                      />
+                    </div>
                   </div>
-                )}
-                {/* TOTAL PRICE */}
-                {formData.service.length > 0 && (
-                  <div className="mt-2">
-                    <strong>Total Price:</strong> ₱
-                    {formData.service.reduce((total, serviceName) => {
-                      const service = services.find(
-                        (s) => s.name === serviceName
-                      );
-                      return total + (service?.price || 0);
-                    }, 0)}
-                  </div>
-                )}
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
 
-        <h5 className="mt-3">Appointment Details</h5>
-        <div className="card mb-2 mt-2">
-          <div className="card-body">
-            <div className="row">
-              <div className="col-12">
+        {/* STEP 2 - Patient Details */}
+        {currentStep === 2 && (
+          <>
+            <h5 className="mt-3">Patient Details</h5>
+            <div className="card mb-2 mt-2">
+              <div className="card-body">
+                <div className="row">
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label htmlFor="pet_name">
+                        Pet Name: <span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="pet_name"
+                        name="pet_name"
+                        className="form-control"
+                        value={formData.pet_name}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-3">
+                      <label htmlFor="pet_breed">
+                        Breed: <span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="pet_breed"
+                        name="pet_breed"
+                        className="form-control"
+                        value={formData.pet_breed}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label htmlFor="pet_species">
+                        Species: <span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="pet_species"
+                        name="pet_species"
+                        className="form-control"
+                        value={formData.pet_species}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* STEP 3 - Reason for Visit */}
+        {currentStep === 3 && (
+          <>
+            <h5 className="mt-3">Reason for Visit</h5>
+            <div className="card mb-2 mt-2">
+              <div className="card-body">
+                <label htmlFor="reasonForVisit">
+                  Please describe the reason for your visit: <span className="text-danger">*</span>
+                </label>
+                <textarea
+                  id="reason_for_visit"
+                  name="reason_for_visit"
+                  className="form-control"
+                  rows="3"
+                  placeholder="E.g., Annual vaccination, skin irritation, follow-up checkup..."
+                  value={formData.reason_for_visit}
+                  onChange={handleChange}
+                  required
+                ></textarea>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* STEP 4 - Preferred Schedule */}
+        {currentStep === 4 && (
+          <>
+            <h5 className="mt-3">Preferred Schedule</h5>
+            <div className="card mb-2 mt-2">
+              <div className="card-body">
                 <div className="mb-3">
-                  <label htmlFor="date">
-                    Date: <span className="text-danger">*</span>
+                  <label htmlFor="preferred_date">
+                    Preferred Date: <span className="text-danger">*</span>
                   </label>
                   <input
                     type="date"
-                    id="date"
-                    name="date"
+                    id="preferred_date"
+                    name="preferred_date"
                     className="form-control"
-                    value={formData.date}
+                    value={formData.preferred_date}
                     onChange={handleChange}
-                    autoComplete="off"
                     required
                     min={new Date().toISOString().split("T")[0]}
                   />
                 </div>
 
-                <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <label htmlFor="time">
-                      From: <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="time"
-                      id="time"
-                      name="time"
-                      className="form-control"
-                      value={formData.time}
-                      onChange={handleChange}
-                      required
-                      disabled={!formData.date}
-                    />
-                  </div>
+                <div className="mb-3">
+                  <label>
+                    Preferred Time Range: <span className="text-danger">*</span>
+                  </label>
+                  <select
+                    id="preferred_time"
+                    name="preferred_time"
+                    className="form-control"
+                    value={formData.preferred_time}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">-- Select --</option>
+                    <option value="Morning">Morning (8 AM - 12 PM)</option>
+                    <option value="Afternoon">Afternoon (12 PM - 4 PM)</option>
+                    <option value="Evening">Evening (4 PM - 8 PM)</option>
+                  </select>
+                </div>
 
-                  <div className="col-md-6 mb-3">
-                    <label htmlFor="end_time">
-                      To: <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="time"
-                      id="end_time"
-                      name="end_time"
-                      className="form-control"
-                      value={formData.end_time}
-                      onChange={handleChange}
-                      autoComplete="off"
-                      required
-                      disabled={!formData.date}
-                    />
-                  </div>
+                <div className="mb-3">
+                  <label htmlFor="notes">Additional Notes:</label>
+                  <textarea
+                    id="notes"
+                    name="notes"
+                    className="form-control"
+                    value={formData.notes}
+                    onChange={handleChange}
+                    placeholder="E.g., Available after 3 PM"
+                  />
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
 
-        <input
-          type="hidden"
-          name="reference_number"
-          value={formData.reference_number}
-        />
+        {/* STEP 5 - Review & Submit */}
+        {currentStep === 5 && (
+          <>
+            <h5 className="mt-3">Review & Submit</h5>
+            <div className="card mb-3 mt-2">
+              <div className="card-body">
 
-        {/* SUBMIT BUTTON */}
-        <div className="button-container">
-          <Button
-            variant="primary"
-            type="submit"
-            className="button btn-gradient"
-            disabled={isLoading}
-          >
-            {isLoading ? "Booking..." : "Book"}
-          </Button>
+                {/* Personal Details */}
+                <section className="mb-4">
+                  <h6 className="text-primary border-bottom pb-2">Personal Details</h6>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <p><strong>First Name:</strong> {formData.firstName}</p>
+                      <p><strong>Last Name:</strong> {formData.lastName}</p>
+                    </div>
+                    <div className="col-md-6">
+                      <p><strong>Contact Number:</strong> {formData.contact}</p>
+                      <p><strong>Email:</strong> {formData.email || "N/A"}</p>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Patient Details */}
+                <section className="mb-4">
+                  <h6 className="text-primary border-bottom pb-2">Patient Details</h6>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <p><strong>Pet Name:</strong> {formData.pet_name}</p>
+                      <p><strong>Breed:</strong> {formData.pet_breed}</p>
+                    </div>
+                    <div className="col-md-6">
+                      <p><strong>Species:</strong> {formData.pet_species}</p>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Reason for Visit */}
+                <section className="mb-4">
+                  <h6 className="text-primary border-bottom pb-2">Reason for Visit</h6>
+                  <p>{formData.reason_for_visit}</p>
+                </section>
+
+                {/* Preferred Schedule */}
+                <section>
+                  <h6 className="text-primary border-bottom pb-2">Preferred Schedule</h6>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <p><strong>Preferred Date:</strong> {formData.preferred_date}</p>
+                      <p><strong>Preferred Time Range:</strong> {formData.preferred_time}</p>
+                    </div>
+                    <div className="col-md-6">
+                      {formData.notes && (
+                        <p><strong>Additional Notes:</strong> {formData.notes}</p>
+                      )}
+                    </div>
+                  </div>
+                </section>
+
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* NAVIGATION BUTTONS */}
+        <div className="d-flex justify-content-between mt-4">
+          {currentStep > 1 && (
+            <Button variant="secondary" onClick={prevStep}>
+              Back
+            </Button>
+          )}
+          {currentStep < totalSteps && (
+            <Button variant="primary" onClick={nextStep} disabled={!isStepValid()}>
+              Next
+            </Button>
+          )}
+          {currentStep === totalSteps && (
+            <Button
+              variant="primary"
+              type="submit"
+              className="button btn-gradient"
+              disabled={isLoading}
+            >
+              {isLoading ? "Booking..." : "Book"}
+            </Button>
+          )}
         </div>
       </form>
     </div>
