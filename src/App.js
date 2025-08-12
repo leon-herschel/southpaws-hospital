@@ -33,14 +33,14 @@ import ArchivedSupplierManagement from "./components/Archive/ArchivedSupplierMan
 import Generic from "./components/Generic";
 import ReportGeneration from "./components/ReportGeneration";
 import Forecasting from "./components/Forecasting";
-import PendingAppointments from "./components/AppointmentModule/PendingAppointment";
-import ClientAppointment from "./components/ClientModule/ClientAppointment";
-import ClientAppointmentForm from "./components/ClientModule/ClientInfo";
-import ReferenceTracking from "./components/ClientModule/ReferenceTracking";
+import ClientAppointment from "./components/AppointmentModule/ClientSide/ClientAppointment";
+import ClientAppointmentForm from "./components/AppointmentModule/ClientSide/ClientInfo";
+import ReferenceTracking from "./components/AppointmentModule/ClientSide/ReferenceTracking";
 import GeneralSettings from "./components/Settings/GeneralSettings";
-import ConfirmedAppointments from "./components/AppointmentModule/ConfirmedAppointments";
-import CancelledAppointment from "./components/AppointmentModule/CancelledAppointment";
-import DoneAppointments from "./components/AppointmentModule/DoneAppointments";
+import ConfirmedAppointments from "./components/AppointmentModule/Tables/ConfirmedAppointments";
+import CancelledAppointment from "./components/AppointmentModule/Tables/CancelledAppointment";
+import DoneAppointments from "./components/AppointmentModule/Tables/DoneAppointments";
+import PendingAppointments from "./components/AppointmentModule/Tables/PendingAppointment";
 
 function App() {
   // Manage the authentication state in App.js

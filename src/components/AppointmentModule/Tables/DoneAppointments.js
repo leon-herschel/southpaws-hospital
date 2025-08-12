@@ -1,65 +1,39 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { FaArrowLeft, FaEdit } from "react-icons/fa";
+import { FaEye, FaArrowLeft } from "react-icons/fa";
 import { format } from "date-fns";
-import EditAppointment from "./EditAppointment";
 
-function ConfirmedAppointments() {
-  const [confirmedAppointments, setConfirmedAppointments] = useState([]);
+function DoneAppointments() {
+  const [doneAppointments, setDoneAppointments] = useState([]);
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [appointmentsPerPage, setAppointmentsPerPage] = useState(5);
   const [sortBy, setSortBy] = useState({ key: "", order: "" });
   const [searchTerm, setSearchTerm] = useState("");
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editData, setEditData] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showEventModal, setShowEventModal] = useState(false);
 
-  const fetchConfirmed = async () => {
+  const handleEventClick = (event) => {
+    setSelectedEvent(event);
+    setShowEventModal(true);
+  };
+
+  const fetchDone = async () => {
     try {
       const res = await axios.get("http://localhost/api/appointments.php");
-      setConfirmedAppointments(
-        res.data.appointments.filter((a) => a.status === "Confirmed")
+      setDoneAppointments(
+        res.data.appointments.filter((a) => a.status === "Done")
       );
     } catch (err) {
-      console.log("Error fetching confirmed appointments", err);
+      console.log("Error in fetching done appointments", err);
     }
   };
 
   useEffect(() => {
-    fetchConfirmed();
+    fetchDone();
   }, []);
-
-  const editSelected = (appointment) => {
-    if (!appointment) return;
-    prepareEditData(appointment);
-  };
-  const prepareEditData = (appointment) => {
-    if (
-      appointment &&
-      appointment.date &&
-      appointment.time &&
-      appointment.end_time
-    ) {
-      const start = new Date(`${appointment.date}T${appointment.time}`);
-      const end = new Date(`${appointment.date}T${appointment.end_time}`);
-      setEditData({ ...appointment, start, end });
-      setShowEditModal(true);
-    } else {
-      console.warn("Missing fields in appointment:", appointment);
-      toast.error("Selected appointment is missing date/time information.");
-    }
-  };
-
-  const handleModalClose = () => {
-    setShowEditModal(false);
-    setEditData(null);
-  };
-
-  const handleAppointmentUpdated = () => {
-    fetchConfirmed(); // Refresh data after update
-  };
 
   const handleFilter = (e) => {
     setSearchTerm(e.target.value.toLowerCase());
@@ -72,7 +46,7 @@ function ConfirmedAppointments() {
     }
     setSortBy({ key, order });
 
-    const sorted = [...confirmedAppointments].sort((a, b) => {
+    const sorted = [...doneAppointments].sort((a, b) => {
       const valA = typeof a[key] === "string" ? a[key].toLowerCase() : a[key];
       const valB = typeof b[key] === "string" ? b[key].toLowerCase() : b[key];
       if (valA < valB) return order === "asc" ? -1 : 1;
@@ -80,7 +54,7 @@ function ConfirmedAppointments() {
       return 0;
     });
 
-    setConfirmedAppointments(sorted);
+    setDoneAppointments(sorted);
   };
 
   const getSortIcon = (key) => {
@@ -90,7 +64,7 @@ function ConfirmedAppointments() {
     return null;
   };
 
-  const filteredAppointments = confirmedAppointments.filter((a) =>
+  const filteredAppointments = doneAppointments.filter((a) =>
     Object.values(a).join(" ").toLowerCase().includes(searchTerm)
   );
 
@@ -116,7 +90,8 @@ function ConfirmedAppointments() {
       >
         <FaArrowLeft /> Back
       </button>
-      <h2 className="mb-3">Confirmed Appointments</h2>
+      <h2 className="mb-3">Completed Appointments</h2>
+
       <div className="d-flex justify-content-between align-items-center">
         <div className="input-group" style={{ width: "25%" }}>
           <input
@@ -127,7 +102,6 @@ function ConfirmedAppointments() {
           />
         </div>
       </div>
-
       <table className="table table-striped align-middle text-center">
         <thead>
           <tr>
@@ -184,10 +158,10 @@ function ConfirmedAppointments() {
           </tr>
         </thead>
         <tbody>
-          {confirmedAppointments.length === 0 ? (
+          {doneAppointments.length === 0 ? (
             <tr>
               <td colSpan="11" className="text-center">
-                No confirmed appointments.
+                No Done appointments.
               </td>
             </tr>
           ) : (
@@ -207,11 +181,11 @@ function ConfirmedAppointments() {
                 <td>{appt.service}</td>
                 <td>
                   <button
-                    className="btn btn-md btn-primary me-2"
-                    onClick={() => editSelected(appt)}
-                    title="Edit Appointment"
+                    className="btn btn-md btn-success"
+                    onClick={() => handleEventClick(appt)}
+                    title="View Appointment Info"
                   >
-                    <FaEdit />
+                    <FaEye />
                   </button>
                 </td>
               </tr>
@@ -219,7 +193,6 @@ function ConfirmedAppointments() {
           )}
         </tbody>
       </table>
-
       <div className="d-flex justify-content-between mb-3">
         <div className="d-flex align-items-center">
           <label className="me-2">Items per page:</label>
@@ -257,17 +230,88 @@ function ConfirmedAppointments() {
           )}
         </ul>
       </div>
+      {selectedEvent && (
+        <Modal show={showEventModal} onHide={() => setShowEventModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Appointment Info</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {/* Personal Details */}
+            <section className="mb-3">
+              <h6 className="text-primary border-bottom pb-2">Personal Details</h6>
+              <div className="row">
+                <div className="col-md-6">
+                  <p><strong>Name:</strong> {selectedEvent.name}</p>
+                  <p><strong>Contact #:</strong> {selectedEvent.contact}</p>
+                </div>
+                <div className="col-md-6">
+                  <p><strong>Email:</strong> {selectedEvent.email || "N/A"}</p>
+                </div>
+              </div>
+            </section>
+  
+            {/* Patient Details */}
+            <section className="mb-3">
+              <h6 className="text-primary border-bottom pb-2">Patient Details</h6>
+              <div className="row">
+                <div className="col-md-6">
+                  <p><strong>Pet Name:</strong> {selectedEvent.pet_name}</p>
+                  <p><strong>Breed:</strong> {selectedEvent.pet_breed}</p>
+                </div>
+                <div className="col-md-6">
+                  <p><strong>Species:</strong> {selectedEvent.pet_species}</p>
+                </div>
+              </div>
+            </section>
+  
+            {/* Service */}
+            <section className="mb-4">
+              <h6 className="text-primary border-bottom pb-2">Service</h6>
+              <p>{selectedEvent.service || "—"}</p>
+            </section>
+  
+            {/* Appointment Details */}
+            <section>
+              <h6 className="text-primary border-bottom pb-2">Appointment Details</h6>
+              <div className="row">
+                {/* Left column */}
+                <div className="col-md-6">
+                  {selectedEvent?.date && !isNaN(new Date(selectedEvent.date)) && (
+                    <p>
+                      <strong>Date:</strong>{" "}
+                      {format(new Date(selectedEvent.date), "MMMM dd, yyyy")}
+                    </p>
+                  )}
+                  {selectedEvent?.time && selectedEvent?.end_time && (
+                    <p>
+                      <strong>Time:</strong>{" "}
+                      {format(new Date(`1970-01-01T${selectedEvent.time}`), "hh:mm a")} to{" "}
+                      {format(new Date(`1970-01-01T${selectedEvent.end_time}`), "hh:mm a")}
+                    </p>
+                  )}
+                </div>
 
-      {editData && (
-        <EditAppointment
-          show={showEditModal}
-          onClose={handleModalClose}
-          eventData={editData}
-          onUpdated={handleAppointmentUpdated}
-        />
+                {/* Right column */}
+                <div className="col-md-6">
+                  <p><strong>Doctor:</strong> {selectedEvent.doctor_name || "TBD"}</p>
+                  <p><strong>Status:</strong> {selectedEvent.status || "Pending"}</p>
+                </div>
+              </div>
+            </section>
+
+          </Modal.Body>
+          <Modal.Footer>
+            <button
+              className="btn btn-secondary"
+              onClick={() => setShowEventModal(false)}
+            >
+              Close
+            </button>
+          </Modal.Footer>
+        </Modal>
       )}
     </div>
   );
 }
 
-export default ConfirmedAppointments;
+export default DoneAppointments;

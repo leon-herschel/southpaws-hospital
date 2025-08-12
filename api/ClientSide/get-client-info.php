@@ -31,7 +31,17 @@ if (!$reference_number) {
 }
 
 try {
-    $stmt = $conn->prepare("SELECT name, contact, email, status, date, pet_name, pet_breed, pet_species, reference_number, service FROM appointments WHERE reference_number = ? LIMIT 1");
+    $stmt = $conn->prepare("
+        SELECT 
+            a.name, a.contact, a.email, a.status, a.date,
+            a.pet_name, a.pet_breed, a.pet_species, a.time, a.end_time, a.reference_number, a.service,
+            a.doctor_id,
+            CONCAT(d.first_name, ' ', d.last_name) AS doctor_name
+        FROM appointments a
+        LEFT JOIN internal_users d ON a.doctor_id = d.id
+        WHERE a.reference_number = ?
+        LIMIT 1
+    ");
     $stmt->execute([$reference_number]);
     $appointment = $stmt->fetch(PDO::FETCH_ASSOC);
 

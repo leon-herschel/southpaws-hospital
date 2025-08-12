@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Button, ProgressBar } from "react-bootstrap";
 import { toast } from "react-toastify";
+import { format } from "date-fns";
 
 function AddAppointments() {
   const [formData, setFormData] = useState({
@@ -412,15 +413,16 @@ function AddAppointments() {
                 <section>
                   <h6 className="text-primary border-bottom pb-2">Preferred Schedule</h6>
                   <div className="row">
-                    <div className="col-md-6">
-                      <p><strong>Preferred Date:</strong> {formData.preferred_date}</p>
+                      <p>
+                        <strong>Preferred Date:</strong>{" "}
+                        {formData.preferred_date
+                          ? format(new Date(formData.preferred_date), "MMMM dd, yyyy")
+                          : "—"}
+                      </p>
                       <p><strong>Preferred Time:</strong> {formData.preferred_time}</p>
-                    </div>
-                    <div className="col-md-6">
                       {formData.notes && (
                         <p><strong>Additional Notes:</strong> {formData.notes}</p>
                       )}
-                    </div>
                   </div>
                 </section>
               </div>

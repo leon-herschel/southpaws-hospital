@@ -1,39 +1,65 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Modal } from "react-bootstrap";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { FaEye, FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaEdit } from "react-icons/fa";
 import { format } from "date-fns";
+import EditAppointment from "../EditAppointment";
 
-function DoneAppointments() {
-  const [doneAppointments, setDoneAppointments] = useState([]);
+function ConfirmedAppointments() {
+  const [confirmedAppointments, setConfirmedAppointments] = useState([]);
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [appointmentsPerPage, setAppointmentsPerPage] = useState(5);
   const [sortBy, setSortBy] = useState({ key: "", order: "" });
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const [showEventModal, setShowEventModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editData, setEditData] = useState(null);
 
-  const handleEventClick = (event) => {
-    setSelectedEvent(event);
-    setShowEventModal(true);
-  };
-
-  const fetchDone = async () => {
+  const fetchConfirmed = async () => {
     try {
       const res = await axios.get("http://localhost/api/appointments.php");
-      setDoneAppointments(
-        res.data.appointments.filter((a) => a.status === "Done")
+      setConfirmedAppointments(
+        res.data.appointments.filter((a) => a.status === "Confirmed")
       );
     } catch (err) {
-      console.log("Error in fetching done appointments", err);
+      console.log("Error fetching confirmed appointments", err);
     }
   };
 
   useEffect(() => {
-    fetchDone();
+    fetchConfirmed();
   }, []);
+
+  const editSelected = (appointment) => {
+    if (!appointment) return;
+    prepareEditData(appointment);
+  };
+  const prepareEditData = (appointment) => {
+    if (
+      appointment &&
+      appointment.date &&
+      appointment.time &&
+      appointment.end_time
+    ) {
+      const start = new Date(`${appointment.date}T${appointment.time}`);
+      const end = new Date(`${appointment.date}T${appointment.end_time}`);
+      setEditData({ ...appointment, start, end });
+      setShowEditModal(true);
+    } else {
+      console.warn("Missing fields in appointment:", appointment);
+      toast.error("Selected appointment is missing date/time information.");
+    }
+  };
+
+  const handleModalClose = () => {
+    setShowEditModal(false);
+    setEditData(null);
+  };
+
+  const handleAppointmentUpdated = () => {
+    fetchConfirmed(); // Refresh data after update
+  };
 
   const handleFilter = (e) => {
     setSearchTerm(e.target.value.toLowerCase());
@@ -46,7 +72,7 @@ function DoneAppointments() {
     }
     setSortBy({ key, order });
 
-    const sorted = [...doneAppointments].sort((a, b) => {
+    const sorted = [...confirmedAppointments].sort((a, b) => {
       const valA = typeof a[key] === "string" ? a[key].toLowerCase() : a[key];
       const valB = typeof b[key] === "string" ? b[key].toLowerCase() : b[key];
       if (valA < valB) return order === "asc" ? -1 : 1;
@@ -54,7 +80,7 @@ function DoneAppointments() {
       return 0;
     });
 
-    setDoneAppointments(sorted);
+    setConfirmedAppointments(sorted);
   };
 
   const getSortIcon = (key) => {
@@ -64,7 +90,7 @@ function DoneAppointments() {
     return null;
   };
 
-  const filteredAppointments = doneAppointments.filter((a) =>
+  const filteredAppointments = confirmedAppointments.filter((a) =>
     Object.values(a).join(" ").toLowerCase().includes(searchTerm)
   );
 
@@ -90,8 +116,7 @@ function DoneAppointments() {
       >
         <FaArrowLeft /> Back
       </button>
-      <h2 className="mb-3">Completed Appointments</h2>
-
+      <h2 className="mb-3">Confirmed Appointments</h2>
       <div className="d-flex justify-content-between align-items-center">
         <div className="input-group" style={{ width: "25%" }}>
           <input
@@ -102,6 +127,7 @@ function DoneAppointments() {
           />
         </div>
       </div>
+
       <table className="table table-striped align-middle text-center">
         <thead>
           <tr>
@@ -158,10 +184,10 @@ function DoneAppointments() {
           </tr>
         </thead>
         <tbody>
-          {doneAppointments.length === 0 ? (
+          {confirmedAppointments.length === 0 ? (
             <tr>
               <td colSpan="11" className="text-center">
-                No Done appointments.
+                No confirmed appointments.
               </td>
             </tr>
           ) : (
@@ -181,11 +207,11 @@ function DoneAppointments() {
                 <td>{appt.service}</td>
                 <td>
                   <button
-                    className="btn btn-md btn-success"
-                    onClick={() => handleEventClick(appt)}
-                    title="View Appointment Info"
+                    className="btn btn-md btn-primary me-2"
+                    onClick={() => editSelected(appt)}
+                    title="Edit Appointment"
                   >
-                    <FaEye />
+                    <FaEdit />
                   </button>
                 </td>
               </tr>
@@ -193,6 +219,7 @@ function DoneAppointments() {
           )}
         </tbody>
       </table>
+
       <div className="d-flex justify-content-between mb-3">
         <div className="d-flex align-items-center">
           <label className="me-2">Items per page:</label>
@@ -230,78 +257,17 @@ function DoneAppointments() {
           )}
         </ul>
       </div>
-      {selectedEvent && (
-        <Modal show={showEventModal} onHide={() => setShowEventModal(false)}>
-          <Modal.Header closeButton>
-            <Modal.Title>Appointment Info</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>
-              <strong>Reference #:</strong> {selectedEvent.reference_number}
-            </p>
-            {selectedEvent &&
-              selectedEvent.date &&
-              !isNaN(new Date(selectedEvent.date)) && (
-                <p>
-                  <strong>Date:</strong>{" "}
-                  {format(new Date(selectedEvent.date), "MMMM dd, yyyy")}
-                </p>
-              )}
 
-            {selectedEvent && selectedEvent.time && selectedEvent.end_time && (
-              <p>
-                <strong>Time:</strong>{" "}
-                {format(
-                  new Date(`1970-01-01T${selectedEvent.time}`),
-                  "hh:mm a"
-                )}{" "}
-                to{" "}
-                {format(
-                  new Date(`1970-01-01T${selectedEvent.end_time}`),
-                  "hh:mm a"
-                )}
-              </p>
-            )}
-            <p>
-              <strong>Name:</strong> {selectedEvent.name}
-            </p>
-            <p>
-              <strong>Contact #:</strong> {selectedEvent.contact}
-            </p>
-            <p>
-              <strong>Email:</strong> {selectedEvent.email}
-            </p>
-            <p>
-              <strong>Pet Name:</strong> {selectedEvent.pet_name}
-            </p>
-            <p>
-              <strong>Species:</strong> {selectedEvent.pet_species}
-            </p>
-            <p>
-              <strong>Breed:</strong> {selectedEvent.pet_breed}
-            </p>
-            <p>
-              <strong>Service:</strong> {selectedEvent.service}
-            </p>
-            <p>
-              <strong>Doctor:</strong> {selectedEvent.doctor_name}
-            </p>
-            <p>
-              <strong>Status:</strong> {selectedEvent.status}
-            </p>
-          </Modal.Body>
-          <Modal.Footer>
-            <button
-              className="btn btn-secondary"
-              onClick={() => setShowEventModal(false)}
-            >
-              Close
-            </button>
-          </Modal.Footer>
-        </Modal>
+      {editData && (
+        <EditAppointment
+          show={showEditModal}
+          onClose={handleModalClose}
+          eventData={editData}
+          onUpdated={handleAppointmentUpdated}
+        />
       )}
     </div>
   );
 }
 
-export default DoneAppointments;
+export default ConfirmedAppointments;

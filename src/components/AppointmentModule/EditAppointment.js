@@ -252,21 +252,6 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
                       required
                     />
                   </Form.Group>
-
-                  <Form.Group className="mb-3">
-                    <Form.Label>Status:</Form.Label>
-                    <select
-                      name="status"
-                      className="form-control"
-                      value={formData.status}
-                      onChange={handleChange}
-                      required
-                    >
-                      <option value="Confirmed">Confirmed</option>
-                      <option value="Cancelled">Cancelled</option>
-                      <option value="Done">Done</option>
-                    </select>
-                  </Form.Group>
                 </div>
               </div>
             </div>
@@ -521,6 +506,21 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
                         disabled={!formData.date}
                       />
                     </div>
+
+                    <Form.Group className="mb-3">
+                    <Form.Label>Status:</Form.Label>
+                    <select
+                      name="status"
+                      className="form-control"
+                      value={formData.status}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="Confirmed">Confirmed</option>
+                      <option value="Cancelled">Cancelled</option>
+                      <option value="Done">Done</option>
+                    </select>
+                  </Form.Group>
                   </div>
                 </div>
               </div>

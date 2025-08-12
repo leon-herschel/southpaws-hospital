@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "./../../assets/southpawslogowhite.png";
+import logo from "../../../assets/southpawslogowhite.png";
 
 const ClientTopBar = () => {
   return (

@@ -1,15 +1,26 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { format } from "date-fns";
 
 function ReferenceTracking() {
   const [referenceNumber, setReferenceNumber] = useState("");
   const [appointmentDetails, setAppointmentDetails] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Confirmed":
+        return "badge badge-lg bg-success";
+      case "Cancelled":
+        return "badge badge-lg bg-danger";
+      default:
+        return "badge badge-lg bg-secondary"; 
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted!");
 
     if (!referenceNumber.trim()) {
       toast.error("Reference number is required.");
@@ -37,7 +48,15 @@ function ReferenceTracking() {
         { reference_number: referenceNumber }
       );
 
-      setAppointmentDetails(detailsRes.data);
+      const details = detailsRes.data;
+
+      // Disallow tracking for Arrived and Done
+      if (details.status === "Arrived" || details.status === "Done") {
+        toast.error("Appointment not found.");
+        return;
+      }
+
+      setAppointmentDetails(details);
       toast.success("Appointment details fetched!");
     } catch (error) {
       if (error.response?.status === 404) {
@@ -62,7 +81,7 @@ function ReferenceTracking() {
           value={referenceNumber}
           onChange={(e) => setReferenceNumber(e.target.value)}
         />
-        <div className="button-container">
+        <div className="button-container mb-3">
           <button
             type="submit"
             className="button btn-gradient"
@@ -75,40 +94,33 @@ function ReferenceTracking() {
 
       {appointmentDetails && (
         <div className="mt-4 p-3 border rounded shadow-sm">
-          <h4>Appointment Information</h4>
-          <p>
-            <strong>Name:</strong> {appointmentDetails.name}
-          </p>
-          <p>
-            <strong>Contact:</strong> {appointmentDetails.contact}
-          </p>
-          <p>
-            <strong>Email:</strong> {appointmentDetails.email || "N/A"}
-          </p>
-          <p>
-            <strong>Status:</strong> {appointmentDetails.status}
-          </p>
-          <p>
-            <strong>Date:</strong> {appointmentDetails.date}
-          </p>
-          <p>
-            <strong>Service:</strong> {appointmentDetails.service}
-          </p>
-          <p>
-            <strong>Reference Number:</strong>{" "}
-            {appointmentDetails.reference_number}
-          </p>
-
-          <h5 className="mt-3">Pet Information</h5>
-          <p>
-            <strong>Name:</strong> {appointmentDetails.pet_name}
-          </p>
-          <p>
-            <strong>Breed:</strong> {appointmentDetails.pet_breed}
-          </p>
-          <p>
-            <strong>Species:</strong> {appointmentDetails.pet_species}
-          </p>
+          <h4 className="mb-3 text-primary">Appointment Info</h4>
+          <section className="mb-3">
+            <p><strong>Name:</strong> {appointmentDetails.name}</p>
+            <p><strong>Pet Name:</strong> {appointmentDetails.pet_name}</p>
+            <p>
+              <strong>Date:</strong>{" "}
+              {appointmentDetails.date
+                ? format(new Date(appointmentDetails.date), "MMMM d, yyyy")
+                : "—"}
+            </p>
+            <p>
+              <strong>Time:</strong>{" "}
+              {appointmentDetails.time
+                ? appointmentDetails.end_time
+                  ? `${format(new Date(`1970-01-01T${appointmentDetails.time}`), "hh:mm a")} to ${format(new Date(`1970-01-01T${appointmentDetails.end_time}`), "hh:mm a")}`
+                  : format(new Date(`1970-01-01T${appointmentDetails.time}`), "hh:mm a")
+                : "—"}
+            </p>
+            <p><strong>Service:</strong> {appointmentDetails.service || "TBD"}</p>
+            <p><strong>Doctor:</strong> {appointmentDetails.doctor_name || "TBD"}</p>
+            <p>
+              <strong>Status:</strong>{" "}
+              <span className={getStatusClass(appointmentDetails.status)}>
+                {appointmentDetails.status || "Pending"}
+              </span>
+            </p>
+          </section>
         </div>
       )}
     </div>

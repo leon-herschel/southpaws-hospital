@@ -337,26 +337,65 @@ const Appointment = () => {
             <Modal.Title>Appointment Info</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>
-              <strong>Reference #:</strong> {selectedEvent.reference_number}
-            </p>
-            <p>
-              <strong>Date:</strong>{" "}
-              {format(selectedEvent.start, "MMMM dd, yyyy")}
-            </p>
-            <p>
-              <strong>Time:</strong> {format(selectedEvent.start, "hh:mm a")} to{" "}
-              {format(selectedEvent.end, "hh:mm a")}
-            </p>
-            <p><strong>Name:</strong> {selectedEvent.name}</p>
-            <p><strong>Contact #:</strong> {selectedEvent.contact}</p>
-            <p><strong>Email:</strong> {selectedEvent.email}</p>
-            <p><strong>Pet Name:</strong> {selectedEvent.pet_name}</p>
-            <p><strong>Species:</strong> {selectedEvent.pet_species}</p>
-            <p><strong>Breed:</strong> {selectedEvent.pet_breed}</p>
-            <p><strong>Service:</strong> {selectedEvent.service}</p>
-            <p><strong>Doctor:</strong> {selectedEvent.doctor_name}</p>
-            <p><strong>Status:</strong> {selectedEvent.status}</p>
+            {/* Personal Details */}
+            <section className="mb-3">
+              <h6 className="text-primary border-bottom pb-2">Personal Details</h6>
+              <div className="row">
+                <div className="col-md-6">
+                  <p><strong>Name:</strong> {selectedEvent.name}</p>
+                  <p><strong>Contact #:</strong> {selectedEvent.contact}</p>
+                </div>
+                <div className="col-md-6">
+                  <p><strong>Email:</strong> {selectedEvent.email || "N/A"}</p>
+                </div>
+              </div>
+            </section>
+
+            {/* Patient Details */}
+            <section className="mb-3">
+              <h6 className="text-primary border-bottom pb-2">Patient Details</h6>
+              <div className="row">
+                <div className="col-md-6">
+                  <p><strong>Pet Name:</strong> {selectedEvent.pet_name}</p>
+                  <p><strong>Breed:</strong> {selectedEvent.pet_breed}</p>
+                </div>
+                <div className="col-md-6">
+                  <p><strong>Species:</strong> {selectedEvent.pet_species}</p>
+                </div>
+              </div>
+            </section>
+
+            {/* Service */}
+            <section className="mb-4">
+              <h6 className="text-primary border-bottom pb-2">Service</h6>
+              <p>{selectedEvent.service || "—"}</p>
+            </section>
+
+            {/* Appointment Details */}
+            <section>
+              <h6 className="text-primary border-bottom pb-2">Appointment Details</h6>
+              <div className="row">
+                <div className="col-md-6">
+                  <p><strong>Reference #:</strong> {selectedEvent.reference_number || "—"}</p>
+                  <p>
+                    <strong>Date:</strong>{" "}
+                    {selectedEvent.start
+                      ? format(selectedEvent.start, "MMMM dd, yyyy")
+                      : "—"}
+                  </p>
+                  <p>
+                    <strong>Time:</strong>{" "}
+                    {selectedEvent.start && selectedEvent.end
+                      ? `${format(selectedEvent.start, "hh:mm a")} to ${format(selectedEvent.end, "hh:mm a")}`
+                      : "—"}
+                  </p>
+                </div>
+                <div className="col-md-6">
+                  <p><strong>Doctor:</strong> {selectedEvent.doctor_name || "TBD"}</p>
+                  <p><strong>Status:</strong> {selectedEvent.status || "Pending"}</p>
+                </div>
+              </div>
+            </section>
           </Modal.Body>
           <Modal.Footer>
             {selectedEvent?.status === "Cancelled" && (
@@ -373,6 +412,8 @@ const Appointment = () => {
             >
               Close
             </button>
+            
+            {selectedEvent.status !== "Done" && (
             <button
               className="btn btn-primary me-2"
               onClick={() => {
@@ -382,6 +423,7 @@ const Appointment = () => {
             >
               Edit
             </button>
+            )}
           </Modal.Footer>
         </Modal>
       )}

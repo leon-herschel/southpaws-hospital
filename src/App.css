@@ -245,6 +245,11 @@ thead {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
+.badge-lg {
+  font-size: 0.9rem;  
+  padding: 0.4em 0.4em; 
+}
+
 
 
 

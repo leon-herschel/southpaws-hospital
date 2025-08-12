@@ -3,8 +3,9 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaEye } from "react-icons/fa";
-import AddAppointments from "./AddAppointments";
+import AddAppointments from "../AddAppointments";
 import { Modal } from "react-bootstrap";
+import { format } from "date-fns";
 
 const PendingAppointments = () => {
   const [pendingAppointments, setPendingAppointments] = useState([]);
@@ -262,7 +263,7 @@ const PendingAppointments = () => {
           >
             <div className="modal-content">
               <div className="modal-header">
-                <h4 className="modal-title">Appointment Request Details</h4>
+                <h4 className="modal-title">Review Appointment Request</h4>
                 <button type="button" className="btn-close" onClick={closeModal} />
               </div>
               <div className="modal-body">
@@ -292,24 +293,25 @@ const PendingAppointments = () => {
                   </div>
                 </section>
 
-                <section className="mb-3">
+                <section className="mb-4">
                   <h6 className="text-primary border-bottom pb-2">Reason for Visit</h6>
                   <p>{viewingAppointment.reason_for_visit}</p>
                 </section>
 
                 <section>
                   <h6 className="text-primary border-bottom pb-2">Preferred Schedule</h6>
-                  <div className="row">
-                    <div className="col-md-6">
-                      <p><strong>Preferred Date:</strong> {viewingAppointment.preferred_date}</p>
+                  <div>
+                    <p>
+                      <strong>Preferred Date:</strong>{" "}
+                      {viewingAppointment.preferred_date
+                        ? format(new Date(viewingAppointment.preferred_date), "MMMM dd, yyyy")
+                        : "—"}
+                    </p>
                       <p><strong>Preferred Time:</strong> {viewingAppointment.preferred_time}</p>
                     </div>
-                    <div className="col-md-6">
                       {viewingAppointment.notes && (
                         <p><strong>Additional Notes:</strong> {viewingAppointment.notes}</p>
                       )}
-                    </div>
-                  </div>
                 </section>
               </div>
               <div className="modal-footer">
