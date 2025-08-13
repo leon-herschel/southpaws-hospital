@@ -20,6 +20,7 @@ const PointofSales = () => {
     const [clientPets, setClientPets] = useState([]);
     const [showReceipt, setShowReceipt] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [isConfirming, setIsConfirming] = useState(false);
     const [showInventory, setShowInventory] = useState(false);
     const [showServices, setShowServices] = useState(false);
     const [services, setServices] = useState([]);
@@ -211,12 +212,6 @@ const PointofSales = () => {
         }
     };
     
-    
-   
-    
-    
-    
-
     useEffect(() => {
         localStorage.setItem('cartItems', JSON.stringify(cartItems));
     }, [cartItems]);
@@ -349,9 +344,6 @@ const PointofSales = () => {
         setCartItems(updatedItems);
     };
     
-    
-    
-
     const decreaseQuantity = (itemId) => {
         const updatedItems = cartItems.map(item =>
             item.barcode === itemId && item.quantity > 1 && !item.isService
@@ -407,9 +399,6 @@ const PointofSales = () => {
         setShowConfirmModal(true);
     };
     
-    
-    
-
     const updateCartItemQuantity = (item, newQuantity) => {
         // Allow empty input while typing
         if (newQuantity === '') {
@@ -439,6 +428,9 @@ const PointofSales = () => {
     };
     
     const handleConfirmYes = async () => {
+        if (isConfirming) return;
+
+        setIsConfirming(true);
         try {
             setErrorMessage(""); // Reset previous errors
     
@@ -453,6 +445,7 @@ const PointofSales = () => {
             if (!clientId) {
                 if (!clientName.trim()) {
                     setErrorMessage("Client name is required.");
+                    setIsConfirming(false);
                     return;
                 }
     
@@ -574,6 +567,8 @@ const PointofSales = () => {
         } catch (error) {
             console.error("❌ Error while sending order:", error);
             setErrorMessage("An error occurred while placing the order. Please try again.");
+        } finally {
+            setIsConfirming(false); // Reset button state
         }
     };
 
@@ -1021,12 +1016,15 @@ const PointofSales = () => {
         <Button variant="secondary" onClick={handleConfirmNo}>
             Close
         </Button>
-        <Button variant="primary" onClick={handleConfirmYes} disabled={changeAmount === null}>
-            Confirm
+        <Button 
+            variant="primary" 
+            onClick={handleConfirmYes} 
+            disabled={changeAmount === null || isConfirming}
+        >
+            {isConfirming ? "Processing..." : "Confirm"}
         </Button>
     </Modal.Footer>
 </Modal>
-
 
             {/* Receipt Modal */}
             <Modal show={showReceipt} onHide={() => setShowReceipt(false)}>
