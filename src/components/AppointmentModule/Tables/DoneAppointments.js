@@ -23,9 +23,12 @@ function DoneAppointments() {
   const fetchDone = async () => {
     try {
       const res = await axios.get("http://localhost/api/appointments.php");
-      setDoneAppointments(
-        res.data.appointments.filter((a) => a.status === "Done")
-      );
+      let done = res.data.appointments.filter((a) => a.status === "Done");
+
+      // Sort by date DESC
+      done.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      setDoneAppointments(done);
     } catch (err) {
       console.log("Error in fetching done appointments", err);
     }

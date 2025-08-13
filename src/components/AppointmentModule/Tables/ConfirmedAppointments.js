@@ -19,13 +19,17 @@ function ConfirmedAppointments() {
   const fetchConfirmed = async () => {
     try {
       const res = await axios.get("http://localhost/api/appointments.php");
-      setConfirmedAppointments(
-        res.data.appointments.filter((a) => a.status === "Confirmed")
-      );
+      let confirmed = res.data.appointments.filter((a) => a.status === "Confirmed");
+
+      // Sort by date ASC on initial load
+      confirmed.sort((b, a) => new Date(b.date) - new Date(a.date));
+
+      setConfirmedAppointments(confirmed);
     } catch (err) {
       console.log("Error fetching confirmed appointments", err);
     }
   };
+
 
   useEffect(() => {
     fetchConfirmed();
