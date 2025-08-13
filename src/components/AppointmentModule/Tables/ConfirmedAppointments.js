@@ -180,6 +180,12 @@ function ConfirmedAppointments() {
             >
               Service {getSortIcon("service")}
             </th>
+            <th
+              onClick={() => handleSort("doctor_name")}
+              style={{ cursor: "pointer" }}
+            >
+              Doctor {getSortIcon("doctor_name")}
+            </th>
             <th style={{ width: "15%" }}>Actions</th>
           </tr>
         </thead>
@@ -205,6 +211,7 @@ function ConfirmedAppointments() {
                 <td>{appt.pet_species}</td>
                 <td>{appt.pet_breed}</td>
                 <td>{appt.service}</td>
+                <td>{appt.doctor_name || "—"}</td>
                 <td>
                   <button
                     className="btn btn-md btn-primary me-2"
