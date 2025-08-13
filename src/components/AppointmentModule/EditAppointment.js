@@ -26,7 +26,8 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
 
   const [formData, setFormData] = useState({
     id: "",
-    name: "",
+    first_name: "",
+    last_name: "",
     contact: "",
     email: "",
     service: [""],
@@ -42,12 +43,17 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost/api/get_services.php")
-      .then((res) => setServices(res.data))
-      .catch((err) => {
-        console.error("Failed to load services:", err);
-        toast.error("Failed to load available services.");
-      });
+    .get("http://localhost/api/get_services.php")
+    .then((res) =>
+      setServices(res.data.map(s => ({
+        ...s,
+        name: s.name.trim() // clean trailing/leading spaces
+      })))
+    )
+    .catch((err) => {
+      console.error("Failed to load services:", err);
+      toast.error("Failed to load available services.");
+    });
 
       axios
         .get("http://localhost/api/get_doctors.php")
@@ -69,13 +75,21 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
       const start = new Date(eventData.start);
       const end = new Date(eventData.end);
 
+      const nameParts = (eventData.name || "").trim().split(/\s+/);
+      const last_name = nameParts.length > 1 ? nameParts.pop() : "";
+      const first_name = nameParts.join(" ");
+
       setFormData({
         id: eventData.id,
-        name: eventData.name || "",
+        first_name,
+        last_name,
         contact: eventData.contact || "",
         email: eventData.email || "",
         service: eventData.service
-          ? eventData.service.split(/\s*,\s*/).filter(Boolean)
+          ? eventData.service
+              .split(/\s*,\s*/)
+              .map(s => s.trim()) // ensure no trailing/leading spaces
+              .filter(Boolean)
           : [""],
         date: start.toISOString().split("T")[0],
         time: start.toTimeString().substring(0, 5),
@@ -90,6 +104,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
       console.warn("Invalid start or end time:", eventData);
     }
   }, [eventData]);
+
 
   useEffect(() => {
     if (formData.date && formData.doctor_id) {
@@ -119,7 +134,8 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
   };
 
   const handleUpdate = async () => {
-    const { name, contact, time, end_time } = formData;
+    const { first_name, last_name, contact, time, end_time } = formData;
+    const name = `${first_name} ${last_name}`.trim();
 
     // Contact validation
     if (!/^\d{11}$/.test(contact)) {
@@ -171,11 +187,15 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
 
     const updatedData = {
       ...formData,
+      name, // merged name
       doctor_id: formData.doctor_id,
       service: [...new Set(formData.service.map(s => s.trim()).filter(Boolean))].join(", "),
       user_id: currentUserID,
       user_email: currentUserEmail,
     };
+
+    delete updatedData.first_name;
+    delete updatedData.last_name;
 
     try {
       await axios.put("http://localhost/api/appointments.php", updatedData);
@@ -216,16 +236,29 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
               <div className="row">
                 <div className="col-md-6">
                   <Form.Group className="mb-3">
-                    <Form.Label>Name:</Form.Label>
+                    <Form.Label>First Name:</Form.Label>
                     <Form.Control
                       type="text"
-                      name="name"
-                      value={formData.name}
+                      name="first_name"
+                      value={formData.first_name || ""}
                       onChange={handleChange}
                       required
                     />
                   </Form.Group>
 
+                  <Form.Group className="mb-3">
+                    <Form.Label>Last Name:</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="last_name"
+                      value={formData.last_name || ""}
+                      onChange={handleChange}
+                      required
+                    />
+                  </Form.Group>
+                </div>
+
+                <div className="col-md-6">
                   <Form.Group className="mb-3">
                     <Form.Label>Email:</Form.Label>
                     <Form.Control
@@ -236,9 +269,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
                       required
                     />
                   </Form.Group>
-                </div>
 
-                <div className="col-md-6">
                   <Form.Group className="mb-3">
                     <Form.Label>Contact Number:</Form.Label>
                     <Form.Control
