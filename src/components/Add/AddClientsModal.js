@@ -238,7 +238,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                         <div className="row">
                             <div className="col-md-6">
                                 <Form.Group>
-                                    <Form.Label>Name</Form.Label>
+                                    <Form.Label>Name: <span className="text-danger">*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="name"
@@ -250,7 +250,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                                     />
                                 </Form.Group>
                                 <Form.Group>
-                                    <Form.Label>Address</Form.Label>
+                                    <Form.Label>Address: <span className="text-danger">*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="address"
@@ -261,7 +261,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                                     />
                                 </Form.Group>
                                 <Form.Group>
-                                    <Form.Label>Mobile Number</Form.Label>
+                                    <Form.Label>Mobile Number: <span className="text-danger">*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="cellnumber"
@@ -274,7 +274,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                             </div>
                             <div className="col-md-6">
                                 <Form.Group>
-                                    <Form.Label>Email</Form.Label>
+                                    <Form.Label>Email: <span className="text-danger">*</span></Form.Label>
                                     <Form.Control
                                         type="email"
                                         name="email"
@@ -285,7 +285,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                                     />
                                 </Form.Group>
                                 <Form.Group>
-                                    <Form.Label>Gender</Form.Label>
+                                    <Form.Label>Gender: <span className="text-danger">*</span></Form.Label>
                                     <Form.Control
                                         as="select"
                                         name="gender"
@@ -312,7 +312,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                             <div className="row" key={index}>
                                 <div className="col-md-6">
                                     <Form.Group>
-                                        <Form.Label>Name</Form.Label>
+                                        <Form.Label>Name: <span className="text-danger">*</span></Form.Label>
                                         <Form.Control
                                             type="text"
                                             name="name"
@@ -323,7 +323,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                                         />
                                     </Form.Group>
                                     <Form.Group>
-                                        <Form.Label>Species</Form.Label>
+                                        <Form.Label>Species: <span className="text-danger">*</span></Form.Label>
                                         <Form.Control
                                             type="text"
                                             name="species"
@@ -334,17 +334,18 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                                         />
                                     </Form.Group>
                                     <Form.Group>
-                                        <Form.Label>Breed</Form.Label>
+                                        <Form.Label>Breed: <span className="text-danger">*</span></Form.Label>
                                         <Form.Control
                                             type="text"
                                             name="breed"
                                             value={patient.breed}
                                             onChange={(event) => handlePatientChange(event, index)}
                                             placeholder="Enter breed"
+                                            required
                                         />
                                     </Form.Group>
                                     <Form.Group>
-                                        <Form.Label>Weight (in kgs.)</Form.Label>
+                                        <Form.Label>Weight (in kgs.): </Form.Label>
                                         <Form.Control
                                             type="number"
                                             step="0.1"
@@ -357,7 +358,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                                 </div>
                                 <div className="col-md-6">
                                 <Form.Group>
-                                <Form.Label>Birthdate</Form.Label>
+                                <Form.Label>Birthdate: <span className="text-danger">*</span></Form.Label>
                                 <Form.Control
                                     type="date"
                                     name="birthdate"
@@ -368,7 +369,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                                 />
                             </Form.Group>
                                     <Form.Group>
-                                <Form.Label>Age</Form.Label>
+                                <Form.Label>Age: </Form.Label>
                                 <Form.Control
                                     type="text" // Change to 'text' so that it can display the full age in years and months
                                     name="age"
@@ -379,7 +380,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                             </Form.Group>
 
                                     <Form.Group>
-                                        <Form.Label>Distinct Features</Form.Label>
+                                        <Form.Label>Distinct Features: </Form.Label>
                                         <Form.Control
                                             type="text"
                                             name="distinct_features"
@@ -389,7 +390,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                                         />
                                     </Form.Group>
                                     <Form.Group>
-                                        <Form.Label>Other Details</Form.Label>
+                                        <Form.Label>Other Details: </Form.Label>
                                         <Form.Control
                                             as="textarea"
                                             rows={3}

@@ -19,13 +19,17 @@ function ConfirmedAppointments() {
   const fetchConfirmed = async () => {
     try {
       const res = await axios.get("http://localhost/api/appointments.php");
-      setConfirmedAppointments(
-        res.data.appointments.filter((a) => a.status === "Confirmed")
-      );
+      let confirmed = res.data.appointments.filter((a) => a.status === "Confirmed");
+
+      // Sort by date ASC on initial load
+      confirmed.sort((b, a) => new Date(b.date) - new Date(a.date));
+
+      setConfirmedAppointments(confirmed);
     } catch (err) {
       console.log("Error fetching confirmed appointments", err);
     }
   };
+
 
   useEffect(() => {
     fetchConfirmed();
@@ -180,6 +184,12 @@ function ConfirmedAppointments() {
             >
               Service {getSortIcon("service")}
             </th>
+            <th
+              onClick={() => handleSort("doctor_name")}
+              style={{ cursor: "pointer" }}
+            >
+              Doctor {getSortIcon("doctor_name")}
+            </th>
             <th style={{ width: "15%" }}>Actions</th>
           </tr>
         </thead>
@@ -205,6 +215,7 @@ function ConfirmedAppointments() {
                 <td>{appt.pet_species}</td>
                 <td>{appt.pet_breed}</td>
                 <td>{appt.service}</td>
+                <td>{appt.doctor_name || "—"}</td>
                 <td>
                   <button
                     className="btn btn-md btn-primary me-2"
