@@ -39,16 +39,15 @@ try {
     } elseif ($appointment['status'] !== 'Confirmed') {
         echo json_encode(["valid" => false, "message" => "Appointment is not confirmed."]);
     } elseif ($appointment['appointment_date'] !== date('Y-m-d')) {
-        echo json_encode(["valid" => false, "message" => "Appointment is not scheduled for today."]);
+        // Send a "warning" flag but still allow proceeding
+        echo json_encode([
+            "valid" => "warning",
+            "message" => "⚠ Appointment is not scheduled for today."
+        ]);
     } else {
         echo json_encode(["valid" => true]);
     }
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(["error" => "Query error: " . $e->getMessage()]);
-}
-
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    http_response_code(200);
-    exit();
 }

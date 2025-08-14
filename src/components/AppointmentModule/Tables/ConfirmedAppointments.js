@@ -132,7 +132,7 @@ function ConfirmedAppointments() {
         </div>
       </div>
 
-      <table className="table table-striped align-middle text-center">
+      <table className="table table-striped table-hover custom-table align-middle text-center">
         <thead>
           <tr>
             <th
