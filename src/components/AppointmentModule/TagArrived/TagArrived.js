@@ -26,7 +26,10 @@ function TagArrived({ onClose }) {
         reference_number: referenceNumber,
       });
 
-      if (res.data.valid) {
+      if (res.data.valid === true) {
+        setStep("prompt");
+      } else if (res.data.valid === "warning") {
+        toast.warn(res.data.message);
         setStep("prompt");
       } else {
         toast.error(res.data.message || "Invalid reference number.");
