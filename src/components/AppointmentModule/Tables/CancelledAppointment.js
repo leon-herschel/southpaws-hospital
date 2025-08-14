@@ -24,9 +24,12 @@ function CancelledAppointment() {
   const fetchCancelled = async () => {
     try {
       const res = await axios.get("http://localhost/api/appointments.php");
-      setCancelledAppointments(
-        res.data.appointments.filter((a) => a.status === "Cancelled")
-      );
+      let cancelled = res.data.appointments.filter((a) => a.status === "Cancelled");
+
+      // Sort by date ASC
+      cancelled.sort((b, a) => new Date(b.date) - new Date(a.date));
+
+      setCancelledAppointments(cancelled);
     } catch (err) {
       console.log("Error fetching cancelled appointments", err);
     }
@@ -255,6 +258,12 @@ function CancelledAppointment() {
             >
               Service {getSortIcon("service")}
             </th>
+            <th
+              onClick={() => handleSort("doctor_name")}
+              style={{ cursor: "pointer" }}
+            >
+              Doctor {getSortIcon("doctor_name")}
+            </th>
             <th style={{ width: "15%" }}>Actions</th>
           </tr>
         </thead>
@@ -288,6 +297,7 @@ function CancelledAppointment() {
                 <td>{appt.pet_species}</td>
                 <td>{appt.pet_breed}</td>
                 <td>{appt.service}</td>
+                <td>{appt.doctor_name || "—"}</td>
                 <td>
                   <button
                     className="btn btn-md btn-danger"

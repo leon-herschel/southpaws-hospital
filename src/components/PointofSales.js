@@ -9,6 +9,7 @@ import AddSurgicalFormModal from '../components/Add/AddSurgicalFormModal';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AddClientAndPatientModal from '../components/Add/AddClientsModal';
+import Select from "react-select";
 
 const cartFromLocalStorage = JSON.parse(localStorage.getItem('cartItems') || '[]');
 
@@ -20,6 +21,7 @@ const PointofSales = () => {
     const [clientPets, setClientPets] = useState([]);
     const [showReceipt, setShowReceipt] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [isConfirming, setIsConfirming] = useState(false);
     const [showInventory, setShowInventory] = useState(false);
     const [showServices, setShowServices] = useState(false);
     const [services, setServices] = useState([]);
@@ -211,12 +213,6 @@ const PointofSales = () => {
         }
     };
     
-    
-   
-    
-    
-    
-
     useEffect(() => {
         localStorage.setItem('cartItems', JSON.stringify(cartItems));
     }, [cartItems]);
@@ -349,9 +345,6 @@ const PointofSales = () => {
         setCartItems(updatedItems);
     };
     
-    
-    
-
     const decreaseQuantity = (itemId) => {
         const updatedItems = cartItems.map(item =>
             item.barcode === itemId && item.quantity > 1 && !item.isService
@@ -407,9 +400,6 @@ const PointofSales = () => {
         setShowConfirmModal(true);
     };
     
-    
-    
-
     const updateCartItemQuantity = (item, newQuantity) => {
         // Allow empty input while typing
         if (newQuantity === '') {
@@ -439,6 +429,9 @@ const PointofSales = () => {
     };
     
     const handleConfirmYes = async () => {
+        if (isConfirming) return;
+
+        setIsConfirming(true);
         try {
             setErrorMessage(""); // Reset previous errors
     
@@ -453,6 +446,7 @@ const PointofSales = () => {
             if (!clientId) {
                 if (!clientName.trim()) {
                     setErrorMessage("Client name is required.");
+                    setIsConfirming(false);
                     return;
                 }
     
@@ -574,6 +568,8 @@ const PointofSales = () => {
         } catch (error) {
             console.error("❌ Error while sending order:", error);
             setErrorMessage("An error occurred while placing the order. Please try again.");
+        } finally {
+            setIsConfirming(false); // Reset button state
         }
     };
 
@@ -590,34 +586,34 @@ const PointofSales = () => {
 
     return (
         <div className='container mt-2'>
-<div className="d-flex justify-content-between align-items-center">
+            <div className="d-flex justify-content-between align-items-center">
 
-    <h1 style={{ fontWeight: 'bold' }}>Point of Sales</h1>
-    
-    <div style={{ position: 'relative', display: 'inline-block' }}>
-        <FaShoppingCart
-            style={{ fontSize: '3rem', cursor: 'pointer', color: 'black' }}
-            onClick={() => setShowCartModal(true)}
-        />
-        {cartItems.length > 0 && (
-            <span
-                style={{
-                    position: 'absolute',
-                    top: 0,
-                    right: 0,
-                    background: 'red',
-                    color: 'white',
-                    borderRadius: '50%',
-                    padding: '0.05rem 0.5rem',
-                    fontSize: '0.8rem',
-                    fontWeight: 'bold',
-                }}
-            >
-                {cartItems.length}
-            </span>
-        )}
-    </div>
-</div>
+                <h1 style={{ fontWeight: 'bold' }}>Point of Sales</h1>
+                
+                <div style={{ position: 'relative', display: 'inline-block' }}>
+                    <FaShoppingCart
+                        style={{ fontSize: '3rem', cursor: 'pointer', color: 'black' }}
+                        onClick={() => setShowCartModal(true)}
+                    />
+                    {cartItems.length > 0 && (
+                        <span
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                right: 0,
+                                background: 'red',
+                                color: 'white',
+                                borderRadius: '50%',
+                                padding: '0.05rem 0.5rem',
+                                fontSize: '0.8rem',
+                                fontWeight: 'bold',
+                            }}
+                        >
+                            {cartItems.length}
+                        </span>
+                    )}
+                </div>
+            </div>
 
             <div className="mb-4">
                 {/* ✅ Label and Plus Button on the Same Row */}
@@ -626,87 +622,89 @@ const PointofSales = () => {
                         Select Client:
                     </label>
 
-                    <button 
-                        className="btn btn-success d-flex align-items-center justify-content-center"
-                        onClick={() => setShowAddClientModal(true)}
-                        style={{ padding: '6px 10px' }} // Adjust padding for better size
-                    >
-                        <FaPlus />
-                    </button>
-                </div>
-
-{/* ✅ Dropdown Below */}
-<select
-    id="clientSelect"
-    className="form-select mt-2"
-    value={selectedClient}
-    onChange={handleClientChange}
-    style={{ width: '100%' }}
->
-    <option value="">Select a client</option>
-    {clients.map((client, index) => (
-        <option key={index} value={client.id}>{client.name}</option>
-    ))}
-</select>
-
-
-                {/* Show pets and checkboxes if a client is selected */}
-                {clientPets.length > 0 && (
-    <div className="mt-3">
-        <p>Select pets:</p>
-        <div style={{ display: 'flex', flexWrap: 'wrap' }}> {/* Flex container for horizontal layout */}
-            {clientPets.map((pet) => (
-                <div key={pet.pet_id} style={{ marginRight: '15px', marginBottom: '10px' }}> {/* Spacing between items */}
-                    <input
-                        type="checkbox"
-                        id={`pet-${pet.pet_id}`} // Unique ID for each pet
-                        value={pet.pet_id}
-                        onChange={(e) => handlePetSelection(e, pet.pet_id)} // Handle pet selection/deselection
-                        checked={selectedPets.includes(pet.pet_id)} // Bind the checked state
-                        style={{ display: 'none' }} // Hide the default checkbox
-                    />
-                    <label 
-                        htmlFor={`pet-${pet.pet_id}`} 
-                        className="ms-2"
-                        style={{
-                            cursor: 'pointer',
-                            position: 'relative',
-                            paddingLeft: '25px',
-                            lineHeight: '1.5',
-                        }}
-                    >
-                        {/* Custom checkbox */}
-                        <span
-                            style={{
-                                position: 'absolute',
-                                left: '0',
-                                top: '0',
-                                width: '20px',
-                                height: '20px',
-                                border: '1px solid #000',
-                                backgroundColor: selectedPets.includes(pet.pet_id) ? '#007BFF' : '#fff',
-                                color: selectedPets.includes(pet.pet_id) ? 'white' : 'transparent',
-                                textAlign: 'center',
-                                fontSize: '14px',
-                                fontWeight: 'bold',
-                                borderRadius: '4px',
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                            }}
+                        <button 
+                            className="btn btn-success d-flex align-items-center justify-content-center"
+                            onClick={() => setShowAddClientModal(true)}
+                            style={{ padding: '6px 10px' }} // Adjust padding for better size
                         >
-                            {selectedPets.includes(pet.pet_id) ? '✓' : ''}
-                        </span>
-                        {pet.pet_name} {/* Display pet name */}
-                    </label>
+                            <FaPlus />
+                        </button>
                 </div>
-            ))}
-        </div>
-    </div>
-)}
+
+                    {/* ✅ Dropdown Below */}
+                    <Select
+                        id="clientSelect"
+                        className="mt-2"
+                        options={clients.map(client => ({
+                            value: client.id,
+                            label: client.name
+                        }))}
+                        value={clients
+                            .map(client => ({ value: client.id, label: client.name }))
+                            .find(option => option.value === selectedClient) || null
+                        }
+                        onChange={option => setSelectedClient(option ? option.value : "")}
+                        placeholder="Select or search for a client..."
+                        isSearchable={true}
+                    />
 
 
-     </div>
+                    {/* Show pets and checkboxes if a client is selected */}
+                    {clientPets.length > 0 && (
+                    <div className="mt-3">
+                        <p>Select pets:</p>
+                        <div style={{ display: 'flex', flexWrap: 'wrap' }}> {/* Flex container for horizontal layout */}
+                            {clientPets.map((pet) => (
+                                <div key={pet.pet_id} style={{ marginRight: '15px', marginBottom: '10px' }}> {/* Spacing between items */}
+                                    <input
+                                        type="checkbox"
+                                        id={`pet-${pet.pet_id}`} // Unique ID for each pet
+                                        value={pet.pet_id}
+                                        onChange={(e) => handlePetSelection(e, pet.pet_id)} // Handle pet selection/deselection
+                                        checked={selectedPets.includes(pet.pet_id)} // Bind the checked state
+                                        style={{ display: 'none' }} // Hide the default checkbox
+                                    />
+                                    <label 
+                                        htmlFor={`pet-${pet.pet_id}`} 
+                                        className="ms-2"
+                                        style={{
+                                            cursor: 'pointer',
+                                            position: 'relative',
+                                            paddingLeft: '25px',
+                                            lineHeight: '1.5',
+                                        }}
+                                    >
+                                        {/* Custom checkbox */}
+                                        <span
+                                            style={{
+                                                position: 'absolute',
+                                                left: '0',
+                                                top: '0',
+                                                width: '20px',
+                                                height: '20px',
+                                                border: '1px solid #000',
+                                                backgroundColor: selectedPets.includes(pet.pet_id) ? '#007BFF' : '#fff',
+                                                color: selectedPets.includes(pet.pet_id) ? 'white' : 'transparent',
+                                                textAlign: 'center',
+                                                fontSize: '14px',
+                                                fontWeight: 'bold',
+                                                borderRadius: '4px',
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                            }}
+                                        >
+                                            {selectedPets.includes(pet.pet_id) ? '✓' : ''}
+                                        </span>
+                                        {pet.pet_name} {/* Display pet name */}
+                                    </label>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+
             <div className="d-flex justify-content-around mt-4">
                 <Card style={{ width: '18rem' }} onClick={() => { fetchInventory(); setShowInventory(true); setShowServices(false); }}>
                     <Card.Body>
@@ -812,139 +810,137 @@ const PointofSales = () => {
 
             {/* Cart Modal */}
             <Modal show={showCartModal} onHide={handleCloseCartModal} size="xl" centered>
-    <Modal.Header closeButton>
-        <Modal.Title>Cart Items</Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
-        <div className="table-responsive">
-            <Table striped bordered hover>
-                <thead>
-                    <tr>
-                        <th>Barcode</th>
-                        <th>Name</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Total</th>
-                        <th>Type</th>
-                        <th>Action</th>
-                        <th>Form</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {cartItems.map((item, index) => (
-                        <tr key={index}>
-                            <td>{item.barcode}</td>
-                            <td>{item.name ? item.name : item.product_name}</td>
-                            <td>₱{parseFloat(item.price).toLocaleString()}</td>
-                            <td style={{ padding: '0', margin: '0', height: '100%', background: 'transparent', border: 'none' }}>
-                                <Form.Control
-                                    type="number"
-                                    min="1"
-                                    max={(() => {
-                                        const inventoryItem = inventory.find(inv => inv.barcode === item.barcode);
-                                        return inventoryItem ? inventoryItem.quantity : 1; // ✅ Get stock from API
-                                    })()}
-                                    value={item.quantity}
-                                    onChange={(e) => {
-                                        let newQuantity = parseInt(e.target.value, 10) || 1; // Default to 1 if empty or invalid
+                <Modal.Header closeButton>
+                    <Modal.Title>Cart Items</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className="table-responsive">
+                        <Table striped bordered hover>
+                            <thead>
+                                <tr>
+                                    <th>Barcode</th>
+                                    <th>Name</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                    <th>Type</th>
+                                    <th>Action</th>
+                                    <th>Form</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {cartItems.map((item, index) => (
+                                    <tr key={index}>
+                                        <td>{item.barcode}</td>
+                                        <td>{item.name ? item.name : item.product_name}</td>
+                                        <td>₱{parseFloat(item.price).toLocaleString()}</td>
+                                        <td style={{ padding: '0', margin: '0', height: '100%', background: 'transparent', border: 'none' }}>
+                                            <Form.Control
+                                                type="number"
+                                                min="1"
+                                                max={(() => {
+                                                    const inventoryItem = inventory.find(inv => inv.barcode === item.barcode);
+                                                    return inventoryItem ? inventoryItem.quantity : 1; // ✅ Get stock from API
+                                                })()}
+                                                value={item.quantity}
+                                                onChange={(e) => {
+                                                    let newQuantity = parseInt(e.target.value, 10) || 1; // Default to 1 if empty or invalid
 
-                                        // ✅ Find the inventory stock dynamically
-                                        const inventoryItem = inventory.find(inv => inv.barcode === item.barcode);
-                                        const inventoryQuantity = inventoryItem ? inventoryItem.quantity : 1;
+                                                    // ✅ Find the inventory stock dynamically
+                                                    const inventoryItem = inventory.find(inv => inv.barcode === item.barcode);
+                                                    const inventoryQuantity = inventoryItem ? inventoryItem.quantity : 1;
 
-                                        if (newQuantity > inventoryQuantity) {
-                                            newQuantity = inventoryQuantity; // ✅ Prevent exceeding stock
-                                            
-                                            // ✅ Show toast notification for stock limit
-                                            toast.warning(`Only ${inventoryQuantity} available in stock!`, {
-                                                position: "top-right",
-                                                autoClose: 2000,
-                                                hideProgressBar: false,
-                                                closeOnClick: true,
-                                                pauseOnHover: true,
-                                                draggable: true,
-                                            });
-                                        }
-                                        updateCartItemQuantity(item, newQuantity);
-                                    }}
-                                    onBlur={(e) => {
-                                        if (!e.target.value) {
-                                            updateCartItemQuantity(item, 1); // ✅ Reset to 1 if left empty
-                                        }
-                                    }}
-                                    style={{
-                                        width: '50px',
-                                        height: '80%',
-                                        textAlign: 'center',
-                                        border: 'none',
-                                        outline: 'none',
-                                        boxShadow: 'none',
-                                        background: 'transparent',
-                                        lineHeight: 'normal',
-                                        padding: '10px 0',
-                                    }}
-                                    className="quantity-input"
-                                />
-                            </td>
+                                                    if (newQuantity > inventoryQuantity) {
+                                                        newQuantity = inventoryQuantity; // ✅ Prevent exceeding stock
+                                                        
+                                                        // ✅ Show toast notification for stock limit
+                                                        toast.warning(`Only ${inventoryQuantity} available in stock!`, {
+                                                            position: "top-right",
+                                                            autoClose: 2000,
+                                                            hideProgressBar: false,
+                                                            closeOnClick: true,
+                                                            pauseOnHover: true,
+                                                            draggable: true,
+                                                        });
+                                                    }
+                                                    updateCartItemQuantity(item, newQuantity);
+                                                }}
+                                                onBlur={(e) => {
+                                                    if (!e.target.value) {
+                                                        updateCartItemQuantity(item, 1); // ✅ Reset to 1 if left empty
+                                                    }
+                                                }}
+                                                style={{
+                                                    width: '50px',
+                                                    height: '80%',
+                                                    textAlign: 'center',
+                                                    border: 'none',
+                                                    outline: 'none',
+                                                    boxShadow: 'none',
+                                                    background: 'transparent',
+                                                    lineHeight: 'normal',
+                                                    padding: '10px 0',
+                                                }}
+                                                className="quantity-input"
+                                            />
+                                        </td>
 
-                            <td>₱{formatPrice(item.price * item.quantity)}</td>
-                            <td>{item.isService ? 'Service' : 'Product'}</td>
-                            <td>
-                                <Button variant="success" onClick={() => increaseQuantity(item.barcode)}>
-                                    <FaPlus />
-                                </Button>{' '}
-                                <Button variant="warning" onClick={() => decreaseQuantity(item.barcode)}>
-                                    <FaMinus />
-                                </Button>{' '}
-                                <Button
-                                    variant="danger"
-                                    onClick={() =>
-                                        removeFromTable(item.isService ? item.id : item.barcode, item.isService)
-                                    }
-                                >
-                                    <FaTrash />
-                                </Button>
-                            </td>
-                            <td>
-    {item.isService && item.consent_form && item.consent_form.trim() !== "None" ? (
-        <Button variant="info" onClick={() => handleServiceForm(item)}>
-            {item.consent_form}
-        </Button>
-    ) : null}
-</td>
+                                        <td>₱{formatPrice(item.price * item.quantity)}</td>
+                                        <td>{item.isService ? 'Service' : 'Product'}</td>
+                                        <td>
+                                            <Button variant="success" onClick={() => increaseQuantity(item.barcode)}>
+                                                <FaPlus />
+                                            </Button>{' '}
+                                            <Button variant="warning" onClick={() => decreaseQuantity(item.barcode)}>
+                                                <FaMinus />
+                                            </Button>{' '}
+                                            <Button
+                                                variant="danger"
+                                                onClick={() =>
+                                                    removeFromTable(item.isService ? item.id : item.barcode, item.isService)
+                                                }
+                                            >
+                                                <FaTrash />
+                                            </Button>
+                                        </td>
+                                        <td>
+                                            {item.isService && item.consent_form && item.consent_form.trim() !== "None" ? (
+                                                <Button variant="info" onClick={() => handleServiceForm(item)}>
+                                                    {item.consent_form}
+                                                </Button>
+                                            ) : null}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
 
-                        </tr>
-                    ))}
-                </tbody>
-            </Table>
+                        <h4>Grand Total: ₱{formatPrice(calculateGrandTotal())}</h4>
 
-            <h4>Grand Total: ₱{formatPrice(calculateGrandTotal())}</h4>
-
-            <Form.Group className="mb-3">
-                <Form.Label>Amount tendered:</Form.Label>
-                <Form.Control
-                    type="number"
-                    value={paymentAmount}
-                    onChange={(e) => setPaymentAmount(e.target.value)}
-                />
-                {/* Error Message */}
-                {errorMessage && (
-                    <div style={{ color: 'red', marginTop: '5px', fontSize: '0.9rem' }}>
-                        {errorMessage}
+                        <Form.Group className="mb-3">
+                            <Form.Label>Amount tendered:</Form.Label>
+                            <Form.Control
+                                type="number"
+                                value={paymentAmount}
+                                onChange={(e) => setPaymentAmount(e.target.value)}
+                            />
+                            {/* Error Message */}
+                            {errorMessage && (
+                                <div style={{ color: 'red', marginTop: '5px', fontSize: '0.9rem' }}>
+                                    {errorMessage}
+                                </div>
+                            )}
+                        </Form.Group>
                     </div>
-                )}
-            </Form.Group>
-        </div>
-    </Modal.Body>
-    <Modal.Footer>
-        <Button variant="secondary" onClick={() => setShowCartModal(false)}>
-            Close
-        </Button>
-        <Button variant="primary" onClick={handleConfirm}>
-            Confirm Payment
-        </Button>
-    </Modal.Footer>
-
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowCartModal(false)}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={handleConfirm}>
+                        Confirm Payment
+                    </Button>
+                </Modal.Footer>
             
                 <AddImmunizationFormModal
                 show={showImmunizationModal}
@@ -975,58 +971,61 @@ const PointofSales = () => {
             />
 
             </Modal>
-                {/* Confirm Modal */}
-                <Modal show={showConfirmModal} onHide={handleConfirmNo}>
-    <Modal.Header closeButton>
-        <Modal.Title>Confirm Payment</Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
-        {/* Show input for client name only if no client ID exists */}
-        {!selectedClient && (
-    <div className="mb-3">
-        <label>Client Name:</label>
-        <input
-            type="text"
-            className="form-control"
-            value={clientName}
-            onChange={(e) => setClientName(e.target.value)}
-            placeholder="Enter client name"
-            required
-        />
-    </div>
-)}
+            {/* Confirm Modal */}
+            <Modal show={showConfirmModal} onHide={handleConfirmNo}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Payment</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {/* Show input for client name only if no client ID exists */}
+                    {!selectedClient && (
+                <div className="mb-3">
+                    <label>Client Name:</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        value={clientName}
+                        onChange={(e) => setClientName(e.target.value)}
+                        placeholder="Enter client name"
+                        required
+                    />
+                </div>
+            )}
 
-{!selectedClient && (
-    <div className="mb-3">
-        <label>Client Email:</label>
-        <input
-            type="email"
-            className="form-control"
-            value={clientEmail}
-            onChange={(e) => setClientEmail(e.target.value)}
-            placeholder="Enter client email"
-            required
-        />
-    </div>
-)}
+            {!selectedClient && (
+                <div className="mb-3">
+                    <label>Client Email:</label>
+                    <input
+                        type="email"
+                        className="form-control"
+                        value={clientEmail}
+                        onChange={(e) => setClientEmail(e.target.value)}
+                        placeholder="Enter client email"
+                        required
+                    />
+                </div>
+            )}
 
 
-        {changeAmount !== null ? (
-            <p>Payment confirmed! Change: ₱{formatPrice(changeAmount)}</p>
-        ) : (
-            <p>Insufficient payment. Please enter a valid amount.</p>
-        )}
-    </Modal.Body>
-    <Modal.Footer>
-        <Button variant="secondary" onClick={handleConfirmNo}>
-            Close
-        </Button>
-        <Button variant="primary" onClick={handleConfirmYes} disabled={changeAmount === null}>
-            Confirm
-        </Button>
-    </Modal.Footer>
-</Modal>
-
+                    {changeAmount !== null ? (
+                        <p>Payment confirmed! Change: ₱{formatPrice(changeAmount)}</p>
+                    ) : (
+                        <p>Insufficient payment. Please enter a valid amount.</p>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleConfirmNo}>
+                        Close
+                    </Button>
+                    <Button 
+                        variant="primary" 
+                        onClick={handleConfirmYes} 
+                        disabled={changeAmount === null || isConfirming}
+                    >
+                        {isConfirming ? "Processing..." : "Confirm"}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
 
             {/* Receipt Modal */}
             <Modal show={showReceipt} onHide={() => setShowReceipt(false)}>

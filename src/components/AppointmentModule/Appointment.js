@@ -447,17 +447,18 @@ const Appointment = () => {
               Close
             </button>
 
-            {selectedEvent.status !== "Done" && (
-              <button
-                className="btn btn-primary me-2"
-                onClick={() => {
-                  setShowEditModal(true);
-                  setShowEventModal(false);
-                }}
-              >
-                Edit
-              </button>
-            )}
+            {selectedEvent.status !== "Done" &&
+              selectedEvent.status !== "Arrived" && (
+                <button
+                  className="btn btn-primary me-2"
+                  onClick={() => {
+                    setShowEditModal(true);
+                    setShowEventModal(false);
+                  }}
+                >
+                  Edit
+                </button>
+              )}
           </Modal.Footer>
         </Modal>
       )}

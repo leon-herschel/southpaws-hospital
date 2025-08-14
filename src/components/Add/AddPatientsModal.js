@@ -107,7 +107,7 @@ const AddPatientsModal = ({ show, handleClose, client}) => {
                 <Form onSubmit={handleSubmit} className="row">
                     <div className="col-md-6">
                         <Form.Group controlId="formName">
-                            <Form.Label>Name</Form.Label>
+                            <Form.Label>Name: <span className="text-danger">*</span></Form.Label>
                             <Form.Control 
                                 type="text" 
                                 name="name" 
@@ -118,7 +118,7 @@ const AddPatientsModal = ({ show, handleClose, client}) => {
                             />
                         </Form.Group>
                         <Form.Group controlId="formSpecies">
-                            <Form.Label>Species</Form.Label>
+                            <Form.Label>Species: <span className="text-danger">*</span></Form.Label>
                             <Form.Control 
                                 type="text" 
                                 name="species" 
@@ -128,7 +128,7 @@ const AddPatientsModal = ({ show, handleClose, client}) => {
                             />
                         </Form.Group>
                         <Form.Group controlId="formBreed">
-                            <Form.Label>Breed</Form.Label>
+                            <Form.Label>Breed: <span className="text-danger">*</span></Form.Label>
                             <Form.Control 
                                 type="text" 
                                 name="breed" 
@@ -138,20 +138,19 @@ const AddPatientsModal = ({ show, handleClose, client}) => {
                             />
                         </Form.Group>
                         <Form.Group controlId="formWeight">
-                            <Form.Label>Weight (in kgs.)</Form.Label>
+                            <Form.Label>Weight (in kgs.): </Form.Label>
                             <Form.Control 
                                 type="number" 
                                 name="weight" 
                                 onChange={handleChange} 
                                 placeholder="Enter weight" 
-                                required
                                 min="0" // Ensure non-negative values
                             />
                         </Form.Group>
                     </div>
                     <div className="col-md-6">
                     <Form.Group controlId="formBirthdate">
-                        <Form.Label>Birthdate</Form.Label>
+                        <Form.Label>Birthdate: <span className="text-danger">*</span></Form.Label>
                         <Form.Control 
                             type="date" 
                             name="birthdate" 
@@ -162,33 +161,32 @@ const AddPatientsModal = ({ show, handleClose, client}) => {
                     </Form.Group>
 
                         <Form.Group controlId="formAge">
-                            <Form.Label>Age</Form.Label>
+                            <Form.Label>Age: </Form.Label>
                             <Form.Control 
                                 type="text" 
                                 name="age" 
                                 value={age || ""} // Set the calculated age as the value
                                 readOnly // Make it read-only since it's auto-calculated
+                                placeholder="Auto-calculated age"
                             />
                         </Form.Group>
                         <Form.Group controlId="formDistinctFeatures">
-                            <Form.Label>Distinct Features</Form.Label>
+                            <Form.Label>Distinct Features: </Form.Label>
                             <Form.Control 
                                 type="text" 
                                 name="distinct_features" 
                                 onChange={handleChange} 
                                 placeholder="Enter distinct features" 
-                                required
                             />
                         </Form.Group>
                         <Form.Group controlId="formOtherDetails">
-                            <Form.Label>Other Details</Form.Label>
+                            <Form.Label>Other Details: </Form.Label>
                             <Form.Control 
                                 as="textarea" 
                                 rows={3} 
                                 name="other_details" 
                                 onChange={handleChange} 
                                 placeholder="Enter other details" 
-                                required
                             />
                         </Form.Group>
                     </div>
