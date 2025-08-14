@@ -11,6 +11,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
   const [doctors, setDoctors] = useState([]);
   const [showServiceDropdown, setShowServiceDropdown] = useState(false);
   const dropdownRef = useRef(null);
+  const [showDoneConfirm, setShowDoneConfirm] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -121,8 +122,13 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
     }
   }, [formData.date, formData.doctor_id]);
 
-  const handleChange = (e, index = null) => {
+ const handleChange = (e, index = null) => {
     const { name, value } = e.target;
+
+    if (name === "status" && value === "Done") {
+      setShowDoneConfirm(true);
+      return;
+    }
 
     if (name === "service" && index !== null) {
       const updatedServices = [...formData.service];
@@ -559,6 +565,33 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
           </div>
         </Form>
       </Modal.Body>
+
+      <Modal show={showDoneConfirm} onHide={() => setShowDoneConfirm(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Status Change</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Setting this appointment to <strong>Done</strong> cannot be reversed.
+          Are you sure you want to proceed?
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowDoneConfirm(false)}
+          >
+            Cancel
+          </button>
+          <button
+            className="btn btn-danger"
+            onClick={() => {
+              setFormData((prev) => ({ ...prev, status: "Done" }));
+              setShowDoneConfirm(false);
+            }}
+          >
+            Yes, set to Done
+          </button>
+        </Modal.Footer>
+      </Modal>
 
       <Modal.Footer>
         <button className="btn btn-secondary" onClick={onClose}>
