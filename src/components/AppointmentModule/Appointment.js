@@ -17,7 +17,7 @@ import {
   FaTimesCircle,
   FaCheckDouble,
 } from "react-icons/fa";
-
+import Notifications from "./Notifications";
 const locales = { "en-US": enUS };
 
 const localizer = dateFnsLocalizer({
@@ -47,9 +47,10 @@ const Appointment = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState("All");
-  const doctorOptions = ["All", ...new Set(appointments.map(a => a.doctor_name).filter(Boolean))].map((name) =>
-    name === "All" ? name : `Dr. ${name}`
-  );
+  const doctorOptions = [
+    "All",
+    ...new Set(appointments.map((a) => a.doctor_name).filter(Boolean)),
+  ].map((name) => (name === "All" ? name : `Dr. ${name}`));
   const filteredEvents =
     selectedDoctor === "All"
       ? events
@@ -73,7 +74,9 @@ const Appointment = () => {
 
   const fetchPendingAppointments = async () => {
     try {
-      const res = await axios.get("http://localhost/api/pending_appointments.php");
+      const res = await axios.get(
+        "http://localhost/api/pending_appointments.php"
+      );
       setPendingAppointments(res.data.appointments || []);
     } catch (err) {
       console.error("Failed to fetch pending appointments", err);
@@ -227,7 +230,9 @@ const Appointment = () => {
   return (
     <div className="container mt-2">
       <h1 style={{ textAlign: "left", fontWeight: "bold" }}>Appointments</h1>
-
+      <div className="d-flex justify-content-end">
+        <Notifications />
+      </div>
       {renderStatusBoxes()}
 
       <div className="d-flex justify-content-between align-items-center mb-4 gap-2">
@@ -339,28 +344,44 @@ const Appointment = () => {
           <Modal.Body>
             {/* Personal Details */}
             <section className="mb-3">
-              <h6 className="text-primary border-bottom pb-2">Personal Details</h6>
+              <h6 className="text-primary border-bottom pb-2">
+                Personal Details
+              </h6>
               <div className="row">
                 <div className="col-md-6">
-                  <p><strong>Name:</strong> {selectedEvent.name}</p>
-                  <p><strong>Contact #:</strong> {selectedEvent.contact}</p>
+                  <p>
+                    <strong>Name:</strong> {selectedEvent.name}
+                  </p>
+                  <p>
+                    <strong>Contact #:</strong> {selectedEvent.contact}
+                  </p>
                 </div>
                 <div className="col-md-6">
-                  <p><strong>Email:</strong> {selectedEvent.email || "N/A"}</p>
+                  <p>
+                    <strong>Email:</strong> {selectedEvent.email || "N/A"}
+                  </p>
                 </div>
               </div>
             </section>
 
             {/* Patient Details */}
             <section className="mb-3">
-              <h6 className="text-primary border-bottom pb-2">Patient Details</h6>
+              <h6 className="text-primary border-bottom pb-2">
+                Patient Details
+              </h6>
               <div className="row">
                 <div className="col-md-6">
-                  <p><strong>Pet Name:</strong> {selectedEvent.pet_name}</p>
-                  <p><strong>Breed:</strong> {selectedEvent.pet_breed}</p>
+                  <p>
+                    <strong>Pet Name:</strong> {selectedEvent.pet_name}
+                  </p>
+                  <p>
+                    <strong>Breed:</strong> {selectedEvent.pet_breed}
+                  </p>
                 </div>
                 <div className="col-md-6">
-                  <p><strong>Species:</strong> {selectedEvent.pet_species}</p>
+                  <p>
+                    <strong>Species:</strong> {selectedEvent.pet_species}
+                  </p>
                 </div>
               </div>
             </section>
@@ -373,10 +394,15 @@ const Appointment = () => {
 
             {/* Appointment Details */}
             <section>
-              <h6 className="text-primary border-bottom pb-2">Appointment Details</h6>
+              <h6 className="text-primary border-bottom pb-2">
+                Appointment Details
+              </h6>
               <div className="row">
                 <div className="col-md-6">
-                  <p><strong>Reference #:</strong> {selectedEvent.reference_number || "—"}</p>
+                  <p>
+                    <strong>Reference #:</strong>{" "}
+                    {selectedEvent.reference_number || "—"}
+                  </p>
                   <p>
                     <strong>Date:</strong>{" "}
                     {selectedEvent.start
@@ -386,13 +412,21 @@ const Appointment = () => {
                   <p>
                     <strong>Time:</strong>{" "}
                     {selectedEvent.start && selectedEvent.end
-                      ? `${format(selectedEvent.start, "hh:mm a")} to ${format(selectedEvent.end, "hh:mm a")}`
+                      ? `${format(selectedEvent.start, "hh:mm a")} to ${format(
+                          selectedEvent.end,
+                          "hh:mm a"
+                        )}`
                       : "—"}
                   </p>
                 </div>
                 <div className="col-md-6">
-                  <p><strong>Doctor:</strong> {selectedEvent.doctor_name || "TBD"}</p>
-                  <p><strong>Status:</strong> {selectedEvent.status || "Pending"}</p>
+                  <p>
+                    <strong>Doctor:</strong>{" "}
+                    {selectedEvent.doctor_name || "TBD"}
+                  </p>
+                  <p>
+                    <strong>Status:</strong> {selectedEvent.status || "Pending"}
+                  </p>
                 </div>
               </div>
             </section>
@@ -412,18 +446,19 @@ const Appointment = () => {
             >
               Close
             </button>
-            
-            {(selectedEvent.status !== "Done" && selectedEvent.status !== "Arrived") && (
-            <button
-              className="btn btn-primary me-2"
-              onClick={() => {
-                setShowEditModal(true);
-                setShowEventModal(false);
-              }}
-            >
-              Edit
-            </button>
-            )}
+
+            {selectedEvent.status !== "Done" &&
+              selectedEvent.status !== "Arrived" && (
+                <button
+                  className="btn btn-primary me-2"
+                  onClick={() => {
+                    setShowEditModal(true);
+                    setShowEventModal(false);
+                  }}
+                >
+                  Edit
+                </button>
+              )}
           </Modal.Footer>
         </Modal>
       )}
