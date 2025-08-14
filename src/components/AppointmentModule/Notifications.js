@@ -1,4 +1,5 @@
 import { MdOutlineNotificationsActive } from "react-icons/md";
+import { FaTimes } from "react-icons/fa";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { format, isToday, isYesterday } from "date-fns";
@@ -6,24 +7,53 @@ import { useNavigate } from "react-router-dom";
 
 export default function NotificationBell() {
   const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
+
   const navigate = useNavigate();
 
+  // Load from localStorage helpers
+  const getDismissedFromStorage = () =>
+    JSON.parse(localStorage.getItem("dismissedNotifications")) || [];
+
+  const getSeenFromStorage = () =>
+    JSON.parse(localStorage.getItem("seenNotifications")) || [];
+
+  // State
+  const [dismissedNotifications, setDismissedNotifications] = useState(
+    getDismissedFromStorage()
+  );
+
+  const [seenIds, setSeenIds] = useState(getSeenFromStorage());
+
+  // Fetch notifications every 5 seconds
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
         const res = await axios.get("http://localhost/api/notifications.php");
         const now = new Date();
 
-        const filtered = (res.data.notifications || [])
+        let filtered = (res.data.notifications || [])
           .filter((n) => {
             const createdAt = new Date(n.created_at);
             const diffInDays = (now - createdAt) / (1000 * 60 * 60 * 24);
-            return diffInDays < 7;
+            return diffInDays < 7; // keep last 7 days
           })
           .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
+        // Remove dismissed ones
+        filtered = filtered.filter(
+          (n) => !dismissedNotifications.includes(n.id)
+        );
+
         setNotifications(filtered);
+
+        // Count only those not in seenIds
+        const currentUnread = filtered.filter(
+          (n) => !seenIds.includes(n.id)
+        ).length;
+
+        setUnreadCount(currentUnread);
       } catch (err) {
         console.error("Error fetching notifications", err);
       }
@@ -32,7 +62,20 @@ export default function NotificationBell() {
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [dismissedNotifications, seenIds]);
+
+  // Clicking bell marks all as seen
+  const handleBellClick = () => {
+    setShowDropdown((prev) => !prev);
+    if (!showDropdown) {
+      const updatedSeen = [
+        ...new Set([...seenIds, ...notifications.map((n) => n.id)]),
+      ];
+      setSeenIds(updatedSeen);
+      localStorage.setItem("seenNotifications", JSON.stringify(updatedSeen));
+      setUnreadCount(0);
+    }
+  };
 
   const getBellColor = (status) => {
     if (status === "Pending") return "gold";
@@ -65,14 +108,28 @@ export default function NotificationBell() {
     return status || "unknown";
   };
 
+  // Remove a notification and mark as seen
+  const handleRemoveNotification = (id) => {
+    const updatedDismissed = [...dismissedNotifications, id];
+    setDismissedNotifications(updatedDismissed);
+    localStorage.setItem(
+      "dismissedNotifications",
+      JSON.stringify(updatedDismissed)
+    );
+
+    const updatedSeen = [...seenIds, id];
+    setSeenIds(updatedSeen);
+    localStorage.setItem("seenNotifications", JSON.stringify(updatedSeen));
+
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  };
+
   return (
     <div style={{ position: "relative", display: "inline-block" }}>
-      <div
-        onClick={() => setShowDropdown((prev) => !prev)}
-        style={{ cursor: "pointer" }}
-      >
+      {/* Bell Icon */}
+      <div onClick={handleBellClick} style={{ cursor: "pointer" }}>
         <MdOutlineNotificationsActive size={28} color="#444" />
-        {notifications.length > 0 && (
+        {unreadCount > 0 && (
           <span
             style={{
               position: "absolute",
@@ -86,7 +143,7 @@ export default function NotificationBell() {
               fontWeight: "bold",
             }}
           >
-            {notifications.length}
+            {unreadCount}
           </span>
         )}
       </div>
@@ -110,28 +167,43 @@ export default function NotificationBell() {
             notifications.map((n) => (
               <div
                 key={n.id}
-                onClick={() => handleNotificationClick(n)}
                 style={{
                   padding: "8px",
                   borderBottom: "1px solid #eee",
                   fontSize: "14px",
                   display: "flex",
                   alignItems: "center",
+                  justifyContent: "space-between",
                   gap: "8px",
-                  cursor: "pointer",
                   backgroundColor:
                     n.status === "Pending"
                       ? "rgba(255, 215, 0, 0.1)"
                       : "rgba(255, 0, 0, 0.1)",
                 }}
               >
-                <MdOutlineNotificationsActive
-                  size={20}
-                  color={getBellColor(n.status)}
+                <div
+                  onClick={() => handleNotificationClick(n)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    cursor: "pointer",
+                  }}
+                >
+                  <MdOutlineNotificationsActive
+                    size={20}
+                    color={getBellColor(n.status)}
+                  />
+                  {`${getStatus(n.status)} Appointment for ${
+                    n.name
+                  } - ${formatNotificationDate(n.created_at)}`}
+                </div>
+                <FaTimes
+                  size={14}
+                  color="gray"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleRemoveNotification(n.id)}
                 />
-                {`${getStatus(n.status)} Appointment for ${
-                  n.name
-                } - ${formatNotificationDate(n.created_at)}`}
               </div>
             ))
           ) : (
