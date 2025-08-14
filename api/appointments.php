@@ -27,6 +27,15 @@ $method = $_SERVER['REQUEST_METHOD'];
 switch ($method) {
     case 'GET':
         try {
+             // Auto-cancel confirmed appointments that are past current date
+            $autoCancel = $conn->prepare("
+                UPDATE appointments
+                SET status = 'Cancelled'
+                WHERE status = 'Confirmed'
+                AND date < CURDATE()
+            ");
+            $autoCancel->execute();
+
             $sql = "
                 SELECT 
                     a.id, a.reference_number, a.service, a.date, a.time, a.end_time,
