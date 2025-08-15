@@ -21,3 +21,11 @@ node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# rasa
+venv/
+.venv/
+__pycache__/
+models/
+.rasa/
+*.pyc
