@@ -63,7 +63,7 @@ export default function ChatbotModal({ onClose }) {
             >
               {msg.sender === "bot" && (
                 <div className="me-2">
-                  <FaRobot className="bg-primary text-white p-2 rounded-circle" size={30} />
+                  <FaRobot className="bg-primary text-white p-2 rounded-circle" size={35} />
                 </div>
               )}
               <div
@@ -76,7 +76,7 @@ export default function ChatbotModal({ onClose }) {
               </div>
               {msg.sender === "user" && (
                 <div className="ms-2">
-                  <FaUser className="bg-primary text-white p-2 rounded-circle" size={30} />
+                  <FaUser className="bg-primary text-white p-2 rounded-circle" size={35} />
                 </div>
               )}
             </div>

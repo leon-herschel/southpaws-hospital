@@ -283,6 +283,11 @@ thead {
   transform: scale(1.1);
 }
 
+.notification-bell:hover {
+  transform: scale(1.1) rotate(-10deg);
+}
+
+
 
 
 
