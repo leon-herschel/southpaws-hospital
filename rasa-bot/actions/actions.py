@@ -16,6 +16,16 @@ def db_query(query, params=()):
         cursor.execute(query, params)
         return cursor.fetchall()
 
+def format_timedelta(td):
+    total_seconds = int(td.total_seconds())
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    # Format to 12-hour clock
+    suffix = "AM" if hours < 12 else "PM"
+    hours_12 = hours % 12
+    hours_12 = 12 if hours_12 == 0 else hours_12
+    return f"{hours_12:02d}:{minutes:02d} {suffix}"
+
 # --- CLIENTS ---
 class ActionRetrieveClient(Action):
     def name(self): return "action_retrieve_client"
@@ -53,7 +63,17 @@ class ActionRetrieveAppointment(Action):
             if reference_number:
                 results = db_query("SELECT * FROM appointments WHERE reference_number=%s", (reference_number,))
             elif client_name:
-                results = db_query("SELECT * FROM appointments WHERE name LIKE %s", (f"%{client_name}%",))
+                results = db_query(
+                    "SELECT * FROM appointments WHERE LOWER(name) = LOWER(%s)",
+                    (client_name,)
+                )
+
+                if not results:
+                    results = db_query(
+                        "SELECT * FROM appointments WHERE name REGEXP %s",
+                        (f'\\b{client_name}\\b',)
+                    )
+                    
             else:
                 dispatcher.utter_message(text="Provide a reference number or client name.")
                 return []
@@ -62,14 +82,16 @@ class ActionRetrieveAppointment(Action):
                 for row in results:
                     doctor = db_query("SELECT first_name, last_name FROM internal_users WHERE id=%s", (row["doctor_id"],))
                     doctor_name = f"{doctor[0]['first_name']} {doctor[0]['last_name']}" if doctor else "N/A"
+                    time_str = f"{format_timedelta(row['time'])} to {format_timedelta(row['end_time'])}"
                     response = (
                         "Here are the appointment details: \n"
                         f"- Ref #: {row['reference_number']}\n"
-                        f"- Client: {row['name']} ({row['contact']})\n"
+                        f"- Client: {row['name']} \n"
+                        f"- Contact #: {row['contact']} \n"
                         f"- Pet: {row['pet_name']} ({row['pet_species']}, {row['pet_breed']})\n"
                         f"- Service(s): {row['service']}\n"
                         f"- Date: {row['date'].strftime('%B %d, %Y')}\n"
-                        f"- Time: {row['time']} - {row['end_time']}\n"
+                        f"- Time: {time_str}\n"
                         f"- Doctor: {doctor_name}\n"
                         f"- Status: {row['status']}"
                     )

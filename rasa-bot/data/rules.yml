@@ -20,3 +20,48 @@ rules:
   - intent: retrieve_patient
   - action: action_retrieve_patient
 
+# Chitchat rules
+- rule: Greet
+  steps:
+  - intent: greet
+  - action: utter_greet
+
+- rule: Goodbye
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
+
+- rule: Thank you
+  steps:
+  - intent: thank_you
+  - action: utter_thank_you
+
+- rule: Mood great
+  steps:
+  - intent: mood_great
+  - action: utter_mood_great
+
+- rule: Mood unhappy
+  steps:
+  - intent: mood_unhappy
+  - action: utter_mood_unhappy
+
+- rule: Bot challenge
+  steps:
+  - intent: bot_challenge
+  - action: utter_bot_challenge
+
+- rule: How are you
+  steps:
+  - intent: how_are_you
+  - action: utter_how_are_you
+
+- rule: Who are you
+  steps:
+  - intent: who_are_you
+  - action: utter_who_are_you
+
+- rule: What can you do
+  steps:
+  - intent: what_can_you_do
+  - action: utter_what_can_you_do

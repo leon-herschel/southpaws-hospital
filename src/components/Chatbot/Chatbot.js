@@ -7,18 +7,21 @@ import "bootstrap/dist/css/bootstrap.min.css";
 export default function ChatbotModal({ onClose }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [botTyping, setBotTyping] = useState(false);
 
   const userId = localStorage.getItem("userID") || "guest";
   const chatEndRef = useRef(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, botTyping]);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
 
     setMessages((prev) => [...prev, { sender: "user", text: input }]);
+    setInput("");
+    setBotTyping(true);
 
     try {
       const res = await axios.post("http://localhost:5005/webhooks/rest/webhook", {
@@ -26,23 +29,24 @@ export default function ChatbotModal({ onClose }) {
         message: input,
       });
 
-      res.data.forEach((msg) => {
-        if (msg.text) {
-          setMessages((prev) => [...prev, { sender: "bot", text: msg.text }]);
-        }
-      });
+      // small delay to simulate typing
+      setTimeout(() => {
+        res.data.forEach((msg) => {
+          if (msg.text) {
+            setMessages((prev) => [...prev, { sender: "bot", text: msg.text }]);
+          }
+        });
+        setBotTyping(false);
+      }, 500); // 0.5s delay
     } catch (err) {
       console.error(err);
+      setBotTyping(false);
     }
-
-    setInput("");
   };
 
   return (
     <Draggable handle=".chatbot-header">
-      <div
-        className="chatbot-modal position-fixed shadow-lg"
-      >
+      <div className="chatbot-modal position-fixed shadow-lg">
         {/* Header */}
         <div
           className="chatbot-header d-flex justify-content-between align-items-center px-3 py-2 bg-primary text-white"
@@ -81,6 +85,22 @@ export default function ChatbotModal({ onClose }) {
               )}
             </div>
           ))}
+
+          {/* Bot typing indicator */}
+          {botTyping && (
+            <div className="d-flex mb-3 justify-content-start">
+              <div className="me-2">
+                <FaRobot className="bg-primary text-white p-2 rounded-circle" size={35} />
+              </div>
+              <div
+                className="p-2 rounded bg-light border"
+                style={{ maxWidth: "70%" }}
+              >
+                <span className="bot-typing">Typing...</span>
+              </div>
+            </div>
+          )}
+
           <div ref={chatEndRef} />
         </div>
 

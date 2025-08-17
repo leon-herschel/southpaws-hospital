@@ -1,15 +1,15 @@
 version: "3.1"
 
 intents:
-  - chitchat/greet
-  - chitchat/goodbye
-  - chitchat/thank_you
-  - chitchat/mood_great
-  - chitchat/mood_unhappy
-  - chitchat/bot_challenge
-  - chitchat/how_are_you
-  - chitchat/who_are_you
-  - chitchat/what_can_you_do
+  - greet
+  - goodbye
+  - thank_you
+  - mood_great
+  - mood_unhappy
+  - bot_challenge
+  - how_are_you
+  - who_are_you
+  - what_can_you_do
   - retrieve_client
   - retrieve_appointment
   - retrieve_patient
@@ -63,42 +63,42 @@ responses:
     - text: "Hmm, I’m not sure I understood. Can you try again?"
     - text: "I’m not sure I understood that. Could you clarify?"
     
-  utter_chitchat/greet:
+  utter_greet:
     - text: "Hey! How can I help?"
     - text: "Hello! What can I help you with today?"
     - text: "Hi there!"
 
-  utter_chitchat/goodbye:
+  utter_goodbye:
     - text: "See you later!"
     - text: "Goodbye!"
 
-  utter_chitchat/thank_you:
+  utter_thank_you:
     - text: "You’re welcome!"
     - text: "Glad I could help!"
     - text: "No problem!"
 
-  utter_chitchat/mood_great:
+  utter_mood_great:
     - text: "That’s awesome to hear!"
     - text: "Great! Keep it up."
     - text: "Glad you’re doing well!"
 
-  utter_chitchat/mood_unhappy:
+  utter_mood_unhappy:
     - text: "You’ve got this. And if you don’t, I’ve got you."
     - text: "Sadness detected. Deploying digital hugs."
     - text: "Don’t worry, you’re not alone. I’m literally programmed to stick around."
 
-  utter_chitchat/bot_challenge:
-     - text: "I’m your friendly neighborhood chatbot. No cape, just code."
-     - text: "Yep, I’m PawPal, your friendly AI assistant."
+  utter_bot_challenge:
+     - text: "I’m just your friendly neighborhood chatbot. No cape, just code."
+     - text: "I’m PawPal, your personal AI assistant."
 
-  utter_chitchat/how_are_you:
+  utter_how_are_you:
     - text: "I’m doing great, thanks for asking!"
     - text: "All good here, ready to help you!"
 
-  utter_chitchat/who_are_you:
+  utter_who_are_you:
     - text: "I’m PawPal, your personal AI assistant."
 
-  utter_chitchat/what_can_you_do:
+  utter_what_can_you_do:
     - text: "I can retrieve client, patient, appointment, and other records."
     - text: "I’m here to help you with hospital-related data."
 
