@@ -61,6 +61,11 @@ export default function NotificationBell() {
           (n) => !dismissedNotifications.includes(n.id)
         );
 
+        // Remove dismissed ones
+        filtered = filtered.filter(
+          (n) => !dismissedNotifications.includes(n.id)
+        );
+
         setNotifications(filtered);
 
         // Count only those not in seenIds

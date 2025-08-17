@@ -41,6 +41,7 @@ import ConfirmedAppointments from "./components/AppointmentModule/Tables/Confirm
 import CancelledAppointment from "./components/AppointmentModule/Tables/CancelledAppointment";
 import DoneAppointments from "./components/AppointmentModule/Tables/DoneAppointments";
 import PendingAppointments from "./components/AppointmentModule/Tables/PendingAppointment";
+import Chatbot from "./components/Chatbot/Chatbot";
 
 function App() {
   // Manage the authentication state in App.js
@@ -85,6 +86,7 @@ function App() {
                           element={<ListClients />}
                         />
                         <Route path="home" element={<Dashboard />} />
+                        <Route path="chatbot" element={<Chatbot />} />
                         <Route path="category" element={<Category />} />
                         <Route path="brand" element={<Brand />} />
                         <Route path="generic" element={<Generic />} />
