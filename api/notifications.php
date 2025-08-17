@@ -11,7 +11,7 @@ $conn = $objDB->connect();
 try {
     $notifications = [];
 
-    $sqlCancelled = "Select id, status, name, created_at FROM appointments WHERE status = 'Cancelled'";
+    $sqlCancelled = "Select id, status, name, date, time FROM appointments WHERE status = 'Cancelled'";
     $stmtCancelled = $conn->prepare($sqlCancelled);
     $stmtCancelled->execute();
     $cancelled = $stmtCancelled->fetchAll(PDO::FETCH_ASSOC);

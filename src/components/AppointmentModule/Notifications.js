@@ -34,12 +34,32 @@ export default function NotificationBell() {
         const now = new Date();
 
         let filtered = (res.data.notifications || [])
+          .map((n) => {
+            if (n.date && n.time) {
+              return {
+                ...n,
+                created_at: new Date(`${n.date}T${n.time}`),
+              };
+            } else if (n.created_at) {
+              // For pending appointments
+              return {
+                ...n,
+                created_at: new Date(n.created_at),
+              };
+            }
+            return n;
+          })
           .filter((n) => {
-            const createdAt = new Date(n.created_at);
-            const diffInDays = (now - createdAt) / (1000 * 60 * 60 * 24);
+            if (!n.created_at) return false;
+            const diffInDays = (now - n.created_at) / (1000 * 60 * 60 * 24);
             return diffInDays < 7; // keep last 7 days
           })
-          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+          .sort((a, b) => b.created_at - a.created_at);
+
+        // Remove dismissed ones
+        filtered = filtered.filter(
+          (n) => !dismissedNotifications.includes(n.id)
+        );
 
         // Remove dismissed ones
         filtered = filtered.filter(
@@ -60,8 +80,6 @@ export default function NotificationBell() {
     };
 
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 5000);
-    return () => clearInterval(interval);
   }, [dismissedNotifications, seenIds]);
 
   // Clicking bell marks all as seen
