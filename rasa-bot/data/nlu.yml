@@ -9,62 +9,52 @@ nlu:
     - hello there
     - good morning
     - good evening
-    - moin
-    - hey there
-    - let's go
-    - hey dude
-    - goodmorning
-    - goodevening
     - good afternoon
+    - howdy
+    - hi there
+    - hey bot
+    - what's up
+    - yo
+    - greetings
 
 - intent: goodbye
   examples: |
     - cu
-    - good by
-    - cee you later
+    - good bye
+    - see you later
+    - see ya
     - good night
     - bye
     - goodbye
     - have a nice day
-    - see you around
+    - take care
     - bye bye
-    - see you later
+    - catch you later
 
-- intent: affirm
+- intent: thank_you
   examples: |
-    - yes
-    - y
-    - indeed
-    - of course
-    - that sounds good
-    - correct
-
-- intent: deny
-  examples: |
-    - no
-    - n
-    - never
-    - I don't think so
-    - don't like that
-    - no way
-    - not really
+    - thanks
+    - thank you
+    - appreciate it
+    - many thanks
+    - thanks a lot
+    - cheers
 
 - intent: mood_great
   examples: |
     - perfect
     - great
     - amazing
-    - feeling like a king
+    - feeling awesome
     - wonderful
     - I am feeling very good
     - I am great
     - I am amazing
-    - I am going to save the world
     - super stoked
     - extremely good
-    - so so perfect
-    - so good
-    - so perfect
+    - awesome
+    - fantastic
+    - couldn’t be better
 
 - intent: mood_unhappy
   examples: |
@@ -72,16 +62,15 @@ nlu:
     - I am sad
     - I don't feel very well
     - I am disappointed
-    - super sad
     - I'm so sad
     - sad
     - very sad
     - unhappy
     - not good
     - not very good
-    - extremly sad
-    - so saad
-    - so sad
+    - feeling down
+    - I feel lonely
+    - terrible day
 
 - intent: bot_challenge
   examples: |
@@ -89,6 +78,34 @@ nlu:
     - are you a human?
     - am I talking to a bot?
     - am I talking to a human?
+    - are you real?
+    - are you an AI?
+    - are you alive?
+
+- intent: how_are_you
+  examples: |
+    - how are you?
+    - how are you doing?
+    - how’s it going?
+    - how are things?
+    - how do you feel?
+    - are you doing okay?
+
+- intent: who_are_you
+  examples: |
+    - who are you?
+    - what are you?
+    - tell me about yourself
+    - what’s your name?
+    - who am I talking to?
+
+- intent: what_can_you_do
+  examples: |
+    - what can you do?
+    - what are your skills?
+    - how can you help me?
+    - what do you know?
+    - what services do you provide?
 
 - intent: retrieve_client
   examples: |
@@ -100,3 +117,50 @@ nlu:
     - Search the database for [Peter Parker](client_name)
     - Show me information for [Anna Lee](client_name)
     - Find the record of [Robert Brown](client_name)
+    - Pull up details for [James Doe](client_name)
+    - Can I see information about [Jane Smith](client_name)?
+    - Give me the profile of [Juan Dela Cruz](client_name)
+    - Show [Maria Santos](client_name)’s info
+    - Lookup [Lyle Peterson](client_name)’s record
+    - Provide data on [Peter Parker](client_name)
+    - Do you have [Anna Lee](client_name)’s file?
+    - Fetch [Robert Brown](client_name)’s contact details
+    - Find client entry for [Michael Reyes](client_name)
+    - I want the record of [Samantha Cruz](client_name)
+
+- intent: retrieve_appointment
+  examples: |
+    - Show me the appointment details for reference number [APT-2345](reference_number)
+    - Retrieve appointment for [Romnick Herschel](name)
+    - What’s the schedule of [Jasper Dizon](name) on [August 15, 2025](date)?
+    - Find appointment for [Maria Santos](name)
+    - Lookup appointment of [Anna Lee](name)
+    - Check appointment with reference [XYZ-8065](reference_number)
+    - When is [Peter Parker](name)’s appointment?
+    - Appointment details for [Robert Brown](name)
+    - Can you pull up booking [APT-2345](reference_number)?
+    - Get me the appointment info for [Romnick Herschel](name)
+    - When does [Jasper Dizon](name) have a checkup on [August 15, 2025](date)?
+    - I need [Maria Santos](name)’s schedule
+    - Do you have booking details for [Anna Lee](name)?
+    - Find appointment ref [XYZ-8065](reference_number)
+    - List [Peter Parker](name)’s appointments
+    - Show all bookings for [Robert Brown](name)
+
+- intent: retrieve_patient
+  examples: |
+    - Get patient info for [Max](pet_name)
+    - Show me the record of patient [Bella](pet_name)
+    - Retrieve details of [Charlie](pet_name)
+    - Patient information for [Luna](pet_name)
+    - Look up patient named [Rocky](pet_name)
+    - Can you find patient [Daisy](pet_name)?
+    - Get medical record of [Coco](pet_name)
+    - Show me data on patient [Max](pet_name)
+    - I need the profile of [Bella](pet_name)
+    - Can you pull history of [Charlie](pet_name)?
+    - Provide details for pet [Luna](pet_name)
+    - Do you have [Rocky](pet_name)’s pet records?
+    - Fetch pet info on [Daisy](pet_name)
+    - Lookup pet record of [Coco](pet_name)
+    - Find patient file for [Buddy](pet_name)

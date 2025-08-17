@@ -3,8 +3,10 @@ import '../App.css';
 import { SidebarData } from './SidebarData';
 import logo from '../assets/southpawslogo.png';
 import { RiArrowDownSLine, RiArrowRightSLine } from 'react-icons/ri';
+import { FaRobot } from "react-icons/fa";
 
-function Sidebar() {
+
+function Sidebar({ onOpenChatbot }) {
     const [isProductsOpen, setIsProductsOpen] = useState(false);
     const [isSalesOpen, setIsSalesOpen] = useState(false); // State for Sales section
     const [isServicesOpen, setIsServicesOpen] = useState(false);
@@ -173,6 +175,13 @@ function Sidebar() {
                     );
                 })}
             </ul>
+
+            <hr className="divider" />
+            
+            {/* Chatbot Button */}
+            <div className="chatbot-button mt-4" onClick={onOpenChatbot}>
+                <FaRobot size={24} />
+            </div>
         </div>
     );
 }

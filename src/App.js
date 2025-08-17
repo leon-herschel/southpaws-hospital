@@ -41,7 +41,7 @@ import ConfirmedAppointments from "./components/AppointmentModule/Tables/Confirm
 import CancelledAppointment from "./components/AppointmentModule/Tables/CancelledAppointment";
 import DoneAppointments from "./components/AppointmentModule/Tables/DoneAppointments";
 import PendingAppointments from "./components/AppointmentModule/Tables/PendingAppointment";
-import Chatbot from "./components/Chatbot/Chatbot";
+import ChatbotModal from "./components/Chatbot/Chatbot";
 
 function App() {
   // Manage the authentication state in App.js
@@ -53,6 +53,8 @@ function App() {
   const handleLogin = () => {
     setIsAuthenticated(true);
   };
+
+  const [showChatbot, setShowChatbot] = useState(false);
 
   return (
     <div className="App">
@@ -76,7 +78,7 @@ function App() {
                 path="/*"
                 element={
                   <>
-                    <Sidebar />
+                    <Sidebar onOpenChatbot={() => setShowChatbot(true)} />
                     <div className="content">
                       <Topbar />
                       <Routes>
@@ -86,7 +88,6 @@ function App() {
                           element={<ListClients />}
                         />
                         <Route path="home" element={<Dashboard />} />
-                        <Route path="chatbot" element={<Chatbot />} />
                         <Route path="category" element={<Category />} />
                         <Route path="brand" element={<Brand />} />
                         <Route path="generic" element={<Generic />} />
@@ -139,6 +140,7 @@ function App() {
                         <Route path="settings" element={<GeneralSettings />} />
                       </Routes>
                     </div>
+                    {showChatbot && <ChatbotModal onClose={() => setShowChatbot(false)} />}
                   </>
                 }
               />
