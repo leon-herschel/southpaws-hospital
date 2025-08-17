@@ -101,9 +101,9 @@ export default function NotificationBell() {
 
   const handleNotificationClick = (notif) => {
     if (notif.status === "Pending") {
-      navigate("/appointment/pending");
+      navigate("/appointment/pending", { state: { searchName: notif.name } });
     } else if (notif.status === "Cancelled") {
-      navigate("/appointment/cancelled");
+      navigate("/appointment/cancelled", { state: { searchName: notif.name } });
     }
   };
 
