@@ -3,44 +3,110 @@ from typing import Any, Text, Dict, List
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
 
+DB_CONFIG = {
+    "host": "localhost",
+    "user": "root",
+    "password": "",
+    "database": "react-crud"
+}
+
+def db_query(query, params=()):
+    conn = pymysql.connect(**DB_CONFIG)
+    with conn.cursor(pymysql.cursors.DictCursor) as cursor:
+        cursor.execute(query, params)
+        return cursor.fetchall()
+
+# --- CLIENTS ---
 class ActionRetrieveClient(Action):
-
-    def name(self) -> Text:
-        return "action_retrieve_client"
-
-    def run(self, dispatcher: CollectingDispatcher,
-            tracker: Tracker,
-            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-
-        # Try to get client name from extracted entities
+    def name(self): return "action_retrieve_client"
+    def run(self, dispatcher, tracker, domain):
         client_name = next(tracker.get_latest_entity_values("client_name"), None)
-
         if not client_name:
             dispatcher.utter_message(text="Please provide the client's full name.")
             return []
-
         try:
-            conn = pymysql.connect(
-                host="localhost",       
-                user="root",            
-                password="",            
-                database="react-crud" 
-            )
-
-            with conn.cursor(pymysql.cursors.DictCursor) as cursor:
-                sql = "SELECT * FROM clients WHERE name LIKE %s"
-                cursor.execute(sql, (f"%{client_name}%",))
-                results = cursor.fetchall()
-
-                if results:
-                    response = ""
-                    for row in results:
-                        response += f"ID: {row['id']}, Name: {row['name']}, Email: {row['email']}\n"
-                    dispatcher.utter_message(text=response.strip())
-                else:
-                    dispatcher.utter_message(text=f"No record found for {client_name}")
-
+            results = db_query("SELECT * FROM clients WHERE name LIKE %s", (f"%{client_name}%",))
+            if results:
+                for row in results:
+                    response = (
+                        f"Here are the details I found for {row['name']}:\n"
+                        f"- ID: {row['id']}\n"
+                        f"- Name: {row['name']}\n"
+                        f"- Email: {row['email']}\n"
+                        f"- Phone: {row['cellnumber']}\n"
+                        f"- Address: {row['address']}"
+                    )
+                    dispatcher.utter_message(text=response)
+            else:
+                dispatcher.utter_message(text=f"No record found for {client_name}")
         except Exception as e:
             dispatcher.utter_message(text=f"Error: {str(e)}")
+        return []
 
+# --- APPOINTMENTS ---
+class ActionRetrieveAppointment(Action):
+    def name(self): return "action_retrieve_appointment"
+    def run(self, dispatcher, tracker, domain):
+        reference_number = next(tracker.get_latest_entity_values("reference_number"), None)
+        client_name = next(tracker.get_latest_entity_values("name"), None)
+        try:
+            if reference_number:
+                results = db_query("SELECT * FROM appointments WHERE reference_number=%s", (reference_number,))
+            elif client_name:
+                results = db_query("SELECT * FROM appointments WHERE name LIKE %s", (f"%{client_name}%",))
+            else:
+                dispatcher.utter_message(text="Provide a reference number or client name.")
+                return []
+
+            if results:
+                for row in results:
+                    doctor = db_query("SELECT first_name, last_name FROM internal_users WHERE id=%s", (row["doctor_id"],))
+                    doctor_name = f"{doctor[0]['first_name']} {doctor[0]['last_name']}" if doctor else "N/A"
+                    response = (
+                        "Here are the appointment details: \n"
+                        f"- Ref #: {row['reference_number']}\n"
+                        f"- Client: {row['name']} ({row['contact']})\n"
+                        f"- Pet: {row['pet_name']} ({row['pet_species']}, {row['pet_breed']})\n"
+                        f"- Service(s): {row['service']}\n"
+                        f"- Date: {row['date'].strftime('%B %d, %Y')}\n"
+                        f"- Time: {row['time']} - {row['end_time']}\n"
+                        f"- Doctor: {doctor_name}\n"
+                        f"- Status: {row['status']}"
+                    )
+                    dispatcher.utter_message(text=response)
+            else:
+                dispatcher.utter_message(text="No appointment found.")
+        except Exception as e:
+            dispatcher.utter_message(text=f"Error: {str(e)}")
+        return []
+
+# --- PATIENTS ---
+class ActionRetrievePatient(Action):
+    def name(self): return "action_retrieve_patient"
+    def run(self, dispatcher, tracker, domain):
+        pet_name = next(tracker.get_latest_entity_values("pet_name"), None)
+        if not pet_name:
+            dispatcher.utter_message(text="Please provide the pet name.")
+            return []
+        try:
+            results = db_query("SELECT * FROM patients WHERE name LIKE %s", (f"%{pet_name}%",))
+            if results:
+                for row in results:
+                    owner = db_query("SELECT name FROM clients WHERE id=%s", (row['owner_id'],))
+                    owner_name = owner[0]['name'] if owner else "N/A"
+                    response = (
+                        f"Here are the details for patient {row['name']}:\n"
+                        f"- ID: {row['id']}\n"
+                        f"- Name: {row['name']}\n"
+                        f"- Species: {row['species']}\n"
+                        f"- Breed: {row['breed']}\n"
+                        f"- Birthdate: {row['birthdate']}\n"
+                        f"- Age: {row['age']}\n"
+                        f"- Owner: {owner_name}"
+                    )
+                    dispatcher.utter_message(text=response)
+            else:
+                dispatcher.utter_message(text=f"No patient found for {pet_name}")
+        except Exception as e:
+            dispatcher.utter_message(text=f"Error: {str(e)}")
         return []

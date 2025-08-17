@@ -1,0 +1,108 @@
+version: "3.1"
+
+nlu:
+- intent: chitchat/greet
+  examples: |
+    - hey
+    - hello
+    - hi
+    - hello there
+    - good morning
+    - good evening
+    - good afternoon
+    - howdy
+    - hi there
+    - hey bot
+    - what's up
+    - yo
+    - greetings
+
+- intent: chitchat/goodbye
+  examples: |
+    - cu
+    - good bye
+    - see you later
+    - see ya
+    - good night
+    - bye
+    - goodbye
+    - have a nice day
+    - take care
+    - bye bye
+    - catch you later
+
+- intent: chitchat/thank_you
+  examples: |
+    - thanks
+    - thank you
+    - appreciate it
+    - many thanks
+    - thanks a lot
+    - cheers
+
+- intent: chitchat/mood_great
+  examples: |
+    - perfect
+    - great
+    - amazing
+    - feeling awesome
+    - wonderful
+    - I am feeling very good
+    - I am great
+    - I am amazing
+    - super stoked
+    - extremely good
+    - awesome
+    - fantastic
+    - couldn’t be better
+
+- intent: chitchat/mood_unhappy
+  examples: |
+    - my day was horrible
+    - I am sad
+    - I don't feel very well
+    - I am disappointed
+    - I'm so sad
+    - sad
+    - very sad
+    - unhappy
+    - not good
+    - not very good
+    - feeling down
+    - I feel lonely
+    - terrible day
+
+- intent: chitchat/bot_challenge
+  examples: |
+    - are you a bot?
+    - are you a human?
+    - am I talking to a bot?
+    - am I talking to a human?
+    - are you real?
+    - are you an AI?
+    - are you alive?
+
+- intent: chitchat/how_are_you
+  examples: |
+    - how are you?
+    - how are you doing?
+    - how’s it going?
+    - how are things?
+    - how do you feel?
+    - are you doing okay?
+
+- intent: chitchat/who_are_you
+  examples: |
+    - who are you?
+    - what are you?
+    - tell me about yourself
+    - what’s your name?
+    - who am I talking to?
+
+- intent: chitchat/what_can_you_do
+  examples: |
+    - what can you do?
+    - what are your skills?
+    - how can you help me?
+    - what do you know?
+    - what services do you provide?

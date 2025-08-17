@@ -1,95 +1,6 @@
 version: "3.1"
 
 nlu:
-- intent: greet
-  examples: |
-    - hey
-    - hello
-    - hi
-    - hello there
-    - good morning
-    - good evening
-    - moin
-    - hey there
-    - let's go
-    - hey dude
-    - goodmorning
-    - goodevening
-    - good afternoon
-
-- intent: goodbye
-  examples: |
-    - cu
-    - good by
-    - cee you later
-    - good night
-    - bye
-    - goodbye
-    - have a nice day
-    - see you around
-    - bye bye
-    - see you later
-
-- intent: affirm
-  examples: |
-    - yes
-    - y
-    - indeed
-    - of course
-    - that sounds good
-    - correct
-
-- intent: deny
-  examples: |
-    - no
-    - n
-    - never
-    - I don't think so
-    - don't like that
-    - no way
-    - not really
-
-- intent: mood_great
-  examples: |
-    - perfect
-    - great
-    - amazing
-    - feeling like a king
-    - wonderful
-    - I am feeling very good
-    - I am great
-    - I am amazing
-    - I am going to save the world
-    - super stoked
-    - extremely good
-    - so so perfect
-    - so good
-    - so perfect
-
-- intent: mood_unhappy
-  examples: |
-    - my day was horrible
-    - I am sad
-    - I don't feel very well
-    - I am disappointed
-    - super sad
-    - I'm so sad
-    - sad
-    - very sad
-    - unhappy
-    - not good
-    - not very good
-    - extremly sad
-    - so saad
-    - so sad
-
-- intent: bot_challenge
-  examples: |
-    - are you a bot?
-    - are you a human?
-    - am I talking to a bot?
-    - am I talking to a human?
-
 - intent: retrieve_client
   examples: |
     - Can you retrieve the client record of [James Doe](client_name)
@@ -100,3 +11,51 @@ nlu:
     - Search the database for [Peter Parker](client_name)
     - Show me information for [Anna Lee](client_name)
     - Find the record of [Robert Brown](client_name)
+    - Pull up details for [James Doe](client_name)
+    - Can I see information about [Jane Smith](client_name)?
+    - Give me the profile of [Juan Dela Cruz](client_name)
+    - Show [Maria Santos](client_name)’s info
+    - Lookup [Lyle Peterson](client_name)’s record
+    - Provide data on [Peter Parker](client_name)
+    - Do you have [Anna Lee](client_name)’s file?
+    - Fetch [Robert Brown](client_name)’s contact details
+    - Find client entry for [Michael Reyes](client_name)
+    - I want the record of [Samantha Cruz](client_name)
+
+- intent: retrieve_appointment
+  examples: |
+    - Show me the appointment details for reference number [APT-2345](reference_number)
+    - Retrieve appointment for [Romnick Herschel](name)
+    - What’s the schedule of [Jasper Dizon](name) on [August 15, 2025](date)?
+    - Find appointment for [Maria Santos](name)
+    - Lookup appointment of [Anna Lee](name)
+    - Check appointment with reference [XYZ-8065](reference_number)
+    - When is [Peter Parker](name)’s appointment?
+    - Appointment details for [Robert Brown](name)
+    - Can you pull up booking [APT-2345](reference_number)?
+    - Get me the appointment info for [Romnick Herschel](name)
+    - When does [Jasper Dizon](name) have a checkup on [August 15, 2025](date)?
+    - I need [Maria Santos](name)’s schedule
+    - Do you have booking details for [Anna Lee](name)?
+    - Find appointment ref [XYZ-8065](reference_number)
+    - List [Peter Parker](name)’s appointments
+    - Show all bookings for [Robert Brown](name)
+
+- intent: retrieve_patient
+  examples: |
+    - Get patient info for [Max](pet_name)
+    - Show me the record of patient [Bella](pet_name)
+    - Retrieve details of [Charlie](pet_name)
+    - Patient information for [Luna](pet_name)
+    - Look up patient named [Rocky](pet_name)
+    - Can you find patient [Daisy](pet_name)?
+    - Get medical record of [Coco](pet_name)
+    - Show me data on patient [Max](pet_name)
+    - I need the profile of [Bella](pet_name)
+    - Can you pull history of [Charlie](pet_name)?
+    - Provide details for [Luna](pet_name)
+    - Do you have [Rocky](pet_name)’s records?
+    - Fetch medical info on [Daisy](pet_name)
+    - Lookup health record of [Coco](pet_name)
+    - Find patient file for [Buddy](pet_name)
+

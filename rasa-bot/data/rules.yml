@@ -2,18 +2,21 @@ version: "3.1"
 
 rules:
 
-- rule: Say goodbye anytime the user says goodbye
+# --- Client retrieval flow ---
+- rule: Retrieve client by name
   steps:
-  - intent: goodbye
-  - action: utter_goodbye
+  - intent: retrieve_client
+  - action: action_retrieve_client
 
-- rule: Say 'I am a bot' anytime the user challenges
+# --- Appointment retrieval flow ---
+- rule: Retrieve appointment by reference
   steps:
-  - intent: bot_challenge
-  - action: utter_iamabot
+  - intent: retrieve_appointment
+  - action: action_retrieve_appointment
 
-- rule: Retrieve client record
+# --- Patient retrieval flow ---
+- rule: Retrieve patient by name
   steps:
-    - intent: retrieve_client
-    - action: action_retrieve_client
+  - intent: retrieve_patient
+  - action: action_retrieve_patient
 
