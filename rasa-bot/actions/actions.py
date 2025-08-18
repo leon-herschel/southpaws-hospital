@@ -52,7 +52,6 @@ class ActionRetrieveClient(Action):
         if not client_name:
             dispatcher.utter_message(text="Please provide the client's full name.")
             return []
-
         try:
             conditions, params = build_split_word_query("name", client_name)
             query = f"SELECT * FROM clients WHERE {conditions}"
@@ -148,7 +147,6 @@ class ActionRetrieveAppointment(Action):
 # --- PATIENTS ---
 class ActionRetrievePatient(Action):
     def name(self): return "action_retrieve_patient"
-
     def run(self, dispatcher, tracker, domain):
         pet_name = next(tracker.get_latest_entity_values("pet_name"), None)
         if not pet_name:
