@@ -5,7 +5,10 @@ import { FaUser, FaRobot, FaTimes, FaPaperPlane } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function ChatbotModal({ onClose }) {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => {
+    const saved = localStorage.getItem("chatHistory");
+    return saved ? JSON.parse(saved) : [];
+  });
   const [input, setInput] = useState("");
   const [botTyping, setBotTyping] = useState(false);
 
@@ -15,6 +18,10 @@ export default function ChatbotModal({ onClose }) {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, botTyping]);
+
+  useEffect(() => {
+    localStorage.setItem("chatHistory", JSON.stringify(messages));
+  }, [messages]);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -53,7 +60,13 @@ export default function ChatbotModal({ onClose }) {
           style={{ cursor: "move", borderTopLeftRadius: "10px", borderTopRightRadius: "10px" }}
         >
           <span>PawPal</span>
-          <FaTimes style={{ cursor: "pointer" }} onClick={onClose} />
+          <FaTimes
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              localStorage.removeItem("chatHistory");
+              onClose();
+            }}
+          />
         </div>
 
         {/* Messages */}
