@@ -184,7 +184,6 @@ function CancelledAppointment() {
           <input
             type="text"
             className="form-control"
-            value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
             placeholder="Search"
           />

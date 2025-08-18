@@ -111,7 +111,7 @@ nlu:
   examples: |
     - Can you retrieve the client record of [James Doe](client_name)
     - Please get the client record for [Jane Smith](client_name)
-    - Look up client record of [Juan Dela Cruz](client_name)
+    - Look up client record of [Juan dela Cruz](client_name)
     - Fetch client info for [Maria Santos](client_name)
     - I need the details of [Lyle Peterson](client_name)
     - Search the database for [Peter Parker](client_name)
@@ -119,14 +119,16 @@ nlu:
     - Find the record of [Robert Brown](client_name)
     - Pull up details for [James Doe](client_name)
     - Can I see information about [Jane Smith](client_name)?
-    - Give me the profile of [Juan Dela Cruz](client_name)
+    - Give me the profile of [John dela Cerna](client_name)
     - Show [Maria Santos](client_name)’s info
     - Lookup [Lyle Peterson](client_name)’s record
     - Provide data on [Peter Parker](client_name)
     - Do you have [Anna Lee](client_name)’s file?
-    - Fetch [Robert Brown](client_name)’s contact details
+    - Fetch [Robert de Guzman](client_name)’s contact details
     - Find client entry for [Michael Reyes](client_name)
     - I want the record of [Samantha Cruz](client_name)
+    - Give me [Anna Lee](client_name)’s profile
+    - Pull up [Peter Parker](client_name)’s contact information
 
 - intent: retrieve_appointment
   examples: |
@@ -146,6 +148,10 @@ nlu:
     - Find appointment ref [XYZ-8065](reference_number)
     - List [Peter Parker](name)’s appointments
     - Show all bookings for [Robert Brown](name)
+    - Can you tell me [Jane Smith](name)’s meeting time?
+    - Pull up [Michael Reyes](name)’s consultation
+    - Show [Anna Lee](name)’s checkup schedule
+    - Retrieve booking info for [Lyle Peterson](name)
 
 - intent: retrieve_patient
   examples: |
@@ -164,3 +170,79 @@ nlu:
     - Fetch pet info on [Daisy](pet_name)
     - Lookup pet record of [Coco](pet_name)
     - Find patient file for [Buddy](pet_name)
+    - Can you check [Max](pet_name)’s record?
+    - I want to see [Bella](pet_name)’s file
+    - What info do you have on [Charlie](pet_name)?
+    - Pull up [Luna](pet_name)’s profile
+    - Access [Rocky](pet_name)’s medical history
+    - Display patient data for [Daisy](pet_name)
+    - Do you have details on [Coco](pet_name)?
+    - Give me [Buddy](pet_name)’s report
+    - Patient [Bella](pet_name), show details
+    - Information about pet [Max](pet_name) please
+
+- lookup: pet_name
+  examples: |
+    - Max
+    - Bella
+    - Charlie
+    - Luna
+    - Rocky
+    - Daisy
+    - Coco
+    - Buddy
+    - Molly
+    - Bailey
+    - Lola
+    - Sadie
+    - Oliver
+    - Toby
+    - Teddy
+    - Simba
+    - Nala
+    - Bituin
+    - Mingming
+    - Puti
+    - Bruno
+    - Bantay
+    - Kuting
+    - Gino
+    - Tisoy
+    - Cherry
+    - Brownie
+    - Coco
+    - Daisy
+    - Lucky
+    - Tigger
+    - Pogi
+    - Baby
+    - Ruffy
+    - Choco
+    - Laki
+    - Bunso
+    - Paws
+    - Miming
+
+- synonym: record
+  examples: |
+    - file
+    - report
+    - history
+    - details
+    - data
+    - profile
+    - information
+    - dossier
+    - entry
+
+- synonym: appointment
+  examples: |
+    - booking
+    - schedule
+    - meeting
+    - consultation
+    - checkup
+    - reservation
+    - session
+    - visit
+    - slot

@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css'; // Import CSS for Toastify
 import AddClientAndPatientModal from './Add/AddClientsModal'; // Use only the new modal
 import EditClientsModal from '../components/Edit/EditClientModal';
 import ViewClientModal from '../components/View/ViewClientModal';
+import { useLocation } from 'react-router-dom';
 
 const ListClients = () => {
     const [users, setUsers] = useState([]);
@@ -24,10 +25,14 @@ const ListClients = () => {
     const [showViewModal, setShowViewModal] = useState(false);
     const [viewClientId, setViewClientId] = useState(null);
     const [viewClientPatients, setViewClientPatients] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const location = useLocation();
 
     useEffect(() => {
-        getUsers();
-    }, []);
+        if (location.state?.searchName) {
+            setSearchTerm(location.state.searchName.toLowerCase());
+        }
+    }, [location.state]);
 
     const handleCategoryAdded = () => {
         getUsers();
@@ -85,8 +90,13 @@ const ListClients = () => {
             });
     };
 
-    function handleFilter(event) {
-        const searchText = event.target.value.toLowerCase();
+    function handleFilter(eventOrValue) {
+        const searchText = typeof eventOrValue === "string"
+            ? eventOrValue.toLowerCase()
+            : eventOrValue.target.value.toLowerCase();
+
+        setSearchTerm(searchText);
+
         const newData = originalUsers.filter(row => {
             return (
                 String(row.name).toLowerCase().includes(searchText) ||
@@ -94,8 +104,20 @@ const ListClients = () => {
                 String(row.cellnumber).toLowerCase().includes(searchText)
             );
         });
+
         setUsers(searchText ? newData : originalUsers);
     }
+
+    useEffect(() => {
+        getUsers();
+    }, []);
+
+    useEffect(() => {
+        if (searchTerm) {
+            handleFilter(searchTerm);
+        }
+    }, [searchTerm, originalUsers]);
+
 
     const indexOfLastUser = currentPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
@@ -164,7 +186,12 @@ const ListClients = () => {
             <h1 style={{ textAlign: 'left', fontWeight: 'bold' }}>Clients</h1>
             <div className='d-flex justify-content-between align-items-center'>
                 <div className="input-group-prepend" style={{ width: '25%' }}>
-                    <input type="text" className="form-control" onChange={handleFilter} placeholder="Search" />
+                    <input 
+                        type="text" 
+                        className="form-control"
+                        onChange={handleFilter} 
+                        placeholder="Search" 
+                    />
                 </div>
                 <div className='text-end'>
                     <Button onClick={() => setShowAddModal(true)} className='btn btn-primary w-100'
