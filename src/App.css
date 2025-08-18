@@ -287,6 +287,10 @@ thead {
   transform: scale(1.1) rotate(-10deg);
 }
 
+.chat-message p {
+  margin-bottom: 0; 
+}
+
 
 
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Modal } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FaEye, FaArrowLeft } from "react-icons/fa";
 import { format } from "date-fns";
 
@@ -14,6 +14,13 @@ function DoneAppointments() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.searchName) {
+      setSearchTerm(location.state.searchName.toLowerCase());
+    }
+  }, [location.state]);
 
   const handleEventClick = (event) => {
     setSelectedEvent(event);

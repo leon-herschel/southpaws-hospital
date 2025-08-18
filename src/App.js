@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -54,7 +54,14 @@ function App() {
     setIsAuthenticated(true);
   };
 
-  const [showChatbot, setShowChatbot] = useState(false);
+  // Persist chatbot modal state with localStorage
+  const [showChatbot, setShowChatbot] = useState(
+    localStorage.getItem("chatbotOpen") === "true"
+  );
+
+  useEffect(() => {
+    localStorage.setItem("chatbotOpen", showChatbot);
+  }, [showChatbot]);
 
   return (
     <div className="App">
@@ -140,7 +147,9 @@ function App() {
                         <Route path="settings" element={<GeneralSettings />} />
                       </Routes>
                     </div>
-                    {showChatbot && <ChatbotModal onClose={() => setShowChatbot(false)} />}
+                    {showChatbot && (
+                      <ChatbotModal onClose={() => setShowChatbot(false)} />
+                    )}
                   </>
                 }
               />

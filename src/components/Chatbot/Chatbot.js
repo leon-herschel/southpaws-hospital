@@ -3,9 +3,15 @@ import axios from "axios";
 import Draggable from "react-draggable";
 import { FaUser, FaRobot, FaTimes, FaPaperPlane } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Link } from 'react-router-dom';
+import ReactMarkdown from "react-markdown";
+
 
 export default function ChatbotModal({ onClose }) {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => {
+    const saved = localStorage.getItem("chatHistory");
+    return saved ? JSON.parse(saved) : [];
+  });
   const [input, setInput] = useState("");
   const [botTyping, setBotTyping] = useState(false);
 
@@ -15,6 +21,10 @@ export default function ChatbotModal({ onClose }) {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, botTyping]);
+
+  useEffect(() => {
+    localStorage.setItem("chatHistory", JSON.stringify(messages));
+  }, [messages]);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -35,7 +45,68 @@ export default function ChatbotModal({ onClose }) {
           if (msg.text) {
             setMessages((prev) => [...prev, { sender: "bot", text: msg.text }]);
           }
+
+          if (msg.custom) {
+            // single link
+            if (msg.custom.link) {
+              setMessages((prev) => [
+                ...prev,
+                {
+                  sender: "bot",
+                  link: {
+                    url: msg.custom.link.url,
+                    label: msg.custom.link.label,
+                    searchName: msg.custom.link.searchName,
+                  },
+                },
+              ]);
+            }
+
+            // multiple appointments
+            if (msg.custom.appointments) {
+              msg.custom.appointments.forEach((appt) => {
+                setMessages((prev) => [
+                  ...prev,
+                  {
+                    sender: "bot",
+                    text: appt.text,
+                    link: appt.link,
+                  },
+                ]);
+              });
+            }
+
+            // multiple clients
+            if (msg.custom.clients) {
+              msg.custom.clients.forEach((client) => {
+                setMessages((prev) => [
+                  ...prev,
+                  {
+                    sender: "bot",
+                    text: client.text,
+                    link: client.link,
+                  },
+                ]);
+              });
+            }
+
+            // multiple patients
+            if (msg.custom.patients) {
+              msg.custom.patients.forEach((patient) => {
+                setMessages((prev) => [
+                  ...prev,
+                  {
+                    sender: "bot",
+                    text: patient.text,
+                    link: patient.link,
+                  },
+                ]);
+              });
+            }
+          }
+
         });
+
         setBotTyping(false);
       }, 500); // 0.5s delay
     } catch (err) {
@@ -53,7 +124,13 @@ export default function ChatbotModal({ onClose }) {
           style={{ cursor: "move", borderTopLeftRadius: "10px", borderTopRightRadius: "10px" }}
         >
           <span>PawPal</span>
-          <FaTimes style={{ cursor: "pointer" }} onClick={onClose} />
+          <FaTimes
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              localStorage.removeItem("chatHistory");
+              onClose();
+            }}
+          />
         </div>
 
         {/* Messages */}
@@ -76,7 +153,26 @@ export default function ChatbotModal({ onClose }) {
                 }`}
                 style={{ maxWidth: "70%", whiteSpace: "pre-line" }}
               >
-                {msg.text}
+                {msg.text && (
+                      <ReactMarkdown
+                        components={{
+                          p: ({ children }) => <p style={{ marginBottom: 0 }}>{children}</p>,
+                        }}
+                      >
+                        {msg.text}
+                      </ReactMarkdown>
+                )}
+                  {msg.link && (
+                    <div className="mt-2">
+                      <Link
+                        to={msg.link.url}
+                        state={{ searchName: msg.link.searchName }}
+                        className="text-primary fw-bold"
+                      >
+                        {msg.link.label}
+                      </Link>
+                    </div>
+                  )}
               </div>
               {msg.sender === "user" && (
                 <div className="ms-2">

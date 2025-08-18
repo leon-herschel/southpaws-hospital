@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FaArrowLeft, FaEdit } from "react-icons/fa";
 import { format } from "date-fns";
 import EditAppointment from "../EditAppointment";
@@ -15,6 +15,13 @@ function ConfirmedAppointments() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
   const [editData, setEditData] = useState(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.searchName) {
+      setSearchTerm(location.state.searchName.toLowerCase());
+    }
+  }, [location.state]);
 
   const fetchConfirmed = async () => {
     try {
