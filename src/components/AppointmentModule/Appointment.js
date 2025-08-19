@@ -229,8 +229,8 @@ const Appointment = () => {
 
   return (
     <div className="container mt-2">
-      <h1 style={{ textAlign: "left", fontWeight: "bold" }}>Appointments</h1>
-      <div className="d-flex justify-content-end">
+      <div className="container mt-2 d-flex align-items-center justify-content-between p-0">
+        <h1 style={{ fontWeight: "bold"}}>Appointments</h1>
         <Notifications />
       </div>
       {renderStatusBoxes()}
@@ -447,8 +447,7 @@ const Appointment = () => {
               Close
             </button>
 
-            {selectedEvent.status !== "Done" &&
-              selectedEvent.status !== "Arrived" && (
+            {selectedEvent.status !== "Done" && (
                 <button
                   className="btn btn-primary me-2"
                   onClick={() => {

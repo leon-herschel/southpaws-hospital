@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FaArrowLeft, FaEye } from "react-icons/fa";
 import AddAppointments from "../AddAppointments";
 import { Modal } from "react-bootstrap";
@@ -21,6 +21,13 @@ const PendingAppointments = () => {
   const [pendingToDeleteId, setPendingToDeleteId] = useState(null);
   const currentUserID = localStorage.getItem("userID");
   const currentUserEmail = localStorage.getItem("userEmail");
+  const location = useLocation();
+  
+    useEffect(() => {
+      if (location.state?.searchName) {
+        setSearchTerm(location.state.searchName.toLowerCase());
+      }
+    }, [location.state]);
 
   const fetchPending = async () => {
     try {
@@ -159,7 +166,7 @@ const PendingAppointments = () => {
       </button>
       <h2 className="mb-3">Pending Appointments</h2>
 
-      <div className="input-group mb-3" style={{ width: "25%" }}>
+      <div className="input-group" style={{ width: "25%" }}>
         <input
           type="text"
           className="form-control"

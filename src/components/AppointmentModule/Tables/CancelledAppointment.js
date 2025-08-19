@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FaTrash, FaArrowLeft } from "react-icons/fa";
 import { format } from "date-fns";
 import { Modal } from "react-bootstrap";
@@ -20,6 +20,13 @@ function CancelledAppointment() {
 
   const currentUserID = localStorage.getItem("userID");
   const currentUserEmail = localStorage.getItem("userEmail");
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.searchName) {
+      setSearchTerm(location.state.searchName.toLowerCase());
+    }
+  }, [location.state]);
 
   const fetchCancelled = async () => {
     try {
@@ -177,7 +184,7 @@ function CancelledAppointment() {
           <input
             type="text"
             className="form-control"
-            onChange={handleFilter}
+            onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
             placeholder="Search"
           />
         </div>

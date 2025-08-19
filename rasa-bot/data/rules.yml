@@ -2,18 +2,66 @@ version: "3.1"
 
 rules:
 
-- rule: Say goodbye anytime the user says goodbye
+# --- Client retrieval flow ---
+- rule: Retrieve client by name
+  steps:
+  - intent: retrieve_client
+  - action: action_retrieve_client
+
+# --- Appointment retrieval flow ---
+- rule: Retrieve appointment by reference
+  steps:
+  - intent: retrieve_appointment
+  - action: action_retrieve_appointment
+
+# --- Patient retrieval flow ---
+- rule: Retrieve patient by name
+  steps:
+  - intent: retrieve_patient
+  - action: action_retrieve_patient
+
+# Chitchat rules
+- rule: Greet
+  steps:
+  - intent: greet
+  - action: utter_greet
+
+- rule: Goodbye
   steps:
   - intent: goodbye
   - action: utter_goodbye
 
-- rule: Say 'I am a bot' anytime the user challenges
+- rule: Thank you
+  steps:
+  - intent: thank_you
+  - action: utter_thank_you
+
+- rule: Mood great
+  steps:
+  - intent: mood_great
+  - action: utter_mood_great
+
+- rule: Mood unhappy
+  steps:
+  - intent: mood_unhappy
+  - action: utter_mood_unhappy
+
+- rule: Bot challenge
   steps:
   - intent: bot_challenge
-  - action: utter_iamabot
+  - action: utter_bot_challenge
 
-- rule: Retrieve client record
+- rule: How are you
   steps:
-    - intent: retrieve_client
-    - action: action_retrieve_client
+  - intent: how_are_you
+  - action: utter_how_are_you
 
+- rule: Who are you
+  steps:
+  - intent: who_are_you
+  - action: utter_who_are_you
+
+- rule: What can you do
+  steps:
+  - intent: what_can_you_do
+  - action: utter_what_can_you_do
