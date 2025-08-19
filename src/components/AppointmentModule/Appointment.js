@@ -447,8 +447,7 @@ const Appointment = () => {
               Close
             </button>
 
-            {selectedEvent.status !== "Done" &&
-              selectedEvent.status !== "Arrived" && (
+            {selectedEvent.status !== "Done" && (
                 <button
                   className="btn btn-primary me-2"
                   onClick={() => {
