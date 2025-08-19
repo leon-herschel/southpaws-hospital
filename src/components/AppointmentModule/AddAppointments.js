@@ -223,6 +223,7 @@ const AddAppointments = ({ onClose, prefill }) => {
     }
 
     const finalEmail = formData.email?.trim() || "no_email@noemail.com";
+    const shouldSendEmail = finalEmail && finalEmail !== "no_email@noemail.com";
 
     const formToSend = {
       ...formData,
@@ -234,6 +235,34 @@ const AddAppointments = ({ onClose, prefill }) => {
       user_email: currentUserEmail,
       doctor_id: formData.doctor_id,
     };
+
+    if (shouldSendEmail) {
+      const confirmSend = window.confirm(
+        "An email was found for this client. Do you want to send a confirmation email?"
+      );
+
+      if (confirmSend) {
+        try {
+          const emailRes = await axios.post(
+            "http://localhost/api/send_email.php",
+            formToSend
+          );
+
+          if (emailRes.data.success) {
+            toast.success("Appointment saved and confirmation email sent.");
+          } else {
+            toast.warn(
+              "Appointment saved, but confirmation email could not be sent."
+            );
+          }
+        } catch (err) {
+          console.error("Email error", err);
+          toast.warn(
+            "Appointment saved, but confirmation email could not be sent."
+          );
+        }
+      }
+    }
 
     try {
       const res = await axios.post(
@@ -554,7 +583,9 @@ const AddAppointments = ({ onClose, prefill }) => {
             <div className="row">
               <div className="col-12">
                 <div className="mb-3">
-                  <label htmlFor="doctor_id">Assigned Doctor: <span className="text-danger">*</span></label>
+                  <label htmlFor="doctor_id">
+                    Assigned Doctor: <span className="text-danger">*</span>
+                  </label>
                   <select
                     id="doctor_id"
                     name="doctor_id"
