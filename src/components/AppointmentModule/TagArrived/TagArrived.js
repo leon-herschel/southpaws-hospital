@@ -237,6 +237,9 @@ function TagArrived({ onClose }) {
                     try {
                       const res = await axios.post("http://localhost/api/TagArrived/mark-arrived.php", {
                         reference_number: referenceNumber,
+                        pet_name: selectedPet?.name,
+                        pet_species: selectedPet?.species,
+                        pet_breed: selectedPet?.breed,
                       });
 
                       if (res.data.success) {
