@@ -42,7 +42,7 @@ try {
         // Send a "warning" flag but still allow proceeding
         echo json_encode([
             "valid" => "warning",
-            "message" => "⚠ Appointment is not scheduled for today."
+            "message" => "This appointment is not scheduled for today. Please verify before proceeding."
         ]);
     } else {
         echo json_encode(["valid" => true]);

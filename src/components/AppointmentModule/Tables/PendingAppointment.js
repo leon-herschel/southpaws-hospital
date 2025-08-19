@@ -166,11 +166,10 @@ const PendingAppointments = () => {
       </button>
       <h2 className="mb-3">Pending Appointments</h2>
 
-      <div className="input-group mb-3" style={{ width: "25%" }}>
+      <div className="input-group" style={{ width: "25%" }}>
         <input
           type="text"
           className="form-control"
-          value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
           placeholder="Search"
         />

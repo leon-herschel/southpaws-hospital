@@ -26,6 +26,10 @@ $pet_name   = $data['pet_name']   ?? null;
 $pet_species = $data['pet_species'] ?? null;
 $pet_breed  = $data['pet_breed']  ?? null;
 
+$client_name   = $data['client_name']   ?? null;
+$client_contact = $data['client_contact'] ?? null;
+$client_email  = $data['client_email']  ?? null;
+
 if (!$reference_number) {
     http_response_code(400);
     echo json_encode(["error" => "Reference number is required."]);
@@ -33,8 +37,20 @@ if (!$reference_number) {
 }
 
 try {
-    if ($pet_name && $pet_species && $pet_breed) {
-        // Update status + pet details
+    if ($pet_name && $pet_species && $pet_breed && $client_name && $client_contact) {
+        // Update everything (status + pet + client)
+        $stmt = $conn->prepare("UPDATE appointments 
+                                SET status = 'Arrived', 
+                                    pet_name = ?, 
+                                    pet_species = ?, 
+                                    pet_breed = ?,
+                                    name = ?, 
+                                    contact = ?, 
+                                    email = ?
+                                WHERE reference_number = ?");
+        $stmt->execute([$pet_name, $pet_species, $pet_breed, $client_name, $client_contact, $client_email, $reference_number]);
+    } elseif ($pet_name && $pet_species && $pet_breed) {
+        // Update status + pet only
         $stmt = $conn->prepare("UPDATE appointments 
                                 SET status = 'Arrived', 
                                     pet_name = ?, 
