@@ -3,8 +3,10 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { format, isToday, isYesterday } from "date-fns";
 import { useNavigate } from "react-router-dom";
-import { MdOutlineNotificationsNone, MdOutlineNotificationsActive } from "react-icons/md";
-
+import {
+  MdOutlineNotificationsNone,
+  MdOutlineNotificationsActive,
+} from "react-icons/md";
 
 export default function NotificationBell() {
   const [notifications, setNotifications] = useState([]);
@@ -29,35 +31,42 @@ export default function NotificationBell() {
 
   // Fetch notifications every 5 seconds
   useEffect(() => {
-  const fetchNotifications = async () => {
-    try {
-      const res = await axios.get("http://localhost/api/notifications.php");
-      const now = new Date();
+    const fetchNotifications = async () => {
+      try {
+        const res = await axios.get("http://localhost/api/notifications.php");
+        const now = new Date();
 
-      let filtered = (res.data.notifications || [])
-        .map((n) => {
-          if (n.date && n.time) return { ...n, created_at: new Date(`${n.date}T${n.time}`) };
-          if (n.created_at) return { ...n, created_at: new Date(n.created_at) };
-          return n;
-        })
-        .filter((n) => n.created_at && (now - n.created_at) / (1000 * 60 * 60 * 24) < 7)
-        .filter((n) => !dismissedNotifications.includes(n.id))
-        .sort((a, b) => b.created_at - a.created_at);
+        let filtered = (res.data.notifications || [])
+          .map((n) => {
+            if (n.date && n.time)
+              return { ...n, created_at: new Date(`${n.date}T${n.time}`) };
+            if (n.created_at)
+              return { ...n, created_at: new Date(n.created_at) };
+            return n;
+          })
+          .filter(
+            (n) =>
+              n.created_at && (now - n.created_at) / (1000 * 60 * 60 * 24) < 7
+          )
+          .filter((n) => !dismissedNotifications.includes(n.id))
+          .sort((a, b) => b.created_at - a.created_at);
 
-      setNotifications(filtered);
-      const currentUnread = filtered.filter((n) => !seenIds.includes(n.id)).length;
-      setUnreadCount(currentUnread);
-    } catch (err) {
-      console.error("Error fetching notifications", err);
-    }
-  };
+        setNotifications(filtered);
+        const currentUnread = filtered.filter(
+          (n) => !seenIds.includes(n.id)
+        ).length;
+        setUnreadCount(currentUnread);
+      } catch (err) {
+        console.error("Error fetching notifications", err);
+      }
+    };
 
-  fetchNotifications(); // initial fetch
+    fetchNotifications(); // initial fetch
 
-  const interval = setInterval(fetchNotifications, 5000); // fetch every 5 seconds
+    const interval = setInterval(fetchNotifications, 5000); // fetch every 5 seconds
 
-  return () => clearInterval(interval); // cleanup on unmount
-}, [dismissedNotifications, seenIds]);
+    return () => clearInterval(interval); // cleanup on unmount
+  }, [dismissedNotifications, seenIds]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -205,8 +214,17 @@ export default function NotificationBell() {
             notifications.map((n) => (
               <div
                 key={n.id}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.05)"}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = n.status === "Pending" ? "rgba(255,215,0,0.1)" : n.status === "Cancelled" ? "rgba(255,0,0,0.08)" : "transparent"}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.05)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor =
+                    n.status === "Pending"
+                      ? "rgba(255,215,0,0.1)"
+                      : n.status === "Cancelled"
+                      ? "rgba(255,0,0,0.08)"
+                      : "transparent")
+                }
                 style={{
                   display: "flex",
                   alignItems: "flex-start",
@@ -214,25 +232,60 @@ export default function NotificationBell() {
                   padding: "12px 10px",
                   borderBottom: "1px solid #eee",
                   cursor: "pointer",
-                  backgroundColor: n.status === "Pending" ? "rgba(255,215,0,0.1)" : n.status === "Cancelled" ? "rgba(255,0,0,0.08)" : "transparent",
+                  backgroundColor:
+                    n.status === "Pending"
+                      ? "rgba(255,215,0,0.1)"
+                      : n.status === "Cancelled"
+                      ? "rgba(255,0,0,0.08)"
+                      : "transparent",
                   transition: "background 0.2s",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }} onClick={() => handleNotificationClick(n)}>
-                  <MdOutlineNotificationsActive size={20} color={getBellColor(n.status)} />
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "10px" }}
+                  onClick={() => handleNotificationClick(n)}
+                >
+                  <MdOutlineNotificationsActive
+                    size={20}
+                    color={getBellColor(n.status)}
+                  />
                   <div style={{ display: "flex", flexDirection: "column" }}>
-                    <span style={{ fontWeight: 600, fontSize: "14px", color: "#333" }}>
+                    <span
+                      style={{
+                        fontWeight: 600,
+                        fontSize: "14px",
+                        color: "#333",
+                      }}
+                    >
                       {getStatus(n.status)} Appointment
                     </span>
-                    <span style={{ fontSize: "13px", color: "#555" }}>Client: {n.name}</span>
-                    <span style={{ fontSize: "12px", color: "#888" }}>{formatNotificationDate(n.created_at)}</span>
+                    <span style={{ fontSize: "13px", color: "#555" }}>
+                      Client: {n.name}
+                    </span>
+                    <span style={{ fontSize: "12px", color: "#888" }}>
+                      {formatNotificationDate(n.created_at)}
+                    </span>
                   </div>
                 </div>
-                <FaTimes size={14} color="#888" style={{ cursor: "pointer" }} onClick={() => handleRemoveNotification(n.id)} />
+                <FaTimes
+                  size={14}
+                  color="#888"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleRemoveNotification(n.id)}
+                />
               </div>
             ))
           ) : (
-            <div style={{ padding: "12px", textAlign: "center", fontSize: "14px", color: "#555" }}>No new notifications</div>
+            <div
+              style={{
+                padding: "12px",
+                textAlign: "center",
+                fontSize: "14px",
+                color: "#555",
+              }}
+            >
+              No new notifications
+            </div>
           )}
         </div>
       )}
