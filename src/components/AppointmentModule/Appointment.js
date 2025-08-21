@@ -349,7 +349,7 @@ const Appointment = () => {
               </h6>
               <div className="row">
                 <div className="col-md-6">
-                  <p>
+                  <p className="text-break">
                     <strong>Name:</strong> {selectedEvent.name}
                   </p>
                   <p>
@@ -357,7 +357,7 @@ const Appointment = () => {
                   </p>
                 </div>
                 <div className="col-md-6">
-                  <p>
+                  <p className="text-break">
                     <strong>Email:</strong> {selectedEvent.email || "N/A"}
                   </p>
                 </div>

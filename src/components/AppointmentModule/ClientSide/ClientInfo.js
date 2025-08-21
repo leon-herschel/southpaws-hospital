@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Button, ProgressBar } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { format } from "date-fns";
 
@@ -122,7 +122,8 @@ function AddAppointments() {
         return (
           formData.firstName.trim() !== "" &&
           formData.lastName.trim() !== "" &&
-          /^\d{11}$/.test(formData.contact)
+          /^\d{11}$/.test(formData.contact) &&
+          /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
         );
       case 2: // Step 2: Patient Details
         return (
@@ -145,8 +146,10 @@ function AddAppointments() {
   };
 
   return (
-    <div className="container mt-4">
-      <ProgressBar now={(currentStep / totalSteps) * 100} className="mb-4" />
+    <div className="container mt-3">
+      <div>
+        <h4>Step {currentStep} of {totalSteps}</h4>
+      </div>
 
       <form onSubmit={handleSubmit}>
         {/* STEP 1 - Personal Details */}
@@ -208,7 +211,7 @@ function AddAppointments() {
                     </div>
 
                     <div className="mb-3">
-                      <label htmlFor="email">Email:</label>
+                      <label htmlFor="email">Email: <span className="text-danger">*</span></label>
                       <input
                         type="email"
                         id="email"
@@ -217,6 +220,7 @@ function AddAppointments() {
                         value={formData.email}
                         onChange={handleChange}
                         autoComplete="off"
+                        required
                       />
                     </div>
                   </div>
@@ -259,9 +263,17 @@ function AddAppointments() {
                         name="pet_breed"
                         className="form-control"
                         value={formData.pet_breed}
+                        list="breedOptions"
                         onChange={handleChange}
                         required
                       />
+                      <datalist id="breedOptions">
+                        <option value="Siberian Husky" />
+                        <option value="Golden Retriever" />
+                        <option value="German Shepherd" />
+                        <option value="Chow Chow" />
+                        <option value="Shih Tzu" />
+                      </datalist>
                     </div>
                   </div>
 
@@ -276,9 +288,14 @@ function AddAppointments() {
                         name="pet_species"
                         className="form-control"
                         value={formData.pet_species}
+                        list="speciesOptions"
                         onChange={handleChange}
                         required
                       />
+                      <datalist id="speciesOptions">
+                        <option value="Canine" />
+                        <option value="Feline" />
+                      </datalist>
                     </div>
                   </div>
                 </div>

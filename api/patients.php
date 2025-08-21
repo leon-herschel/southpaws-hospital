@@ -58,6 +58,10 @@ switch ($method) {
             exit;
         }
 
+        $distinct_features = !empty($patients->distinct_features) ? $patients->distinct_features : "";
+        $other_details     = !empty($patients->other_details) ? $patients->other_details : "";
+        $weight            = isset($patients->weight) && is_numeric($patients->weight) ? $patients->weight : 0;
+
         // If owner exists, insert the patient record
         $sql = "INSERT INTO patients (owner_id, name, species, breed, age, birthdate, distinct_features, other_details, weight, created_by, created_at) 
                 VALUES (:owner_id, :name, :species, :breed, :age, :birthdate, :distinct_features, :other_details, :weight, :created_by, NOW())";
@@ -69,9 +73,9 @@ switch ($method) {
         $stmt->bindParam(':breed', $patients->breed);
         $stmt->bindParam(':age', $patients->age);
         $stmt->bindParam(':birthdate', $patients->birthdate);
-        $stmt->bindParam(':distinct_features', $patients->distinct_features);
-        $stmt->bindParam(':other_details', $patients->other_details);
-        $stmt->bindParam(':weight', $patients->weight);
+        $stmt->bindParam(':distinct_features', $distinct_features);
+        $stmt->bindParam(':other_details', $other_details);
+        $stmt->bindParam(':weight', $weight);
         $stmt->bindParam(':created_by', $patients->created_by);
 
         if ($stmt->execute()) {
@@ -98,6 +102,10 @@ switch ($method) {
                 echo json_encode(['status' => 0, 'message' => 'Invalid owner ID.']);
                 exit;
             }
+
+            $distinct_features = !empty($patients->pet_distinct_features) ? $patients->pet_distinct_features : "";
+            $other_details     = !empty($patients->pet_other_details) ? $patients->pet_other_details : "";
+            $weight            = isset($patients->pet_weight) && is_numeric($patients->pet_weight) ? $patients->pet_weight : 0;
         
             // If owner exists, update the patient record
             $sql = "UPDATE patients SET
@@ -117,11 +125,12 @@ switch ($method) {
             $stmt->bindParam(':pet_name', $patients->pet_name);
             $stmt->bindParam(':pet_species', $patients->pet_species);
             $stmt->bindParam(':pet_breed', $patients->pet_breed);
-            $stmt->bindParam(':pet_weight', $patients->pet_weight);
             $stmt->bindParam(':pet_age', $patients->pet_age);
             $stmt->bindParam(':pet_birthdate', $patients->pet_birthdate);
-            $stmt->bindParam(':pet_distinct_features', $patients->pet_distinct_features);
-            $stmt->bindParam(':pet_other_details', $patients->pet_other_details);
+            $stmt->bindParam(':pet_weight', $weight);
+            $stmt->bindParam(':pet_distinct_features', $distinct_features);
+            $stmt->bindParam(':pet_other_details', $other_details);
+
         
             // Execute the update statement
             if($stmt->execute()) {
@@ -132,9 +141,6 @@ switch ($method) {
             }
             break;
         
-        
-
-
     case 'DELETE':
         $sql = "DELETE FROM patients WHERE id = :id";
         $path = explode('/', $_SERVER['REQUEST_URI']);
@@ -148,4 +154,3 @@ switch ($method) {
         echo json_encode($response);
         break;
 }
-?>
