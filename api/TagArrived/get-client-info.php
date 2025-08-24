@@ -55,6 +55,7 @@ $client_id = $data['client_id'] ?? '';
         echo json_encode([
             "success" => true,
             "client" => [
+                "id" => $client['id'],
                 "name" => $client['name'],
                 "contact" => $client['cellnumber'],
                 "email" => $client['email'] ?? null
@@ -96,10 +97,11 @@ $client_id = $data['client_id'] ?? '';
         }
 
         $stmt2 = $conn->prepare("
-            SELECT * FROM clients 
-            WHERE TRIM(LOWER(name)) = TRIM(LOWER(?)) 
-            AND REPLACE(cellnumber, ' ', '') = REPLACE(?, ' ', '') 
-            LIMIT 1
+            SELECT id, name, cellnumber, email 
+                FROM clients 
+                WHERE TRIM(LOWER(name)) = TRIM(LOWER(?)) 
+                AND REPLACE(cellnumber, ' ', '') = REPLACE(?, ' ', '') 
+                LIMIT 1
         ");
         $stmt2->execute([$appointment['name'], $appointment['contact']]);
         $client = $stmt2->fetch(PDO::FETCH_ASSOC);
@@ -117,6 +119,7 @@ $client_id = $data['client_id'] ?? '';
         echo json_encode([
             "success" => true,
             "client" => [
+                "id" => $client['id'],
                 "name" => $client['name'],
                 "contact" => $client['cellnumber'],
                 "email" => $client['email'] ?? null

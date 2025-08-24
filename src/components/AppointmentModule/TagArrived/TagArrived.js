@@ -4,6 +4,7 @@ import { Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import AddClientAndPatientModal from "../../Add/AddClientsModal";
 import Select from "react-select";
+import AddPatientsModal from "../../Add/AddPatientsModal";
 
 function TagArrived({ onClose }) {
   const [referenceNumber, setReferenceNumber] = useState("");
@@ -15,6 +16,8 @@ function TagArrived({ onClose }) {
   const [selectedPet, setSelectedPet] = useState(null);
   const [allClients, setAllClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState(null);
+  const [showAddPetModal, setShowAddPetModal] = useState(false);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,6 +52,7 @@ function TagArrived({ onClose }) {
       });
 
       if (res.data.client) {
+        console.log("Client info from backend:", res.data.client);
         const pets = res.data.pets || [];
         const appointmentPet = {
           name: (res.data.appointment_pet?.name || '').toLowerCase().trim(),
@@ -63,6 +67,7 @@ function TagArrived({ onClose }) {
         );
 
         setClientInfo({
+           id: res.data.client?.id,
           ...res.data.client,
           service: res.data.appointment_service,
           doctor: res.data.appointment_doctor,
@@ -254,6 +259,14 @@ function TagArrived({ onClose }) {
                               </div>
                             ))}
                           </div>
+
+                          <Button
+                            variant="outline-success"
+                            size="sm"
+                            onClick={() => setShowAddPetModal(true)}
+                          >
+                            + Add Pet
+                          </Button>
                         </>
                       )}
 
@@ -339,6 +352,24 @@ function TagArrived({ onClose }) {
           await handleExistingClient();
         }}
         prefillData={prefillInfo}
+      />
+
+      <AddPatientsModal
+        show={showAddPetModal}
+        handleClose={async (newPet) => {
+          setShowAddPetModal(false);
+
+          if (newPet) {
+            setClientInfo(prev => ({
+              ...prev,
+              pets: [...(prev?.pets || []), newPet]
+            }));
+            setSelectedPet(newPet);
+          } else {
+            await handleExistingClient();
+          }
+        }}
+        client={clientInfo ? { id: clientInfo.id } : { id: selectedClient?.value }} 
       />
     </div>
   );

@@ -235,7 +235,7 @@ const Appointment = () => {
       </div>
       {renderStatusBoxes()}
 
-      <div className="d-flex justify-content-between align-items-center mb-4 gap-2">
+      <div className="d-flex justify-content-between align-items-center mb-2 gap-2">
         <div>
           <select
             className="form-select w-auto"

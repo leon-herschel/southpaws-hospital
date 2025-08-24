@@ -76,7 +76,7 @@ const ViewClientModal = ({ show, handleClose, client = {} }) => {
             .then(response => {
                 fetchPets(); // Refresh pet data after deletion
                 handleDeleteModalClose(); // Close the modal after deletion
-                toast.error("Pet Deleted Successfully");
+                toast.success("Pet Deleted Successfully");
             })
             .catch(error => {
                 console.error('Error deleting pet:', error);

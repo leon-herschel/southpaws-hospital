@@ -79,9 +79,25 @@ switch ($method) {
         $stmt->bindParam(':created_by', $patients->created_by);
 
         if ($stmt->execute()) {
-            $response = ['status' => 1, 'message' => 'Record created successfully.'];
+            $newPetId = $conn->lastInsertId();
+            $sqlFetch = "SELECT * FROM patients WHERE id = :id";
+            $stmtFetch = $conn->prepare($sqlFetch);
+            $stmtFetch->bindParam(':id', $newPetId, PDO::PARAM_INT);
+            $stmtFetch->execute();
+            $newPet = $stmtFetch->fetch(PDO::FETCH_ASSOC);
+
+            $response = [
+                'status' => 1,
+                'message' => 'Record created successfully.',
+                'pet' => $newPet
+            ];
         } else {
-            $response = ['status' => 0, 'message' => 'Failed to create record.'];
+            $errorInfo = $stmt->errorInfo(); 
+            $response = [
+                'status' => 0,
+                'message' => 'Failed to create record.',
+                'error' => $errorInfo
+            ];
         }
 
         echo json_encode($response);
