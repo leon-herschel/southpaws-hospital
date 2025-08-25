@@ -176,7 +176,7 @@ const AddAppointments = ({ onClose, prefill }) => {
     e.preventDefault();
     setIsLoading(true);
 
-    const { time, name, contact, end_time } = formData;
+    const { time, contact, end_time } = formData;
 
     if (!/^\d{11}$/.test(contact)) {
       toast.error("Contact number must be exactly 11 digits.");
