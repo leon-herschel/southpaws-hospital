@@ -12,6 +12,8 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
   const [showServiceDropdown, setShowServiceDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const [showDoneConfirm, setShowDoneConfirm] = useState(false);
+  const [originalEmail, setOriginalEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -44,25 +46,27 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
 
   useEffect(() => {
     axios
-    .get("http://localhost/api/get_services.php")
-    .then((res) =>
-      setServices(res.data.map(s => ({
-        ...s,
-        name: s.name.trim() // clean trailing/leading spaces
-      })))
-    )
-    .catch((err) => {
-      console.error("Failed to load services:", err);
-      toast.error("Failed to load available services.");
-    });
+      .get("http://localhost/api/get_services.php")
+      .then((res) =>
+        setServices(
+          res.data.map((s) => ({
+            ...s,
+            name: s.name.trim(), // clean trailing/leading spaces
+          }))
+        )
+      )
+      .catch((err) => {
+        console.error("Failed to load services:", err);
+        toast.error("Failed to load available services.");
+      });
 
-      axios
-        .get("http://localhost/api/get_doctors.php")
-        .then((res) => setDoctors(res.data))
-        .catch((err) => {
-          console.error("Failed to load doctors:", err);
-          toast.error("Failed to load doctors list.");
-        });
+    axios
+      .get("http://localhost/api/get_doctors.php")
+      .then((res) => setDoctors(res.data))
+      .catch((err) => {
+        console.error("Failed to load doctors:", err);
+        toast.error("Failed to load doctors list.");
+      });
   }, []);
 
   useEffect(() => {
@@ -89,7 +93,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
         service: eventData.service
           ? eventData.service
               .split(/\s*,\s*/)
-              .map(s => s.trim()) // ensure no trailing/leading spaces
+              .map((s) => s.trim()) // ensure no trailing/leading spaces
               .filter(Boolean)
           : [""],
         date: start.toISOString().split("T")[0],
@@ -100,17 +104,20 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
         pet_species: eventData.pet_species || "",
         pet_breed: eventData.pet_breed || "",
         doctor_id: eventData.doctor_id || "",
+        reference_number: eventData.reference_number || "",
       });
+      setOriginalEmail(eventData.email || "");
     } else {
       console.warn("Invalid start or end time:", eventData);
     }
   }, [eventData]);
 
-
   useEffect(() => {
     if (formData.date && formData.doctor_id) {
       axios
-        .get(`http://localhost/api/get-booked-slots.php?date=${formData.date}&doctor_id=${formData.doctor_id}`)
+        .get(
+          `http://localhost/api/get-booked-slots.php?date=${formData.date}&doctor_id=${formData.doctor_id}`
+        )
         .then((res) => {
           setAvailableSlots(res.data.bookedRanges || []);
         })
@@ -122,7 +129,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
     }
   }, [formData.date, formData.doctor_id]);
 
- const handleChange = (e, index = null) => {
+  const handleChange = (e, index = null) => {
     const { name, value } = e.target;
 
     if (name === "status" && value === "Done") {
@@ -140,7 +147,9 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
   };
 
   const handleUpdate = async () => {
-    const { first_name, last_name, contact, time, end_time } = formData;
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    const { first_name, last_name, contact, time, end_time, email } = formData;
     const name = `${first_name} ${last_name}`.trim();
 
     // Contact validation
@@ -186,16 +195,22 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
       return;
     }
 
-    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    const trimmedEmail = email?.trim() || "";
+    const hasValidEmail = trimmedEmail && /\S+@\S+\.\S+/.test(trimmedEmail);
+
+    if (trimmedEmail && !hasValidEmail) {
       toast.error("Please enter a valid email address.");
       return;
     }
 
     const updatedData = {
       ...formData,
-      name, // merged name
+      email: trimmedEmail || "no_email@noemail.com",
+      name,
       doctor_id: formData.doctor_id,
-      service: [...new Set(formData.service.map(s => s.trim()).filter(Boolean))].join(", "),
+      service: [
+        ...new Set(formData.service.map((s) => s.trim()).filter(Boolean)),
+      ].join(", "),
       user_id: currentUserID,
       user_email: currentUserEmail,
     };
@@ -203,14 +218,70 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
     delete updatedData.first_name;
     delete updatedData.last_name;
 
-    try {
-      await axios.put("http://localhost/api/appointments.php", updatedData);
-      toast.success("Appointment updated successfully!");
-      onUpdated();
-      onClose();
-    } catch (err) {
-      console.error("Update failed", err);
-      toast.error("Failed to update appointment.");
+    const hasNewEmail =
+      hasValidEmail &&
+      trimmedEmail.toLowerCase() !== originalEmail.toLowerCase();
+
+    const updateAppointment = async (sendEmail = false) => {
+      try {
+        if (sendEmail) {
+          try {
+            const emailRes = await axios.post(
+              "http://localhost/api/send_email.php",
+              updatedData
+            );
+            if (emailRes.data.success) {
+              toast.success("Confirmation email sent.");
+            } else {
+              toast.warn("Appointment updated, but email failed to send.");
+            }
+          } catch (err) {
+            console.error("Email error", err);
+            toast.warn("Appointment updated, but email failed to send.");
+          }
+        }
+
+        await axios.put("http://localhost/api/appointments.php", updatedData);
+        toast.success("Appointment updated successfully!");
+        onUpdated();
+        onClose();
+      } catch (err) {
+        console.error("Update failed", err);
+        toast.error("Failed to update appointment.");
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
+
+    if (hasNewEmail) {
+      toast.info(
+        <div>
+          <p>New email detected. Send confirmation email?</p>
+          <div className="flex gap-2 mt-2">
+            <button
+              onClick={() => {
+                toast.dismiss();
+                updateAppointment(true);
+              }}
+              className="px-3 py-1 bg-green-600 text-green rounded"
+            >
+              Yes
+            </button>
+            <button
+              onClick={() => {
+                toast.dismiss();
+                updateAppointment(false);
+              }}
+              className="px-3 py-1 bg-gray-600 text-red rounded"
+            >
+              No
+            </button>
+          </div>
+        </div>,
+        { autoClose: false }
+      );
+    } else {
+      await updateAppointment(false);
     }
   };
 
@@ -545,19 +616,19 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
                     </div>
 
                     <Form.Group className="mb-3">
-                    <Form.Label>Status:</Form.Label>
-                    <select
-                      name="status"
-                      className="form-control"
-                      value={formData.status}
-                      onChange={handleChange}
-                      required
-                    >
-                      <option value="Confirmed">Confirmed</option>
-                      <option value="Cancelled">Cancelled</option>
-                      <option value="Done">Done</option>
-                    </select>
-                  </Form.Group>
+                      <Form.Label>Status:</Form.Label>
+                      <select
+                        name="status"
+                        className="form-control"
+                        value={formData.status}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Cancelled">Cancelled</option>
+                        <option value="Done">Done</option>
+                      </select>
+                    </Form.Group>
                   </div>
                 </div>
               </div>
@@ -566,7 +637,11 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
         </Form>
       </Modal.Body>
 
-      <Modal show={showDoneConfirm} onHide={() => setShowDoneConfirm(false)} centered>
+      <Modal
+        show={showDoneConfirm}
+        onHide={() => setShowDoneConfirm(false)}
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Confirm Status Change</Modal.Title>
         </Modal.Header>
@@ -597,8 +672,12 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
         <button className="btn btn-secondary" onClick={onClose}>
           Cancel
         </button>
-        <button className="btn btn-success" onClick={handleUpdate}>
-          Save Changes
+        <button
+          className="btn btn-success"
+          onClick={handleUpdate}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Saving" : " Save Changes"}
         </button>
       </Modal.Footer>
     </Modal>

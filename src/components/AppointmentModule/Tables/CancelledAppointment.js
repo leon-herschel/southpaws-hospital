@@ -17,6 +17,7 @@ function CancelledAppointment() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [appointmentToDelete, setAppointmentToDelete] = useState(null);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
+  const [deleteConfirmationText, setDeleteConfirmationText] = useState("");
 
   const currentUserID = localStorage.getItem("userID");
   const currentUserEmail = localStorage.getItem("userEmail");
@@ -31,7 +32,9 @@ function CancelledAppointment() {
   const fetchCancelled = async () => {
     try {
       const res = await axios.get("http://localhost/api/appointments.php");
-      let cancelled = res.data.appointments.filter((a) => a.status === "Cancelled");
+      let cancelled = res.data.appointments.filter(
+        (a) => a.status === "Cancelled"
+      );
 
       // Sort by date ASC
       cancelled.sort((b, a) => new Date(b.date) - new Date(a.date));
@@ -159,6 +162,7 @@ function CancelledAppointment() {
 
       toast.success("Selected appointments deleted successfully.");
       setSelectedIds([]);
+      setDeleteConfirmationText(""); // <-- reset input here
       fetchCancelled();
     } catch (error) {
       console.error("Bulk delete error:", error);
@@ -167,7 +171,6 @@ function CancelledAppointment() {
       setShowBulkDeleteConfirm(false);
     }
   };
-
 
   return (
     <div className="container mt-3">
@@ -385,7 +388,10 @@ function CancelledAppointment() {
 
       <Modal
         show={showBulkDeleteConfirm}
-        onHide={() => setShowBulkDeleteConfirm(false)}
+        onHide={() => {
+          setShowBulkDeleteConfirm(false);
+          setDeleteConfirmationText(""); // reset input
+        }}
         centered
       >
         <Modal.Header closeButton>
@@ -393,23 +399,43 @@ function CancelledAppointment() {
         </Modal.Header>
         <Modal.Body>
           <p>
-            Are you sure you want to delete <strong>{selectedIds.length}</strong>{" "}
-            selected appointment(s)?
+            You are about to delete <strong>{selectedIds.length}</strong>{" "}
+            selected appointment(s). <br />
+            <span className="text-danger">This action cannot be undone!</span>
           </p>
+          <p className="mt-3">
+            Please type <strong>DELETE</strong> below to confirm:
+          </p>
+          <input
+            type="text"
+            className="form-control"
+            value={deleteConfirmationText}
+            onChange={(e) => setDeleteConfirmationText(e.target.value)}
+            placeholder="Type DELETE to confirm"
+          />
         </Modal.Body>
         <Modal.Footer>
           <button
             className="btn btn-secondary"
-            onClick={() => setShowBulkDeleteConfirm(false)}
+            onClick={() => {
+              setShowBulkDeleteConfirm(false);
+              setDeleteConfirmationText(""); // reset input
+            }}
           >
             Cancel
           </button>
-          <button className="btn btn-danger" onClick={handleBulkDelete}>
+          <button
+            className="btn btn-danger"
+            disabled={deleteConfirmationText !== "DELETE"}
+            onClick={() => {
+              handleBulkDelete();
+              setDeleteConfirmationText(""); // reset input after success
+            }}
+          >
             Yes, Delete All
           </button>
         </Modal.Footer>
       </Modal>
-
     </div>
   );
 }
