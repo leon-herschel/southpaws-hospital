@@ -237,44 +237,49 @@ function TagArrived({ onClose }) {
                 </div>
 
                 {clientInfo.pets?.length > 0 && (
-                  <>
-                    <div className="row">
-                      {!selectedPet && (
-                        <>
-                          <p><strong>Select which pet is receiving the service:</strong></p>
-                          <div className="mb-3">
-                            {clientInfo.pets.map((pet, index) => (
-                              <div key={index} className="form-check">
-                                <input
-                                  className="form-check-input"
-                                  type="radio"
-                                  name="selectedPet"
-                                  value={index}
-                                  id={`pet-${index}`}
-                                  onChange={() => setSelectedPet(clientInfo.pets[index])}
-                                />
-                                <label className="form-check-label" htmlFor={`pet-${index}`}>
-                                  {pet.name} — {pet.species}, {pet.breed}
-                                </label>
-                              </div>
-                            ))}
-                          </div>
+                 <>
+                  <div className="row">
+                    {!selectedPet && (
+                      <>
+                        <p>
+                          <strong>Select which pet is receiving the service:</strong>
+                        </p>
+                        <div className="mb-3 d-flex flex-column gap-2">
+                          {clientInfo.pets.map((pet, index) => (
+                            <React.Fragment key={index}>
+                              <input
+                                type="radio"
+                                className="btn-check"
+                                name="selectedPet"
+                                id={`pet-${index}`}
+                                autoComplete="off"
+                                onChange={() => setSelectedPet(clientInfo.pets[index])}
+                              />
+                              <label
+                                className="btn btn-outline-primary"
+                                htmlFor={`pet-${index}`}
+                              >
+                                {pet.name} — {pet.species}, {pet.breed}
+                              </label>
+                            </React.Fragment>
+                          ))}
 
                           <Button
                             variant="outline-success"
                             size="sm"
+                            className="w-auto mt-2"
                             onClick={() => setShowAddPetModal(true)}
                           >
-                            + Add Pet
+                            + Add New Pet
                           </Button>
-                        </>
-                      )}
+                        </div>
+                      </>
+                    )}
 
                       {(selectedPet) && (
                         <div className="col-md-12">
                           <h5 className="mb-3">Patient Details</h5>
                           <div className="card p-3 mb-4 shadow-sm">
-                            <p className="mb-1"><strong>Service:</strong> {clientInfo.service}</p>
                             <p className="mb-1"><strong>Name:</strong> {(selectedPet || clientInfo.pets[0]).name}</p>
                             <p className="mb-1"><strong>Species:</strong> {(selectedPet || clientInfo.pets[0]).species}</p>
                             <p className="mb-1"><strong>Breed:</strong> {(selectedPet || clientInfo.pets[0]).breed}</p>
