@@ -79,18 +79,29 @@ const AddPatientsModal = ({ show, handleClose, client}) => {
         event.preventDefault();
 
         const userID = localStorage.getItem('userID');
-        const formData = { ...inputs, age, created_by: userID, owner_id: client.id }; // Include calculated age
 
-        axios.post('http://localhost:80/api/patients.php/save', formData)
-            .then(response => {
-                console.log(response.data);
-                handleClose();
+        const ownerId = client?.id || client?.owner_id || client?.client?.id || null;
+        const formData = { 
+            ...inputs, 
+            age, 
+            created_by: userID, 
+            owner_id: ownerId
+        };
+
+        axios.post("http://localhost/api/patients.php", formData)
+        .then(response => {
+            if (response.data.status === 1) {
                 toast.success("Pet Added Successfully");
-                
-            })
-            .catch(error => {
-                console.error('Error saving patients:', error);
-            });
+                handleClose(response.data.pet); 
+            } else {
+                console.error("Add Pet Error:", response.data); 
+                toast.error(response.data.message || "Failed to add pet");
+            }
+        })
+        .catch(error => {
+            console.error("Request failed:", error);
+            toast.error("Server error: " + error.message);
+        });
     };
 
     const handleModalClose = () => {

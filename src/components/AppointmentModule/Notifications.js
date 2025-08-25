@@ -38,10 +38,15 @@ export default function NotificationBell() {
 
         let filtered = (res.data.notifications || [])
           .map((n) => {
-            if (n.date && n.time)
+            if (n.status === "Cancelled") {
+              return { ...n, created_at: new Date() };
+            }
+            if (n.date && n.time) {
               return { ...n, created_at: new Date(`${n.date}T${n.time}`) };
-            if (n.created_at)
+            }
+            if (n.created_at) {
               return { ...n, created_at: new Date(n.created_at) };
+            }
             return n;
           })
           .filter(

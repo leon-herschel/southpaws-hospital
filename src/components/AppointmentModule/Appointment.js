@@ -235,7 +235,7 @@ const Appointment = () => {
       </div>
       {renderStatusBoxes()}
 
-      <div className="d-flex justify-content-between align-items-center mb-4 gap-2">
+      <div className="d-flex justify-content-between align-items-center mb-2 gap-2">
         <div>
           <select
             className="form-select w-auto"
@@ -349,7 +349,7 @@ const Appointment = () => {
               </h6>
               <div className="row">
                 <div className="col-md-6">
-                  <p>
+                  <p className="text-break">
                     <strong>Name:</strong> {selectedEvent.name}
                   </p>
                   <p>
@@ -357,7 +357,7 @@ const Appointment = () => {
                   </p>
                 </div>
                 <div className="col-md-6">
-                  <p>
+                  <p className="text-break">
                     <strong>Email:</strong> {selectedEvent.email || "N/A"}
                   </p>
                 </div>
