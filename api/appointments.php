@@ -81,14 +81,14 @@ switch ($method) {
 
             if ($stmt->execute()) {
                 logAudit(
-    $conn,
-    $data['user_id'],
-    'reject',
-    'appointments',
-    $data['id'],
-     $data['name'],
-    $data['user_email']
-);
+                $conn,
+                $data['user_id'],
+                'reject',
+                'appointments',
+                $data['id'],
+                $data['name'],
+                $data['user_email']
+            );
                 echo json_encode([
                     'success' => true,
                     'message' => 'Appointment deleted successfully.'
@@ -168,20 +168,38 @@ switch ($method) {
     }
 
     // Update appointment
-    $sql = "UPDATE appointments 
-            SET name = :name, 
-                contact = :contact, 
-                email = :email, 
-                service = :service, 
-                date = :date, 
-                time = :time, 
-                end_time = :end_time,
-                pet_name = :pet_name,
-                pet_species = :pet_species,
-                pet_breed = :pet_breed,
-                status = :status,
-                doctor_id = :doctor_id
-            WHERE id = :id";
+    if ($data['status'] === 'Done') {
+        $sql = "UPDATE appointments 
+                SET name = :name, 
+                    contact = :contact, 
+                    email = :email, 
+                    service = :service, 
+                    date = :date, 
+                    time = :time, 
+                    end_time = :end_time,
+                    pet_name = :pet_name,
+                    pet_species = :pet_species,
+                    pet_breed = :pet_breed,
+                    status = :status,
+                    doctor_id = :doctor_id,
+                    reference_number = 'ARCHIVED'
+                WHERE id = :id";
+    } else {
+        $sql = "UPDATE appointments 
+                SET name = :name, 
+                    contact = :contact, 
+                    email = :email, 
+                    service = :service, 
+                    date = :date, 
+                    time = :time, 
+                    end_time = :end_time,
+                    pet_name = :pet_name,
+                    pet_species = :pet_species,
+                    pet_breed = :pet_breed,
+                    status = :status,
+                    doctor_id = :doctor_id
+                WHERE id = :id";
+    }
 
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':name', $data['name']);

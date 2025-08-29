@@ -32,11 +32,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Update appointment status
-    $stmt = $conn->prepare("
-        UPDATE appointments 
-        SET status = :status 
-        WHERE name = :name AND contact = :contact AND pet_name = :pet_name AND status = 'Arrived'
-    ");
+    if ($data->status === 'Done') {
+        $stmt = $conn->prepare("
+            UPDATE appointments 
+            SET status = :status,
+                reference_number = 'ARCHIVED'
+            WHERE name = :name 
+            AND contact = :contact 
+            AND pet_name = :pet_name 
+            AND status = 'Arrived'
+        ");
+    } else {
+        $stmt = $conn->prepare("
+            UPDATE appointments 
+            SET status = :status
+            WHERE name = :name 
+            AND contact = :contact 
+            AND pet_name = :pet_name 
+            AND status = 'Arrived'
+        ");
+    }
+
     $stmt->bindParam(':status', $data->status);
     $stmt->bindParam(':name', $client['name']);
     $stmt->bindParam(':contact', $client['cellnumber']);
