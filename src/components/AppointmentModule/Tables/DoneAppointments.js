@@ -258,11 +258,11 @@ function DoneAppointments() {
               <h6 className="text-primary border-bottom pb-2">Personal Details</h6>
               <div className="row">
                 <div className="col-md-6">
-                  <p><strong>Name:</strong> {selectedEvent.name}</p>
+                  <p className="text-break"><strong>Name:</strong> {selectedEvent.name}</p>
                   <p><strong>Contact #:</strong> {selectedEvent.contact}</p>
                 </div>
                 <div className="col-md-6">
-                  <p><strong>Email:</strong> {selectedEvent.email || "N/A"}</p>
+                  <p className="text-break"><strong>Email:</strong> {selectedEvent.email || "N/A"}</p>
                 </div>
               </div>
             </section>

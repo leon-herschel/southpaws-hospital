@@ -116,7 +116,6 @@ function TagArrived({ onClose }) {
     return `${formattedStart} ${formattedEnd ? `- ${formattedEnd}` : ''}`;
   };
 
-
   return (
     <div>
       {step === "input" && (
@@ -357,6 +356,7 @@ function TagArrived({ onClose }) {
           await handleExistingClient();
         }}
         prefillData={prefillInfo}
+        disablePrefilledFields={true}
       />
 
       <AddPatientsModal
