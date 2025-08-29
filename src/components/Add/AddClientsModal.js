@@ -3,7 +3,7 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import axios from 'axios';
 import '../../assets/add.css';
 
-const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillData }) => {
+const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillData, disablePrefilledFields }) => {
     const [clientInputs, setClientInputs] = useState({
         name: '',
         email: '',
@@ -204,8 +204,17 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
         }));
     
         const userID = localStorage.getItem('userID');
-        const formData = {
+
+        // If email empty, set a default placeholder
+        const safeClientInputs = {
             ...clientInputs,
+            email: clientInputs.email && clientInputs.email.trim() !== '' 
+                ? clientInputs.email 
+                : 'no_email@noemail.com'
+        };
+        
+        const formData = {
+            ...safeClientInputs,
             created_by: userID,
             patients: updatedPatients
         };
@@ -247,6 +256,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                                         onChange={handleClientChange}
                                         placeholder="Enter name"
                                         required
+                                        disabled={disablePrefilledFields && !!prefillData?.name}
                                     />
                                 </Form.Group>
                                 <Form.Group>
@@ -269,19 +279,20 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                                         onChange={handleClientChange}
                                         placeholder="Enter mobile number"
                                         required
+                                        disabled={disablePrefilledFields && !!prefillData?.name}
                                     />
                                 </Form.Group>
                             </div>
                             <div className="col-md-6">
                                 <Form.Group>
-                                    <Form.Label>Email: <span className="text-danger">*</span></Form.Label>
+                                    <Form.Label>Email: </Form.Label>
                                     <Form.Control
                                         type="email"
                                         name="email"
                                         value={clientInputs.email || ''}
                                         onChange={handleClientChange}
                                         placeholder="Enter email"
-                                        required
+                                        disabled={disablePrefilledFields && !!prefillData?.name}
                                     />
                                 </Form.Group>
                                 <Form.Group>
@@ -306,7 +317,15 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
 
                         <h4 className="d-flex justify-content-between align-items-center">
                             Pet Information
-                            <Button variant="success" onClick={addNewPatient} className="sticky-button">Add Another Patient</Button>
+                            {!(disablePrefilledFields && !!prefillData?.name) && (
+                                <Button 
+                                variant="success" 
+                                onClick={addNewPatient} 
+                                className="sticky-button"
+                                >
+                                Add Another Patient
+                                </Button>
+                            )}
                         </h4>
                         {patients.map((patient, index) => (
                             <div className="row" key={index}>
@@ -320,6 +339,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                                             onChange={(event) => handlePatientChange(event, index)}
                                             placeholder="Enter name"
                                             required
+                                            disabled={disablePrefilledFields && !!prefillData?.name}
                                         />
                                     </Form.Group>
                                     <Form.Group>
@@ -331,6 +351,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                                             onChange={(event) => handlePatientChange(event, index)}
                                             placeholder="Enter species"
                                             required
+                                            disabled={disablePrefilledFields && !!prefillData?.name}
                                         />
                                     </Form.Group>
                                     <Form.Group>
@@ -342,6 +363,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                                             onChange={(event) => handlePatientChange(event, index)}
                                             placeholder="Enter breed"
                                             required
+                                            disabled={disablePrefilledFields && !!prefillData?.name}
                                         />
                                     </Form.Group>
                                     <Form.Group>
