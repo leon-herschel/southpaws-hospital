@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaTrash, FaPlus, FaMinus, FaShoppingCart, FaMedkit } from 'react-icons/fa';
-import { Button, Card, Modal, Form, Table } from 'react-bootstrap';
+import { Button, Card, Modal, Form, Table, ToggleButton, Row, Col } from 'react-bootstrap';
 import '../assets/table.css';
 import Receipt from './Receipt';
 import AddImmunizationFormModal from '../components/Add/AddImmunizationFormModal';
@@ -16,7 +16,7 @@ const cartFromLocalStorage = JSON.parse(localStorage.getItem('cartItems') || '[]
 const PointofSales = () => {
     const [cartItems, setCartItems] = useState(cartFromLocalStorage);
     const [clients, setClients] = useState([]);
-    const [selectedClient, setSelectedClient] = useState('');
+    const [selectedClient, setSelectedClient] = useState(null);
     const [selectedPetsData, setSelectedPetsData] = useState([]); 
     const [clientPets, setClientPets] = useState([]);
     const [showReceipt, setShowReceipt] = useState(false);
@@ -34,16 +34,15 @@ const PointofSales = () => {
     const [clientName, setClientName] = useState(""); // Track client name input
     const [unregisteredClientId, setUnregisteredClientId] = useState(null); // Store unregistered client ID
     const [clientEmail, setClientEmail] = useState("");
-
+    const [searchTerm, setSearchTerm] = useState("");
+    const [hasManuallySelectedClient, setHasManuallySelectedClient] = useState(false);
     const [showImmunizationModal, setShowImmunizationModal] = useState(false);
     const [showSurgicalModal, setShowSurgicalModal] = useState(false);
     const [serviceForForm, setServiceForForm] = useState(null); // Track service for the form modals
-
     const [immunizationFormData, setImmunizationFormData] = useState(null); // For Immunization Form
     const [surgicalFormData, setSurgicalFormData] = useState(null); // For Surgical Form
     const [isImmunizationFormComplete, setIsImmunizationFormComplete] = useState(false);
     const [isSurgicalFormComplete, setIsSurgicalFormComplete] = useState(false);
-
     const [errorMessage, setErrorMessage] = useState('');
     const [showAddClientModal, setShowAddClientModal] = useState(false);
 
@@ -108,19 +107,23 @@ const PointofSales = () => {
         }
     };
 
-    const handleClientChange = (e) => {
-        const selectedClientId = e.target.value;
+    const handleClientSelect = (option) => {
+        const selectedClientId = option ? option.value : null;
         setSelectedClient(selectedClientId);
-        localStorage.setItem("selectedClient", selectedClientId);
+        setHasManuallySelectedClient(true);
 
         if (selectedClientId) {
+            localStorage.setItem("selectedClient", selectedClientId);
             fetchPets(selectedClientId);
+            setSelectedPets([]);
+            setCartItems([]);
+            localStorage.removeItem("selectedPets");
         } else {
-            // Reset all when client is cleared
             setClientPets([]);
             setSelectedPets([]);
-            setCartItems([]); // 🧼 Clear cart
+            setCartItems([]);
             localStorage.removeItem("selectedPets");
+            localStorage.removeItem("selectedClient");
         }
     };
 
@@ -168,12 +171,15 @@ const PointofSales = () => {
         const savedClient = localStorage.getItem('selectedClient');
         if (savedClient) {
             setSelectedClient(savedClient);
+        } else {
+            setSelectedClient(null);
         }
     }, []);
 
+
     const handleCloseCartModal = () => {
-        setShowCartModal(false); // Close modal
-        setErrorMessage('');     // ✅ Reset error message
+        setShowCartModal(false); 
+        setErrorMessage('');     
         setPaymentAmount('');
     };
 
@@ -317,7 +323,6 @@ const PointofSales = () => {
         });
         setCartItems(updatedItems);
     };
-    
 
     const increaseQuantity = (itemId) => {
         const updatedItems = cartItems.map(item => {
@@ -490,6 +495,9 @@ const PointofSales = () => {
             const amountTendered = parseFloat(paymentAmount) || 0;
             const changeAmount = (amountTendered - grandTotal).toFixed(2);
     
+            if (!hasManuallySelectedClient) {
+                clientId = null;
+            }
             // ✅ Use the newly created unregistered client ID if applicable
             const receiptData = {
                 client_id: clientId || null, // Ensure null for unregistered clients
@@ -540,7 +548,7 @@ const PointofSales = () => {
     
                 setReceiptData({
                     receiptNumber: generatedReceiptNumber,
-                    client_id: clientId || null,
+                    client_id: hasManuallySelectedClient ? clientId : null,
                     pet_id: selectedPets, // Handle multiple pets
                     unregistered_client_id: unregisteredClientIdToUse, // Corrected variable
                     items: cartItems,
@@ -558,15 +566,17 @@ const PointofSales = () => {
                 setCartItems([]);
                 setShowConfirmModal(false);
                 setShowCartModal(false);
-                setClientPets("");
-                setSelectedPets("");
-                setSelectedClient("");
+                setSelectedClient(null);
+                setClientPets([]);
+                setSelectedPets([]);
+                localStorage.removeItem("selectedClient");
+                localStorage.removeItem("selectedPets");
             } else {
-                setErrorMessage(`❌ Order failed: ${response.data.message}`);
-                console.error("🚨 Order creation failed:", response.data);
+                setErrorMessage(`Order failed: ${response.data.message}`);
+                console.error("Order creation failed:", response.data);
             }
         } catch (error) {
-            console.error("❌ Error while sending order:", error);
+            console.error("Error while sending order:", error);
             setErrorMessage("An error occurred while placing the order. Please try again.");
         } finally {
             setIsConfirming(false); // Reset button state
@@ -586,14 +596,16 @@ const PointofSales = () => {
 
     return (
         <div className='container mt-2'>
-            <div className="d-flex justify-content-between align-items-center">
+            <div className="d-flex justify-content-between align-items-center mb-2">
 
                 <h1 style={{ fontWeight: 'bold' }}>Point of Sales</h1>
                 
                 <div style={{ position: 'relative', display: 'inline-block' }}>
                     <FaShoppingCart
+                        className="cart-icon"
                         style={{ fontSize: '3rem', cursor: 'pointer', color: 'black' }}
                         onClick={() => setShowCartModal(true)}
+                        title="View Cart"
                     />
                     {cartItems.length > 0 && (
                         <span
@@ -615,331 +627,368 @@ const PointofSales = () => {
                 </div>
             </div>
 
-            <div className="mb-4">
-                {/* ✅ Label and Plus Button on the Same Row */}
-                <div className="d-flex align-items-center gap-2">
-                    <label htmlFor="clientSelect" className="form-label mb-0" style={{ minWidth: "120px" }}>
-                        Select Client:
-                    </label>
-
-                        <button 
-                            className="btn btn-success d-flex align-items-center justify-content-center"
-                            onClick={() => setShowAddClientModal(true)}
-                            style={{ padding: '6px 10px' }} // Adjust padding for better size
-                        >
-                            <FaPlus />
-                        </button>
+            {/* Client Selection Section */}
+            <Card className="mb-3 shadow-sm">
+            <Card.Body>
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                <h6 className="mb-0">Select Client</h6>
+                <button 
+                    className="btn btn-success btn-sm d-flex align-items-center"
+                    onClick={() => setShowAddClientModal(true)}
+                >
+                    <FaPlus className="me-1" /> Add Client
+                </button>
                 </div>
 
-                    {/* ✅ Dropdown Below */}
-                    <Select
-                        id="clientSelect"
-                        className="mt-2"
-                        options={clients.map(client => ({
-                            value: client.id,
-                            label: client.name
-                        }))}
-                        value={clients
-                            .map(client => ({ value: client.id, label: client.name }))
-                            .find(option => option.value === selectedClient) || null
-                        }
-                        onChange={option => setSelectedClient(option ? option.value : "")}
-                        placeholder="Select or search for a client..."
-                        isSearchable={true}
-                    />
+                <Select
+                    id="clientSelect"
+                    className="mt-2"
+                    options={clients.map(client => ({
+                        value: client.id,
+                        label: client.name
+                    }))}
+                    value={clients
+                        .map(client => ({ value: client.id, label: client.name }))
+                        .find(option => option.value === selectedClient) || null
+                    }
+                    onChange={option => handleClientSelect(option)}
+                    placeholder="Select or search for a client..."
+                    isSearchable={true}
+                />
+            </Card.Body>
+            </Card>
 
+            {/* Pet Selection Section */}
+            {hasManuallySelectedClient && selectedClient && clientPets.length > 0 && (
+            <Card className="mb-3 shadow-sm">
+                <Card.Body>
+                <h6 className="mb-3">Select Pet</h6>
+                <div className="d-flex flex-wrap gap-2">
+                    {clientPets.map((pet) => (
+                    <ToggleButton
+                        key={pet.pet_id}
+                        id={`pet-${pet.pet_id}`}
+                        type="checkbox"
+                        variant={selectedPets.includes(pet.pet_id) ? "primary" : "outline-primary"}
+                        value={pet.pet_id}
+                        checked={selectedPets.includes(pet.pet_id)}
+                        onChange={(e) => handlePetSelection(e, pet.pet_id)}
+                    >
+                        {pet.pet_name}
+                    </ToggleButton>
+                    ))}
+                </div>
+                </Card.Body>
+            </Card>
+            )}
 
-                    {/* Show pets and checkboxes if a client is selected */}
-                    {clientPets.length > 0 && (
-                    <div className="mt-3">
-                        <p>Select pets:</p>
-                        <div style={{ display: 'flex', flexWrap: 'wrap' }}> {/* Flex container for horizontal layout */}
-                            {clientPets.map((pet) => (
-                                <div key={pet.pet_id} style={{ marginRight: '15px', marginBottom: '10px' }}> {/* Spacing between items */}
-                                    <input
-                                        type="checkbox"
-                                        id={`pet-${pet.pet_id}`} // Unique ID for each pet
-                                        value={pet.pet_id}
-                                        onChange={(e) => handlePetSelection(e, pet.pet_id)} // Handle pet selection/deselection
-                                        checked={selectedPets.includes(pet.pet_id)} // Bind the checked state
-                                        style={{ display: 'none' }} // Hide the default checkbox
-                                    />
-                                    <label 
-                                        htmlFor={`pet-${pet.pet_id}`} 
-                                        className="ms-2"
-                                        style={{
-                                            cursor: 'pointer',
-                                            position: 'relative',
-                                            paddingLeft: '25px',
-                                            lineHeight: '1.5',
-                                        }}
-                                    >
-                                        {/* Custom checkbox */}
-                                        <span
-                                            style={{
-                                                position: 'absolute',
-                                                left: '0',
-                                                top: '0',
-                                                width: '20px',
-                                                height: '20px',
-                                                border: '1px solid #000',
-                                                backgroundColor: selectedPets.includes(pet.pet_id) ? '#007BFF' : '#fff',
-                                                color: selectedPets.includes(pet.pet_id) ? 'white' : 'transparent',
-                                                textAlign: 'center',
-                                                fontSize: '14px',
-                                                fontWeight: 'bold',
-                                                borderRadius: '4px',
-                                                display: 'flex',
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                            }}
-                                        >
-                                            {selectedPets.includes(pet.pet_id) ? '✓' : ''}
-                                        </span>
-                                        {pet.pet_name} {/* Display pet name */}
-                                    </label>
+            <div className="d-flex justify-content-around mt-4 mb-4">
+                <Row className="mt-4">
+                    <Col md={6}>
+                        <Card 
+                            className={`h-100 shadow-sm p-3 card-clickable ${showInventory ? "active" : ""}`}
+                            onClick={() => { 
+                                fetchInventory(); 
+                                setShowInventory(true); 
+                                setShowServices(false); 
+                                setTimeout(() => document.getElementById("inventory-section")?.scrollIntoView({ behavior: "smooth" }), 100);
+                            }}
+                            >
+                            <Card.Body>
+                                <Card.Title className="text-center">
+                                    Products
+                                </Card.Title>
+                                <div className="text-center mb-2">
+                                    <FaShoppingCart style={{ fontSize: '75px' }} />
                                 </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
+                                <Card.Text className="text-center">Click to view and add items to the cart.</Card.Text>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                    <Col md={6}>
+                        <Card 
+                            className={`h-100 shadow-sm p-3 card-clickable ${showServices ? "active" : ""}`}
+                            onClick={() => {
+                                if (!selectedClient) {
+                                toast.warning("Please select a client first.", { autoClose: 2000 });
+                                return;
+                                }
+                                fetchServices();
+                                setShowServices(true);
+                                setShowInventory(false);
+                                setTimeout(() => document.getElementById("services-section")?.scrollIntoView({ behavior: "smooth" }), 100);
+                            }}
+                            >
+                            <Card.Body>
+                                <Card.Title className="text-center">
+                                    Services 
+                                </Card.Title>
+                                <div className="text-center mb-2">
+                                    <FaMedkit style={{ fontSize: '75px' }} />
+                                </div>
+                                <Card.Text className="text-center">Click to view and add services to the cart.</Card.Text>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
             </div>
-
-            <div className="d-flex justify-content-around mt-4">
-                <Card style={{ width: '18rem' }} onClick={() => { fetchInventory(); setShowInventory(true); setShowServices(false); }}>
-                    <Card.Body>
-                        <Card.Title className="text-center">
-                            Product 
-                        </Card.Title>
-                        <div className="text-center">
-                            <FaShoppingCart style={{ fontSize: '50px' }} />
-                        </div>
-                        <Card.Text className="text-center">Click to view and add items to the cart.</Card.Text>
-                    </Card.Body>
-                </Card>
-                <Card 
-                    style={{ width: '18rem' }} 
-                    onClick={() => {
-                        if (!selectedClient) {
-                            // ✅ Show Toast Notification
-                            toast.warning("Please select a client first!", {
-                                position: "top-right",
-                                autoClose: 2000,
-                                hideProgressBar: false,
-                                closeOnClick: true,
-                                pauseOnHover: true,
-                                draggable: true,
-                            });
-                            return; // ✅ Stop function execution if no client is selected
-                        }
-
-                        fetchServices(); // ✅ Fetch services only if a client is selected
-                        setShowServices(true);
-                        setShowInventory(false);
-                    }}
-                >
-                    <Card.Body>
-                        <Card.Title className="text-center">
-                            Services 
-                        </Card.Title>
-                        <div className="text-center">
-                            <FaMedkit style={{ fontSize: '50px' }} />
-                        </div>
-                        <Card.Text className="text-center">Click to view and add services to the cart.</Card.Text>
-                    </Card.Body>
-                </Card>
-            </div>
+            <hr className='mt-4'/> 
 
             {showInventory && (
-                <div className="table-responsive mt-4">
-                    <h3>Available Inventory</h3>
-                    <table className="table table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>Barcode</th>
-                                <th>Name</th>
-                                <th>Supplier</th>
-                                <th>Brand</th>
-                                <th>Price</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {inventory.map((item, index) => (
-                                <tr key={index}>
-                                    <td>{item.barcode}</td>
-                                    <td> {item.product_name}  </td>
-                                    <td>{item.supplier_name}</td>               
-                                    <td>{item.brand_name}</td>
-                                    <td>₱{formatPrice(item.price)}</td>
-                                    <td>
-                                        <Button variant="success" onClick={() => addProductToCart(item)}>Add to Cart</Button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+            <div id="inventory-section" className="table-responsive mt-4">
+                <h3 className="mb-3">Available Inventory</h3>
+                <Form.Control
+                type="text"
+                placeholder="Search items..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="mb-3"
+                style={{ maxWidth: "300px" }}
+                />
+
+                <table className="table table-striped table-hover align-middle">
+                <thead>
+                    <tr>
+                    <th>Barcode</th>
+                    <th>Name</th>
+                    <th>Supplier</th>
+                    <th>Brand</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {inventory
+                    .filter(item =>
+                        searchTerm === "" ||
+                        item.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        item.brand_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        item.supplier_name.toLowerCase().includes(searchTerm.toLowerCase())
+                    )
+                    .map((item, index) => (
+                        <tr key={index}>
+                        <td>{item.barcode}</td>
+                        <td>{item.product_name}</td>
+                        <td>{item.supplier_name}</td>
+                        <td>{item.brand_name}</td>
+                        <td>₱{formatPrice(item.price)}</td>
+                        <td>
+                            <Button
+                            variant="success"
+                            onClick={() => addProductToCart(item)}
+                            >
+                            Add to Cart
+                            </Button>
+                        </td>
+                        </tr>
+                    ))}
+                </tbody>
+                </table>
+            </div>
             )}
 
             {showServices && (
-                <div className="table-responsive mt-4">
-                    <h3>Available Services</h3>
-                    <table className="table table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Price</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {services.map((service, index) => (
-                                <tr key={index}>
-                                    <td>{service.name}</td>
-                                    <td>₱{formatPrice(service.price)}</td>
-                                    <td>
-                                        <Button variant="success" onClick={() => addServiceToCart(service)}>Add to Cart</Button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+            <div id="services-section" className="table-responsive mt-4">
+                <h3 className="mb-3">Available Services</h3>
+                <Form.Control
+                type="text"
+                placeholder="Search services..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="mb-3"
+                style={{ maxWidth: "300px" }}
+                />
+
+                <table className="table table-striped table-hover align-middle">
+                <thead>
+                    <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {services
+                    .filter(service =>
+                        searchTerm === "" ||
+                        service.name.toLowerCase().includes(searchTerm.toLowerCase())
+                    )
+                    .map((service, index) => (
+                        <tr key={index}>
+                        <td>{service.name}</td>
+                        <td>₱{formatPrice(service.price)}</td>
+                        <td>
+                            <Button
+                            variant="success"
+                            onClick={() => addServiceToCart(service)}
+                            >
+                            Add to Cart
+                            </Button>
+                        </td>
+                        </tr>
+                    ))}
+                </tbody>
+                </table>
+            </div>
             )}
 
             {/* Cart Modal */}
             <Modal show={showCartModal} onHide={handleCloseCartModal} size="xl" centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>Cart Items</Modal.Title>
+                <Modal.Header closeButton className="bg-light">
+                    <Modal.Title className="fw-bold align">
+                    Cart Summary
+                    </Modal.Title>
                 </Modal.Header>
+
                 <Modal.Body>
-                    <div className="table-responsive">
-                        <Table striped bordered hover>
-                            <thead>
-                                <tr>
-                                    <th>Barcode</th>
-                                    <th>Name</th>
-                                    <th>Price</th>
-                                    <th>Quantity</th>
-                                    <th>Total</th>
-                                    <th>Type</th>
-                                    <th>Action</th>
-                                    <th>Form</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {cartItems.map((item, index) => (
-                                    <tr key={index}>
-                                        <td>{item.barcode}</td>
-                                        <td>{item.name ? item.name : item.product_name}</td>
-                                        <td>₱{parseFloat(item.price).toLocaleString()}</td>
-                                        <td style={{ padding: '0', margin: '0', height: '100%', background: 'transparent', border: 'none' }}>
-                                            <Form.Control
-                                                type="number"
-                                                min="1"
-                                                max={(() => {
-                                                    const inventoryItem = inventory.find(inv => inv.barcode === item.barcode);
-                                                    return inventoryItem ? inventoryItem.quantity : 1; // ✅ Get stock from API
-                                                })()}
-                                                value={item.quantity}
-                                                onChange={(e) => {
-                                                    let newQuantity = parseInt(e.target.value, 10) || 1; // Default to 1 if empty or invalid
+                    <div className="table-responsive shadow-sm rounded p-2">
+                    <Table hover bordered className="align-middle text-center">
+                        <thead>
+                        <tr>
+                            <th>Barcode</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th style={{ width: "120px" }}>Quantity</th>
+                            <th>Total</th>
+                            <th>Type</th>
+                            <th>Action</th>
+                            <th>Form</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {cartItems.map((item, index) => (
+                            <tr key={index}>
+                            <td className="text-muted">{item.barcode}</td>
+                            <td className="fw-semibold">
+                                {item.name ? item.name : item.product_name}
+                            </td>
+                            <td>₱{parseFloat(item.price).toLocaleString()}</td>
 
-                                                    // ✅ Find the inventory stock dynamically
-                                                    const inventoryItem = inventory.find(inv => inv.barcode === item.barcode);
-                                                    const inventoryQuantity = inventoryItem ? inventoryItem.quantity : 1;
-
-                                                    if (newQuantity > inventoryQuantity) {
-                                                        newQuantity = inventoryQuantity; // ✅ Prevent exceeding stock
-                                                        
-                                                        // ✅ Show toast notification for stock limit
-                                                        toast.warning(`Only ${inventoryQuantity} available in stock!`, {
-                                                            position: "top-right",
-                                                            autoClose: 2000,
-                                                            hideProgressBar: false,
-                                                            closeOnClick: true,
-                                                            pauseOnHover: true,
-                                                            draggable: true,
-                                                        });
-                                                    }
-                                                    updateCartItemQuantity(item, newQuantity);
-                                                }}
-                                                onBlur={(e) => {
-                                                    if (!e.target.value) {
-                                                        updateCartItemQuantity(item, 1); // ✅ Reset to 1 if left empty
-                                                    }
-                                                }}
-                                                style={{
-                                                    width: '50px',
-                                                    height: '80%',
-                                                    textAlign: 'center',
-                                                    border: 'none',
-                                                    outline: 'none',
-                                                    boxShadow: 'none',
-                                                    background: 'transparent',
-                                                    lineHeight: 'normal',
-                                                    padding: '10px 0',
-                                                }}
-                                                className="quantity-input"
-                                            />
-                                        </td>
-
-                                        <td>₱{formatPrice(item.price * item.quantity)}</td>
-                                        <td>{item.isService ? 'Service' : 'Product'}</td>
-                                        <td>
-                                            <Button variant="success" onClick={() => increaseQuantity(item.barcode)}>
-                                                <FaPlus />
-                                            </Button>{' '}
-                                            <Button variant="warning" onClick={() => decreaseQuantity(item.barcode)}>
-                                                <FaMinus />
-                                            </Button>{' '}
-                                            <Button
-                                                variant="danger"
-                                                onClick={() =>
-                                                    removeFromTable(item.isService ? item.id : item.barcode, item.isService)
-                                                }
-                                            >
-                                                <FaTrash />
-                                            </Button>
-                                        </td>
-                                        <td>
-                                            {item.isService && item.consent_form && item.consent_form.trim() !== "None" ? (
-                                                <Button variant="info" onClick={() => handleServiceForm(item)}>
-                                                    {item.consent_form}
-                                                </Button>
-                                            ) : null}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </Table>
-
-                        <h4>Grand Total: ₱{formatPrice(calculateGrandTotal())}</h4>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Amount tendered:</Form.Label>
-                            <Form.Control
+                            {/* Quantity Input */}
+                            <td>
+                                <Form.Control
                                 type="number"
-                                value={paymentAmount}
-                                onChange={(e) => setPaymentAmount(e.target.value)}
-                            />
-                            {/* Error Message */}
-                            {errorMessage && (
-                                <div style={{ color: 'red', marginTop: '5px', fontSize: '0.9rem' }}>
-                                    {errorMessage}
+                                min="1"
+                                max={(() => {
+                                    const inventoryItem = inventory.find(
+                                    (inv) => inv.barcode === item.barcode
+                                    );
+                                    return inventoryItem ? inventoryItem.quantity : 1;
+                                })()}
+                                value={item.quantity}
+                                onChange={(e) => {
+                                    let newQuantity = parseInt(e.target.value, 10) || 1;
+                                    const inventoryItem = inventory.find(
+                                    (inv) => inv.barcode === item.barcode
+                                    );
+                                    const inventoryQuantity = inventoryItem
+                                    ? inventoryItem.quantity
+                                    : 1;
+
+                                    if (newQuantity > inventoryQuantity) {
+                                    newQuantity = inventoryQuantity;
+                                    toast.warning(
+                                        `Only ${inventoryQuantity} available in stock!`,
+                                        { autoClose: 2000 }
+                                    );
+                                    }
+                                    updateCartItemQuantity(item, newQuantity);
+                                }}
+                                onBlur={(e) => {
+                                    if (!e.target.value) {
+                                    updateCartItemQuantity(item, 1);
+                                    }
+                                }}
+                                className="text-center"
+                                />
+                            </td>
+
+                            <td className="fw-bold text-success">
+                                ₱{formatPrice(item.price * item.quantity)}
+                            </td>
+                            <td>
+                                {item.isService ? "Service" : "Product"}
+                            </td>
+
+                            {/* Actions */}
+                            <td>
+                                <div className="d-flex justify-content-center gap-2">
+                                <Button
+                                    size="sm"
+                                    variant="success"
+                                    onClick={() => increaseQuantity(item.barcode)}
+                                >
+                                    <FaPlus />
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant="warning"
+                                    onClick={() => decreaseQuantity(item.barcode)}
+                                >
+                                    <FaMinus />
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant="danger"
+                                    onClick={() =>
+                                    removeFromTable(
+                                        item.isService ? item.id : item.barcode,
+                                        item.isService
+                                    )
+                                    }
+                                >
+                                    <FaTrash />
+                                </Button>
                                 </div>
-                            )}
-                        </Form.Group>
+                            </td>
+
+                            {/* Service Form */}
+                            <td>
+                                {item.isService &&
+                                item.consent_form &&
+                                item.consent_form.trim() !== "None" && (
+                                    <Button
+                                    size="sm"
+                                    variant="info"
+                                    onClick={() => handleServiceForm(item)}
+                                    >
+                                    {item.consent_form}
+                                    </Button>
+                                )}
+                            </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </Table>
+                    </div>
+
+                    {/* Summary */}
+                    <div className="mt-4 p-3 bg-light rounded shadow-sm">
+                    <h4 className="fw-bold text-end">
+                        Grand Total:{" "}
+                        <span className="text-success">
+                        ₱{formatPrice(calculateGrandTotal())}
+                        </span>
+                    </h4>
+
+                    <Form.Group className="mt-3">
+                        <Form.Label className="fw-semibold">Amount Tendered</Form.Label>
+                        <Form.Control
+                        type="number"
+                        value={paymentAmount}
+                        onChange={(e) => setPaymentAmount(e.target.value)}
+                        placeholder="Enter amount..."
+                        />
+                        {errorMessage && (
+                        <small className="text-danger mt-1 d-block">{errorMessage}</small>
+                        )}
+                    </Form.Group>
                     </div>
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowCartModal(false)}>
-                        Close
-                    </Button>
-                    <Button variant="primary" onClick={handleConfirm}>
-                        Confirm Payment
-                    </Button>
+
+                <Modal.Footer className="bg-light">
+                    <Button variant="secondary" onClick={() => setShowCartModal(false)}>Close</Button>
+                    <Button variant="success" onClick={handleConfirm}> Confirm Payment</Button>
                 </Modal.Footer>
             
                 <AddImmunizationFormModal
@@ -972,57 +1021,73 @@ const PointofSales = () => {
 
             </Modal>
             {/* Confirm Modal */}
-            <Modal show={showConfirmModal} onHide={handleConfirmNo}>
+            <Modal show={showConfirmModal} onHide={handleConfirmNo} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Confirm Payment</Modal.Title>
+                    <Modal.Title className="fw-bold">Confirm Payment</Modal.Title>
                 </Modal.Header>
+
                 <Modal.Body>
-                    {/* Show input for client name only if no client ID exists */}
+                    {/* Show input for client name/email only if no client ID exists */}
                     {!selectedClient && (
-                <div className="mb-3">
-                    <label>Client Name:</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        value={clientName}
-                        onChange={(e) => setClientName(e.target.value)}
-                        placeholder="Enter client name"
-                        required
-                    />
-                </div>
-            )}
+                    <>
+                        <div className="form-floating mb-3">
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="clientName"
+                            value={clientName}
+                            onChange={(e) => setClientName(e.target.value)}
+                            placeholder="Enter client name"
+                            required
+                        />
+                        <label htmlFor="clientName">Client Name</label>
+                        </div>
 
-            {!selectedClient && (
-                <div className="mb-3">
-                    <label>Client Email:</label>
-                    <input
-                        type="email"
-                        className="form-control"
-                        value={clientEmail}
-                        onChange={(e) => setClientEmail(e.target.value)}
-                        placeholder="Enter client email"
-                        required
-                    />
-                </div>
-            )}
-
-
-                    {changeAmount !== null ? (
-                        <p>Payment confirmed! Change: ₱{formatPrice(changeAmount)}</p>
-                    ) : (
-                        <p>Insufficient payment. Please enter a valid amount.</p>
+                        <div className="form-floating mb-3">
+                        <input
+                            type="email"
+                            className="form-control"
+                            id="clientEmail"
+                            value={clientEmail}
+                            onChange={(e) => setClientEmail(e.target.value)}
+                            placeholder="Enter client email"
+                            required
+                        />
+                        <label htmlFor="clientEmail">Client Email</label>
+                        </div>
+                    </>
                     )}
+
+                    <div className="text-center">
+                    {changeAmount !== null ? (
+                    <div className="p-3 mb-3 rounded bg-light border">
+                        <h5 className="mb-1 text-muted">Change</h5>
+                        <h3 className="mb-0 text-success">₱{formatPrice(changeAmount)}</h3>
+                    </div>
+                    ) : (
+                    <div className="p-2 mb-3 text-danger">
+                        Insufficient payment. Please enter a valid amount.
+                    </div>
+                    )}
+                    </div>
                 </Modal.Body>
-                <Modal.Footer>
+
+                <Modal.Footer className="d-flex justify-content-between">
                     <Button variant="secondary" onClick={handleConfirmNo}>
-                        Close
+                    Cancel
                     </Button>
-                    <Button 
-                        variant="primary" 
-                        onClick={handleConfirmYes} 
-                        disabled={changeAmount === null || isConfirming}
+                    <Button
+                    variant="primary"
+                    onClick={handleConfirmYes}
+                    disabled={changeAmount === null || isConfirming}
                     >
-                        {isConfirming ? "Processing..." : "Confirm"}
+                    {isConfirming ? (
+                        <>
+                        Processing...
+                        </>
+                    ) : (
+                        "Confirm Payment"
+                    )}
                     </Button>
                 </Modal.Footer>
             </Modal>
