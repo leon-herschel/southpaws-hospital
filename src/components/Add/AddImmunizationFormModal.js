@@ -294,10 +294,23 @@ function AddImmunizationFormModal({ show, handleClose, onFormAdded, selectedClie
                                     src={capturedImage} 
                                     alt="Captured" 
                                     className="mb-2" 
-                                    style={{ width: "100%", maxHeight: "300px", objectFit: "cover", borderRadius: "8px" }} 
+                                    style={{ 
+                                        maxWidth: "100%", 
+                                        height: "auto",       
+                                        maxHeight: "400px",  
+                                        objectFit: "contain", 
+                                        borderRadius: "8px" 
+                                    }} 
                                 />
                             ) : (
-                                <video ref={videoRef} autoPlay style={{ width: "100%", display: stream ? "block" : "none" }} />
+                                <video ref={videoRef} autoPlay style={{         
+                                    maxWidth: "100%",    
+                                    maxHeight: "400px",   
+                                    objectFit: "contain", 
+                                    borderRadius: "8px",
+                                    display: stream ? "block" : "none",
+                                    
+                                }}  />
                             )}
                         </div>
 

@@ -74,39 +74,36 @@ function ViewImmunizationFormModal({ show, handleClose, formData }) {
                 {formData ? (
                     <div>
                         <h5 className="text-center mb-4">Veterinary Immunization Consent Form</h5>
-                        <h6>Client Image:</h6>
-                        {formData.pet_image ? (
-                            <img 
-                                src={formData.pet_image} 
-                                alt="Pet" 
-                                style={{ maxWidth: '300px', height: 'auto', display: 'block' }} 
-                            />
-                        ) : (
-                            <p>No image available</p>
-                        )}
-                        {/* Owner Information */}
-                        <Table bordered>
-                            <tbody>
-                                <tr>
-                                    <th>Owner's Name</th>
-                                    <td>{formData.client_name || 'N/A'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Owner's Address</th>
-                                    <td>{formData.address || 'N/A'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Owner's Contact</th>
-                                    <td>{formData.cellnumber || 'N/A'}</td>
-                                </tr>
-                            </tbody>
-                        </Table>
 
-                        {/* Multiple Pets Details */}
-                        {petDetails.length > 0 ? (
-                            <div className="mt-4">
-                                <h5 className="text-center">Pet Information</h5>
-                                <Table bordered>
+                        {/* Client Info */}
+                        <div className="mb-4 p-3 border rounded bg-light">
+                            <h6 className="mb-3">Client Information</h6>
+                            <div className="row">
+                                <div className="col-md-3 text-center">
+                                    {formData.pet_image ? (
+                                        <img
+                                            src={formData.pet_image}
+                                            alt="Client"
+                                            className="img-fluid rounded mb-2"
+                                            style={{ maxHeight: "150px", objectFit: "cover" }}
+                                        />
+                                    ) : (
+                                        <div className="text-muted">No Image Available</div>
+                                    )}
+                                </div>
+                                <div className="col-md-9">
+                                    <p><strong>Name:</strong> {formData.client_name || 'N/A'}</p>
+                                    <p><strong>Address:</strong> {formData.address || 'N/A'}</p>
+                                    <p><strong>Contact:</strong> {formData.cellnumber || 'N/A'}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Pet Info */}
+                        <div className="mb-4 p-3 border rounded bg-light">
+                            <h6 className="mb-3">Pet Information</h6>
+                            {petDetails.length > 0 ? (
+                                <Table bordered size="sm">
                                     <thead>
                                         <tr>
                                             <th>#</th>
@@ -124,44 +121,34 @@ function ViewImmunizationFormModal({ show, handleClose, formData }) {
                                         ))}
                                     </tbody>
                                 </Table>
-                            </div>
-                        ) : (
-                            <Table bordered className="mt-4">
-                                <tbody>
-                                    <tr>
-                                        <th>Pet's Name</th>
-                                        <td>{formData.pet_name || 'N/A'}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Pet's Age</th>
-                                        <td>{formData.age || 'N/A'}</td>
-                                    </tr>
-                                </tbody>
-                            </Table>
-                        )}
+                            ) : (
+                                <p>
+                                    <strong>Name:</strong> {formData.pet_name || 'N/A'} <br />
+                                    <strong>Age:</strong> {formData.age || 'N/A'}
+                                </p>
+                            )}
+                        </div>
 
                         {/* Immunization Details */}
-                        <Table bordered className="mt-4">
-                            <tbody>
-                                <tr>
-                                    <th>Date Signed</th>
-                                    <td>{formatDate(formData.created_at)}</td>
-                                </tr>
-                                <tr>
-                                    <th>Signature Status</th>
-                                    <td>{formData.signature ? 'Signed' : 'Not Signed'}</td>
-                                </tr>
-                            </tbody>
-                        </Table>
+                        <div className="mb-4 p-3 border rounded bg-light">
+                            <h6 className="mb-3">Immunization Details</h6>
+                            <p><strong>Date Signed:</strong> {formatDate(formData.created_at)}</p>
+                            <p>
+                                <strong>Signature Status:</strong>{" "}
+                                <span className={formData.signature ? "text-success" : "text-danger"}>
+                                    {formData.signature ? "Signed" : "Not Signed"}
+                                </span>
+                            </p>
+                        </div>
 
                         {/* Notes Section */}
                         {notes.length > 0 && (
-                            <div className="mt-4">
-                                <h5 className="text-center">Additional Notes</h5>
+                            <div className="mb-4">
+                                <h6 className="mb-3 text-center">Additional Notes</h6>
                                 {notes.map((note, index) => (
-                                    <div key={index} className="border p-3 mb-3 bg-light">
+                                    <div key={index} className="border p-3 mb-3 bg-white rounded shadow-sm">
                                         <h6 className="text-center">{note.title}</h6>
-                                        <p>{note.content}</p>
+                                        <p className="mb-0">{note.content}</p>
                                     </div>
                                 ))}
                             </div>
