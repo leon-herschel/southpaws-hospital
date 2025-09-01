@@ -63,22 +63,25 @@ const EditPetModal = ({ show, handleClose, editPatient, handleEditChange, handle
         return ageString || 'Less than a day old';
     };
 
+    // Populate form data when patient changes
     useEffect(() => {
         if (editPatient && Object.keys(editPatient).length > 0) {
             setFormData({
                 ...editPatient,
-                owner_id: editPatient.owner_id || '' // Provide a fallback if undefined
+                owner_id: editPatient.owner_id || ''
             });
-            setLoading(false);
-            setTimeout(() => {
-                if (brandNameRef.current) {
-                    brandNameRef.current.focus();
-                }
-            }, 100);
-        } else {
-            setLoading(false);
         }
-    }, [editPatient, show]);
+        setLoading(false);
+    }, [editPatient]);
+
+    // Only focus input when modal opens
+    useEffect(() => {
+        if (show && brandNameRef.current) {
+            setTimeout(() => {
+                brandNameRef.current.focus();
+            }, 100);
+        }
+    }, [show]);
 
     useEffect(() => {
         if (formData.pet_birthdate) {
