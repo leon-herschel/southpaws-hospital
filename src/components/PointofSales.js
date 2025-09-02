@@ -742,19 +742,19 @@ const PointofSales = () => {
                 placeholder="Search items..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="mb-3"
+                className="shadow-sm"
                 style={{ maxWidth: "300px" }}
                 />
 
-                <table className="table table-striped table-hover align-middle">
-                <thead>
+                <table className="table table-striped table-hover align-middle shadow-sm">
+                <thead className='table-light'>
                     <tr>
                     <th>Barcode</th>
                     <th>Name</th>
                     <th>Supplier</th>
                     <th>Brand</th>
                     <th>Price</th>
-                    <th>Action</th>
+                    <th className='text-center'>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -772,7 +772,7 @@ const PointofSales = () => {
                         <td>{item.supplier_name}</td>
                         <td>{item.brand_name}</td>
                         <td>₱{formatPrice(item.price)}</td>
-                        <td>
+                        <td className="text-center">
                             <Button
                             variant="success"
                             onClick={() => addProductToCart(item)}
@@ -795,16 +795,16 @@ const PointofSales = () => {
                 placeholder="Search services..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="mb-3"
+                className="shadow-sm"
                 style={{ maxWidth: "300px" }}
                 />
 
-                <table className="table table-striped table-hover align-middle">
-                <thead>
+                <table className="table table-striped table-hover align-middle shadow-sm">
+                <thead className="table-light">
                     <tr>
                     <th>Name</th>
                     <th>Price</th>
-                    <th>Action</th>
+                    <th className='text-center'>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -817,7 +817,7 @@ const PointofSales = () => {
                         <tr key={index}>
                         <td>{service.name}</td>
                         <td>₱{formatPrice(service.price)}</td>
-                        <td>
+                        <td className='text-center'>
                             <Button
                             variant="success"
                             onClick={() => addServiceToCart(service)}
@@ -843,7 +843,7 @@ const PointofSales = () => {
                 <Modal.Body>
                     <div className="table-responsive shadow-sm rounded p-2">
                     <Table hover bordered className="align-middle text-center">
-                        <thead>
+                        <thead className='table-light'>
                         <tr>
                             <th>Barcode</th>
                             <th>Name</th>
@@ -899,7 +899,7 @@ const PointofSales = () => {
                                     updateCartItemQuantity(item, 1);
                                     }
                                 }}
-                                className="text-center"
+                                className="text-center shadow-sm"
                                 />
                             </td>
 
@@ -976,6 +976,7 @@ const PointofSales = () => {
                         <Form.Control
                         type="number"
                         value={paymentAmount}
+                        className='shadow-sm'
                         onChange={(e) => setPaymentAmount(e.target.value)}
                         placeholder="Enter amount..."
                         />

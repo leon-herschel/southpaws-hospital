@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { AiOutlineArrowUp, AiOutlineArrowDown } from 'react-icons/ai';
 import axios from "axios";
-import { Pagination, Button } from 'react-bootstrap';
+import { Pagination, Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import ReceiptModal from '../components/ReceiptModal';
 import '../assets/table.css';
+import { FaEye } from 'react-icons/fa';
 
 const SalesList = () => {
     const [sales, setSales] = useState([]);
     const [originalSales, setOriginalSales] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [salesPerPage, setSalesPerPage] = useState(10);
+    const [salesPerPage, setSalesPerPage] = useState(5);
     const [sortBy, setSortBy] = useState({ key: '', order: '' });
     const [showModal, setShowModal] = useState(false);
     const [selectedReceipt, setSelectedReceipt] = useState(null);
@@ -103,17 +104,23 @@ const SalesList = () => {
         setShowModal(true);
     }; 
 
+    const IconButtonWithTooltip = ({ tooltip, children, ...props }) => (
+            <OverlayTrigger placement="top" overlay={<Tooltip>{tooltip}</Tooltip>}>
+                <Button {...props}>{children}</Button>
+            </OverlayTrigger>
+    );
+
     return (
         <div className='container mt-2'>
             <h1 style={{ textAlign: 'left', fontWeight: 'bold' }}>Sales Transactions</h1>
             <div className='d-flex justify-content-between align-items-center'>
-                <div className="input-group" style={{ width: '25%', marginBottom: '10px' }}>
-                    <input type="text" className="form-control" onChange={handleFilter} placeholder="Search" />
+                <div className="input-group" style={{ width: '25%' }}>
+                    <input type="text" className="form-control shadow-sm" onChange={handleFilter} placeholder="Search" />
                 </div>
             </div>
             <div className="table-responsive">
-                <table className="table table-striped table-hover custom-table" style={{ width: '100%' }}>
-                    <thead>
+                <table className="table table-striped table-hover custom-table align-middle shadow-sm" style={{ width: '100%' }}>
+                    <thead className='table-light'>
                         <tr>
                             <th className="text-center" onClick={() => handleSort('receipt_number')}>
                                 Receipt # {getSortIcon('receipt_number')}
@@ -140,33 +147,68 @@ const SalesList = () => {
                                 <td className="text-center">{formatDate(sale.order_date)}</td>
                                 <td className="text-center">{formatCurrency(sale.grand_total)}</td>
                                 <td className="text-center">
-                                    <Button variant="primary" size="sm" onClick={() => handleViewReceipt(sale)}>View</Button>
+                                    <IconButtonWithTooltip tooltip="View" variant="primary" className='btn btn-success' onClick={() => handleViewReceipt(sale)}><FaEye /></IconButtonWithTooltip>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
-            <div className="d-flex justify-content-between mb-3">
+            <div className="d-flex justify-content-between align-items-center">
+                {/* Items per page selector (left) */}
                 <div className="d-flex align-items-center">
-                    <label htmlFor="itemsPerPage" className="form-label me-2">Items per page:</label>
-                    <select id="itemsPerPage" className="form-select" value={salesPerPage} onChange={handlePerPageChange}>
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="15">15</option>
-                        <option value="20">20</option>
-                        <option value="30">30</option>
-                        <option value="50">50</option>
+                    <label htmlFor="itemsPerPage" className="form-label me-2 fw-bold">Items per page:</label>
+                    <select 
+                    style={{ width: '80px' }} 
+                    id="itemsPerPage" 
+                    className="form-select form-select-sm shadow-sm" 
+                    value={salesPerPage} 
+                    onChange={handlePerPageChange}
+                    >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
                     </select>
                 </div>
-                <Pagination>
-                    {Array.from({ length: Math.ceil(sales.length / salesPerPage) }, (_, index) => (
-                        <Pagination.Item key={index} active={index + 1 === currentPage} onClick={() => paginate(index + 1)}>
-                            {index + 1}
+
+                {/* Pagination (right) */}
+                <Pagination className="mb-0">
+                    {/* Prev button */}
+                    <Pagination.Prev
+                    onClick={() => currentPage > 1 && paginate(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    />
+
+                    {Array.from({ length: Math.ceil(sales.length / salesPerPage) }, (_, index) => index + 1)
+                    .filter(page =>
+                        page === 1 ||
+                        page === Math.ceil(sales.length / salesPerPage) ||
+                        (page >= currentPage - 2 && page <= currentPage + 2) // show range around current page
+                    )
+                    .map((page, i, arr) => (
+                        <React.Fragment key={page}>
+                        {/* Add ellipsis when gap */}
+                        {i > 0 && arr[i] !== arr[i - 1] + 1 && <Pagination.Ellipsis disabled />}
+                        <Pagination.Item
+                            active={page === currentPage}
+                            onClick={() => paginate(page)}
+                        >
+                            {page}
                         </Pagination.Item>
+                        </React.Fragment>
                     ))}
+
+                    {/* Next button */}
+                    <Pagination.Next
+                    onClick={() =>
+                        currentPage < Math.ceil(sales.length / salesPerPage) &&
+                        paginate(currentPage + 1)
+                    }
+                    disabled={currentPage === Math.ceil(sales.length / salesPerPage)}
+                    />
                 </Pagination>
-            </div>
+                </div>
 
                 {/* Receipt Modal */}
                 <ReceiptModal 

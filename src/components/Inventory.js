@@ -10,7 +10,6 @@ import ViewInventoryModal from '../components/View/ViewInventoryModal';
 import EditInventoryModal from '../components/Edit/EditInventoryModal';
 import {  toast } from 'react-toastify'; // Import Toastify
 
-
 const Inventory = () => {
     const [products, setProducts] = useState([]);
     const [originalProducts, setOriginalProducts] = useState([]);
@@ -425,19 +424,26 @@ const Inventory = () => {
             order = 'desc';
         }
         setSortBy({ key, order });
-        
+
         const sortedProducts = [...products].sort((a, b) => {
-            // Handle cases where the value might be null or undefined
-            const valueA = a[key] === null || a[key] === undefined ? '' : 
-                          typeof a[key] === 'string' ? a[key].toLowerCase() : a[key];
-            const valueB = b[key] === null || b[key] === undefined ? '' : 
-                          typeof b[key] === 'string' ? b[key].toLowerCase() : b[key];
-    
-            if (valueA < valueB) return order === 'asc' ? -1 : 1;
-            if (valueA > valueB) return order === 'asc' ? 1 : -1;
+            let valueA = a[key];
+            let valueB = b[key];
+
+            // Handle null/undefined
+            if (valueA === null || valueA === undefined) valueA = 0;
+            if (valueB === null || valueB === undefined) valueB = 0;
+
+            if (typeof valueA === "number" && typeof valueB === "number") {
+                return order === "asc" ? valueA - valueB : valueB - valueA;
+            }
+
+            valueA = String(valueA).toLowerCase();
+            valueB = String(valueB).toLowerCase();
+            if (valueA < valueB) return order === "asc" ? -1 : 1;
+            if (valueA > valueB) return order === "asc" ? 1 : -1;
             return 0;
         });
-        
+
         setProducts(sortedProducts);
     };
 
@@ -598,13 +604,13 @@ const Inventory = () => {
         <div className='container mt-2'>
             <h1 style={{ textAlign: 'left', fontWeight: 'bold' }}>Inventory</h1>
             <div className='d-flex justify-content-between align-items-center'>
-                <div className="input-group" style={{ width: '25%', marginBottom: '10px' }}>
-                    <input type="text" className="form-control" onChange={handleFilter} placeholder="Search" />
+                <div className="input-group" style={{ width: '25%' }}>
+                    <input type="text" className="form-control shadow-sm" onChange={handleFilter} placeholder="Search" />
                 </div>
             </div>
             <div className="table-responsive">
-            <table className="table table-striped table-hover custom-table" style={{ width: '100%' }}>
-    <thead>
+            <table className="table table-striped shadow-sm table-hover custom-table align-middle" style={{ width: '100%' }}>
+    <thead className="table-light">
         <tr>
             <th className="text-center" onClick={() => handleSort('product_name')}>
                 Product Name
@@ -622,17 +628,17 @@ const Inventory = () => {
                 Type
                 {getSortIcon('unit_name')}
             </th>
-            <th className="text-center" onClick={() => handleSort('totalcount')}>
+            <th className="text-center" onClick={() => handleSort('total_count')}>
                 Total Count
-                {getSortIcon('totalcount')}
+                {getSortIcon('total_count')}
             </th>
-            <th className="text-center" onClick={() => handleSort('instock')}>
+            <th className="text-center" onClick={() => handleSort('quantity')}>
                 In Stock
-                {getSortIcon('instock')}
+                {getSortIcon('quantity')}
             </th>
-            <th className="text-center" onClick={() => handleSort('totalsold')}>
+            <th className="text-center" onClick={() => handleSort('item_sold')}>
                 Total Item Sold
-                {getSortIcon('totalsold')}
+                {getSortIcon('item_sold')}
             </th>
             <th className="text-center">Action</th>
         </tr>
@@ -660,7 +666,7 @@ const Inventory = () => {
                                 placement="top"
                                 overlay={<Tooltip id={`expand-tooltip-${product.id}`}>Expand</Tooltip>}
                             >
-                                <Button onClick={() => toggleExpand(product.id)}>
+                                <Button className="btn me-2" onClick={() => toggleExpand(product.id)}>
                                     {expandedProduct === product.id ? <FaCaretUp /> : <FaCaretDown />}
                                 </Button>
                             </OverlayTrigger>
@@ -673,8 +679,7 @@ const Inventory = () => {
                                 >
                                     <Button
                                         onClick={() => handleShow(product.id)}
-                                        className="btn btn-success me-2 col-4"
-                                        style={{ fontSize: "1.1rem" }}
+                                        className="btn btn-success me-2"
                                     >
                                         <FaPlus />
                                     </Button>
@@ -689,7 +694,7 @@ const Inventory = () => {
     <tr>
         <td colSpan="8" className="bg-light">
             <div style={{ paddingLeft: '30px' }}>
-                <table className="table table-borderless">
+                <table className="table text-center table-borderless">
                     <tbody>
                         {/* Title Row with Different Style */}
                         <tr className="inventory-details-title">
@@ -706,7 +711,7 @@ const Inventory = () => {
                         {/* Data Rows for multiple inventory items */}
                         {product.inventory.length > 0 ? (
                             product.inventory.map((inventoryItem, index) => (
-                                <tr key={index}>
+                                <tr key={index} className='align-middle'>
                                     <td>{inventoryItem?.sku || 'N/A'}</td>
                                     <td>{inventoryItem?.supplier_name || 'N/A'}</td>
                                     <td>₱{inventoryItem?.price ? formatPrice(inventoryItem.price) : 'N/A'}</td>
@@ -768,7 +773,7 @@ const Inventory = () => {
                                                 >
                                                     <Button
                                                         onClick={() => handleShowDeleteModal(inventoryItem)}
-                                                        className="btn btn-warning btn-sm ms-1"
+                                                        className="btn btn-warning btn-sm me-1"
                                                         style={{ fontSize: "1.1rem" }}
                                                     >
                                                         <FaArchive />
@@ -796,30 +801,61 @@ const Inventory = () => {
 </table>
 
             </div>
-            <div className="d-flex justify-content-between mb-3">
+            <div className="d-flex justify-content-between align-items-center">
+                {/* Items per page selector (left) */}
                 <div className="d-flex align-items-center">
-                    <div className="col-md-auto">
-                        <label htmlFor="itemsPerPage" className="form-label me-2">Items per page:</label>
-                    </div>
-                    <div className="col-md-5">
-                        <select id="itemsPerPage" className="form-select" value={productsPerPage} onChange={handlePerPageChange}>
-                            <option value="5">5</option>
-                            <option value="10">10</option>
-                            <option value="15">15</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="50">50</option>
-                        </select>
-                    </div>
+                    <label className="me-2 fw-bold">Items per page:</label>
+                    <select 
+                    className="form-select form-select-sm shadow-sm" 
+                    style={{ width: '80px' }} 
+                    value={productsPerPage} 
+                    onChange={handlePerPageChange}
+                    >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                    </select>
                 </div>
-                <Pagination>
-                    {Array.from({ length: Math.ceil(products.length / productsPerPage) }, (_, index) => (
-                        <Pagination.Item key={index} active={index + 1 === currentPage} onClick={() => paginate(index + 1)}>
-                            {index + 1}
+
+                {/* Pagination (right) */}
+                <Pagination className="mb-0">
+                    {/* Prev button */}
+                    <Pagination.Prev
+                    onClick={() => currentPage > 1 && paginate(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    />
+
+                    {Array.from({ length: Math.ceil(products.length / productsPerPage) }, (_, index) => index + 1)
+                    .filter(page =>
+                        page === 1 ||
+                        page === Math.ceil(products.length / productsPerPage) ||
+                        (page >= currentPage - 2 && page <= currentPage + 2) // show range around current page
+                    )
+                    .map((page, i, arr) => (
+                        <React.Fragment key={page}>
+                        {/* Add ellipsis when gap */}
+                        {i > 0 && arr[i] !== arr[i - 1] + 1 && <Pagination.Ellipsis disabled />}
+                        <Pagination.Item
+                            active={page === currentPage}
+                            onClick={() => paginate(page)}
+                        >
+                            {page}
                         </Pagination.Item>
+                        </React.Fragment>
                     ))}
+
+                    {/* Next button */}
+                    <Pagination.Next
+                    onClick={() =>
+                        currentPage < Math.ceil(products.length / productsPerPage) &&
+                        paginate(currentPage + 1)
+                    }
+                    disabled={currentPage === Math.ceil(products.length / productsPerPage)}
+                    />
                 </Pagination>
-            </div>
+                </div>
+
             <EditInventoryModal
                 show={showEditModal}
                 handleClose={handleCloseEditModal}

@@ -144,8 +144,8 @@ const History = () => {
       {/* Search Input */}
       <input
         type="text"
-        className="form-control mb-3"
-        placeholder="🔍 Search..."
+        className="form-control mb-3 shadow-sm"
+        placeholder="Search"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         style={{ width: "460px" }}
@@ -159,7 +159,7 @@ const History = () => {
           <input
             type="date"
             id="fromDate"
-            className="form-control me-3"
+            className="form-control me-3 mb-0 shadow-sm"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
           />
@@ -169,7 +169,7 @@ const History = () => {
           <input
             type="date"
             id="toDate"
-            className="form-control"
+            className="form-control shadow-sm mb-0"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
           />
@@ -178,8 +178,8 @@ const History = () => {
 
       {/* Dynamic Table */}
       <div id="printable-history" className="table-responsive mt-3">
-        <table className="table table-striped table-hover custom-table">
-          <thead>
+        <table className="table table-striped table-hover custom-table align-middle">
+          <thead className="table-light">
             <tr>
               {columns.map((col, index) => (
                 <th
@@ -218,41 +218,57 @@ const History = () => {
       </div>
 
       {/* Pagination & Entries Selector */}
-      <div className="d-flex justify-content-between align-items-center mt-3">
-        <div className="d-flex align-items-center">
-          <label htmlFor="dataPerPage" className="me-2">
-            Show:
-          </label>
-          <select
-            id="dataPerPage"
-            className="form-select me-3"
-            value={dataPerPage}
-            onChange={(e) => setDataPerPage(Number(e.target.value))}
-            style={{ width: "80px" }}
-          >
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-          </select>
-          <span>entries</span>
-        </div>
-
-        <Pagination>
-          {Array.from(
-            { length: Math.ceil(filteredData.length / dataPerPage) },
-            (_, index) => (
-              <Pagination.Item
-                key={index}
-                active={index + 1 === currentPage}
-                onClick={() => paginate(index + 1)}
+      <div className="d-flex justify-content-between align-items-center">
+          <div className="d-flex align-items-center">
+              <label htmlFor="itemsPerPage" className="form-label me-2 fw-bold">Items per page:</label>
+              <select 
+                  style={{ width: '80px' }} 
+                  id="itemsPerPage" 
+                  className="form-select form-select-sm shadow-sm" 
+                  value={dataPerPage} 
+                  onChange={(e) => setDataPerPage(Number(e.target.value))}
               >
-                {index + 1}
-              </Pagination.Item>
-            )
-          )}
-        </Pagination>
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+              </select>
+          </div>
+          <Pagination className="mb-0">
+            {/* Prev button */}
+            <Pagination.Prev
+              onClick={() => currentPage > 1 && paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+            />
+
+            {Array.from({ length: Math.ceil(filteredData.length / dataPerPage) }, (_, index) => index + 1)
+              .filter(page =>
+                page === 1 || 
+                page === Math.ceil(filteredData.length / dataPerPage) || 
+                (page >= currentPage - 2 && page <= currentPage + 2) // show range around current page
+              )
+              .map((page, i, arr) => (
+                <React.Fragment key={page}>
+                  {/* Add ellipsis when gap */}
+                  {i > 0 && arr[i] !== arr[i - 1] + 1 && <Pagination.Ellipsis disabled />}
+                  <Pagination.Item
+                    active={page === currentPage}
+                    onClick={() => paginate(page)}
+                  >
+                    {page}
+                  </Pagination.Item>
+                </React.Fragment>
+              ))}
+
+            {/* Next button */}
+            <Pagination.Next
+              onClick={() =>
+                currentPage < Math.ceil(filteredData.length / dataPerPage) &&
+                paginate(currentPage + 1)
+              }
+              disabled={currentPage === Math.ceil(filteredData.length / dataPerPage)}
+            />
+          </Pagination>
       </div>
     </div>
   );

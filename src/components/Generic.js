@@ -12,9 +12,10 @@ import EditGenericModal from '../components/Edit/EditGenericModal';
 const Generic = () => {
     const [generics, setGenerics] = useState([]);
     const [originalGenerics, setOriginalGenerics] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [genericsPerPage, setGenericsPerPage] = useState(5); 
-    const [sortBy, setSortBy] = useState({ key: 'id', order: 'desc' }); 
+    const [sortBy, setSortBy] = useState({ key: 'id', order: 'asc' });
     const [showAddModal, setShowAddModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -23,6 +24,14 @@ const Generic = () => {
     const [editLoading, setEditLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState('');
     const [userRole, setUserRole] = useState(null); 
+
+    const filteredGenerics = generics.filter((generic) =>
+    generic.generic_name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const indexOfLast = currentPage * genericsPerPage;
+    const indexOfFirst = indexOfLast - genericsPerPage;
+    const currentGenerics = filteredGenerics.slice(indexOfFirst, indexOfLast);
 
     useEffect(() => {
         const role = parseInt(localStorage.getItem('userRole'), 10);
@@ -71,9 +80,10 @@ const Generic = () => {
             .then(response => {
                 if (Array.isArray(response.data.records)) {
                     const fetchedGenerics = response.data.records;
-                    const sortedGenerics = sortGenerics(fetchedGenerics, 'id', 'desc'); 
+                    const sortedGenerics = sortGenerics(fetchedGenerics, 'id', 'asc'); // ✅ sort asc
                     setGenerics(sortedGenerics);
                     setOriginalGenerics(fetchedGenerics);
+                    setSortBy({ key: 'id', order: 'asc' }); // ✅ so arrow shows
                 } else {
                     console.error('Unexpected response structure: records is not an array');
                 }
@@ -83,7 +93,6 @@ const Generic = () => {
             });
     };
 
-    /** ✅ Fix: Define `sortGenerics` */
     const sortGenerics = (data, key, order) => {
         return [...data].sort((a, b) => {
             if (key === 'id') {
@@ -150,25 +159,43 @@ const Generic = () => {
                 setEditLoading(false);
             });
     };
-    
 
+    const IconButtonWithTooltip = ({ tooltip, children, ...props }) => (
+        <OverlayTrigger placement="top" overlay={<Tooltip>{tooltip}</Tooltip>}>
+            <Button {...props}>{children}</Button>
+        </OverlayTrigger>
+    );
+    
     return (
         <div className='container mt-2'>
             <h1 style={{ textAlign: 'left', fontWeight: 'bold' }}>Generic CMS</h1>
             <div className='d-flex justify-content-between align-items-center'>
-                <div className="input-group" style={{ width: '25%', marginBottom: '10px' }}>
-                    <input type="text" className="form-control" placeholder="Search" />
+                <div className="input-group" style={{ width: '25%' }}>
+                    <input 
+                        type="text" 
+                        className="form-control shadow-sm" 
+                        placeholder="Search" 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                 </div>
                 {userRole !== 1 && (
-                    <Button onClick={handleShowAddModal} className='btn btn-primary'>
+                    <Button onClick={handleShowAddModal} className='btn btn-primary btn-gradient'
+                    style={{
+                                backgroundImage: 'linear-gradient(to right, #006cb6, #31b44b)',
+                                color: '#ffffff',
+                                borderColor: '#006cb6',
+                                fontWeight: 'bold',
+                                marginBottom: '-10px',
+                            }}>
                         Add Generic
                     </Button>
                 )}
             </div>
 
             <div className="table-responsive">
-                <table className="table table-striped table-hover">
-                    <thead>
+                <table className="table table-striped table-hover custom-table align-middle shadow-sm">
+                    <thead className="table-light">
                         <tr>
                             <th className="text-center" onClick={() => handleSort('id')}>
                                 # {sortBy.key === 'id' ? (sortBy.order === 'asc' ? <AiOutlineArrowUp /> : <AiOutlineArrowDown />) : null}
@@ -180,24 +207,70 @@ const Generic = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {generics.map((generic, index) => (
+                        {currentGenerics.map((generic, index) => (
                             <tr key={generic.id}>
-                                <td className="text-center">{index + 1}</td>
+                                <td className="text-center">{index + indexOfFirst + 1}</td>
                                 <td className="text-center">{generic.generic_name}</td>
                                 {userRole !== 1 && (
                                     <td className="text-center">
-                                        <Button onClick={() => handleShowEditModal(generic.id)} className="btn btn-primary me-2">
+                                        <IconButtonWithTooltip
+                                            tooltip="Edit"
+                                            onClick={() => handleShowEditModal(generic.id)}
+                                            className="btn btn-primary me-2"
+                                        >
                                             <FaEdit />
-                                        </Button>
-                                        <Button onClick={() => handleShowDeleteModal(generic.id)} className="btn btn-danger">
+                                        </IconButtonWithTooltip>
+
+                                        <IconButtonWithTooltip
+                                            tooltip="Delete"
+                                            onClick={() => handleShowDeleteModal(generic.id)}
+                                            className="btn btn-danger"
+                                        >
                                             <FaTrash />
-                                        </Button>
+                                        </IconButtonWithTooltip>
                                     </td>
                                 )}
                             </tr>
                         ))}
                     </tbody>
                 </table>
+                <div className="d-flex justify-content-between align-items-center">
+                    {/* Per page dropdown */}
+                    <div className="d-flex align-items-center">
+                        <label className="me-2 fw-bold">Items per page:</label>
+                        <select
+                        value={genericsPerPage}
+                        onChange={(e) => {
+                            setGenericsPerPage(Number(e.target.value));
+                            setCurrentPage(1); // reset to first page
+                        }}
+                        className="form-select form-select-sm"
+                        style={{ width: "80px" }}
+                        >
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                        <option value="20">20</option>
+                        </select>
+                    </div>
+
+                    {/* Pagination buttons */}
+                    <ul className="pagination mb-0">
+                        {Array.from(
+                        { length: Math.ceil(filteredGenerics.length / genericsPerPage) },
+                        (_, index) => (
+                            <li
+                            key={index}
+                            className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
+                            style={{ cursor: "pointer" }}
+                            onClick={() => setCurrentPage(index + 1)}
+                            >
+                            <span className="page-link">{index + 1}</span>
+                            </li>
+                        )
+                        )}
+                    </ul>
+                </div>
             </div>
             
             <AddGenericModal show={showAddModal} handleClose={handleCloseAddModal} onGenericAdded={handleGenericAdded} />

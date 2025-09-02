@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { FaSearch, FaEdit, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaArchive, FaEdit, FaTrash } from 'react-icons/fa';
 import { AiOutlineArrowUp, AiOutlineArrowDown } from 'react-icons/ai';
 import axios from 'axios';
-import { Form, Button, Modal, Pagination, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Button, Modal, Pagination, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import '../assets/table.css';
 import AddSupplierModal from '../components/Add/AddSupplierModal'; 
 import EditSupplierModal from '../components/Edit/EditSupplierModal'; 
@@ -147,9 +147,6 @@ const SupplierManagement = () => {
             });
     };
     
-    
-    
-
     function handleFilter(event) {
         const searchText = event.target.value.toLowerCase();
         const newData = originalSuppliers.filter(row => {
@@ -290,9 +287,6 @@ const SupplierManagement = () => {
             });
     };
     
-    
-    
-
     useEffect(() => {
         if (showEditModal && supplierIdToEdit) {
             // Fetch the supplier data when the edit modal opens
@@ -315,26 +309,25 @@ const SupplierManagement = () => {
         }
     }, [showEditModal, supplierIdToEdit]);
     
-    
-
     return (
         <div className='container mt-2'>
             
             <h1 style={{ textAlign: 'left', fontWeight: 'bold' }}>Suppliers</h1>
             
             <div className='d-flex justify-content-between align-items-center'>
-                <div className="input-group" style={{ width: '25%', marginBottom: '10px' }}>
-                    <input type="text" className="form-control" onChange={handleFilter} placeholder="Search" />
+                <div className="input-group" style={{ width: '25%' }}>
+                    <input type="text" className="form-control shadow-sm" onChange={handleFilter} placeholder="Search" />
                 </div>
                 <div className='text-end'>
                     {/* Show Add Supplier button only if user_role is not 1 */}
                     {userRole !== 1 && (
-                        <Button onClick={handleShow} className='btn btn-primary w-100'
+                        <Button onClick={handleShow} className='btn btn-primary w-100 btn-gradient'
                             style={{
                                 backgroundImage: 'linear-gradient(to right, #006cb6, #31b44b)',
                                 color: '#ffffff', // Text color
                                 borderColor: '#006cb6', // Border color
-                                fontWeight: 'bold'
+                                fontWeight: 'bold',
+                                marginBottom: '-10px'
                             }}
                         >
                             Add Supplier
@@ -343,8 +336,8 @@ const SupplierManagement = () => {
                 </div>
             </div>
             <div className="table-responsive">
-                <table className="table table-striped table-hover custom-table" style={{ width: '100%' }}>
-                    <thead>
+                <table className="table table-striped table-hover custom-table align-middle shadow-sm" style={{ width: '100%' }}>
+                    <thead className="table-light">
                         <tr>
                             <th className="col text-center" onClick={() => handleSort('supplier_name')}>
                                 Supplier Name
@@ -387,12 +380,12 @@ const SupplierManagement = () => {
                                 <OverlayTrigger
                                     placement="top"
                                     overlay={<Tooltip>Edit</Tooltip>}>
-                                    <Button onClick={() => handleShowEditModal(supplier.id)} className="btn btn-primary me-2 col-5"><FaEdit /></Button>
+                                    <Button onClick={() => handleShowEditModal(supplier.id)} className="btn btn-primary me-2"><FaEdit /></Button>
                                 </OverlayTrigger>
                                 <OverlayTrigger
                                     placement="top"
-                                    overlay={<Tooltip>Delete </Tooltip>}>
-                                        <button onClick={() => handleShowArchiveModal(supplier.id)} className="btn btn-danger me-2 col-5"><FaTrash /></button>
+                                    overlay={<Tooltip>Archive </Tooltip>}>
+                                        <button onClick={() => handleShowArchiveModal(supplier.id)} className="btn btn-warning me-2"><FaArchive /></button>
                                 </OverlayTrigger>
                                         </>
                                     )}
@@ -402,23 +395,17 @@ const SupplierManagement = () => {
                     </tbody>
                 </table>
             </div>
-            <div className="d-flex justify-content-between mb-3">
+            <div className="d-flex justify-content-between align-items-center">
                 <div className="d-flex align-items-center">
-                    <div className="col-md-auto">
-                        <label htmlFor="itemsPerPage" className="form-label me-2">Items per page:</label>
-                    </div>
-                    <div className="col-md-5">
-                        <select id="itemsPerPage" className="form-select" value={suppliersPerPage} onChange={handlePerPageChange}>
+                        <label htmlFor="itemsPerPage" className="form-label me-2 fw-bold">Items per page:</label>
+                        <select style={{ width: '80px' }} id="itemsPerPage" className="form-select form-select-sm shadow-sm" value={suppliersPerPage} onChange={handlePerPageChange}>
                             <option value="5">5</option>
                             <option value="10">10</option>
-                            <option value="15">15</option>
                             <option value="20">20</option>
-                            <option value="30">30</option>
                             <option value="50">50</option>
                         </select>
-                    </div>
                 </div>
-                <Pagination>
+                <Pagination className='mb-0'>
                     {Array.from({ length: Math.ceil(suppliers.length / suppliersPerPage) }, (_, index) => (
                         <Pagination.Item key={index} active={index + 1 === currentPage} onClick={() => paginate(index + 1)}>
                             {index + 1}

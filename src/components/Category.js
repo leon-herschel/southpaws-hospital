@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaArchive, FaEdit } from 'react-icons/fa';
 import { AiOutlineArrowUp, AiOutlineArrowDown } from 'react-icons/ai';
 import axios from "axios";
 import { Pagination, Button, Modal, Tooltip, OverlayTrigger } from 'react-bootstrap';
@@ -13,7 +13,7 @@ const Category = () => {
     const [originalCategories, setOriginalCategories] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [categoriesPerPage, setCategoriesPerPage] = useState(5); 
-    const [sortBy, setSortBy] = useState({ key: 'id', order: 'desc' }); // Default to descending by ID
+    const [sortBy, setSortBy] = useState({ key: 'id', order: 'asc' }); // Default to descending by ID
     const [showAddModal, setShowAddModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -61,7 +61,12 @@ const Category = () => {
                 setEditLoading(false);
             });
     };
-    
+
+    const IconButtonWithTooltip = ({ tooltip, children, ...props }) => (
+        <OverlayTrigger placement="top" overlay={<Tooltip>{tooltip}</Tooltip>}>
+            <Button {...props}>{children}</Button>
+        </OverlayTrigger>
+    );
 
     const getCategories = () => {
         axios.get('http://localhost:80/api/category.php/')
@@ -69,7 +74,7 @@ const Category = () => {
                 console.log('API Response:', response.data); // Log the response
                 if (Array.isArray(response.data.categories)) {
                     const fetchedCategories = response.data.categories;
-                    const sortedCategories = sortCategories(fetchedCategories, 'id', 'desc'); // Sort by ID in descending order
+                    const sortedCategories = sortCategories(fetchedCategories, 'id', 'asc');
                     setCategories(sortedCategories);
                     setOriginalCategories(fetchedCategories);
                 } else {
@@ -98,18 +103,6 @@ const Category = () => {
             }
             return 0;
         });
-    };
-
-    const deleteCategory = () => {
-        axios.delete(`http://localhost:80/api/category.php/${categoryIdToDelete}`)
-            .then(() => {
-                getCategories();
-                handleCloseDeleteModal();
-                toast.success('Category deleted successfully!'); // Show success notification
-            })
-            .catch(error => {
-                toast.error('Failed to delete category'); // Show error notification
-            });
     };
 
     const archiveCategory = () => {
@@ -179,7 +172,9 @@ const Category = () => {
             String(row.name).toLowerCase().includes(searchText) ||
             String(row.created_by).toLowerCase().includes(searchText)
         );
-        setCategories(searchText ? newData : originalCategories);
+
+        const dataToSet = searchText ? newData : originalCategories;
+        setCategories(sortCategories(dataToSet, sortBy.key, sortBy.order)); 
     };
 
     const indexOfLastCategory = currentPage * categoriesPerPage;
@@ -255,17 +250,18 @@ const Category = () => {
         <div className='container mt-2'>
             <h1 style={{ textAlign: 'left', fontWeight: 'bold' }}>Category</h1>
             <div className='d-flex justify-content-between align-items-center'>
-                <div className="input-group" style={{ width: '25%', marginBottom: '10px' }}>
-                    <input type="text" className="form-control" onChange={handleFilter} placeholder="Search" />
+                <div className="input-group" style={{ width: '25%' }}>
+                    <input type="text" className="form-control shadow-sm" onChange={handleFilter} placeholder="Search" />
                 </div>
                 {userRole !== 1 && (
                     <div className='text-end'>
-                        <Button onClick={handleShowAddModal} className='btn btn-primary w-100'
+                        <Button onClick={handleShowAddModal} className='btn btn-primary w-100 btn-gradient'
                         style={{
                             backgroundImage: 'linear-gradient(to right, #006cb6, #31b44b)',
                             color: '#ffffff', // Text color
                             borderColor: '#006cb6', // Border color
-                            fontWeight: 'bold'
+                            fontWeight: 'bold',
+                            marginBottom: '-10px',
                         }}>
                             Add Category
                         </Button>
@@ -275,8 +271,8 @@ const Category = () => {
 
             {/* Table and other components */}
             <div className="table-responsive">
-                <table className="table table-striped table-hover custom-table" style={{ width: '100%' }}>
-                    <thead>
+                <table className="table table-striped table-hover custom-table align-middle shadow-sm" style={{ width: '100%' }}>
+                    <thead className="table-light">
                         <tr>
                             <th className="text-center" onClick={() => handleSort('id')}>
                                 #
@@ -293,40 +289,28 @@ const Category = () => {
                     </thead>
                     <tbody>
                         {currentCategories.map((category, index) => {
-                            const recentIndex = index + 1; // Start numbering from 1 for the current page
                             return (
                                 <tr key={category.id}>
-                                    <td className="text-center">{recentIndex}</td>
+                                    <td className="text-center">{index + indexOfFirstCategory + 1}</td>
                                     <td className="text-center">{category.name}</td>
                                     {userRole !== 1 && (
                                         <td className="text-center">
                                             <div className="d-flex justify-content-center align-items-center">
-                                            <OverlayTrigger
-            placement="top"
-            overlay={<Tooltip id={`edit-tooltip-${category.id}`}>Edit</Tooltip>}
-          >
-                                                <Button 
-                                                    onClick={() => handleShowEditModal(category.id)}
-                                                    className="btn btn-primary me-2 col-4" 
-                                                    style={{ fontSize: ".9rem" }}
+                                            <IconButtonWithTooltip 
+                                                tooltip="Edit" 
+                                                onClick={() => handleShowEditModal(category.id)} 
+                                                className="btn btn-primary me-2"
                                                 >
-                                                    <FaEdit />
-                                                </Button>
-                                                </OverlayTrigger>
+                                                <FaEdit />
+                                                </IconButtonWithTooltip>
 
-                                                <OverlayTrigger
-            placement="top"
-            overlay={<Tooltip id={`delete-tooltip-${category.id}`}>Delete</Tooltip>}
-          >
-                                                <Button 
-                                                    onClick={() => handleShowDeleteModal(category.id)} 
-                                                    className="btn btn-danger me-2 col-4" 
-                                                    style={{ fontSize: ".9rem" }}
+                                                <IconButtonWithTooltip 
+                                                tooltip="Archive" 
+                                                onClick={() => handleShowDeleteModal(category.id)} 
+                                                className="btn btn-warning"
                                                 >
-                                                    <FaTrash />
-                                                </Button>
-                                                </OverlayTrigger>
-
+                                                <FaArchive />
+                                            </IconButtonWithTooltip>
                                             </div>
                                         </td>
                                     )}
@@ -337,18 +321,36 @@ const Category = () => {
                 </table>
             </div>
 
-            {/* Pagination */}
-            <Pagination>
-                {Array.from({ length: Math.ceil(categories.length / categoriesPerPage) }).map((_, index) => (
-                    <Pagination.Item 
-                        key={index + 1} 
-                        active={currentPage === index + 1} 
-                        onClick={() => paginate(index + 1)}
+            <div className="d-flex justify-content-between align-items-center">
+            {/* Items per page selector (left) */}
+                <div className="d-flex align-items-center">
+                    <label className="me-2 fw-bold">Items per page:</label>
+                    <select 
+                        className="form-select form-select-sm shadow-sm" 
+                        style={{ width: '80px' }} 
+                        value={categoriesPerPage} 
+                        onChange={handlePerPageChange}
                     >
-                        {index + 1}
-                    </Pagination.Item>
-                ))}
-            </Pagination>
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={50}>50</option>
+                    </select>
+                </div>
+
+                {/* Pagination */}
+                <Pagination className='mb-0'>
+                    {Array.from({ length: Math.ceil(categories.length / categoriesPerPage) }).map((_, index) => (
+                        <Pagination.Item 
+                            key={index + 1} 
+                            active={currentPage === index + 1} 
+                            onClick={() => paginate(index + 1)}
+                        >
+                            {index + 1}
+                        </Pagination.Item>
+                    ))}
+                </Pagination>
+            </div>
 
             {/* Modals */}
             <AddCategoryModal 

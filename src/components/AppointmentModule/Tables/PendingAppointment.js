@@ -6,6 +6,7 @@ import { FaArrowLeft, FaEye } from "react-icons/fa";
 import AddAppointments from "../AddAppointments";
 import { Modal } from "react-bootstrap";
 import { format } from "date-fns";
+import { Pagination } from "react-bootstrap";
 
 const PendingAppointments = () => {
   const [pendingAppointments, setPendingAppointments] = useState([]);
@@ -169,14 +170,14 @@ const PendingAppointments = () => {
       <div className="input-group" style={{ width: "25%" }}>
         <input
           type="text"
-          className="form-control"
+          className="form-control shadow-sm"
           onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
           placeholder="Search"
         />
       </div>
 
       <table className="table table-striped table-hover custom-table align-middle text-center">
-        <thead>
+        <thead className="table-light shadow-sm">
           <tr>
             <th onClick={() => handleSort("name")} style={{ cursor: "pointer" }}>
               Name {getSortIcon("name")}
@@ -222,38 +223,65 @@ const PendingAppointments = () => {
 
       {/* Pagination */}
       <div className="d-flex justify-content-between mb-3">
-        <div className="d-flex align-items-center">
-          <label className="me-2">Items per page:</label>
-          <select
-            value={appointmentsPerPage}
-            onChange={handlePerPageChange}
-            className="form-select form-select-sm"
-            style={{ width: "80px" }}
-          >
-            {[5, 10, 15, 20].map((num) => (
-              <option key={num} value={num}>
-                {num}
-              </option>
-            ))}
-          </select>
-        </div>
-        <ul className="pagination mb-0">
-          {Array.from(
-            { length: Math.ceil(filteredAppointments.length / appointmentsPerPage) },
-            (_, i) => (
-              <li
-                key={i}
-                className={`page-item ${currentPage === i + 1 ? "active" : ""}`}
-                style={{ cursor: "pointer" }}
-                onClick={() => paginate(i + 1)}
-              >
-                <span className="page-link">{i + 1}</span>
-              </li>
-            )
-          )}
-        </ul>
+      {/* Items per page selector */}
+      <div className="d-flex align-items-center">
+        <label className="me-2 fw-bold">Items per page:</label>
+        <select
+          value={appointmentsPerPage}
+          onChange={handlePerPageChange}
+          className="form-select form-select-sm shadow-sm"
+          style={{ width: "80px" }}
+        >
+          <option value={5}>5</option>
+          <option value={10}>10</option>
+          <option value={15}>15</option>
+          <option value={20}>20</option>
+        </select>
       </div>
 
+      {/* Pagination aligned right */}
+      <Pagination className="mb-0">
+        {/* Prev button */}
+        <Pagination.Prev
+          onClick={() => currentPage > 1 && paginate(currentPage - 1)}
+          disabled={currentPage === 1}
+        />
+
+        {Array.from(
+          { length: Math.ceil(filteredAppointments.length / appointmentsPerPage) },
+          (_, index) => index + 1
+        )
+          .filter(
+            (page) =>
+              page === 1 ||
+              page === Math.ceil(filteredAppointments.length / appointmentsPerPage) ||
+              (page >= currentPage - 2 && page <= currentPage + 2)
+          )
+          .map((page, i, arr) => (
+            <React.Fragment key={page}>
+              {/* Ellipsis when skipping pages */}
+              {i > 0 && arr[i] !== arr[i - 1] + 1 && <Pagination.Ellipsis disabled />}
+              <Pagination.Item
+                active={page === currentPage}
+                onClick={() => paginate(page)}
+              >
+                {page}
+              </Pagination.Item>
+            </React.Fragment>
+          ))}
+
+        {/* Next button */}
+        <Pagination.Next
+          onClick={() =>
+            currentPage < Math.ceil(filteredAppointments.length / appointmentsPerPage) &&
+            paginate(currentPage + 1)
+          }
+          disabled={
+            currentPage === Math.ceil(filteredAppointments.length / appointmentsPerPage)
+          }
+        />
+      </Pagination>
+    </div>
       {/* Modal */}
       {viewingAppointment && (
         <div

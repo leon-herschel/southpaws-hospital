@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaEdit, FaTrash, FaList } from 'react-icons/fa';
+import { FaEdit, FaEye, FaArchive } from 'react-icons/fa';
 import { AiOutlineArrowUp, AiOutlineArrowDown } from 'react-icons/ai';
 import axios from 'axios';
 import { Pagination, Button, Modal, Tooltip, OverlayTrigger } from 'react-bootstrap';
@@ -171,6 +171,12 @@ const Product = () => {
                 setUnits([]); // Reset units on error
             });
     };
+
+    const IconButtonWithTooltip = ({ tooltip, children, ...props }) => (
+        <OverlayTrigger placement="top" overlay={<Tooltip>{tooltip}</Tooltip>}>
+            <Button {...props}>{children}</Button>
+        </OverlayTrigger>
+    );
     
     useEffect(() => {
         if (showEditModal && productIdToEdit) {
@@ -239,17 +245,6 @@ const Product = () => {
                 console.error('Error fetching products:', error);
             });
     };
-    const deleteProduct = (id) => {
-        axios.delete(`http://localhost:80/api/products.php/${id}/delete`)
-            .then(response => {
-                getProducts();
-                toast.success('Product deleted successfully!'); // Show success notification
-                handleCloseDeleteModal();
-            })
-            .catch(error => {
-                console.error('Error deleting product:', error);
-            });
-    };
 
     const handleFilter = (event) => {
         const searchText = event.target.value.toLowerCase();
@@ -315,17 +310,18 @@ const Product = () => {
         <div className='container mt-2'>
             <h1 style={{ textAlign: 'left', fontWeight: 'bold' }}>Products</h1>
             <div className='d-flex justify-content-between align-items-center'>
-                <div className="input-group" style={{ width: '25%', marginBottom: '10px' }}>
-                    <input type="text" className="form-control" onChange={handleFilter} placeholder="Search" />
+                <div className="input-group" style={{ width: '25%' }}>
+                    <input type="text" className="form-control shadow-sm" onChange={handleFilter} placeholder="Search" />
                 </div>
                 {userRole !== 1 && ( // Show Add button only for non-Veterinarian
                     <div className='text-end'>
-                        <Button onClick={handleShow} className='btn btn-primary w-100'
+                        <Button onClick={handleShow} className='btn btn-primary w-100 btn-gradient'
                             style={{
                                 backgroundImage: 'linear-gradient(to right, #006cb6, #31b44b)',
                                 color: '#ffffff',
                                 borderColor: '#006cb6',
-                                fontWeight: 'bold'
+                                fontWeight: 'bold',
+                                marginBottom: '-10px',
                             }}
                         >
                             Add Product
@@ -334,8 +330,8 @@ const Product = () => {
                 )}
             </div>
             <div className="table-responsive">
-            <table className="table table-striped table-hover custom-table" style={{ width: '100%' }}>
-    <thead>
+            <table className="table table-striped table-hover custom-table align-middle shadow-sm" style={{ width: '100%' }}>
+    <thead className="table-light">
         <tr>
             <th className="text-center" onClick={() => handleSort('product_name')}>
                 Product Name
@@ -378,60 +374,93 @@ const Product = () => {
                     <div className="d-flex justify-content-center align-items-center">
                         {userRole !== 1 && (
                             <>
-                                <Button
+                                <IconButtonWithTooltip
+                                    tooltip="View"
                                     onClick={() => handleShowViewDetailsModal(product.id)}
-                                    className="btn btn-success me-2 col-4"
-                                    style={{ fontSize: "1.1rem" }}
+                                    className="btn btn-success me-2"
                                 >
-                                    <FaList />
-                                </Button>
-                                <Button
+                                    <FaEye />
+                                </IconButtonWithTooltip>
+
+                                <IconButtonWithTooltip
+                                    tooltip="Edit"
                                     onClick={() => handleShowEditModal(product.id)}
-                                    className="btn btn-primary me-2 col-4"
-                                    style={{ fontSize: "1.1rem" }}
+                                    className="btn btn-primary me-2"
                                 >
                                     <FaEdit />
-                                </Button>
-                                <Button
+                                </IconButtonWithTooltip>
+
+                                <IconButtonWithTooltip
+                                    tooltip="Archive"
                                     onClick={() => handleShowDeleteModal(product.id)}
-                                    className="btn btn-danger col-4"
+                                    className="btn btn-warning"
                                 >
-                                    <FaTrash />
-                                </Button>
+                                    <FaArchive />
+                                </IconButtonWithTooltip>
                             </>
                         )}
                     </div>
                 </td>
-            </tr>
-        );
-    })}
-</tbody>
-</table>
+                </tr>
+                );
+            })}
+        </tbody>
+        </table>
 
+        </div>
+        <div className="d-flex justify-content-between align-items-center">
+            {/* Items per page selector (left) */}
+            <div className="d-flex align-items-center">
+                <label className="me-2 fw-bold">Items per page:</label>
+                <select 
+                className="form-select form-select-sm shadow-sm" 
+                style={{ width: '80px' }} 
+                value={productsPerPage} 
+                onChange={handlePerPageChange}
+                >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+                </select>
             </div>
-            <div className="d-flex justify-content-between mb-3">
-                <div className="d-flex align-items-center">
-                    <div className="col-md-auto">
-                        <label htmlFor="itemsPerPage" className="form-label me-2">Items per page:</label>
-                    </div>
-                    <div className="col-md-5">
-                        <select id="itemsPerPage" className="form-select" value={productsPerPage} onChange={handlePerPageChange}>
-                            <option value="5">5</option>
-                            <option value="10">10</option>
-                            <option value="15">15</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="50">50</option>
-                        </select>
-                    </div>
-                </div>
-                <Pagination>
-                    {Array.from({ length: Math.ceil(products.length / productsPerPage) }, (_, index) => (
-                        <Pagination.Item key={index} active={index + 1 === currentPage} onClick={() => paginate(index + 1)}>
-                            {index + 1}
-                        </Pagination.Item>
-                    ))}
-                </Pagination>
+
+            {/* Pagination (right) */}
+            <Pagination className="mb-0">
+                {/* Prev button */}
+                <Pagination.Prev
+                onClick={() => currentPage > 1 && paginate(currentPage - 1)}
+                disabled={currentPage === 1}
+                />
+
+                {Array.from({ length: Math.ceil(products.length / productsPerPage) }, (_, index) => index + 1)
+                .filter(page =>
+                    page === 1 ||
+                    page === Math.ceil(products.length / productsPerPage) ||
+                    (page >= currentPage - 2 && page <= currentPage + 2) // show range around current page
+                )
+                .map((page, i, arr) => (
+                    <React.Fragment key={page}>
+                    {/* Add ellipsis when gap */}
+                    {i > 0 && arr[i] !== arr[i - 1] + 1 && <Pagination.Ellipsis disabled />}
+                    <Pagination.Item
+                        active={page === currentPage}
+                        onClick={() => paginate(page)}
+                    >
+                        {page}
+                    </Pagination.Item>
+                    </React.Fragment>
+                ))}
+
+                {/* Next button */}
+                <Pagination.Next
+                onClick={() =>
+                    currentPage < Math.ceil(products.length / productsPerPage) &&
+                    paginate(currentPage + 1)
+                }
+                disabled={currentPage === Math.ceil(products.length / productsPerPage)}
+                />
+            </Pagination>
             </div>
             <AddProductModal show={showModal} handleClose={handleClose} onProductAdded={handleProductAdded} />
             <EditProductModal

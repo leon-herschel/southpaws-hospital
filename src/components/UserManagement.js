@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaSearch, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 import { AiOutlineArrowUp, AiOutlineArrowDown } from 'react-icons/ai';
 import axios from "axios";
 import { Button, Modal, Pagination, OverlayTrigger, Tooltip } from 'react-bootstrap';
@@ -188,16 +188,13 @@ const UserManagement = () => {
         <div className='container mt-2'>
             <h1 style={{ textAlign: 'left', fontWeight: 'bold' }}>User Management</h1>
             <div className='d-flex justify-content-between align-items-center'>
-                <div className="input-group" style={{ width: '25%', marginBottom: '10px' }}>
-                    <input type="text" className="form-control" onChange={handleFilter} placeholder="Search" />
+                <div className="input-group" style={{ width: '25%'}}>
+                    <input type="text" className="form-control shadow-sm" onChange={handleFilter} placeholder="Search" />
                 </div>
                 <div className='text-end'>
-                    <Button onClick={handleShow} className='btn btn-primary w-100'
+                    <Button onClick={handleShow} className='btn btn-primary w-100 btn-gradient'
                         style={{
-                            backgroundImage: 'linear-gradient(to right, #006cb6, #31b44b)',
-                            color: '#ffffff', // Text color
-                            borderColor: '#006cb6', // Border color
-                            fontWeight: 'bold'
+                            marginBottom: '-10px',
                         }}
                     >
                         Add User
@@ -205,8 +202,8 @@ const UserManagement = () => {
                 </div>
             </div>
             <div className="table-responsive">
-                <table className="table table-striped table-hover custom-table" style={{ width: '100%' }}>
-                    <thead>
+                <table className="table table-striped table-hover custom-table align-middle shadow-sm" style={{ width: '100%' }}>
+                    <thead className="table-light">
                         <tr>
                             <th className="col text-center" onClick={() => handleSort('email')}>
                                 Email
@@ -240,7 +237,7 @@ const UserManagement = () => {
                                         placement="top"
                                         overlay={<Tooltip id="edit-tooltip">Edit</Tooltip>}
                                     >
-                                        <Button onClick={() => handleShowEditModal(currentUsers[key].id)} className="btn btn-primary me-2 col-5">
+                                        <Button onClick={() => handleShowEditModal(currentUsers[key].id)} className="btn btn-primary me-2">
                                             <FaEdit />
                                         </Button>
                                     </OverlayTrigger>
@@ -248,7 +245,7 @@ const UserManagement = () => {
                                         placement="top"
                                         overlay={<Tooltip id="delete-tooltip">Delete</Tooltip>}
                                     >
-                                        <button onClick={() => handleShowDeleteModal(currentUsers[key].id)} className="btn btn-danger me-2 col-5">
+                                        <button onClick={() => handleShowDeleteModal(currentUsers[key].id)} className="btn btn-danger me-2">
                                             <FaTrash />
                                         </button>
                                     </OverlayTrigger>
@@ -258,23 +255,23 @@ const UserManagement = () => {
                     </tbody>
                 </table>
             </div>
-            <div className="d-flex justify-content-between mb-3">
+            <div className="d-flex justify-content-between align-items-center">
                 <div className="d-flex align-items-center">
-                    <div className="col-md-auto">
-                        <label htmlFor="itemsPerPage" className="form-label me-2">Items per page:</label>
-                    </div>
-                    <div className="col-md-5">
-                        <select id="itemsPerPage" className="form-select" value={usersPerPage} onChange={handlePerPageChange}>
-                            <option value="5">5</option>
-                            <option value="10">10</option>
-                            <option value="15">15</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="50">50</option>
-                        </select>
-                    </div>
+                    <label htmlFor="itemsPerPage" className="form-label me-2 fw-bold">Items per page:</label>
+                    <select 
+                        style={{ width: '80px' }} 
+                        id="itemsPerPage" 
+                        className="form-select form-select-sm shadow-sm" 
+                        value={usersPerPage} 
+                        onChange={handlePerPageChange}
+                    >
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={50}>50</option>
+                    </select>
                 </div>
-                <Pagination>
+                <Pagination className='mb-0'>
                     {Array.from({ length: Math.ceil(users.length / usersPerPage) }, (_, index) => (
                         <Pagination.Item key={index} active={index + 1 === currentPage} onClick={() => paginate(index + 1)}>
                             {index + 1}

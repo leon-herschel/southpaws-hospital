@@ -235,10 +235,10 @@ const Forecasting = () => {
 
     return (
         <div className='container mt-2'>
-            <h2 className="text-center text-white bg-dark p-3 rounded">Product Inventory Forecast</h2>
-            <div className="table-responsive mt-3">
+            <h2 className="text-center text-white bg-success p-3 mb-0">Product Inventory Forecast</h2>
+            <div className="table-responsive">
                 <Table striped bordered hover className="text-center">
-                    <thead className="bg-dark text-white">
+                    <thead className="table-light">
                         <tr>
                             <th>SKU</th>
                             <th>Product Name</th>

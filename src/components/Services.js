@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaSearch, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 import { AiOutlineArrowUp, AiOutlineArrowDown } from 'react-icons/ai';
 import axios from "axios";
 import { Pagination, Button, Modal, Tooltip, OverlayTrigger } from 'react-bootstrap';
@@ -178,17 +178,18 @@ const Services = () => {
             <h1 style={{ textAlign: 'left', fontWeight: 'bold' }}>Services</h1>
             <div className='d-flex justify-content-between align-items-center'>
                 <div className="input-group-prepend" style={{ width: '25%' }}>
-                    <input type="text" className="form-control" onChange={handleFilter} placeholder="Search by name or status" />
+                    <input type="text" className="form-control shadow-sm" onChange={handleFilter} placeholder="Search by name or status" />
                 </div>
                 <div className='text-end'>
                     {/* Show "Add Service" button only for non-admin users */}
                     {userRole !== '1' && (
-                        <Button onClick={handleShowAddModal} className='btn btn-primary w-100'
+                        <Button onClick={handleShowAddModal} className='btn btn-primary w-100 btn-gradient'
                             style={{
                                 backgroundImage: 'linear-gradient(to right, #006cb6, #31b44b)',
                                 color: '#ffffff', // Text color
                                 borderColor: '#006cb6', // Border color
-                                fontWeight: 'bold'
+                                fontWeight: 'bold',
+                                marginBottom: '-10px'
                             }}
                         >
                             Add Service
@@ -197,8 +198,8 @@ const Services = () => {
                 </div>
             </div>
             <div className="table-responsive">
-                <table className="table table-striped table-hover custom-table" style={{ width: '100%' }}>
-                    <thead>
+                <table className="table table-striped shadow-sm table-hover custom-table align-middle" style={{ width: '100%' }}>
+                    <thead className='table-light'>
                         <tr>
                             <th className="col text-center" onClick={() => handleSort('name')}>
                                 Name
@@ -222,54 +223,65 @@ const Services = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentServices.map((service, key) => (
-                            <tr key={key}>
-                                <td className="col text-center">{service.name}</td>
-                                <td className="col text-center">{service.price}</td>
-                                <td className="col text-center">{service.consentForm}</td>
-                                <td className="col text-center">{service.status}</td>
-                                {userRole !== '1' && (
-                                <td className="col text-center">
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip id={`edit-tooltip-${service.id}`}>Edit</Tooltip>}
-                                    >
-                                        <Button onClick={() => handleShowEditModal(service.id)} className="btn btn-primary me-2 col-5">
-                                            <FaEdit />
-                                        </Button>
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip id={`delete-tooltip-${service.id}`}>Delete</Tooltip>}
-                                    >
-                                        <button onClick={() => handleShowDeleteModal(service.id)} className="btn btn-danger me-2 col-5">
-                                            <FaTrash />
-                                        </button>
-                                    </OverlayTrigger>
-                                </td>
-                                )}
-                            </tr>
-                        ))}
+                    {currentServices.length > 0 ? (
+                        currentServices.map((service, key) => (
+                        <tr key={key}>
+                            <td className="col text-center">{service.name}</td>
+                            <td className="col text-center">{service.price}</td>
+                            <td className="col text-center">{service.consentForm}</td>
+                            <td className="col text-center">{service.status}</td>
+                            {userRole !== '1' && (
+                            <td className="col text-center">
+                                <OverlayTrigger
+                                placement="top"
+                                overlay={<Tooltip id={`edit-tooltip-${service.id}`}>Edit</Tooltip>}
+                                >
+                                <Button
+                                    onClick={() => handleShowEditModal(service.id)}
+                                    className="btn btn-primary me-2"
+                                >
+                                    <FaEdit />
+                                </Button>
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                placement="top"
+                                overlay={<Tooltip id={`delete-tooltip-${service.id}`}>Delete</Tooltip>}
+                                >
+                                <button
+                                    onClick={() => handleShowDeleteModal(service.id)}
+                                    className="btn btn-danger me-2"
+                                >
+                                    <FaTrash />
+                                </button>
+                                </OverlayTrigger>
+                            </td>
+                            )}
+                        </tr>
+                        ))
+                    ) : (
+                        <tr>
+                        <td
+                            className="text-center text-muted"
+                            colSpan={userRole !== '1' ? 5 : 4}
+                        >
+                            No services available.
+                        </td>
+                        </tr>
+                    )}
                     </tbody>
                 </table>
             </div>
-            <div className="d-flex justify-content-between mb-3">
+            <div className="d-flex justify-content-between align-items-center">
                 <div className="d-flex align-items-center">
-                    <div className="col-md-auto">
-                        <label htmlFor="itemsPerPage" className="form-label me-2">Items per page:</label>
-                    </div>
-                    <div className="col-md-5">
-                        <select id="itemsPerPage" className="form-select" value={servicesPerPage} onChange={handlePerPageChange}>
+                        <label htmlFor="itemsPerPage" className="form-label me-2 fw-bold">Items per page:</label>
+                        <select style={{ width: '80px' }} id="itemsPerPage" className="form-select form-select-sm shadow-sm" value={servicesPerPage} onChange={handlePerPageChange}>
                             <option value="5">5</option>
                             <option value="10">10</option>
-                            <option value="15">15</option>
                             <option value="20">20</option>
-                            <option value="30">30</option>
                             <option value="50">50</option>
                         </select>
-                    </div>
                 </div>
-                <Pagination>
+                <Pagination className='mb-0'>
                     {Array.from({ length: Math.ceil(services.length / servicesPerPage) }, (_, index) => (
                         <Pagination.Item key={index} active={index + 1 === currentPage} onClick={() => paginate(index + 1)}>
                             {index + 1}

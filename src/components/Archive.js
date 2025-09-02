@@ -89,7 +89,7 @@ const ArchivedRecords = () => {
 
     const handleArchiveSelected = () => {
         if (selectedRecords.length === 0) {
-            toast.error("❗ Please select at least one record to archive.");
+            toast.error("Please select at least one record to archive.");
             return;
         }
         setShowModal(true); // Show modal before proceeding
@@ -97,7 +97,7 @@ const ArchivedRecords = () => {
 
     const confirmArchive = () => {
         if (selectedRecords.length === 0) {
-            toast.error("❗ No records selected.");
+            toast.error("No records selected.");
             return;
         }
     
@@ -128,7 +128,7 @@ const ArchivedRecords = () => {
         });
     
         if (Object.keys(recordsByTable).length === 0) {
-            toast.error("❗ No valid records selected.");
+            toast.error("No valid records selected.");
             return;
         }
     
@@ -174,8 +174,8 @@ const ArchivedRecords = () => {
                 setShowModal(false);
             })
             .catch(error => {
-                console.error("❌ Archive Error:", error);
-                toast.error("❌ Failed to archive some records.");
+                console.error("Archive Error:", error);
+                toast.error("Failed to archive some records.");
                 // Still refresh data even if there were errors
                 fetchData();
                 setSelectedRecords([]);
@@ -190,13 +190,13 @@ const ArchivedRecords = () => {
     return (
         <div className="container mt-2">
             <div className="d-flex justify-content-between align-items-center mb-3">
-            <h1 className="m-0" style={{ textAlign: "left", fontWeight: "bold" }}>Archived Records</h1>
-            <Button className="btn btn-warning" onClick={handleArchiveSelected}>Archive Selected</Button>
+            <h1 className="m-0" style={{ textAlign: "left", fontWeight: "bold" }}>Record Archiver</h1>
+            <Button className="btn btn-warning" style={{ marginBottom: '-10px' }} onClick={handleArchiveSelected}>Archive Selected</Button>
         </div>
 
             <div className="table-responsive mt-3">
-                <table className="table table-striped table-hover custom-table">
-                    <thead>
+                <table className="table table-striped table-hover custom-table align-middle shadow-sm">
+                    <thead className="table-light">
                         <tr>
                             <th className="text-center">
                                 <Form.Check type="checkbox" checked={selectAll} onChange={handleSelectAll} />
@@ -238,8 +238,8 @@ const ArchivedRecords = () => {
                                         <td colSpan={3} className="p-0">
                                             <Collapse in={expandedRow === key}>
                                                 <div className="p-3 border rounded bg-light">
-                                                    <table className="table table-bordered">
-                                                        <thead>
+                                                    <table className="table table-bordered align-middle">
+                                                        <thead className="table-light">
                                                             <tr>
                                                                 <td className="text-center"></td>
                                                                 {Object.keys(records[0])

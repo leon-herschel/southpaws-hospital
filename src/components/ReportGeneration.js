@@ -8,7 +8,7 @@ const ReportGeneration = () => {
     const [data, setData] = useState([]);
     const [columns, setColumns] = useState([]); // Stores column names dynamically
     const [currentPage, setCurrentPage] = useState(1);
-    const [dataPerPage, setDataPerPage] = useState(10);
+    const [dataPerPage, setDataPerPage] = useState(5);
     const [sortBy, setSortBy] = useState({ key: '', order: '' });
     const [fromDate, setFromDate] = useState('');
     const [toDate, setToDate] = useState('');
@@ -257,7 +257,6 @@ const formatDate = (dateStr) => {
         <div className='container mt-2'>
             <h1 style={{ textAlign: 'left', fontWeight: 'bold' }}>Report Generation</h1>
             
-
             {/* Navigation Tabs for Filters */}
             <Nav variant="tabs" defaultActiveKey="sales">
                 {['sales', 'products', 'services', 'clients'].map(type => (
@@ -268,8 +267,8 @@ const formatDate = (dateStr) => {
             </Nav>
             <input 
                 type="text" 
-                className="form-control" 
-                placeholder="🔍 Search..." 
+                className="form-control shadow-sm"  
+                placeholder="Search" 
                 value={searchTerm} 
                 onChange={(e) => setSearchTerm(e.target.value)} 
                 style={{ width: '460px' }} 
@@ -279,17 +278,17 @@ const formatDate = (dateStr) => {
             <div className="d-flex justify-content-between align-items-center mt-3">
                 <div className="d-flex">
                     <label htmlFor="fromDate" className="me-2">From: </label>
-                    <input type="date" id="fromDate" className="form-control me-3" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
+                    <input type="date" id="fromDate" className="form-control me-3 shadow-sm" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
                     <label htmlFor="toDate" className="me-2">To: </label>
-                    <input type="date" id="toDate" className="form-control" value={toDate} onChange={(e) => setToDate(e.target.value)} />
+                    <input type="date" id="toDate" className="form-control shadow-sm" value={toDate} onChange={(e) => setToDate(e.target.value)} />
                 </div>
-                <Button onClick={handlePrint} className="btn btn-primary">Print Report</Button>
+                <Button onClick={handlePrint} style={{ marginBottom: "-10px" }}className="btn btn-primary">Print Report</Button>
             </div>
 
             {/* Dynamic Table */}
-            <div id="printable-report" className="table-responsive mt-3">
-                <table className="table table-striped table-hover custom-table">
-                    <thead>
+            <div id="printable-report" className="table-responsive mt-1">
+                <table className="table table-striped table-hover custom-table align-middle shadow-sm">
+                    <thead className='table-light'>
                         <tr>
                             {columns.map((col, index) => (
                                 <th key={index} className="text-center" onClick={() => handleSort(col)}>
@@ -321,44 +320,68 @@ const formatDate = (dateStr) => {
     ))}
 </tbody>
 
-                </table>
+</table>
+</div>
+        <div className="d-flex justify-content-between align-items-center">
+            {/* Items per page selector */}
+            <div className="d-flex align-items-center">
+                <label htmlFor="dataPerPage" className="form-label me-2 fw-bold">
+                    Items per page:
+                </label>
+                <select 
+                    id="dataPerPage" 
+                    className="form-select form-select-sm shadow-sm me-3"
+                    value={dataPerPage}
+                    onChange={(e) => setDataPerPage(Number(e.target.value))}
+                    style={{ width: '80px' }}
+                >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                </select>
             </div>
 
-            <div className="d-flex justify-content-between align-items-center mt-3">
-    <div className="d-flex align-items-center">
-        <label htmlFor="dataPerPage" className="me-2">Show:</label>
-        <select 
-            id="dataPerPage" 
-            className="form-select me-3"
-            value={dataPerPage}
-            onChange={(e) => setDataPerPage(Number(e.target.value))}
-            style={{ width: '80px' }} // Adjust width to fit the dropdown
-        >
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-        </select>
-        <span>entries</span>
-    </div>
+            {/* Pagination aligned to the right */}
+            <div className="d-flex justify-content-end">
+                <Pagination className="mb-0">
+                    {/* Prev button */}
+                    <Pagination.Prev 
+                        onClick={() => currentPage > 1 && paginate(currentPage - 1)} 
+                        disabled={currentPage === 1} 
+                    />
 
-    {/* Pagination aligned to the right */}
-    <div className="d-flex justify-content-end" style={{ width: '100%' }}>
-        <Pagination>
-            {Array.from({ length: Math.ceil(data.length / dataPerPage) }, (_, index) => (
-                <Pagination.Item 
-                    key={index} 
-                    active={index + 1 === currentPage} 
-                    onClick={() => paginate(index + 1)}
-                >
-                    {index + 1}
-                </Pagination.Item>
-            ))}
-        </Pagination>
-    </div>
-</div>
+                    {Array.from(
+                        { length: Math.ceil(data.length / dataPerPage) },
+                        (_, index) => index + 1
+                    )
+                    .filter(page => 
+                        page === 1 || 
+                        page === Math.ceil(data.length / dataPerPage) || 
+                        (page >= currentPage - 2 && page <= currentPage + 2)
+                    )
+                    .map((page, i, arr) => (
+                        <React.Fragment key={page}>
+                            {/* Ellipsis when skipping pages */}
+                            {i > 0 && arr[i] !== arr[i - 1] + 1 && <Pagination.Ellipsis disabled />}
+                            <Pagination.Item 
+                                active={page === currentPage} 
+                                onClick={() => paginate(page)}
+                            >
+                                {page}
+                            </Pagination.Item>
+                        </React.Fragment>
+                    ))}
 
+                    {/* Next button */}
+                    <Pagination.Next 
+                        onClick={() => currentPage < Math.ceil(data.length / dataPerPage) && paginate(currentPage + 1)} 
+                        disabled={currentPage === Math.ceil(data.length / dataPerPage)} 
+                    />
+                </Pagination>
+            </div>
+        </div>
         </div>
     );
 };

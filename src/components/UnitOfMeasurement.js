@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaArchive, FaEdit } from 'react-icons/fa';
 import { AiOutlineArrowUp, AiOutlineArrowDown } from 'react-icons/ai';
 import axios from "axios";
 import { Pagination, Button, Modal, Tooltip, OverlayTrigger } from 'react-bootstrap';
@@ -13,7 +13,7 @@ const UnitOfMeasurement = () => {
     const [originalUnits, setOriginalUnits] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [unitsPerPage, setUnitsPerPage] = useState(5);
-    const [sortBy, setSortBy] = useState({ key: 'id', order: 'desc' }); // Default to descending by ID
+    const [sortBy, setSortBy] = useState({ key: 'id', order: 'asc' });
     const [showAddModal, setShowAddModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -70,7 +70,7 @@ const handleShowDeleteModal = (unitId) => {
         .then(response => {
             if (Array.isArray(response.data.units)) {
                 const fetchedUnits = response.data.units;
-                const sortedUnits = sortUnits(fetchedUnits, 'id', 'desc');
+                const sortedUnits = sortUnits(fetchedUnits, 'id', 'asc');
                 setUnits(sortedUnits);
                 setOriginalUnits(fetchedUnits);
             } else {
@@ -102,25 +102,19 @@ const handleShowDeleteModal = (unitId) => {
         });
     };
 
-    const deleteUnit = () => {
-        axios.delete(`http://localhost:80/api/units.php/${unitIdToDelete}`)
-            .then(() => {
-                getUnits();
-                handleCloseDeleteModal();
-                toast.success('Unit deleted successfully!');
-            })
-            .catch(error => {
-                toast.error('Failed to delete unit');
-            });
-    };
-
     const handleFilter = (event) => {
         const searchText = event.target.value.toLowerCase();
         const newData = originalUnits.filter(row => 
             String(row.unit_name).toLowerCase().includes(searchText) ||
             String(row.created_by).toLowerCase().includes(searchText)
         );
-        setUnits(searchText ? newData : originalUnits);
+
+        if (searchText) {
+            setUnits(newData);
+        } else {
+            const sorted = sortUnits(originalUnits, sortBy.key, sortBy.order);
+            setUnits(sorted);
+        }
     };
 
     const indexOfLastUnit = currentPage * unitsPerPage;
@@ -233,26 +227,22 @@ const handleShowDeleteModal = (unitId) => {
         });
     };
     
-    
-    
-    
-    
-
     return (
         <div className='container mt-2'>
             <h1 style={{ textAlign: 'left', fontWeight: 'bold' }}>Unit of Measurement</h1>
             <div className='d-flex justify-content-between align-items-center'>
-                <div className="input-group" style={{ width: '25%', marginBottom: '10px' }}>
-                    <input type="text" className="form-control" onChange={handleFilter} placeholder="Search" />
+                <div className="input-group" style={{ width: '25%' }}>
+                    <input type="text" className="form-control shadow-sm" onChange={handleFilter} placeholder="Search" />
                 </div>
                 {userRole !== 1 && (
                     <div className='text-end'>
-                        <Button onClick={handleShowAddModal} className='btn btn-primary w-100'
+                        <Button onClick={handleShowAddModal} className='btn btn-primary w-100 btn-gradient'
                         style={{
                             backgroundImage: 'linear-gradient(to right, #006cb6, #31b44b)',
                             color: '#ffffff',
                             borderColor: '#006cb6',
-                            fontWeight: 'bold'
+                            fontWeight: 'bold',
+                            marginBottom: '-10px'
                         }}>
                             Add Unit
                         </Button>
@@ -261,8 +251,8 @@ const handleShowDeleteModal = (unitId) => {
             </div>
 
             <div className="table-responsive">
-                <table className="table table-striped table-hover custom-table" style={{ width: '100%' }}>
-                    <thead>
+                <table className="table table-striped table-hover shadow-sm custom-table align-middle" style={{ width: '100%' }}>
+                    <thead className="table-light">
                         <tr>
                             <th className="text-center" onClick={() => handleSort('id')}>
                                 #
@@ -279,7 +269,7 @@ const handleShowDeleteModal = (unitId) => {
                     </thead>
                     <tbody>
                         {currentUnits.map((unit, index) => {
-                            const recentIndex = index + 1; 
+                            const recentIndex = index + indexOfFirstUnit + 1; 
                             return (
                                 <tr key={unit.id}>
                                     <td className="text-center">{recentIndex}</td>
@@ -289,19 +279,17 @@ const handleShowDeleteModal = (unitId) => {
                                             <OverlayTrigger placement="top" overlay={<Tooltip>Edit</Tooltip>}>
                                                 <Button 
                                                     onClick={() => handleShowEditModal(unit.id)}
-                                                    className="btn btn-primary me-2 col-4" 
-                                                    style={{ padding: '5px 7px', height: '30px' }}
+                                                    className="btn btn-primary me-2" 
                                                 >
                                                     <FaEdit />
                                                 </Button>
                                             </OverlayTrigger>
-                                            <OverlayTrigger placement="top" overlay={<Tooltip>Delete</Tooltip>}>
+                                            <OverlayTrigger placement="top" overlay={<Tooltip>Archive</Tooltip>}>
                                                 <Button 
                                                     onClick={() => handleShowDeleteModal(unit.id)}
-                                                    className="btn btn-danger col-4"
-                                                    style={{ padding: '5px 7px', height: '30px' }}
+                                                    className="btn btn-warning"
                                                 >
-                                                    <FaTrash />
+                                                    <FaArchive />
                                                 </Button>
                                             </OverlayTrigger>
                                         </td>
@@ -313,17 +301,23 @@ const handleShowDeleteModal = (unitId) => {
                 </table>
             </div>
 
-            <div className="row">
-                <div className="col-md-6 d-flex align-items-center justify-content-start">
-                    <label className="form-label me-2">Show entries:</label>
-                    <select value={unitsPerPage} onChange={handlePerPageChange} className="form-select" style={{ width: '50px' }}>
-                        {[5, 10, 25].map(value => (
-                            <option key={value} value={value}>{value}</option>
-                        ))}
+            <div className="d-flex justify-content-between align-items-center">
+            {/* Items per page selector (left) */}
+                <div className="d-flex align-items-center">
+                    <label className="me-2 fw-bold">Items per page:</label>
+                    <select 
+                        className="form-select form-select-sm shadow-sm" 
+                        style={{ width: '80px' }} 
+                        value={unitsPerPage} 
+                        onChange={handlePerPageChange}
+                    >
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={50}>50</option>
                     </select>
                 </div>
-                <div className="col-md-6">
-                    <Pagination className="justify-content-end">
+                    <Pagination className='mb-0'>
                         {Array.from({ length: Math.ceil(units.length / unitsPerPage) }, (_, index) => index + 1).map((pageNumber) => (
                             <Pagination.Item
                                 key={pageNumber}
@@ -335,7 +329,6 @@ const handleShowDeleteModal = (unitId) => {
                         ))}
                     </Pagination>
                 </div>
-            </div>
 
             <AddUnitModal
                 show={showAddModal}

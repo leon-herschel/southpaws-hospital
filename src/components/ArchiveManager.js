@@ -1,25 +1,28 @@
 import React, { useState } from "react";
 import ArchivedRecords from "../components/Archive";
 import ArchivedRestore from "../components/ArchivedRestore";
-import { Button } from "react-bootstrap";
+import { Tabs, Tab } from "react-bootstrap";
 
 const ArchiveManager = () => {
-    const [showArchived, setShowArchived] = useState(true); // Default to archived view
+    const [key, setKey] = useState("restore"); // Default tab
 
     return (
-        <div className="container mt-2">
-            {/* Show Archived or Restore View */}
-            {showArchived ? <ArchivedRecords /> : <ArchivedRestore />}
-
-            {/* Floating Toggle Button */}
-            <div className="floating-button">
-                <Button 
-                    variant={showArchived ? "success" : "primary"}
-                    onClick={() => setShowArchived(!showArchived)}
-                >
-                    {showArchived ? "View Restorable Records" : "View Archived Records"}
-                </Button>
-            </div>
+        <div className="container">
+            {/* Tabs for switching views */}
+            <Tabs
+                id="archive-manager-tabs"
+                activeKey={key}
+                onSelect={(k) => setKey(k)}
+                className="mb-3"
+                justify
+            >
+                <Tab eventKey="archived" title="Record Archiver">
+                    <ArchivedRecords />
+                </Tab>
+                <Tab eventKey="restore" title="Archived Records">
+                    <ArchivedRestore />
+                </Tab>
+            </Tabs>
         </div>
     );
 };

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrash, FaEye } from 'react-icons/fa';
 import { AiOutlineArrowUp, AiOutlineArrowDown } from 'react-icons/ai';
 import axios from "axios";
-import { Pagination, Button, Modal, Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { Pagination, Button, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import ViewSurgicalFormModal from '../components/View/ViewSurgicalFormModal'; // Import the View modal
 import AddSurgicalFormModal from '../components/Add/AddSurgicalFormModal';
 import EditSurgicalFormModal from '../components/Edit/EditSurgicalFormModal';
@@ -245,23 +245,36 @@ const SurgicalForm = () => {
             });
     };
 
+    const IconButtonWithTooltip = ({ tooltip, children, ...props }) => (
+            <OverlayTrigger placement="top" overlay={<Tooltip>{tooltip}</Tooltip>}>
+                <Button {...props}>{children}</Button>
+            </OverlayTrigger>
+    );
+
     return (
         <div className='container mt-2'>
             <h1 style={{ textAlign: 'left', fontWeight: 'bold' }}>Surgical Forms</h1>
             <div className='d-flex justify-content-between align-items-center'>
-                <input type="text" className="form-control w-25" onChange={handleFilter} placeholder="Search" />
+                <input type="text" className="form-control w-25 shadow-sm" onChange={handleFilter} placeholder="Search" />
                 {userRole !== 1 && (
-                    <>
-                        <Button variant="primary" onClick={handleShowAddNoteModal} className="me-2">
+                    <div className="d-flex gap-2">
+                        <Button variant="primary" onClick={handleShowAddNoteModal} className="btn-gradient"
+                        style={{
+                                background: '#006cb6',
+                                color: '#ffffff',
+                                borderColor: '#006cb6',
+                                fontWeight: 'bold',
+                                marginBottom: '-10px'
+                            }}>
                             Add/Edit CMS
                         </Button>
-                        <Button onClick={handleShowAddModal} className='btn btn-primary'>Add Surgical Form</Button>
-                    </>
+                        <Button onClick={handleShowAddModal} className='btn btn-primary btn-gradient' style={{marginBottom: '-10px'}}>Add Surgical Form</Button>
+                    </div>
                 )}
             </div>
             <div className="table-responsive">
-                <table className="table table-striped">
-                    <thead>
+                <table className="table table-striped text-center align-middle shadow-sm">
+                    <thead className="table-light">
                         <tr>
                             <th onClick={() => handleSort('id')}># {getSortIcon('id')}</th>
                             <th onClick={() => handleSort('client_name')}>Client Name {getSortIcon('client_name')}</th>
@@ -272,48 +285,121 @@ const SurgicalForm = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentForms.map((form, index) => (
-                            <tr key={index}>
-                                <td>{form.id}</td>
-                                <td>{form.client_name}</td>
-                                <td>
-                                    {form.patient_id
-                                        ? form.patient_id.split(',').map((petId, idx) => {
-                                            const pet = pets.find(p => p.id.toString() === petId.trim());
-                                            return pet ? (
-                                                <span key={idx}>
-                                                    {pet.name}
-                                                    {idx < form.patient_id.split(',').length - 1 && ', '}
-                                                </span>
-                                            ) : null;
-                                        })
-                                        : "No Pets"}
-                                </td>
-                                <td>{form.signature_status}</td>
-                                <td>{formatDate(form.surgery_date)}</td>
-                                <td>
-                                    <Button onClick={() => handleShowViewModal(form)} className="btn btn-secondary me-2">
-                                        <FaEye />
-                                    </Button>
-                                    {userRole !== 1 && (
-                                        <>
-                                            <Button onClick={() => handleShowEditModal(form.id)} className="btn btn-primary me-2"><FaEdit /></Button>
-                                            <Button onClick={() => handleShowDeleteModal(form.id)} className="btn btn-danger"><FaTrash /></Button>
-                                        </>
-                                    )}
+                        {currentForms.length === 0 ? (
+                            <tr>
+                                <td colSpan="6" className="text-center text-muted">
+                                    No forms available.
                                 </td>
                             </tr>
-                        ))}
+                        ) : (
+                            currentForms.map((form, index) => (
+                                <tr key={index}>
+                                    <td>{(currentPage - 1) * formsPerPage + index + 1}</td>
+                                    <td>{form.client_name}</td>
+                                    <td>
+                                        {form.patient_id
+                                            ? form.patient_id.split(',').map((petId, idx) => {
+                                                const pet = pets.find(p => p.id.toString() === petId.trim());
+                                                return pet ? (
+                                                    <span key={idx}>
+                                                        {pet.name}
+                                                        {idx < form.patient_id.split(',').length - 1 && ', '}
+                                                    </span>
+                                                ) : null;
+                                            })
+                                            : "No Pets"}
+                                    </td>
+                                    <td>{form.signature_status}</td>
+                                    <td>{formatDate(form.surgery_date)}</td>
+                                    <td>
+                                        <IconButtonWithTooltip
+                                            tooltip="View"
+                                            onClick={() => handleShowViewModal(form)}
+                                            className="btn btn-success me-2"
+                                        >
+                                            <FaEye />
+                                        </IconButtonWithTooltip>
+
+                                        {userRole !== 1 && (
+                                            <>
+                                                <IconButtonWithTooltip
+                                                    tooltip="Edit"
+                                                    onClick={() => handleShowEditModal(form.id)}
+                                                    className="btn btn-primary me-2"
+                                                >
+                                                    <FaEdit />
+                                                </IconButtonWithTooltip>
+                                                <IconButtonWithTooltip
+                                                    tooltip="Delete"
+                                                    onClick={() => handleShowDeleteModal(form.id)}
+                                                    className="btn btn-danger"
+                                                >
+                                                    <FaTrash />
+                                                </IconButtonWithTooltip>
+                                            </>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
             </div>
-            <Pagination>
-                {Array.from({ length: Math.ceil(forms.length / formsPerPage) }, (_, index) => (
-                    <Pagination.Item key={index} active={index + 1 === currentPage} onClick={() => paginate(index + 1)}>
-                        {index + 1}
-                    </Pagination.Item>
-                ))}
-            </Pagination>
+            <div className="d-flex justify-content-between align-items-center">
+                {/* Items per page selector (left) */}
+                <div className="d-flex align-items-center">
+                    <label htmlFor="itemsPerPage" className="form-label me-2 fw-bold">Items per page:</label>
+                    <select 
+                    style={{ width: '80px' }} 
+                    id="itemsPerPage" 
+                    className="form-select form-select-sm shadow-sm" 
+                    value={formsPerPage} 
+                    onChange={handlePerPageChange}
+                    >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                    </select>
+                </div>
+
+                {/* Pagination (right) */}
+                <Pagination className="mb-0">
+                    {/* Prev button */}
+                    <Pagination.Prev
+                    onClick={() => currentPage > 1 && paginate(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    />
+
+                    {Array.from({ length: Math.ceil(forms.length / formsPerPage) }, (_, index) => index + 1)
+                    .filter(page =>
+                        page === 1 ||
+                        page === Math.ceil(forms.length / formsPerPage) ||
+                        (page >= currentPage - 2 && page <= currentPage + 2) // show range around current page
+                    )
+                    .map((page, i, arr) => (
+                        <React.Fragment key={page}>
+                        {/* Add ellipsis when gap */}
+                        {i > 0 && arr[i] !== arr[i - 1] + 1 && <Pagination.Ellipsis disabled />}
+                        <Pagination.Item
+                            active={page === currentPage}
+                            onClick={() => paginate(page)}
+                        >
+                            {page}
+                        </Pagination.Item>
+                        </React.Fragment>
+                    ))}
+
+                    {/* Next button */}
+                    <Pagination.Next
+                    onClick={() =>
+                        currentPage < Math.ceil(forms.length / formsPerPage) &&
+                        paginate(currentPage + 1)
+                    }
+                    disabled={currentPage === Math.ceil(forms.length / formsPerPage)}
+                    />
+                </Pagination>
+            </div>
             <AddSurgicalNotesModal
                 show={showAddNoteModal}
                 handleClose={handleCloseAddNoteModal}
