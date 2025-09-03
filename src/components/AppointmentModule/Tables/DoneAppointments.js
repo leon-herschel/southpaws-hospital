@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Modal, Pagination } from "react-bootstrap";
+import { Modal, Pagination, OverlayTrigger, Tooltip, Button } from "react-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
-import { FaEye, FaArrowLeft } from "react-icons/fa";
+import { FaEye, FaArrowLeft, FaRedo } from "react-icons/fa";
 import { format } from "date-fns";
+import AddAppointments from "../../AppointmentModule/AddAppointments";
 
 function DoneAppointments() {
   const [doneAppointments, setDoneAppointments] = useState([]);
@@ -15,6 +16,8 @@ function DoneAppointments() {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
   const location = useLocation();
+  const [showRebookModal, setShowRebookModal] = useState(false);
+  const [rebookData, setRebookData] = useState(null);
 
   useEffect(() => {
     if (location.state?.searchName) {
@@ -25,6 +28,11 @@ function DoneAppointments() {
   const handleEventClick = (event) => {
     setSelectedEvent(event);
     setShowEventModal(true);
+  };
+
+  const handleRebook = (appt) => {
+    setRebookData(appt);
+    setShowRebookModal(true);
   };
 
   const fetchDone = async () => {
@@ -197,13 +205,24 @@ function DoneAppointments() {
                 <td>{appt.service}</td>
                 <td>{appt.doctor_name || "—"}</td>
                 <td>
-                  <button
-                    className="btn btn-md btn-success"
-                    onClick={() => handleEventClick(appt)}
-                    title="View Appointment Info"
-                  >
-                    <FaEye />
-                  </button>
+                  <OverlayTrigger placement="top" overlay={<Tooltip>View</Tooltip>}>
+                    <button
+                      className="btn btn-md btn-success me-2"
+                      onClick={() => handleEventClick(appt)}
+                    >
+                      <FaEye />
+                    </button>
+                  </OverlayTrigger>
+
+                  <OverlayTrigger placement="top" overlay={<Tooltip>Rebook</Tooltip>}>
+                    <Button
+                      variant="primary"
+                      size="md"
+                      onClick={() => handleRebook(appt)}
+                    >
+                      <FaRedo />
+                    </Button>
+                  </OverlayTrigger>
                 </td>
               </tr>
             ))
@@ -350,6 +369,24 @@ function DoneAppointments() {
           </Modal.Footer>
         </Modal>
       )}
+
+      <Modal
+        show={showRebookModal}
+        onHide={() => setShowRebookModal(false)}
+        size="md"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Rebook Appointment</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {rebookData && (
+            <AddAppointments
+              prefill={rebookData}
+              onClose={() => setShowRebookModal(false)}
+            />
+          )}
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }
