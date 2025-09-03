@@ -270,7 +270,6 @@ function DoneAppointments() {
         />
       </Pagination>
     </div>
-
       {selectedEvent && (
         <Modal show={showEventModal} onHide={() => setShowEventModal(false)}>
           <Modal.Header closeButton>

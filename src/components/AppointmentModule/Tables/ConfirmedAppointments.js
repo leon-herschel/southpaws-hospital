@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
-import { FaArrowLeft, FaEdit } from "react-icons/fa";
+import { FaArrowLeft, FaEdit, FaEye } from "react-icons/fa";
 import { format } from "date-fns";
-import { Pagination } from "react-bootstrap";
+import { Pagination, Modal } from "react-bootstrap";
 import EditAppointment from "../EditAppointment";
 
 function ConfirmedAppointments() {
@@ -17,12 +17,19 @@ function ConfirmedAppointments() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editData, setEditData] = useState(null);
   const location = useLocation();
+  const [showEventModal, setShowEventModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   useEffect(() => {
     if (location.state?.searchName) {
       setSearchTerm(location.state.searchName.toLowerCase());
     }
   }, [location.state]);
+
+  const handleEventClick = (appointment) => {
+    setSelectedEvent(appointment);
+    setShowEventModal(true);
+  };
 
   const fetchConfirmed = async () => {
     try {
@@ -226,7 +233,14 @@ function ConfirmedAppointments() {
                 <td>{appt.doctor_name || "—"}</td>
                 <td>
                   <button
-                    className="btn btn-md btn-primary me-2"
+                    className="btn btn-md btn-success me-2"
+                    onClick={() => handleEventClick(appt)}
+                    title="View Appointment Info"
+                  >
+                    <FaEye />
+                  </button>
+                  <button
+                    className="btn btn-md btn-primary"
                     onClick={() => editSelected(appt)}
                     title="Edit Appointment"
                   >
@@ -308,7 +322,88 @@ function ConfirmedAppointments() {
           onUpdated={handleAppointmentUpdated}
         />
       )}
+
+      {/* View Appointment Modal */}
+      <Modal show={showEventModal} onHide={() => setShowEventModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Appointment Info</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {/* Personal Details */}
+            <section className="mb-3">
+              <h6 className="text-primary border-bottom pb-2">Personal Details</h6>
+              <div className="row">
+                <div className="col-md-6">
+                  <p className="text-break"><strong>Name:</strong> {selectedEvent?.name}</p>
+                  <p><strong>Contact #:</strong> {selectedEvent?.contact}</p>
+                </div>
+                <div className="col-md-6">
+                  <p className="text-break"><strong>Email:</strong> {selectedEvent?.email || "N/A"}</p>
+                </div>
+              </div>
+            </section>
+  
+            {/* Patient Details */}
+            <section className="mb-3">
+              <h6 className="text-primary border-bottom pb-2">Patient Details</h6>
+              <div className="row">
+                <div className="col-md-6">
+                  <p><strong>Pet Name:</strong> {selectedEvent?.pet_name}</p>
+                  <p><strong>Breed:</strong> {selectedEvent?.pet_breed}</p>
+                </div>
+                <div className="col-md-6">
+                  <p><strong>Species:</strong> {selectedEvent?.pet_species}</p>
+                </div>
+              </div>
+            </section>
+  
+            {/* Service */}
+            <section className="mb-4">
+              <h6 className="text-primary border-bottom pb-2">Service</h6>
+              <p>{selectedEvent?.service || "—"}</p>
+            </section>
+  
+            {/* Appointment Details */}
+            <section>
+              <h6 className="text-primary border-bottom pb-2">Appointment Details</h6>
+              <div className="row">
+                {/* Left column */}
+                <div className="col-md-6">
+                  {selectedEvent?.date && !isNaN(new Date(selectedEvent.date)) && (
+                    <p>
+                      <strong>Date:</strong>{" "}
+                      {format(new Date(selectedEvent.date), "MMMM dd, yyyy")}
+                    </p>
+                  )}
+                  {selectedEvent?.time && selectedEvent?.end_time && (
+                    <p>
+                      <strong>Time:</strong>{" "}
+                      {format(new Date(`1970-01-01T${selectedEvent.time}`), "hh:mm a")} to{" "}
+                      {format(new Date(`1970-01-01T${selectedEvent.end_time}`), "hh:mm a")}
+                    </p>
+                  )}
+                </div>
+
+                {/* Right column */}
+                <div className="col-md-6">
+                  <p><strong>Doctor:</strong> {selectedEvent?.doctor_name || "TBD"}</p>
+                  <p><strong>Status:</strong> {selectedEvent?.status || "Pending"}</p>
+                </div>
+              </div>
+            </section>
+
+          </Modal.Body>
+          <Modal.Footer>
+            <button
+              className="btn btn-secondary"
+              onClick={() => setShowEventModal(false)}
+            >
+              Close
+            </button>
+          </Modal.Footer>
+        </Modal>
     </div>
+
   );
 }
 
