@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaTrash, FaArrowLeft } from "react-icons/fa";
 import { format } from "date-fns";
-import { Modal, Pagination } from "react-bootstrap";
+import { Modal, Pagination, OverlayTrigger, Tooltip } from "react-bootstrap";
 
 function CancelledAppointment() {
   const [cancelledAppointments, setCancelledAppointments] = useState([]);
@@ -251,12 +251,6 @@ function CancelledAppointment() {
               Pet Name {getSortIcon("pet_name")}
             </th>
             <th
-              onClick={() => handleSort("pet_species")}
-              style={{ cursor: "pointer" }}
-            >
-              Species {getSortIcon("pet_species")}
-            </th>
-            <th
               onClick={() => handleSort("pet_breed")}
               style={{ cursor: "pointer" }}
             >
@@ -304,18 +298,18 @@ function CancelledAppointment() {
                 <td>{appt.contact}</td>
                 <td>{appt.email}</td>
                 <td>{appt.pet_name}</td>
-                <td>{appt.pet_species}</td>
                 <td>{appt.pet_breed}</td>
                 <td>{appt.service}</td>
                 <td>{appt.doctor_name || "—"}</td>
                 <td>
-                  <button
-                    className="btn btn-md btn-danger"
-                    onClick={() => confirmSingleAppointmentDelete(appt.id)}
-                    title="Delete Appointment"
-                  >
-                    <FaTrash />
-                  </button>
+                  <OverlayTrigger placement="top" overlay={<Tooltip>Delete</Tooltip>}>
+                    <button
+                      className="btn btn-md btn-danger"
+                      onClick={() => confirmSingleAppointmentDelete(appt.id)}
+                    >
+                      <FaTrash />
+                    </button>
+                  </OverlayTrigger>
                 </td>
               </tr>
             ))

@@ -155,12 +155,6 @@ function DoneAppointments() {
               Pet Name {getSortIcon("pet_name")}
             </th>
             <th
-              onClick={() => handleSort("pet_species")}
-              style={{ cursor: "pointer" }}
-            >
-              Species {getSortIcon("pet_species")}
-            </th>
-            <th
               onClick={() => handleSort("pet_breed")}
               style={{ cursor: "pointer" }}
             >
@@ -200,7 +194,6 @@ function DoneAppointments() {
                 <td>{appt.contact}</td>
                 <td>{appt.email}</td>
                 <td>{appt.pet_name}</td>
-                <td>{appt.pet_species}</td>
                 <td>{appt.pet_breed}</td>
                 <td>{appt.service}</td>
                 <td>{appt.doctor_name || "—"}</td>

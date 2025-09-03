@@ -6,7 +6,7 @@ import { FaArrowLeft, FaEye } from "react-icons/fa";
 import AddAppointments from "../AddAppointments";
 import { Modal } from "react-bootstrap";
 import { format } from "date-fns";
-import { Pagination } from "react-bootstrap";
+import { Pagination, OverlayTrigger, Tooltip } from "react-bootstrap";
 
 const PendingAppointments = () => {
   const [pendingAppointments, setPendingAppointments] = useState([]);
@@ -207,13 +207,14 @@ const PendingAppointments = () => {
                 <td>{appt.preferred_date}</td>
                 <td>{appt.preferred_time}</td>
                 <td>
-                  <button
-                    className="btn btn-md btn-success"
-                    onClick={() => setViewingAppointment(appt)}
-                    title="View Details"
-                  >
-                    <FaEye />
-                  </button>
+                  <OverlayTrigger placement="top" overlay={<Tooltip>Review</Tooltip>}>
+                    <button
+                      className="btn btn-md btn-success"
+                      onClick={() => setViewingAppointment(appt)}
+                    >
+                      <FaEye />
+                    </button>
+                  </OverlayTrigger>
                 </td>
               </tr>
             ))
