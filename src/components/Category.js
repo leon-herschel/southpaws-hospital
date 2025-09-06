@@ -20,7 +20,6 @@ const Category = () => {
     const [categoryIdToDelete, setCategoryIdToDelete] = useState(null);
     const [editCategory, setEditCategory] = useState({});
     const [editLoading, setEditLoading] = useState(true);
-    const [errorMessage, setErrorMessage] = useState(''); // Add error message state
     const [userRole, setUserRole] = useState(null); // Store the user role
 
     useEffect(() => {
@@ -40,26 +39,25 @@ const Category = () => {
 
     const handleCloseEditModal = () => setShowEditModal(false);
     const handleShowEditModal = (categoryId) => {
-        setErrorMessage(''); // Clear the error message
         setEditLoading(true);
     
         axios.get(`http://localhost:80/api/category.php/${categoryId}`)
-            .then(response => {
-                if (response.data && response.data.category) {
-                    setEditCategory(response.data.category);
-                    setEditLoading(false);
-                    setShowEditModal(true);
-                } else {
-                    console.error('Error: Category not found');
-                    toast.error('Category not found.');
-                    setEditLoading(false);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching category:', error);
-                toast.error('Failed to fetch category.');
+        .then(response => {
+            if (response.data && response.data.id) {
+                setEditCategory(response.data);
                 setEditLoading(false);
-            });
+                setShowEditModal(true);
+            } else {
+                toast.error('Category not found.');
+                setEditLoading(false);
+            }
+        })
+
+        .catch(error => {
+            console.error('Error fetching category:', error);
+            toast.error('Failed to fetch category.');
+            setEditLoading(false);
+        });
     };
 
     const IconButtonWithTooltip = ({ tooltip, children, ...props }) => (
@@ -107,63 +105,31 @@ const Category = () => {
 
     const archiveCategory = () => {
         if (!categoryIdToDelete) {
-            toast.error('Invalid category ID.'); // Prevent sending an invalid request
-            console.error('Invalid category ID:', categoryIdToDelete); // Log the invalid ID
+            toast.error('Invalid category ID.');
             return;
         }
-    
-        console.log('Starting archive process for category ID:', categoryIdToDelete); // Log the start of the process
-    
-        // First, check if the category has any items in the inventory
-        axios.get(`http://localhost:80/api/inventory.php?categoryId=${categoryIdToDelete}`)
-            .then((response) => {
-                console.log('Inventory check response:', response.data); // Log the inventory check response
-    
-                // Ensure the response contains the expected data
-                if (!response.data || !response.data.inventory || !Array.isArray(response.data.inventory)) {
-                    toast.error('Invalid response from server. Unable to check inventory.');
-                    console.error('Invalid response:', response.data); // Log the invalid response
-                    return;
-                }
-    
-                // Calculate the total quantity from the inventory array
-                const totalQuantity = response.data.inventory.reduce((sum, item) => sum + (item.quantity || 0), 0);
-                console.log('Total quantity calculated:', totalQuantity); // Log the total quantity
-    
-                // Check if the category has items in the inventory
-                if (totalQuantity > 0) {
-                    toast.error(`Category cannot be archived because it has items in inventory. Total quantity: ${totalQuantity}`);                    return;
-                }
-    
-                console.log('No items in inventory. Proceeding to archive category.'); // Log the decision to archive
-    
-                // If the inventory is empty, proceed to archive the category
-                axios.put(`http://localhost:80/api/category.php/${categoryIdToDelete}`, {
-                    id: categoryIdToDelete,
-                    archived: 1
-                })
-                    .then((response) => {
-                        console.log('Archive category response:', response.data); // Log the archive response
-    
-                        if (response.data.status === 1) {
-                            getCategories(); // Refresh the categories list
-                            handleCloseDeleteModal(); // Close the modal
-                            toast.success('Category archived successfully!');
-                            console.log('Category archived successfully:', categoryIdToDelete); // Log success
-                        } else {
-                            toast.error(response.data.message || 'Failed to archive category.');
-                            console.error('Failed to archive category:', response.data.message); // Log failure
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('Error archiving category:', error); // Log the error
-                        toast.error('Failed to archive category.');
-                    });
-            })
-            .catch((error) => {
-                console.error('Error checking inventory:', error); // Log the error
-                toast.error('Failed to check inventory.');
-            });
+
+        console.log('Archiving category ID:', categoryIdToDelete);
+
+        axios.put(`http://localhost:80/api/category.php/${categoryIdToDelete}`, {
+            id: categoryIdToDelete,
+            archived: 1
+        })
+        .then((response) => {
+            console.log('Archive category response:', response.data);
+
+            if (response.data.status === 1) {
+                getCategories();
+                handleCloseDeleteModal();
+                toast.success('Category archived successfully!');
+            } else {
+                toast.error(response.data.message || 'Failed to archive category.');
+            }
+        })
+        .catch((error) => {
+            console.error('Error archiving category:', error);
+            toast.error('Failed to archive category.');
+        });
     };
     
     const handleFilter = (event) => {
@@ -219,7 +185,7 @@ const Category = () => {
         event.preventDefault();
     
         if (editCategory.name.trim() === '') {
-            setErrorMessage('Category name cannot be empty.');
+            toast.error('Category name cannot be empty.');
             return;
         }
     
@@ -234,15 +200,14 @@ const Category = () => {
                 if (response.data.status === 1) {
                     handleCloseEditModal();
                     getCategories();
-                    toast.success('Category updated successfully!'); // Show success notification
+                    toast.success('Category updated successfully!');
                 } else {
-                    // If there's an error, set the error message to be displayed in the modal
-                    setErrorMessage(response.data.message || 'Failed to update category');
+                    toast.error(response.data.message || 'Failed to update category');
                 }
             })
             .catch((error) => {
                 console.error('Error updating category:', error);
-                setErrorMessage('Failed to update category. Please try again.');
+                toast.error('Failed to update category. Please try again.');
             });
     };
     
@@ -365,7 +330,6 @@ const Category = () => {
                 editLoading={editLoading}
                 handleEditChange={handleEditChange}
                 handleEditSubmit={handleEditSubmit}
-                errorMessage={errorMessage}  
             />
 
         <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
