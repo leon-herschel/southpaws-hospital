@@ -39,6 +39,11 @@ switch ($method) {
     case 'POST':
         $service = json_decode(file_get_contents('php://input'));
 
+        // Trim name safely
+        if (isset($service->name)) {
+            $service->name = trim($service->name);
+        }
+
         // Check if the service name already exists (case insensitive)
         $sqlCheck = "SELECT id FROM services WHERE LOWER(name) = LOWER(:name)";
         $stmtCheck = $conn->prepare($sqlCheck);
@@ -54,38 +59,36 @@ switch ($method) {
         $conn->beginTransaction();
 
         try {
-            // Insert the new service, including the consent_form field
             $sqlInsert = "INSERT INTO services (name, price, status, consent_form, created_at, created_by) 
-                          VALUES (:name, :price, :status, :consent_form, :created_at, :created_by)";
+                        VALUES (:name, :price, :status, :consent_form, :created_at, :created_by)";
             $stmtInsert = $conn->prepare($sqlInsert);
-            date_default_timezone_set('Asia/Manila'); // ✅ Ensures Philippine Time (PHT)
+            date_default_timezone_set('Asia/Manila');
             $created_at = date('Y-m-d H:i:s');
-            $created_by = "1"; // You may want to replace this with dynamic data
+            $created_by = "1";
+
             $stmtInsert->bindParam(':name', $service->name);
             $stmtInsert->bindParam(':price', $service->price);
-            $stmtInsert->bindParam(':status', $service->status); // 'Available' or 'Unavailable'
+            $stmtInsert->bindParam(':status', $service->status);
             $stmtInsert->bindParam(':consent_form', $service->consent_form);
             $stmtInsert->bindParam(':created_at', $created_at);
             $stmtInsert->bindParam(':created_by', $created_by);
             $stmtInsert->execute();
 
-            // Commit transaction
             $conn->commit();
 
             $response = ['status' => 1, 'message' => 'Record created successfully.'];
         } catch (Exception $e) {
-            // Rollback transaction if there was an error
             $conn->rollBack();
-            // Log detailed error for debugging
-            error_log("Failed to create record: " . $e->getMessage());
-            $response = ['status' => 0, 'message' => 'Failed to create record.'];
+            $response = ['status' => 0, 'message' => 'Failed to create record: ' . $e->getMessage()];
         }
 
         echo json_encode($response);
-        break;
+    break;
 
     case 'PUT':
         $service = json_decode(file_get_contents('php://input'));
+        $service->name = trim($service->name);
+
         if (isset($service->id) && isset($service->name) && isset($service->price) && isset($service->consent_form)) {
             // Check if the service name already exists (case insensitive) except for the current service
             $sqlCheck = "SELECT id FROM services WHERE LOWER(name) = LOWER(:name) AND id != :id";

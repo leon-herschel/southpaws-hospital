@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Button } from "react-bootstrap";
+import { Button, OverlayTrigger, Popover, Tooltip } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { format } from "date-fns";
+import { FaQuestionCircle } from "react-icons/fa";
+import { useEffect } from "react";
 
 function AddAppointments() {
   const [formData, setFormData] = useState({
@@ -27,6 +29,18 @@ function AddAppointments() {
 
   const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
+  const [services, setServices] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:80/api/services.php?archived=0")
+      .then((res) => {
+        if (Array.isArray(res.data)) {
+          setServices(res.data);
+        }
+      })
+      .catch((err) => console.error("Error fetching services:", err));
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -145,6 +159,25 @@ function AddAppointments() {
     }
   };
 
+  const servicesPopover = (
+    <Popover id="services-popover">
+      <Popover.Header as="h3">Available Services</Popover.Header>
+      <Popover.Body>
+        {services.length > 0 ? (
+          <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+            <ul className="mb-0 ps-3 text-start" style={{ listStyleType: "disc" }}>
+              {services.map((s, i) => (
+                <li key={i}>{s.name}</li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <p className="mb-0">No services available</p>
+        )}
+      </Popover.Body>
+    </Popover>
+  );
+
   return (
     <div className="container mt-3">
       <div>
@@ -205,7 +238,6 @@ function AddAppointments() {
                         className="form-control"
                         value={formData.contact}
                         onChange={handleChange}
-                        autoComplete="off"
                         required
                       />
                     </div>
@@ -219,7 +251,6 @@ function AddAppointments() {
                         className="form-control"
                         value={formData.email}
                         onChange={handleChange}
-                        autoComplete="off"
                         required
                       />
                     </div>
@@ -310,13 +341,33 @@ function AddAppointments() {
             <h5 className="mt-3">Reason for Visit</h5>
             <div className="card mb-2 mt-2">
               <div className="card-body">
-                <label htmlFor="reasonForVisit">
-                  Please describe the reason for your visit: <span className="text-danger">*</span>
+                <label htmlFor="reason_for_visit">
+                  Please describe the reason for your visit:{" "}
+                  <span className="text-danger">*</span>
                 </label>
+
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip id="help-tooltip">View available services</Tooltip>}
+                >
+                  <span
+                    className="ms-2 text-secondary"
+                    style={{ cursor: "pointer", transition: "color 0.2s" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "#343a40")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "#6c757d")}
+                  >
+                    <OverlayTrigger trigger="click" placement="right" overlay={servicesPopover} rootClose>
+                      <span>
+                        <FaQuestionCircle />
+                      </span>
+                    </OverlayTrigger>
+                  </span>
+                </OverlayTrigger>
+
                 <textarea
                   id="reason_for_visit"
                   name="reason_for_visit"
-                  className="form-control"
+                  className="form-control mt-2"
                   rows="3"
                   placeholder="E.g., Annual vaccination, skin irritation, follow-up checkup..."
                   value={formData.reason_for_visit}
@@ -352,7 +403,7 @@ function AddAppointments() {
 
                 <div className="mb-3">
                   <label>
-                    Preferred Time Range: <span className="text-danger">*</span>
+                    Preferred Time: <span className="text-danger">*</span>
                   </label>
                   <select
                     id="preferred_time"
