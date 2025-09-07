@@ -1,9 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { Calendar, dateFnsLocalizer } from "react-big-calendar";
-import { format, parse, startOfWeek, getDay } from "date-fns";
+import { Calendar, dateFnsLocalizer, Views } from "react-big-calendar";
+import {
+  format,
+  parse,
+  startOfWeek,
+  getDay,
+  isSameDay,
+  isSameWeek,
+  isSameMonth,
+} from "date-fns";
 import enUS from "date-fns/locale/en-US";
 import AddAppointments from "./AddAppointments";
 import TagArrived from "./TagArrived/TagArrived";
@@ -51,11 +59,12 @@ const Appointment = () => {
     "All",
     ...new Set(appointments.map((a) => a.doctor_name).filter(Boolean)),
   ].map((name) => (name === "All" ? name : `Dr. ${name}`));
-  const filteredEvents =
-    selectedDoctor === "All"
-      ? events
-      : events.filter((e) => `Dr. ${e.doctor_name}` === selectedDoctor);
   const navigate = useNavigate();
+
+  // --- START NEW STATE ---
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentView, setCurrentView] = useState("week");
+  // --- END NEW STATE ---
 
   const handleEventClick = (event) => {
     setSelectedEvent(event);
@@ -132,47 +141,82 @@ const Appointment = () => {
     Done: <FaCheckDouble size={34} />,
   };
 
-  const renderStatusBoxes = () => (
-    <div className="d-flex justify-content-between mt-4 mb-4 gap-3">
-      {statuses.map((status, idx) => (
-        <div
-          className={`card text-white ${cardColors[status]} status-card`}
-          style={{
-            flex: 1,
-            cursor:
-              status === "Pending" || "Confirmed" || "Cancelled" || "Done"
-                ? "pointer"
-                : "default",
-            minWidth: "180px",
-          }}
-          key={idx}
-          onClick={() => {
-            if (
-              ["Pending", "Confirmed", "Cancelled", "Done"].includes(status)
-            ) {
-              navigate(`/appointment/${status.toLowerCase()}`);
-            }
-          }}
-        >
-          <div className="card-body d-flex justify-content-between align-items-center">
-            <div>
-              <h3 className="mb-0 fw-bold">
-                {status === "Pending"
-                  ? pendingAppointments.length
-                  : appointments.filter(
-                      (appt) =>
-                        appt.status &&
-                        appt.status.toLowerCase() === status.toLowerCase()
-                    ).length}
-              </h3>
-              <p className="mb-0">{status}</p>
-            </div>
-            <div className="ms-3">{statusIcons[status]}</div>
-          </div>
-        </div>
-      ))}
-    </div>
+  // --- START NEW LOGIC ---
+  const filterAppointmentsByDate = useCallback(
+    (appts) => {
+      return appts.filter((appt) => {
+        const apptDate = new Date(appt.date);
+        switch (currentView) {
+          case "day":
+            return isSameDay(apptDate, currentDate);
+          case "week":
+            return isSameWeek(apptDate, currentDate, { weekStartsOn: 1 });
+          case "month":
+            return isSameMonth(apptDate, currentDate);
+          default:
+            return true;
+        }
+      });
+    },
+    [currentView, currentDate]
   );
+  // --- END NEW LOGIC ---
+
+  const renderStatusBoxes = () => {
+    // --- START MODIFIED LOGIC ---
+    const filteredPending = filterAppointmentsByDate(pendingAppointments);
+    const filteredConfirmed = filterAppointmentsByDate(
+      appointments.filter((appt) => appt.status === "Confirmed")
+    );
+    const filteredCancelled = filterAppointmentsByDate(
+      appointments.filter((appt) => appt.status === "Cancelled")
+    );
+    const filteredDone = filterAppointmentsByDate(
+      appointments.filter((appt) => appt.status === "Done")
+    );
+
+    const counts = {
+      Pending: filteredPending.length,
+      Confirmed: filteredConfirmed.length,
+      Cancelled: filteredCancelled.length,
+      Done: filteredDone.length,
+    };
+    // --- END MODIFIED LOGIC ---
+
+    return (
+      <div className="d-flex justify-content-between mt-4 mb-4 gap-3">
+        {statuses.map((status, idx) => (
+          <div
+            className={`card text-white ${cardColors[status]} status-card`}
+            style={{
+              flex: 1,
+              cursor:
+                status === "Pending" || "Confirmed" || "Cancelled" || "Done"
+                  ? "pointer"
+                  : "default",
+              minWidth: "180px",
+            }}
+            key={idx}
+            onClick={() => {
+              if (
+                ["Pending", "Confirmed", "Cancelled", "Done"].includes(status)
+              ) {
+                navigate(`/appointment/${status.toLowerCase()}`);
+              }
+            }}
+          >
+            <div className="card-body d-flex justify-content-between align-items-center">
+              <div>
+                <h3 className="mb-0 fw-bold">{counts[status]}</h3>
+                <p className="mb-0">{status}</p>
+              </div>
+              <div className="ms-3">{statusIcons[status]}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   const eventPropGetter = (event) => {
     if (event.status === "Cancelled") {
@@ -227,10 +271,15 @@ const Appointment = () => {
     }
   };
 
+  const filteredEvents =
+    selectedDoctor === "All"
+      ? events
+      : events.filter((e) => `Dr. ${e.doctor_name}` === selectedDoctor);
+
   return (
     <div className="container mt-2">
       <div className="container mt-2 d-flex align-items-center justify-content-between p-0">
-        <h1 style={{ fontWeight: "bold"}}>Appointments</h1>
+        <h1 style={{ fontWeight: "bold" }}>Appointments</h1>
         <Notifications />
       </div>
       {renderStatusBoxes()}
@@ -286,6 +335,12 @@ const Appointment = () => {
             }}
             eventPropGetter={eventPropGetter}
             onSelectEvent={handleEventClick}
+            // --- START NEW PROPS ---
+            onNavigate={(newDate) => setCurrentDate(newDate)}
+            onView={(newView) => setCurrentView(newView)}
+            date={currentDate}
+            view={currentView}
+            // --- END NEW PROPS ---
           />
         </div>
       </div>
@@ -448,16 +503,16 @@ const Appointment = () => {
             </button>
 
             {selectedEvent.status !== "Done" && (
-                <button
-                  className="btn btn-primary me-2"
-                  onClick={() => {
-                    setShowEditModal(true);
-                    setShowEventModal(false);
-                  }}
-                >
-                  Edit
-                </button>
-              )}
+              <button
+                className="btn btn-primary me-2"
+                onClick={() => {
+                  setShowEditModal(true);
+                  setShowEventModal(false);
+                }}
+              >
+                Edit
+              </button>
+            )}
           </Modal.Footer>
         </Modal>
       )}
