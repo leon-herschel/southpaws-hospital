@@ -403,7 +403,7 @@ function AddAppointments() {
 
                 <div className="mb-3">
                   <label>
-                    Preferred Time Range: <span className="text-danger">*</span>
+                    Preferred Time: <span className="text-danger">*</span>
                   </label>
                   <select
                     id="preferred_time"
