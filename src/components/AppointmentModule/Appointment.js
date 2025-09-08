@@ -194,7 +194,7 @@ const Appointment = () => {
                 status === "Pending" || "Confirmed" || "Cancelled" || "Done"
                   ? "pointer"
                   : "default",
-              minWidth: "180px",
+              minWidth: "160px",
             }}
             key={idx}
             onClick={() => {
