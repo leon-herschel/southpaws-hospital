@@ -5,7 +5,6 @@
   flex-direction: row;
 }
 
-
 body {
   display: block; /* Change this if it was previously set to flex */
   margin: 0;
@@ -53,7 +52,6 @@ nav ul li {
   box-sizing: border-box;
 }
 
-
 .Sidebar {
   position: fixed;  /* Keep the sidebar fixed */
   top: 0;  /* Align with the top */
@@ -86,37 +84,76 @@ nav ul li {
   margin: 0%;
 }
 
+/* Sidebar row */
+/* Sidebar row (main items) */
 .SidebarList .row {
   width: 100%;
-  height: 60px;
-  list-style-type: none;
+  height: 55px;
   display: flex;
   flex-direction: row;
-  color: black;
-  justify-content: center;
   align-items: center;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  justify-content: flex-start;
+  gap: 12px;
+  color: #222;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 0 20px 0 28px;  /* extra left padding so icons don’t hug the edge */
+  transition: all 0.2s ease-in-out;
+  border-radius: 8px;
 }
 
+/* Sub-items (dropdown) */
+.SidebarList .row.sub-item {
+  padding-left: 48px !important; /* deeper indentation */
+}
+
+.SidebarList .row.sub-item:hover {
+  background-color: #f2f2f2;
+  color: #006cb6;
+  transform: translateX(3px);
+}
+
+.SidebarList .row.sub-item.active-sub {
+  background-color: #e8f7ff; /* light blue highlight */
+  color: #006cb6;
+  font-weight: 600;
+  border-left: 3px solid #31b44b;
+}
+
+/* Hover effect */
 .SidebarList .row:hover {
   cursor: pointer;
-  background-color: #d9d9d9
+  background-color: #eef5f0; /* softer green tint */
+  color: #006cb6;           /* match brand blue */
+  transform: translateX(4px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
+/* Active item */
 .SidebarList #active {
-  background-color: #d9d9d9;
-  border-radius: 25px;
-  
+  background-color: #d9f2e3; /* light green active */
+  color: #006cb6;
+  font-weight: 600;
+  border-left: 4px solid #31b44b;
+  border-radius: 0 8px 8px 0;
 }
 
+/* Icon size & alignment */
 .row #icon {
-  flex: 30%;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;   /* slightly smaller */
+  width: 22px;       /* consistent width */
+  flex-shrink: 0;
 }
 
+/* Title */
 .row #title {
-  flex: 70%;
+  flex: 1;
+  display: flex;
+  align-items: center;
 }
 
 .Users {
@@ -196,8 +233,16 @@ thead {
       justify-content: space-between;
     }
 
+.dropdown {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease-in-out;
+}
 
-/* App.css or a dedicated TopBar.css */
+.dropdown.open {
+  max-height: 500px;
+}
+
 .dropdown-menu {
   position: absolute;
   top: 100%;

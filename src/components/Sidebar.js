@@ -40,22 +40,14 @@ function Sidebar({ onOpenChatbot }) {
         }
     }, []);
 
-    const toggleProducts = () => {
-        setIsProductsOpen(!isProductsOpen);
-    };
-
-    const toggleSales = () => {
-        setIsSalesOpen(!isSalesOpen);
-    };
-
-    const toggleServices = () => {
-        setIsServicesOpen(!isServicesOpen);
+    const toggleSection = (section) => {
+        setIsProductsOpen(section === "products" ? !isProductsOpen : false);
+        setIsSalesOpen(section === "sales" ? !isSalesOpen : false);
+        setIsServicesOpen(section === "services" ? !isServicesOpen : false);
     };
 
     const handleSubItemClick = (link, isProducts) => {
-        // Set window location to the new path
         window.location.pathname = link;
-        // Only close other sections if they were open
         if (isProducts) {
             setIsSalesOpen(false);
         } else {
@@ -87,25 +79,25 @@ function Sidebar({ onOpenChatbot }) {
                                     <li
                                         id={window.location.pathname === val.link ? "active" : ""}
                                         className='row'
-                                        onClick={toggleProducts}
+                                        onClick={() => toggleSection("products")}
                                     >
                                         <div id='icon'>{val.icon}</div>
                                         <div id='title'>
                                             {val.title} {isProductsOpen ? <RiArrowDownSLine /> : <RiArrowRightSLine />}
                                         </div>
                                     </li>
-                                    {isProductsOpen && val.subItems.map((subVal, subKey) => (
-                                        <li
+                                    <div className={`dropdown ${isProductsOpen ? "open" : ""}`}>
+                                        {val.subItems.map((subVal, subKey) => (
+                                            <li
                                             key={subKey}
-                                            id={window.location.pathname === subVal.link ? "active" : ""}
-                                            className='row'
+                                            className={`row sub-item ${window.location.pathname === subVal.link ? "active-sub" : ""}`}
                                             onClick={() => handleSubItemClick(subVal.link, true)}
-                                            style={{ paddingLeft: '20px' }} // Indentation applied here
-                                        >
-                                            <div id='icon'>{subVal.icon}</div> 
-                                            <div id='title'>{subVal.title}</div>
-                                        </li>
-                                    ))}
+                                            >
+                                            <div id="icon">{subVal.icon}</div>
+                                            <div id="title">{subVal.title}</div>
+                                            </li>
+                                        ))}
+                                    </div>
                                 </>
                             ) : (
                                 (val.title === "Sales") ? (
@@ -113,47 +105,44 @@ function Sidebar({ onOpenChatbot }) {
                                         <li
                                             id={window.location.pathname === val.link ? "active" : ""}
                                             className='row'
-                                            onClick={toggleSales}
+                                            onClick={() => toggleSection("sales")}
                                         >
                                             <div id='icon'>{val.icon}</div>
                                             <div id='title'>
                                                 {val.title} {isSalesOpen ? <RiArrowDownSLine /> : <RiArrowRightSLine />}
                                             </div>
                                         </li>
-                                        {isSalesOpen && val.subItems.map((subVal, subKey) => {
-                                            // Check if the sub-item is "Point of Sales"
-                                            if (subVal.title === "Point of Sales" && userRole === 1) {
-                                                // Skip rendering "Point of Sales" for user_role 1
-                                                return null;
-                                            }
-
-                                            return (
+                                        <div className={`dropdown ${isSalesOpen ? "open" : ""}`}>
+                                            {val.subItems.map((subVal, subKey) => (
                                                 <li
-                                                    key={subKey}
-                                                    id={window.location.pathname === subVal.link ? "active" : ""}
-                                                    className='row'
-                                                    onClick={() => handleSubItemClick(subVal.link, false)}
-                                                    style={{ paddingLeft: '20px' }} // Indentation applied here
+                                                key={subKey}
+                                                className={`row sub-item ${window.location.pathname === subVal.link ? "active-sub" : ""}`}
+                                                onClick={() => handleSubItemClick(subVal.link, true)}
                                                 >
-                                                    <div id='icon'>{subVal.icon}</div> 
-                                                    <div id='title'>{subVal.title}</div>
+                                                <div id="icon">{subVal.icon}</div>
+                                                <div id="title">{subVal.title}</div>
                                                 </li>
-                                            );
-                                        })}
+                                            ))}
+                                        </div>
                                     </>
                                 ) : val.title === "Services" ? (
                                     <>
-                                        <li className='row' id={window.location.pathname === val.link ? "active" : ""} onClick={toggleServices}>
+                                        <li className='row' id={window.location.pathname === val.link ? "active" : ""} onClick={() => toggleSection("services")}>
                                             <div id='icon'>{val.icon}</div>
                                             <div id='title'>{val.title} {isServicesOpen ? <RiArrowDownSLine /> : <RiArrowRightSLine />}</div>
                                         </li>
-                                        {isServicesOpen && val.subItems.map((subVal, subKey) => (
-                                            <li key={subKey} className='row' id={window.location.pathname === subVal.link ? "active" : ""}
-                                                onClick={() => handleSubItemClick(subVal.link, false)} style={{ paddingLeft: '20px' }}>
-                                                <div id='icon'>{subVal.icon}</div>
-                                                <div id='title'>{subVal.title}</div>
-                                            </li>
-                                        ))}
+                                        <div className={`dropdown ${isServicesOpen ? "open" : ""}`}>
+                                            {val.subItems.map((subVal, subKey) => (
+                                                <li
+                                                key={subKey}
+                                                className={`row sub-item ${window.location.pathname === subVal.link ? "active-sub" : ""}`}
+                                                onClick={() => handleSubItemClick(subVal.link, true)}
+                                                >
+                                                <div id="icon">{subVal.icon}</div>
+                                                <div id="title">{subVal.title}</div>
+                                                </li>
+                                            ))}
+                                        </div>
                                     </>
                                 ) : (
                                     <li
