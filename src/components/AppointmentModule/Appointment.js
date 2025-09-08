@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { Calendar, dateFnsLocalizer, Views } from "react-big-calendar";
+import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import {
   format,
   parse,
@@ -61,10 +61,8 @@ const Appointment = () => {
   ].map((name) => (name === "All" ? name : `Dr. ${name}`));
   const navigate = useNavigate();
 
-  // --- START NEW STATE ---
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentView, setCurrentView] = useState("week");
-  // --- END NEW STATE ---
 
   const handleEventClick = (event) => {
     setSelectedEvent(event);
@@ -83,10 +81,16 @@ const Appointment = () => {
 
   const fetchPendingAppointments = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost/api/pending_appointments.php"
-      );
-      setPendingAppointments(res.data.appointments || []);
+      const res = await axios.get("http://localhost/api/pending_appointments.php");
+      const raw = res.data.appointments || [];
+
+      const normalized = raw.map((appt) => ({
+        ...appt,
+        date: appt.preferred_date, 
+        time: appt.preferred_time,
+      }));
+
+      setPendingAppointments(normalized);
     } catch (err) {
       console.error("Failed to fetch pending appointments", err);
     }
@@ -109,7 +113,7 @@ const Appointment = () => {
 
   const formatEvents = (data) => {
     const formatted = data
-      .filter((appt) => appt.status !== "Pending") // HIDE PENDING
+      .filter((appt) => appt.status !== "Pending")
       .map((appt) => {
         const start = new Date(`${appt.date}T${appt.time}`);
         const end = new Date(`${appt.date}T${appt.end_time}`);
@@ -141,7 +145,6 @@ const Appointment = () => {
     Done: <FaCheckDouble size={34} />,
   };
 
-  // --- START NEW LOGIC ---
   const filterAppointmentsByDate = useCallback(
     (appts) => {
       return appts.filter((appt) => {
@@ -160,28 +163,25 @@ const Appointment = () => {
     },
     [currentView, currentDate]
   );
-  // --- END NEW LOGIC ---
 
   const renderStatusBoxes = () => {
-    // --- START MODIFIED LOGIC ---
-    const filteredPending = filterAppointmentsByDate(pendingAppointments);
-    const filteredConfirmed = filterAppointmentsByDate(
-      appointments.filter((appt) => appt.status === "Confirmed")
-    );
-    const filteredCancelled = filterAppointmentsByDate(
-      appointments.filter((appt) => appt.status === "Cancelled")
-    );
-    const filteredDone = filterAppointmentsByDate(
-      appointments.filter((appt) => appt.status === "Done")
-    );
+    const doctorFilter = (appts) => {
+      if (selectedDoctor === "All") return appts;
+      return appts.filter((a) => `Dr. ${a.doctor_name}` === selectedDoctor);
+    };
 
     const counts = {
-      Pending: filteredPending.length,
-      Confirmed: filteredConfirmed.length,
-      Cancelled: filteredCancelled.length,
-      Done: filteredDone.length,
+      Pending: pendingAppointments.length,
+      Confirmed: doctorFilter(
+        filterAppointmentsByDate(appointments.filter((appt) => appt.status === "Confirmed"))
+      ).length,
+      Cancelled: doctorFilter(
+        filterAppointmentsByDate(appointments.filter((appt) => appt.status === "Cancelled"))
+      ).length,
+      Done: doctorFilter(
+        filterAppointmentsByDate(appointments.filter((appt) => appt.status === "Done"))
+      ).length,
     };
-    // --- END MODIFIED LOGIC ---
 
     return (
       <div className="d-flex justify-content-between mt-4 mb-4 gap-3">
@@ -198,9 +198,7 @@ const Appointment = () => {
             }}
             key={idx}
             onClick={() => {
-              if (
-                ["Pending", "Confirmed", "Cancelled", "Done"].includes(status)
-              ) {
+              if (["Pending", "Confirmed", "Cancelled", "Done"].includes(status)) {
                 navigate(`/appointment/${status.toLowerCase()}`);
               }
             }}
@@ -335,12 +333,10 @@ const Appointment = () => {
             }}
             eventPropGetter={eventPropGetter}
             onSelectEvent={handleEventClick}
-            // --- START NEW PROPS ---
             onNavigate={(newDate) => setCurrentDate(newDate)}
             onView={(newView) => setCurrentView(newView)}
             date={currentDate}
             view={currentView}
-            // --- END NEW PROPS ---
           />
         </div>
       </div>
