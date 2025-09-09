@@ -10,7 +10,7 @@ $objDB = new DbConnect;
 try {
     $conn = $objDB->connect();
 
-    $stmt = $conn->prepare("SELECT id, name, price FROM services");
+    $stmt = $conn->prepare("SELECT id, name, price, duration FROM services");
     $stmt->execute();
 
     $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
