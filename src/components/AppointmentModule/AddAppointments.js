@@ -301,6 +301,31 @@ const AddAppointments = ({ onClose, prefill }) => {
     }
   };
 
+  const addMinutesToTime = (timeStr, minutes) => {
+    const [hours, mins] = timeStr.split(":").map(Number);
+    const date = new Date(1970, 0, 1, hours, mins);
+    date.setMinutes(date.getMinutes() + minutes);
+    return date.toTimeString().slice(0, 5);
+  };
+  
+  const getTotalDuration = () => {
+    return formData.service.reduce((total, serviceName) => {
+      const service = services.find((s) => s.name === serviceName);
+      if (!service?.duration) return total;
+
+      const [h, m, s] = service.duration.split(":").map(Number);
+      return total + h * 60 + m + Math.floor(s / 60);
+    }, 0);
+  };
+
+  useEffect(() => {
+    if (formData.time && formData.service.length > 0) {
+      const totalMins = getTotalDuration();
+      const suggestedEnd = addMinutesToTime(formData.time, totalMins);
+      setFormData((prev) => ({ ...prev, end_time: suggestedEnd }));
+    }
+  }, [formData.time, formData.service]);
+
   return (
     <div>
       <form onSubmit={handleSubmit}>
