@@ -59,8 +59,8 @@ switch ($method) {
         $conn->beginTransaction();
 
         try {
-            $sqlInsert = "INSERT INTO services (name, price, status, consent_form, created_at, created_by) 
-                        VALUES (:name, :price, :status, :consent_form, :created_at, :created_by)";
+            $sqlInsert = "INSERT INTO services (name, price, status, consent_form, duration, created_at, created_by) 
+              VALUES (:name, :price, :status, :consent_form, :duration, :created_at, :created_by)";
             $stmtInsert = $conn->prepare($sqlInsert);
             date_default_timezone_set('Asia/Manila');
             $created_at = date('Y-m-d H:i:s');
@@ -72,6 +72,7 @@ switch ($method) {
             $stmtInsert->bindParam(':consent_form', $service->consent_form);
             $stmtInsert->bindParam(':created_at', $created_at);
             $stmtInsert->bindParam(':created_by', $created_by);
+            $stmtInsert->bindParam(':duration', $service->duration);
             $stmtInsert->execute();
 
             $conn->commit();
@@ -102,13 +103,16 @@ switch ($method) {
                 exit;
             }
 
-            $sql = "UPDATE services SET name = :name, price = :price, status = :status, consent_form = :consent_form WHERE id = :id";
+            $sql = "UPDATE services 
+                    SET name = :name, price = :price, status = :status, consent_form = :consent_form, duration = :duration 
+                    WHERE id = :id";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':id', $service->id);
             $stmt->bindParam(':name', $service->name);
             $stmt->bindParam(':price', $service->price);
             $stmt->bindParam(':status', $service->status); // 'Available' or 'Unavailable'
             $stmt->bindParam(':consent_form', $service->consent_form);
+            $stmt->bindParam(':duration', $service->duration);
 
             if ($stmt->execute()) {
                 $response = ['status' => 1, 'message' => 'Record updated successfully.'];

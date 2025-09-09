@@ -11,19 +11,21 @@ const EditServicesModal = ({ show, handleClose, editService, handleEditChange, h
 
     // Sync local state with parent `editService` when the modal opens
     useEffect(() => {
-        if (show) {
-            setLocalEditService(editService || {});
-            setError(''); // Clear errors
-            setLoading(false); // Set loading to false
+        if (show && editService) {
+            const [hours, mins] = (editService.duration || "00:30:00").split(":").map(Number);
+            setLocalEditService({
+                ...editService,
+                duration: (hours * 60 + mins).toString()
+            });
+            setError('');
+            setLoading(false);
             setTimeout(() => {
-                if (brandNameRef.current) {
-                    brandNameRef.current.focus();
-                }
+                if (brandNameRef.current) brandNameRef.current.focus();
             }, 100);
         } else {
-            setLocalEditService({}); // Reset local state
-            setError(''); // Clear errors
-            setLoading(true); // Reset loading state
+            setLocalEditService({});
+            setError('');
+            setLoading(true);
         }
     }, [show, editService]);
 
@@ -37,7 +39,17 @@ const EditServicesModal = ({ show, handleClose, editService, handleEditChange, h
         event.preventDefault(); // Prevent default form submission
         setError(''); // Clear any previous errors
 
-        axios.put(`http://localhost:80/api/services.php/${localEditService.id}`, localEditService)
+        const minutes = parseInt(localEditService.duration) || 30;
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        const durationTime = `${hours.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:00`;
+
+        const updatedService = {
+            ...localEditService,
+            duration: durationTime
+        };
+
+        axios.put(`http://localhost:80/api/services.php/${localEditService.id}`, updatedService)
             .then((response) => {
                 if (response.data.status === 0) {
                     setError('Service name already exists.');
@@ -86,6 +98,33 @@ const EditServicesModal = ({ show, handleClose, editService, handleEditChange, h
                                 onChange={handleLocalChange}
                                 placeholder="Enter price"
                                 required
+                            />
+                        </Form.Group>
+
+                        <Form.Group>
+                            <Form.Label>Duration (minutes)</Form.Label>
+                            <Form.Control
+                                type="number"
+                                min="1"
+                                name="duration"
+                                value={localEditService.duration || ""}
+                                placeholder="Enter duration in minutes"
+                                required
+                                onChange={(e) => {
+                                const val = e.target.value;
+                                if (/^\d*$/.test(val)) {
+                                    setLocalEditService((prev) => ({ ...prev, duration: val }));
+
+                                    const minutes = parseInt(val) || 0;
+                                    const hours = Math.floor(minutes / 60);
+                                    const mins = minutes % 60;
+                                    const durationTime = `${hours.toString().padStart(2, "0")}:${mins
+                                    .toString()
+                                    .padStart(2, "0")}:00`;
+
+                                    handleEditChange({ target: { name: "duration", value: durationTime } });
+                                }
+                                }}
                             />
                         </Form.Group>
 

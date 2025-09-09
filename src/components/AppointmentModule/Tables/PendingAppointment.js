@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
-import { FaArrowLeft, FaEye } from "react-icons/fa";
+import { FaArrowLeft, FaSearch } from "react-icons/fa";
 import AddAppointments from "../AddAppointments";
 import { Modal } from "react-bootstrap";
 import { format } from "date-fns";
@@ -209,10 +209,10 @@ const PendingAppointments = () => {
                 <td>
                   <OverlayTrigger placement="top" overlay={<Tooltip>Review</Tooltip>}>
                     <button
-                      className="btn btn-md btn-success"
+                      className="btn btn-md btn-primary"
                       onClick={() => setViewingAppointment(appt)}
                     >
-                      <FaEye />
+                      <FaSearch />
                     </button>
                   </OverlayTrigger>
                 </td>

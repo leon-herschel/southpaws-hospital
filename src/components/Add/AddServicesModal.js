@@ -45,9 +45,14 @@ const AddServicesModal = ({ show, handleClose, onServicesAdded }) => {
             setInputs((prevInputs) => ({ ...prevInputs, consent_form: '' })); // Clear the consent_form if "None"
         }
 
-        // Add created_by field to inputs
+        const minutes = parseInt(inputs.duration) || 30;
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        const durationTime = `${hours.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:00`;
+
         const dataToSubmit = {
             ...inputs,
+            duration: durationTime, // send TIME format to backend
             created_by: userID
         };
 
@@ -101,6 +106,19 @@ const AddServicesModal = ({ show, handleClose, onServicesAdded }) => {
                             value={inputs.price}
                             placeholder="Enter price"
                             required
+                        />
+                    </Form.Group>
+
+                    <Form.Group>
+                        <Form.Label>Duration (minutes)</Form.Label>
+                        <Form.Control
+                            type="number"
+                            name="duration"
+                            value={inputs.duration ?? ""} 
+                            onChange={handleChange}
+                            placeholder="Enter duration in minutes"
+                            required
+                            min={1}
                         />
                     </Form.Group>
 

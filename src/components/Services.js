@@ -22,11 +22,11 @@ const Services = () => {
     const [serviceIdToEdit, setServiceIdToEdit] = useState(null);
     const [editService, setEditService] = useState({});
     const [editLoading, setEditLoading] = useState(true);
-    const [errorMessage, setErrorMessage] = useState(''); // Add error message state
+    const [errorMessage, setErrorMessage] = useState('');
     
 
     // Get user role from localStorage
-    const userRole = localStorage.getItem('userRole'); // Assuming 'user_role' is stored in localStorage
+    const userRole = localStorage.getItem('userRole'); 
 
     const handleCloseAddModal = () => setShowAddModal(false);
     const handleShowAddModal = () => setShowAddModal(true);
@@ -39,8 +39,8 @@ const Services = () => {
 
     const handleCloseEditModal = () => {
         setShowEditModal(false);
-        setErrorMessage(''); // Clear any error messages
-        setEditLoading(true); // Reset loading state
+        setErrorMessage('');
+        setEditLoading(true);
     };
         const handleShowEditModal = (serviceId) => {
         setServiceIdToEdit(serviceId);
@@ -56,7 +56,7 @@ const Services = () => {
         .then(function (response) {
             const updatedServices = response.data.map(service => ({
                 ...service,
-                consentForm: service.consent_form || "None", // Ensure it is mapped correctly
+                consentForm: service.consent_form || "None",
             }));
             setServices(updatedServices);
             setOriginalServices(updatedServices);
@@ -76,7 +76,7 @@ const Services = () => {
         const newData = originalServices.filter(row => {
             return (
                 String(row.name).toLowerCase().includes(searchText) ||
-                String(row.status).toLowerCase().includes(searchText) ||  // Search by status
+                String(row.status).toLowerCase().includes(searchText) || 
                 String(row.id).toLowerCase().includes(searchText) ||
                 String(row.created_by).toLowerCase().includes(searchText)
             );
@@ -89,12 +89,10 @@ const Services = () => {
     const indexOfFirstService = indexOfLastService - servicesPerPage;
     const currentServices = services.slice(indexOfFirstService, indexOfLastService);
 
-    // Change page
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-    // Handle changing number of items per page
     const handlePerPageChange = (e) => {
-        setCurrentPage(1); // Reset to the first page when changing items per page
+        setCurrentPage(1);
         setServicesPerPage(Number(e.target.value));
     }
 
@@ -138,13 +136,13 @@ const Services = () => {
     };
 
     const handleEditSubmit = (event) => {
-        event.preventDefault(); // Prevent form submission reload
-        setErrorMessage(''); // Clear the error message
+        event.preventDefault(); 
+        setErrorMessage(''); 
         axios.put(`http://localhost:80/api/services.php/${serviceIdToEdit}`, editService)
             .then(function (response) {
                 toast.success("Service updated successfully!");
                 handleCloseEditModal();
-                getServices(); // Refresh services list
+                getServices(); 
             })
             .catch(function (error) {
                 console.error('Error updating services:', error);
@@ -296,9 +294,9 @@ const Services = () => {
     editService={editService} 
     editLoading={editLoading} 
     handleEditChange={handleEditChange} 
-    handleEditSubmit={handleEditSubmit} // Pass the correct function
+    handleEditSubmit={handleEditSubmit} 
     serviceIdToEdit={serviceIdToEdit} 
-    errorMessage={errorMessage}  // Pass the error message state
+    errorMessage={errorMessage} 
 />
 
             <Modal show={showDeleteModal} onHide={handleCloseDeleteModal} className="custom-modal">
