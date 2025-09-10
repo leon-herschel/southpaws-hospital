@@ -363,6 +363,27 @@ thead {
     transform: scale(1.1); 
 }
 
+/* Calendar */
+/* Month view full cell hover */
+.rbc-month-view .rbc-day-bg:hover {
+  background-color: rgba(0, 123, 255, 0.15);
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* Week/Day view full-day column hover */
+.rbc-time-view .rbc-time-slot:hover {
+  background-color: rgba(0, 123, 255, 0.15);
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  z-index: 1;
+}
+
+
+
+
+
+
 
 
 
