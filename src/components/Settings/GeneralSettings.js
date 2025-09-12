@@ -81,6 +81,15 @@ function Settings() {
 
   if (loading) return <p>Loading...</p>;
 
+  const formatTo12Hour = (timeStr) => {
+    if (!timeStr) return "";
+    const [hour, minute] = timeStr.split(":");
+    let h = parseInt(hour, 10);
+    const ampm = h >= 12 ? "PM" : "AM";
+    h = h % 12 || 12;
+    return `${h}:${minute} ${ampm}`;
+  };
+
   return (
     <div className="container light-style flex-grow-1 container-p-y">
       <h1 className="font-weight-bold py-3 mb-4">Settings</h1>
@@ -124,15 +133,16 @@ function Settings() {
       </div>
 
       {/* Time Limit for Booking */}
+      {/* Clinic Schedule Setting */}
       <div className="card shadow-sm mb-4">
         <div className="card-header d-flex align-items-center justify-content-between">
           <h5 className="mb-0">
-            Time Limit for Booking{" "}
+            Clinic Schedule{" "}
             <OverlayTrigger
               placement="right"
               overlay={
                 <Tooltip>
-                  Click this to set the time limits in appointments.
+                  Set your clinic’s operating hours. Appointments can only be booked within these times.
                 </Tooltip>
               }
             >
@@ -142,39 +152,52 @@ function Settings() {
             </OverlayTrigger>
           </h5>
         </div>
+
         <div className="card-body">
-          <h5>
-            Current Time Limit: <strong>{startTime || "Not set"}</strong> to{" "}
-            <strong>{endTime || "Not set"}</strong>
-          </h5>
+          <p className="text-muted mb-4">
+            Current Schedule:{" "}
+            <strong>
+              {startTime ? formatTo12Hour(startTime) : "Not set"}
+            </strong>{" "}
+            –{" "}
+            <strong>
+              {endTime ? formatTo12Hour(endTime) : "Not set"}
+            </strong>
+          </p>
 
-          <div className="mb-3">
-            <label htmlFor="AmTime">FROM:</label>
-            <input
-              type="time"
-              id="AmTime"
-              name="AmTime"
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-              className="form-control"
-            />
+          <div className="row g-3">
+            <div className="col-md-6">
+              <label htmlFor="startTime" className="form-label fw-semibold">
+                Opening Time
+              </label>
+              <input
+                type="time"
+                id="startTime"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                className="form-control shadow-sm"
+              />
+            </div>
+
+            <div className="col-md-6">
+              <label htmlFor="endTime" className="form-label fw-semibold">
+                Closing Time
+              </label>
+              <input
+                type="time"
+                id="endTime"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                className="form-control shadow-sm"
+              />
+            </div>
           </div>
 
-          <div className="mb-3">
-            <label htmlFor="PmTime">TO:</label>
-            <input
-              type="time"
-              id="PmTime"
-              name="PmTime"
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
-              className="form-control"
-            />
+          <div className="d-flex justify-content-end mt-4">
+            <button className="btn btn-primary px-4" onClick={handleSave}>
+              Save Schedule
+            </button>
           </div>
-
-          <button className="btn btn-primary" onClick={handleSave}>
-            Save Time Limit
-          </button>
         </div>
       </div>
     </div>
