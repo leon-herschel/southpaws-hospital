@@ -137,6 +137,14 @@ const AddAppointments = ({ onClose, prefill }) => {
     });
   };
 
+  const formatTo12Hour = (timeStr) => {
+    if (!timeStr) return "";
+    const [hour, minute] = timeStr.split(":").map(Number);
+    const suffix = hour >= 12 ? "PM" : "AM";
+    const adjustedHour = hour % 12 || 12;
+    return `${adjustedHour}:${minute.toString().padStart(2, "0")} ${suffix}`;
+  };
+
   const handleChange = async (e, index = null) => {
     const { name, value } = e.target;
 
@@ -222,7 +230,11 @@ const AddAppointments = ({ onClose, prefill }) => {
     const latestAllowedEnd = new Date(`1970-01-01T${bookingLimits.end}`);
 
     if (start < latestAllowedStart) {
-      toast.error(`Start time must not be earlier than ${bookingLimits.start}`);
+      toast.error(
+        `Start time must not be earlier than ${formatTo12Hour(
+          bookingLimits.start
+        )}`
+      );
       setIsLoading(false);
       return;
     }
@@ -234,7 +246,9 @@ const AddAppointments = ({ onClose, prefill }) => {
     }
 
     if (end > latestAllowedEnd) {
-      toast.error(`End time must not be later than ${bookingLimits.end}`);
+      toast.error(
+        `End time must not be later than ${formatTo12Hour(bookingLimits.end)}`
+      );
       setIsLoading(false);
       return;
     }
@@ -642,7 +656,7 @@ const AddAppointments = ({ onClose, prefill }) => {
                     onChange={handleChange}
                     required
                   >
-                    <option value="">Select a doctor</option>
+                    <option value="">-- Select Doctor --</option>
                     {doctors.map((doc) => (
                       <option key={doc.id} value={doc.id}>
                         Dr. {doc.first_name} {doc.last_name}
@@ -650,6 +664,7 @@ const AddAppointments = ({ onClose, prefill }) => {
                     ))}
                   </select>
                 </div>
+
                 <div className="mb-3">
                   <label htmlFor="date">
                     Date: <span className="text-danger">*</span>
@@ -664,6 +679,7 @@ const AddAppointments = ({ onClose, prefill }) => {
                     autoComplete="off"
                     required
                     min={new Date().toISOString().split("T")[0]}
+                    disabled={!formData.doctor_id}
                   />
                 </div>
 
@@ -680,7 +696,7 @@ const AddAppointments = ({ onClose, prefill }) => {
                       value={formData.time}
                       onChange={handleChange}
                       required
-                      disabled={!formData.date}
+                      disabled={!formData.date || !formData.doctor_id}
                     />
                   </div>
 
@@ -697,7 +713,7 @@ const AddAppointments = ({ onClose, prefill }) => {
                       onChange={handleChange}
                       autoComplete="off"
                       required
-                      disabled={!formData.date}
+                      disabled={!formData.date || !formData.doctor_id}
                     />
                   </div>
                 </div>

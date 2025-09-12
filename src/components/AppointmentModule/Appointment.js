@@ -56,6 +56,8 @@ const Appointment = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState("All");
   const [prefillDate, setPrefillDate] = useState(null);
+  const [startTime, setStartTime] = useState("08:00");
+  const [endTime, setEndTime] = useState("17:00");
   const doctorOptions = [
     "All",
     ...new Set(appointments.map((a) => a.doctor_name).filter(Boolean)),
@@ -95,6 +97,30 @@ const Appointment = () => {
     } catch (err) {
       console.error("Failed to fetch pending appointments", err);
     }
+  };
+
+  const fetchSchedule = async () => {
+    try {
+      const res = await axios.get("http://localhost/api/Settings/get_time_appointments.php");
+      if (res.data.start_time && res.data.end_time) {
+        setStartTime(res.data.start_time.slice(0, 5)); 
+        setEndTime(res.data.end_time.slice(0, 5));
+      }
+    } catch (err) {
+      console.error("Failed to fetch schedule", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAppointments();
+    fetchPendingAppointments();
+    fetchServiceColors();
+    fetchSchedule();
+  }, []);
+
+  const buildDateWithTime = (timeStr) => {
+    const [h, m] = timeStr.split(":");
+    return new Date(2025, 0, 1, h, m);
   };
 
   const fetchServiceColors = async () => {
@@ -327,8 +353,8 @@ const Appointment = () => {
             step={30}
             timeslots={2}
             selectable
-            min={new Date(2025, 0, 1, 8, 0)}
-            max={new Date(2025, 0, 1, 18, 0)}
+            min={buildDateWithTime(startTime)}
+            max={buildDateWithTime(endTime)}
             style={{ height: "100%" }}
             messages={{
               noEventsInRange: "No appointments to show.",
