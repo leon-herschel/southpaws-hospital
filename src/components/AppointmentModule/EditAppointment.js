@@ -14,6 +14,28 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
   const [showDoneConfirm, setShowDoneConfirm] = useState(false);
   const [originalEmail, setOriginalEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [bookingLimits, setBookingLimits] = useState({
+    start: "08:00",
+    end: "17:00",
+  });
+
+  useEffect(() => {
+    axios
+      .get("http://localhost/api/Settings/get_time_appointments.php")
+      .then((res) => {
+        if (
+          res.data.status === "success" &&
+          res.data.start_time &&
+          res.data.end_time
+        ) {
+          setBookingLimits({
+            start: res.data.start_time.slice(0, 5),
+            end: res.data.end_time.slice(0, 5),
+          });
+        }
+      })
+      .catch((err) => console.error("Failed to fetch booking limits", err));
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -129,6 +151,14 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
     }
   }, [formData.date, formData.doctor_id]);
 
+  const formatTo12Hour = (timeStr) => {
+    if (!timeStr) return "";
+    const [hour, minute] = timeStr.split(":").map(Number);
+    const suffix = hour >= 12 ? "PM" : "AM";
+    const adjustedHour = hour % 12 || 12;
+    return `${adjustedHour}:${minute.toString().padStart(2, "0")} ${suffix}`;
+  };
+
   const handleChange = (e, index = null) => {
     const { name, value } = e.target;
 
@@ -155,43 +185,54 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
     // Contact validation
     if (!/^\d{11}$/.test(contact)) {
       toast.error("Contact number must be exactly 11 digits.");
+      setIsSubmitting(false);
       return;
     }
 
     // Name validation
     if (!/^[A-Za-z\s]+$/.test(name)) {
       toast.error("Name should only contain letters and spaces.");
+      setIsSubmitting(false);
       return;
     }
 
     // Time range validation
     const start = new Date(`1970-01-01T${time}`);
     const end = new Date(`1970-01-01T${end_time}`);
-    const latestAllowedStart = new Date(`1970-01-01T08:00`);
-    const latestAllowedEnd = new Date(`1970-01-01T17:00`);
+    const latestAllowedStart = new Date(`1970-01-01T${bookingLimits.start}`);
+    const latestAllowedEnd = new Date(`1970-01-01T${bookingLimits.end}`);
 
     if (start < latestAllowedStart) {
-      toast.error("Start time must not be earlier than 8AM");
+      toast.error(
+        `Start time must not be earlier than ${formatTo12Hour(bookingLimits.start)}`
+      );
+      setIsSubmitting(false);
       return;
     }
 
     if (end <= start) {
       toast.error("End time must be later than the start time");
+      setIsSubmitting(false);
       return;
     }
 
     if (end > latestAllowedEnd) {
-      toast.error("End time must not be later than 5PM");
+      toast.error(
+        `End time must not be later than ${formatTo12Hour(bookingLimits.end)}`
+      );
+      setIsSubmitting(false);
       return;
     }
 
     if (isOverlapping(formData.time, formData.end_time)) {
       toast.error("This time slot overlaps with another appointment.");
+      setIsSubmitting(false);
       return;
     }
 
     if (!formData.doctor_id) {
       toast.error("Please assign a doctor to this appointment.");
+      setIsSubmitting(false);
       return;
     }
 
@@ -599,7 +640,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
                     </select>
                   </Form.Group>
                   <div className="mb-3">
-                    <label htmlFor="date">Appointment Date:</label>
+                    <label htmlFor="date">Date:</label>
                     <input
                       type="date"
                       id="date"
@@ -609,6 +650,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
                       onChange={handleChange}
                       required
                       min={new Date().toISOString().split("T")[0]}
+                      disabled={!formData.doctor_id}
                     />
                   </div>
 
@@ -623,7 +665,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
                         value={formData.time}
                         onChange={handleChange}
                         required
-                        disabled={!formData.date}
+                        disabled={!formData.date || !formData.doctor_id}
                       />
                     </div>
 
@@ -637,7 +679,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
                         value={formData.end_time}
                         onChange={handleChange}
                         required
-                        disabled={!formData.date}
+                        disabled={!formData.date || !formData.doctor_id}
                       />
                     </div>
 

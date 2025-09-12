@@ -656,7 +656,7 @@ const AddAppointments = ({ onClose, prefill }) => {
                     onChange={handleChange}
                     required
                   >
-                    <option value="">Select a doctor</option>
+                    <option value="">-- Select Doctor --</option>
                     {doctors.map((doc) => (
                       <option key={doc.id} value={doc.id}>
                         Dr. {doc.first_name} {doc.last_name}
@@ -696,7 +696,7 @@ const AddAppointments = ({ onClose, prefill }) => {
                       value={formData.time}
                       onChange={handleChange}
                       required
-                      disabled={!formData.date}
+                      disabled={!formData.date || !formData.doctor_id}
                     />
                   </div>
 
@@ -713,7 +713,7 @@ const AddAppointments = ({ onClose, prefill }) => {
                       onChange={handleChange}
                       autoComplete="off"
                       required
-                      disabled={!formData.date}
+                      disabled={!formData.date || !formData.doctor_id}
                     />
                   </div>
                 </div>
