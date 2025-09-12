@@ -55,6 +55,7 @@ const Appointment = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState("All");
+  const [prefillDate, setPrefillDate] = useState(null);
   const doctorOptions = [
     "All",
     ...new Set(appointments.map((a) => a.doctor_name).filter(Boolean)),
@@ -325,6 +326,7 @@ const Appointment = () => {
             views={["month", "week", "day"]}
             step={30}
             timeslots={2}
+            selectable
             min={new Date(2025, 0, 1, 8, 0)}
             max={new Date(2025, 0, 1, 18, 0)}
             style={{ height: "100%" }}
@@ -333,6 +335,18 @@ const Appointment = () => {
             }}
             eventPropGetter={eventPropGetter}
             onSelectEvent={handleEventClick}
+            onSelectSlot={(slotInfo) => {
+            const selectedTime = format(slotInfo.start, "HH:mm");
+
+              // Prevent midnight default
+              const safeTime = selectedTime === "00:00" ? "08:00" : selectedTime;
+
+              setShowModal(true);
+              setPrefillDate({
+                date: format(slotInfo.start, "yyyy-MM-dd"),
+                time: safeTime,
+              });
+            }}
             onNavigate={(newDate) => setCurrentDate(newDate)}
             onView={(newView) => setCurrentView(newView)}
             date={currentDate}
@@ -355,8 +369,13 @@ const Appointment = () => {
 
           <Modal.Body>
             <AddAppointments
+              prefill={{
+                date: prefillDate?.date || "",
+                time: prefillDate?.time || "",
+              }}
               onClose={() => {
                 setShowModal(false);
+                setPrefillDate(null);
                 fetchAppointments();
               }}
             />

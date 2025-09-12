@@ -93,7 +93,6 @@ const AddAppointments = ({ onClose, prefill }) => {
 
   useEffect(() => {
     if (prefill) {
-      // Optionally split full name into first and last names if needed:
       let firstName = "";
       let lastName = "";
       if (prefill.name) {
@@ -104,6 +103,8 @@ const AddAppointments = ({ onClose, prefill }) => {
 
       setFormData((prev) => ({
         ...prev,
+        date: prefill.date || prev.date,
+        time: prefill.time || prev.time,
         name: prefill.name || "",
         contact: prefill.contact || "",
         email: prefill.email || "",
