@@ -30,8 +30,30 @@ const AddAppointments = ({ onClose, prefill }) => {
   const currentUserEmail = localStorage.getItem("userEmail");
   const servicesInputRef = useRef(null);
   const [doctors, setDoctors] = useState([]);
-
   const dropdownRef = useRef(null);
+
+  const [bookingLimits, setBookingLimits] = useState({
+    start: "08:00",
+    end: "17:00",
+  });
+
+  useEffect(() => {
+    axios
+      .get("http://localhost/api/Settings/get_time_appointments.php")
+      .then((res) => {
+        if (
+          res.data.status === "success" &&
+          res.data.start_time &&
+          res.data.end_time
+        ) {
+          setBookingLimits({
+            start: res.data.start_time.slice(0, 5),
+            end: res.data.end_time.slice(0, 5),
+          });
+        }
+      })
+      .catch((err) => console.error("Failed to fetch booking limits", err));
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -196,11 +218,11 @@ const AddAppointments = ({ onClose, prefill }) => {
 
     const start = new Date(`1970-01-01T${time}`);
     const end = new Date(`1970-01-01T${end_time}`);
-    const latestAllowedStart = new Date(`1970-01-01T08:00`);
-    const latestAllowedEnd = new Date(`1970-01-01T17:00`);
+    const latestAllowedStart = new Date(`1970-01-01T${bookingLimits.start}`);
+    const latestAllowedEnd = new Date(`1970-01-01T${bookingLimits.end}`);
 
     if (start < latestAllowedStart) {
-      toast.error("Start time must not be earlier than 8AM");
+      toast.error(`Start time must not be earlier than ${bookingLimits.start}`);
       setIsLoading(false);
       return;
     }
@@ -212,7 +234,7 @@ const AddAppointments = ({ onClose, prefill }) => {
     }
 
     if (end > latestAllowedEnd) {
-      toast.error("End time must not be later than 5PM");
+      toast.error(`End time must not be later than ${bookingLimits.end}`);
       setIsLoading(false);
       return;
     }
@@ -308,7 +330,7 @@ const AddAppointments = ({ onClose, prefill }) => {
     date.setMinutes(date.getMinutes() + minutes);
     return date.toTimeString().slice(0, 5);
   };
-  
+
   const getTotalDuration = () => {
     return formData.service.reduce((total, serviceName) => {
       const service = services.find((s) => s.name === serviceName);
