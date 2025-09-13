@@ -17,7 +17,7 @@ if ($method === 'OPTIONS') {
 
 // Define allowed tables
 $allowedTables = [
-    "products", "categories", "brands", "suppliers", "inventory", "unit_of_measurement",  "clients", "services"
+    "products", "categories", "brands", "suppliers", "inventory", "unit_of_measurement",  "clients", "services", "appointments"
 ];
 
 // Function to format dates
@@ -41,7 +41,8 @@ if ($method === 'GET') {
             "clients" => "SELECT c.id, 'Clients' AS table_name, c.name, c.address, c.cellnumber, c.email, c.gender, c.created_at
                             FROM clients c WHERE c.archived = 1", // ✅ Added clients
             "services" => "SELECT s.id, 'Services' AS table_name, s.name, s.price, s.consent_form, s.created_at, s.status 
-                        FROM services s WHERE s.archived = 1" // ✅ Added services
+                        FROM services s WHERE s.archived = 1", // ✅ Added services
+            "appointments" => "SELECT a.id, 'Appointments' AS table_name, a.name, a.contact, a.email, a.created_at FROM appointments a WHERE a.status = 'Done'"
         ];
 
         $result = [];

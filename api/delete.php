@@ -20,7 +20,7 @@ $action = $data['action'] ?? '';
 $records = $data['records'] ?? [];
 $table = $data['table'] ?? '';
 
-$allowedTables = ["products", "categories", "brands", "suppliers", "inventory", "unit_of_measurement", "clients", "services"];
+$allowedTables = ["products", "categories", "brands", "suppliers", "inventory", "unit_of_measurement", "clients", "services", "appointments"];
 
 if ($method === 'POST' && $action === "delete") {
     if (empty($records) || !is_array($records)) {
