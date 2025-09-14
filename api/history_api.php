@@ -86,33 +86,34 @@ if ($method === 'GET') {
 
         // Fetch audit_logs and join with internal_users for full name
         $auditSql = "
-            SELECT 
-    a.description AS record_name,
-    'Appointment' AS type,
-    a.timestamp AS created_at,
-    
-    -- Show email only if action is 'update'
-    CASE
-        WHEN a.action = 'update' THEN a.email
-        ELSE NULL
-    END AS updated_by,
+    SELECT 
+        a.description AS record_name,
+        'Appointment' AS type,
+        a.timestamp AS created_at,
+        
+        -- Show user's full name only if action is 'update'
+        CASE
+            WHEN a.action = 'update' THEN CONCAT(u.first_name, ' ', u.last_name)
+            ELSE NULL
+        END AS updated_by,
 
-    -- Show user's full name only if action is 'create'
-    CASE 
-        WHEN a.action = 'create' THEN CONCAT(u.first_name, ' ', u.last_name)
-        ELSE NULL
-    END AS created_by,
+        -- Show user's full name only if action is 'create'
+        CASE 
+            WHEN a.action = 'create' THEN CONCAT(u.first_name, ' ', u.last_name)
+            ELSE NULL
+        END AS created_by,
 
-    -- Show email only if action is 'confirm'
-    CASE 
-        WHEN a.action = 'confirm' THEN a.email
-        ELSE NULL
-    END AS confirmed_by
+        -- Show user's full name only if action is 'confirm'
+        CASE 
+            WHEN a.action = 'confirm' THEN CONCAT(u.first_name, ' ', u.last_name)
+            ELSE NULL
+        END AS confirmed_by
 
-FROM audit_logs a
-LEFT JOIN internal_users u ON a.user_id = u.id
-
-        ";
+    FROM audit_logs a
+    LEFT JOIN internal_users u 
+        ON a.user_id = u.id
+    ORDER BY a.timestamp DESC
+";
         $auditStmt = $conn->prepare($auditSql);
         $auditStmt->execute();
         $auditLogs = $auditStmt->fetchAll(PDO::FETCH_ASSOC);

@@ -142,7 +142,8 @@ function Settings() {
               placement="right"
               overlay={
                 <Tooltip>
-                  Set your clinic’s operating hours. Appointments can only be booked within these times.
+                  Set your clinic’s operating hours. Appointments can only be
+                  booked within these times.
                 </Tooltip>
               }
             >
@@ -156,13 +157,8 @@ function Settings() {
         <div className="card-body">
           <p className="text-muted mb-4">
             Current Schedule:{" "}
-            <strong>
-              {startTime ? formatTo12Hour(startTime) : "Not set"}
-            </strong>{" "}
-            –{" "}
-            <strong>
-              {endTime ? formatTo12Hour(endTime) : "Not set"}
-            </strong>
+            <strong>{startTime ? formatTo12Hour(startTime) : "Not set"}</strong>{" "}
+            – <strong>{endTime ? formatTo12Hour(endTime) : "Not set"}</strong>
           </p>
 
           <div className="row g-3">
