@@ -94,21 +94,37 @@ const Dashboard = () => {
       .catch((err) => console.error("Error fetching clients:", err));
   }, []);
 
+  function deduplicateOrders(orders) {
+    const seen = new Set();
+    return orders.filter(order => {
+      if (seen.has(order.order_id)) {
+        return false;
+      }
+      seen.add(order.order_id);
+      return true;
+    });
+  }
+
   useEffect(() => {
     axios
       .get(`http://localhost:80/api/orders.php?t=${new Date().getTime()}`)
       .then((res) => {
         if (Array.isArray(res.data.orders)) {
-          setSalesData(res.data.orders);
+          // fix to remove duplicate orders that wrecks revenue calculation
+          const uniqueOrders = deduplicateOrders(res.data.orders);
+
+          setSalesData(uniqueOrders);
+
           const years = [
             ...new Set(
-              res.data.orders.map((order) =>
+              uniqueOrders.map((order) =>
                 new Date(order.order_date).getFullYear()
               )
             ),
           ];
           setAvailableYears(years.sort((a, b) => b - a));
-          setTotalRevenue(calculateRevenue(res.data.orders, selectedYear).toFixed(2));
+
+          setTotalRevenue(calculateRevenue(uniqueOrders, selectedYear).toFixed(2));
         } else {
           console.error("Orders data is not an array");
         }
