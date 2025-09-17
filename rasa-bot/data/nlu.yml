@@ -160,6 +160,29 @@ nlu:
     - what do you know?
     - what services do you provide?
 
+- intent: list_appointments
+  examples: |
+    - Show me today's confirmed appointments
+    - List tomorrow's confirmed bookings
+    - Show all confirmed appointments on [September 25, 2025](date)
+    - Get confirmed appointments for [2025-09-20](date)
+    - Any confirmed bookings for [Sept 30, 2025](date)?
+    - Show confirmed appointments for [October 3, 2025](date)
+    - List confirmed bookings today
+    - Show me confirmed appointments this week
+    - Any bookings on [December 12, 2025](date)?
+    - Do we have any appointments today?
+    - Check appointments scheduled for tomorrow
+    - What appointments do we have next week?
+    - Are there any bookings this afternoon?
+    - Show me all appointments for [Monday](date)
+    - List appointments for [July 15](date)
+    - Do we have any scheduled appointments for [next Friday](date)?
+    - Can you pull up appointments for [August 2025](date)?
+    - Are there bookings today?
+    - Show today’s appointments
+    - I need to see the schedule for [tomorrow](date)
+
 - intent: retrieve_client
   examples: |
     - Can you retrieve the client record of [James Doe](client_name)
@@ -275,6 +298,13 @@ nlu:
     - Bunso
     - Paws
     - Miming
+  
+- lookup: date
+  examples: |
+    - today
+    - tomorrow
+    - September 25, 2025
+    - Sept 30, 2025
 
 - synonym: record
   examples: |

@@ -65,3 +65,9 @@ rules:
   steps:
   - intent: what_can_you_do
   - action: utter_what_can_you_do
+
+- rule: Show appointments by date
+  steps:
+    - intent: list_appointments
+    - action: action_list_appointments
+

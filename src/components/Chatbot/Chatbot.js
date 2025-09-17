@@ -57,6 +57,7 @@ export default function ChatbotModal({ onClose }) {
                     url: msg.custom.link.url,
                     label: msg.custom.link.label,
                     searchName: msg.custom.link.searchName,
+                    searchDate: msg.custom.link.searchDate,
                   },
                 },
               ]);
@@ -166,7 +167,7 @@ export default function ChatbotModal({ onClose }) {
                     <div className="mt-2">
                       <Link
                         to={msg.link.url}
-                        state={{ searchName: msg.link.searchName }}
+                        state={{ searchName: msg.link.searchName, searchDate: msg.link.searchDate }}
                         className="text-primary fw-bold"
                       >
                         {msg.link.label}
