@@ -14,6 +14,7 @@ export default function Login({ onLogin }) {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const userID = localStorage.getItem("userID");
@@ -21,16 +22,15 @@ export default function Login({ onLogin }) {
       navigate("/home");
     }
 
-    // ✅ Read and decode query parameters
     const queryParams = new URLSearchParams(location.search);
     const message = queryParams.get("message");
 
     if (message) {
-      const decodedMessage = decodeURIComponent(message); // ✅ Fix: Decode URL-encoded strings
+      const decodedMessage = decodeURIComponent(message);
 
       switch (decodedMessage) {
         case "Verification Successful":
-          toast.success("Your email has been successfully verified! 🎉");
+          toast.success("Your email has been successfully verified!");
           break;
         case "Verification Failed":
           toast.error("Verification failed. Please contact support.");
@@ -47,7 +47,6 @@ export default function Login({ onLogin }) {
           toast.error("An unknown error occurred.");
       }
 
-      // ✅ Remove the query parameters after displaying the toast
       navigate(location.pathname, { replace: true });
     }
   }, [navigate, location]);
@@ -59,17 +58,9 @@ export default function Login({ onLogin }) {
       return;
     }
 
+    setLoading(true);
     axios
-      .post(
-        "http://localhost:80/api/login.php",
-        {
-          email: email,
-          password: password,
-        },
-        {
-          withCredentials: true,
-        }
-      )
+      .post("http://localhost:80/api/login.php", { email, password }, { withCredentials: true })
       .then((response) => {
         if (response.data.status === 1) {
           localStorage.setItem("userID", response.data.id);
@@ -80,90 +71,100 @@ export default function Login({ onLogin }) {
           onLogin();
           navigate("/home");
         } else if (response.data.needsVerification) {
-          navigate("/verify", { state: { email: email } });
+          navigate("/verify", { state: { email } });
         } else {
           setErrorMessage(response.data.message || "Login failed.");
         }
       })
       .catch(() => {
         setErrorMessage("An error occurred. Please try again.");
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   return (
-    <div className={"loginContainer"}>
-      <div className={"loginLeftContainer"}>
-        <div className={"loginForm"}>
-          <div className={"loginTitleContainer"}>
-            <div style={{ fontSize: "37px", fontWeight: 500 }}>Sign in</div>
-            <img src={logo} alt="logo" />
+  <div className="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light">
+    <div className="card shadow-lg rounded-4 overflow-hidden w-100" style={{ maxWidth: "950px" }}>
+      <div className="row g-0">
+        {/* Left Section */}
+        <div className="col-md-6 bg-white p-5 d-flex flex-column justify-content-center">
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <h2 className="fw-semibold m-0">Sign in</h2>
+            <img src={logo} alt="logo" style={{ width: "220px" }} />
           </div>
+
           <form onSubmit={handleSubmit}>
-            <label htmlFor="email" className="loginLabel">
-              Email
-            </label>
-            <div className={"loginInputContainer"}>
+            <div className="mb-3">
+              <label htmlFor="email" className="form-label">Email</label>
               <input
                 type="text"
                 id="email"
                 value={email}
-                placeholder="Enter your email here"
                 onChange={(ev) => setEmail(ev.target.value)}
-                className={"loginInputBox"}
+                className="form-control shadow-sm"
+                placeholder="Enter your email"
               />
             </div>
-            <br />
-            <label htmlFor="password" className="loginLabel">
-              Password
-            </label>
-            <div
-              className={"loginInputContainer"}
-              style={{ position: "relative" }}
-            >
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                value={password}
-                placeholder="Enter your password here"
-                onChange={(ev) => setPassword(ev.target.value)}
-                className={"loginInputBox"}
-              />
-              <div
-                onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: "absolute",
-                  right: "20px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  cursor: "pointer",
-                }}
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
+
+            <div className="mb-3">
+              <label htmlFor="password" className="form-label">Password</label>
+              <div className="position-relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  value={password}
+                  onChange={(ev) => setPassword(ev.target.value)}
+                  className="form-control shadow-sm"
+                  placeholder="Enter your password"
+                />
+                <span
+                  className="position-absolute top-50 end-0 translate-middle-y pe-3"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
               </div>
             </div>
-            <br />
-            <button className={"loginInputButton"} type="submit">
-              Sign in
-            </button>
-          </form>
-          {errorMessage && <p className="loginErrorLabel">{errorMessage}</p>}
 
-          {/* Forgot Password link */}
+            <button
+              className="loginInputButton btn-gradient w-100 d-flex justify-content-center align-items-center"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <div className="spinner-border spinner-border-sm text-light me-2" role="status"></div>
+                  Signing in...
+                </>
+              ) : (
+                "Sign in"
+              )}
+            </button>
+
+          </form>
+
+          {errorMessage && <p className="text-danger mt-2">{errorMessage}</p>}
+
           <div
-            className="forgot-password-link"
+            className="forgot-pass-link text-primary mt-3 text-center"
             onClick={() => navigate("/forgot-password")}
           >
             Forgot your password?
           </div>
         </div>
-      </div>
-      <div className={"loginRightContainer"}>
-        <div className={"loginForm2"}>
-          <div className={"loginTitleContainer2"}>
-            <div>SouthPaws Sales and Inventory Control HUB</div>
-          </div>
+
+        {/* Right Section */}
+        <div className="col-md-6 d-flex flex-column justify-content-center align-items-center text-white p-5 loginForm2">
+          <h3 className="fw-bold text-center">
+            SouthPaws Hospital Management Hub
+          </h3>
         </div>
       </div>
     </div>
-  );
+  </div>
+);
+
 }
