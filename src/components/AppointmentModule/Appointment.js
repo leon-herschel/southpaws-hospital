@@ -362,10 +362,8 @@ const Appointment = () => {
             eventPropGetter={eventPropGetter}
             onSelectEvent={handleEventClick}
             onSelectSlot={(slotInfo) => {
-            const selectedTime = format(slotInfo.start, "HH:mm");
-
-              // Prevent midnight default
-              const safeTime = selectedTime === "00:00" ? "08:00" : selectedTime;
+              const selectedTime = format(slotInfo.start, "HH:mm");
+              const safeTime = selectedTime === "00:00" ? startTime : selectedTime;
 
               setShowModal(true);
               setPrefillDate({
