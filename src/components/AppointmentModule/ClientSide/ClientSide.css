@@ -1,0 +1,191 @@
+html {
+  scroll-behavior: smooth;
+}
+
+.scroll-animate {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s ease-out;
+}
+
+.scroll-animate.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.client-website {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Navbar Styles */
+.navbar-brand {
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.navbar button.nav-link {
+  background: transparent;
+  border: none;
+  color: #6c757d;
+  font-weight: 500;
+  transition: color 0.3s;
+  padding: 0.5rem 1rem;
+}
+
+.navbar button.nav-link:hover {
+  color: #006cb6 !important;
+}
+
+.btn-gradient-web {
+  background-image: linear-gradient(to right, #006cb6, #31b44b);
+  color: #fff !important;
+  border-color: #006cb6;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-gradient-web:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 108, 182, 0.3);
+}
+
+/* Hero Section */
+.hero-section {
+  background-size: cover;
+  background-position: center;
+}
+
+/* Feature Cards */
+.feature-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 15px;
+  background: white;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+}
+
+.feature-icon {
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+  transform: scale(1.1);
+}
+
+.services-section {
+  background: linear-gradient(135deg, #006cb6 0%, #31b44b 100%);
+}
+
+.service-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.service-icon {
+  transition: transform 0.3s ease;
+}
+
+.service-card .text-primary { color: #006cb6 !important; }
+.service-card .text-success { color: #28a745 !important; }
+.service-card .text-warning { color: #ffc107 !important; }
+.service-card .text-danger { color: #dc3545 !important; }
+.service-card .text-info { color: #17a2b8 !important; }
+.service-card .text-purple { color: #9d29b1; }
+
+.service-card p,
+.service-card li {
+  color: #333333;
+}
+
+.service-features li {
+  transition: transform 0.2s ease;
+}
+
+.service-features li:hover {
+  transform: translateX(5px);
+}
+
+/* About Section */
+.about-image {
+  position: relative;
+}
+
+.experience-badge {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Footer */
+.footer-link {
+  transition: color 0.2s ease-in-out;
+  opacity: 0.8;
+}
+
+.footer-link:hover {
+  color: #cccccc !important;
+  opacity: 1;
+  text-decoration: underline !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .display-4 {
+    font-size: 2.5rem;
+  }
+  
+  .display-5 {
+    font-size: 2rem;
+  }
+  
+  .stats-section h2 {
+    font-size: 2.5rem;
+  }
+}
+
+/* Hero content entrance effect */
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-hero {
+  animation: fadeSlideUp 1.2s ease-out forwards;
+}
+
+/* Smooth scrolling for all anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Additional spacing and padding improvements */
+section {
+  padding: 80px 0;
+}
+
+.features-section, .services-section, .about-section {
+  padding: 100px 0;
+}

@@ -19,7 +19,7 @@ export default function Login({ onLogin }) {
   useEffect(() => {
     const userID = localStorage.getItem("userID");
     if (userID) {
-      navigate("/home");
+      navigate("/dashboard");
     }
 
     const queryParams = new URLSearchParams(location.search);
@@ -69,7 +69,7 @@ export default function Login({ onLogin }) {
           localStorage.setItem("userRole", response.data.user_role);
           localStorage.setItem("userEmail", response.data.email);
           onLogin();
-          navigate("/home");
+          navigate("/dashboard");
         } else if (response.data.needsVerification) {
           navigate("/verify", { state: { email } });
         } else {

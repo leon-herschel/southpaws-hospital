@@ -71,7 +71,7 @@ function ReferenceTracking() {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="container-fluid px-5 mt-4">
       <h2 className="mb-3">Track Your Appointment</h2>
       <form onSubmit={handleSubmit}>
         <input

@@ -33,28 +33,23 @@ import ArchivedSupplierManagement from "./components/Archive/ArchivedSupplierMan
 import Generic from "./components/Generic";
 import ReportGeneration from "./components/ReportGeneration";
 import Forecasting from "./components/Forecasting";
-import ClientAppointment from "./components/AppointmentModule/ClientSide/ClientAppointment";
-import ClientAppointmentForm from "./components/AppointmentModule/ClientSide/ClientInfo";
-import ReferenceTracking from "./components/AppointmentModule/ClientSide/ReferenceTracking";
 import GeneralSettings from "./components/Settings/GeneralSettings";
 import ConfirmedAppointments from "./components/AppointmentModule/Tables/ConfirmedAppointments";
 import CancelledAppointment from "./components/AppointmentModule/Tables/CancelledAppointment";
 import DoneAppointments from "./components/AppointmentModule/Tables/DoneAppointments";
 import PendingAppointments from "./components/AppointmentModule/Tables/PendingAppointment";
 import ChatbotModal from "./components/Chatbot/Chatbot";
+import ClientWebsite from "./components/AppointmentModule/ClientSide/ClientWebsite";
 
 function App() {
-  // Manage the authentication state in App.js
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem("userID") !== null
   );
 
-  // Handle login function, which updates the authentication state
   const handleLogin = () => {
     setIsAuthenticated(true);
   };
 
-  // Persist chatbot modal state with localStorage
   const [showChatbot, setShowChatbot] = useState(
     localStorage.getItem("chatbotOpen") === "true"
   );
@@ -67,102 +62,74 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
-          {/* Public routes (client-side) */}
-          <Route path="/southpaws-booking/*" element={<ClientAppointment />} />
+          {/* ---------------- PUBLIC ROUTES ---------------- */}
+          <Route path="/southpawsvet/*" element={<ClientWebsite />} />
           <Route
-            path="/southpaws-booking/appointment-form"
-            element={<ClientAppointmentForm />}
-          />
-          <Route
-            path="/southpaws-booking/reference-tracking"
-            element={<ReferenceTracking />}
+            path="/"
+            element={
+              isAuthenticated ? (
+                <Navigate to="/dashboard" />
+              ) : (
+                <Navigate to="/southpawsvet" />
+              )
+            }
           />
 
-          {/* Authenticated routes */}
-          {isAuthenticated ? (
-            <>
-              <Route
-                path="/*"
-                element={
-                  <>
-                    <Sidebar onOpenChatbot={() => setShowChatbot(true)} />
-                    <div className="content">
-                      <Topbar />
-                      <Routes>
-                        <Route path="/" element={<Navigate to="/home" />} />
-                        <Route
-                          path="information/clients"
-                          element={<ListClients />}
-                        />
-                        <Route path="home" element={<Dashboard />} />
-                        <Route path="category" element={<Category />} />
-                        <Route path="brand" element={<Brand />} />
-                        <Route path="generic" element={<Generic />} />
-                        <Route path="unitofmeasurement" element={<Unit />} />
-                        <Route path="inventory" element={<Inventory />} />
-                        <Route path="products" element={<Product />} />
-                        <Route path="suppliers" element={<Supplier />} />
-                        <Route path="sales" element={<Sales />} />
-                        <Route path="pointofsales" element={<PointofSales />} />
-                        <Route path="orders" element={<Orders />} />
-                        <Route path="services" element={<Services />} />
-                        <Route path="profile" element={<UserProfile />} />
-                        <Route
-                          path="usermanagement"
-                          element={<UserManagement />}
-                        />
-                        <Route path="history" element={<LogHistory />} />
-                        <Route
-                          path="ImmunizationForm"
-                          element={<ImmunizationForm />}
-                        />
-                        <Route path="SurgicalForm" element={<SurgicalForm />} />
-                        <Route path="archive" element={<Archive />} />
-                        <Route
-                          path="archived-suppliers"
-                          element={<ArchivedSupplierManagement />}
-                        />
-                        <Route
-                          path="report-generation"
-                          element={<ReportGeneration />}
-                        />
-                        <Route path="forecasting" element={<Forecasting />} />
-                        <Route path="appointment" element={<Appointment />} />
-                        <Route
-                          path="appointment/pending"
-                          element={<PendingAppointments />}
-                        />
-                        <Route
-                          path="appointment/confirmed"
-                          element={<ConfirmedAppointments />}
-                        />
-                        <Route
-                          path="appointment/cancelled"
-                          element={<CancelledAppointment />}
-                        />
-                        <Route
-                          path="appointment/done"
-                          element={<DoneAppointments />}
-                        />
-                        <Route path="settings" element={<GeneralSettings />} />
-                      </Routes>
-                    </div>
-                    {showChatbot && (
-                      <ChatbotModal onClose={() => setShowChatbot(false)} />
-                    )}
-                  </>
-                }
-              />
-            </>
-          ) : (
-            <>
-              <Route path="/login" element={<Login onLogin={handleLogin} />} />
-              <Route path="/verify" element={<VerificationAccount />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="*" element={<Navigate to="/login" />} />
-            </>
+          {/* ---------------- AUTHENTICATION ROUTES ---------------- */}
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
+          <Route path="/verify" element={<VerificationAccount />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+
+          {/* ---------------- PRIVATE SYSTEM ROUTES ---------------- */}
+          {isAuthenticated && (
+            <Route
+              path="/*"
+              element={
+                <>
+                  <Sidebar onOpenChatbot={() => setShowChatbot(true)} />
+                  <div className="content">
+                    <Topbar />
+                    <Routes>
+                      <Route path="/" element={<Navigate to="/dashboard" />} />
+                      <Route path="dashboard" element={<Dashboard />} />
+                      <Route path="category" element={<Category />} />
+                      <Route path="brand" element={<Brand />} />
+                      <Route path="generic" element={<Generic />} />
+                      <Route path="unitofmeasurement" element={<Unit />} />
+                      <Route path="inventory" element={<Inventory />} />
+                      <Route path="products" element={<Product />} />
+                      <Route path="suppliers" element={<Supplier />} />
+                      <Route path="sales" element={<Sales />} />
+                      <Route path="pointofsales" element={<PointofSales />} />
+                      <Route path="orders" element={<Orders />} />
+                      <Route path="services" element={<Services />} />
+                      <Route path="profile" element={<UserProfile />} />
+                      <Route path="usermanagement" element={<UserManagement />} />
+                      <Route path="history" element={<LogHistory />} />
+                      <Route path="ImmunizationForm" element={<ImmunizationForm />} />
+                      <Route path="SurgicalForm" element={<SurgicalForm />} />
+                      <Route path="archive" element={<Archive />} />
+                      <Route path="archived-suppliers" element={<ArchivedSupplierManagement />} />
+                      <Route path="report-generation" element={<ReportGeneration />} />
+                      <Route path="forecasting" element={<Forecasting />} />
+                      <Route path="appointment" element={<Appointment />} />
+                      <Route path="appointment/pending" element={<PendingAppointments />} />
+                      <Route path="appointment/confirmed" element={<ConfirmedAppointments />} />
+                      <Route path="appointment/cancelled" element={<CancelledAppointment />} />
+                      <Route path="appointment/done" element={<DoneAppointments />} />
+                      <Route path="settings" element={<GeneralSettings />} />
+                      <Route path="information/clients" element={<ListClients />} />
+                    </Routes>
+                  </div>
+                  {showChatbot && <ChatbotModal onClose={() => setShowChatbot(false)} />}
+                </>
+              }
+            />
           )}
+
+          {/* ---------------- CATCH-ALL ROUTE ---------------- */}
+          {!isAuthenticated && <Route path="*" element={<Navigate to="/login" />} />}
         </Routes>
       </BrowserRouter>
       <ToastContainer />
