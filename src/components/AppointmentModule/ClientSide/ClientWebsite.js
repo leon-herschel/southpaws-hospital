@@ -130,7 +130,7 @@ function WebsiteHeader({ homeRef, servicesRef, aboutRef }) {
       <div className="container-fluid px-5">
         <button 
           className="navbar-brand d-flex align-items-center border-0 bg-transparent"
-          onClick={() => handleScroll(homeRef)}
+          onClick={() => handleScroll("home")}
           style={{ cursor: 'pointer' }}
         >
           <img src={southpawsLogo} alt="South Paws Veterinary Hospital" style={{ height: "45px", objectFit: "contain" }} />

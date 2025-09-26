@@ -71,56 +71,103 @@ function ReferenceTracking() {
   };
 
   return (
-    <div className="container-fluid px-5 mt-4">
-      <h2 className="mb-3">Track Your Appointment</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          className="form-control mb-3"
-          placeholder="Enter reference number"
-          value={referenceNumber}
-          onChange={(e) => setReferenceNumber(e.target.value)}
-        />
-        <div className="button-container mb-3">
-          <button
-            type="submit"
-            className="button btn-gradient"
-            disabled={loading}
-          >
-            {loading ? "Checking..." : "Submit"}
-          </button>
+    <div className="tracking-container">
+      <div className="text-center mb-4">
+        <i className="fas fa-search text-primary mb-3" style={{ fontSize: '3rem' }}></i>
+        <h3 className="fw-bold">Track Your Appointment</h3>
+        <p className="text-muted">Enter your reference number to check your appointment status</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="mb-4">
+        <div className="row g-2 align-items-center justify-content-center"> 
+          <div className="col-md-8 col-lg-6"> 
+            <input
+              type="text"
+              className="form-control form-control-lg"
+              placeholder="Enter your reference number (e.g., ABC-1234)"
+              value={referenceNumber}
+              onChange={(e) => setReferenceNumber(e.target.value)}
+            />
+          </div>
+          <div className="col-md-auto"> 
+            <button
+              type="submit"
+              className="btn btn-primary btn-lg w-100" 
+              disabled={loading}
+              style={{ minWidth: "120px" }} 
+            >
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" />
+                  Checking...
+                </>
+              ) : (
+                <>
+                  <i className="fas fa-search me-2"></i>
+                  Track
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </form>
 
       {appointmentDetails && (
-        <div className="mt-4 p-3 border rounded shadow-sm">
-          <h4 className="mb-3 text-primary">Appointment Info</h4>
-          <section className="mb-3">
-            <p><strong>Name:</strong> {appointmentDetails.name}</p>
-            <p><strong>Pet Name:</strong> {appointmentDetails.pet_name}</p>
-            <p>
-              <strong>Date:</strong>{" "}
-              {appointmentDetails.date
-                ? format(new Date(appointmentDetails.date), "MMMM d, yyyy")
-                : "—"}
-            </p>
-            <p>
-              <strong>Time:</strong>{" "}
-              {appointmentDetails.time
-                ? appointmentDetails.end_time
-                  ? `${format(new Date(`1970-01-01T${appointmentDetails.time}`), "hh:mm a")} to ${format(new Date(`1970-01-01T${appointmentDetails.end_time}`), "hh:mm a")}`
-                  : format(new Date(`1970-01-01T${appointmentDetails.time}`), "hh:mm a")
-                : "—"}
-            </p>
-            <p><strong>Service:</strong> {appointmentDetails.service || "TBD"}</p>
-            <p><strong>Doctor:</strong> {appointmentDetails.doctor_name || "TBD"}</p>
-            <p>
-              <strong>Status:</strong>{" "}
-              <span className={getStatusClass(appointmentDetails.status)}>
-                {appointmentDetails.status || "Pending"}
-              </span>
-            </p>
-          </section>
+        <div className="appointment-details-card mt-4">
+          <div className="card border-0 shadow-sm">
+            <div className="card-header bg-primary text-white py-3">
+              <h5 className="mb-0">
+                <i className="fas fa-calendar-check me-2"></i>
+                Appointment Details
+              </h5>
+            </div>
+            <div className="card-body p-4">
+              <div className="row">
+                <div className="col-md-6">
+                  <div className="detail-item mb-3">
+                    <strong className="text-primary">Name:</strong>
+                    <p className="mb-0">{appointmentDetails.name}</p>
+                  </div>
+                  <div className="detail-item mb-3">
+                    <strong className="text-primary">Pet Name:</strong>
+                    <p className="mb-0">{appointmentDetails.pet_name}</p>
+                  </div>
+                  <div className="detail-item mb-3">
+                    <strong className="text-primary">Date:</strong>
+                    <p className="mb-0">
+                      {appointmentDetails.date
+                        ? format(new Date(appointmentDetails.date), "MMMM d, yyyy")
+                        : "—"}
+                    </p>
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="detail-item mb-3">
+                    <strong className="text-primary">Time:</strong>
+                    <p className="mb-0">
+                      {appointmentDetails.time
+                        ? appointmentDetails.end_time
+                          ? `${format(new Date(`1970-01-01T${appointmentDetails.time}`), "hh:mm a")} - ${format(new Date(`1970-01-01T${appointmentDetails.end_time}`), "hh:mm a")}`
+                          : format(new Date(`1970-01-01T${appointmentDetails.time}`), "hh:mm a")
+                        : "—"}
+                    </p>
+                  </div>
+                  <div className="detail-item mb-3">
+                    <strong className="text-primary">Service:</strong>
+                    <p className="mb-0">{appointmentDetails.service || "TBD"}</p>
+                  </div>
+                  <div className="detail-item mb-3">
+                    <strong className="text-primary">Status:</strong>
+                    <div className="mt-1">
+                      <span className={getStatusClass(appointmentDetails.status)}>
+                        {appointmentDetails.status || "Pending"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
