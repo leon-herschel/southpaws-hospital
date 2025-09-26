@@ -83,7 +83,7 @@ function ReferenceTracking() {
           <div className="col-md-8 col-lg-6"> 
             <input
               type="text"
-              className="form-control form-control-lg"
+              className="form-control"
               placeholder="Enter your reference number (e.g., ABC-1234)"
               value={referenceNumber}
               onChange={(e) => setReferenceNumber(e.target.value)}
@@ -103,7 +103,6 @@ function ReferenceTracking() {
                 </>
               ) : (
                 <>
-                  <i className="fas fa-search me-2"></i>
                   Track
                 </>
               )}

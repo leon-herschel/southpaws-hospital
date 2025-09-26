@@ -1,4 +1,4 @@
-import { FaPhoneAlt, FaCalendarTimes } from "react-icons/fa";
+import { FaPhoneAlt, FaFacebookMessenger, FaCalendarTimes } from "react-icons/fa";
 
 function AppointmentUnavailable() {
   return (
@@ -18,11 +18,24 @@ function AppointmentUnavailable() {
           But don’t worry — you can still schedule your pet’s visit!
         </p>
 
-        <div className="p-3 bg-white shadow-sm rounded-3 d-inline-block">
+        <div className="p-3 bg-white shadow-sm rounded-3 d-inline-block mb-3">
           <FaPhoneAlt className="text-primary me-2" />
-          <span style={{ fontSize: "1.25rem", fontWeight: "500" }}>
+          <span style={{ fontSize: "1.25rem", fontWeight: "500" }} className="align-middle">
             Call us at <strong>0960 631 7128</strong>
           </span>
+        </div>
+
+        <div className="p-3 bg-white shadow-sm rounded-3 d-inline-block">
+          <FaFacebookMessenger className="text-primary me-2" />
+          <a
+            href="https://www.facebook.com/swusouthpaws/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-decoration-none align-middle"
+            style={{ fontSize: "1.25rem", fontWeight: "500" }}
+          >
+            Message us on Facebook
+          </a>
         </div>
 
         <p className="mt-4 text-muted">

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Routes, Route, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import {
   FaFacebook,
   FaMapMarkerAlt,
@@ -36,20 +37,31 @@ function ClientWebsite() {
       const sectionMap = {
         home: homeRef,
         services: servicesRef,
-        about: aboutRef
+        about: aboutRef,
       };
       const sectionRef = sectionMap[location.state.scrollTo];
-      sectionRef?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      window.history.replaceState({}, document.title);
+
+      const timer = setTimeout(() => {
+        sectionRef?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+        window.history.replaceState({}, document.title);
+      }, 100); 
+
+      return () => clearTimeout(timer);
     }
   }, [location]);
 
   useEffect(() => {
+    if (!location.pathname.endsWith('/southpawsvet') && location.pathname !== '/') {
+      return;
+    }
+    
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add("in-view");
+            observer.unobserve(entry.target);
           }
         });
       },
@@ -61,7 +73,7 @@ function ClientWebsite() {
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [location.pathname]);
 
   const scrollToSection = (sectionRef) => {
     sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -73,7 +85,7 @@ function ClientWebsite() {
 
       <Routes>
         {/* Home page */}
-        <Route path="/" element={
+        <Route path="" element={
           <>
             <div ref={homeRef} style={{ scrollMarginTop: "80px" }}>
               <HomeSection scrollToSection={scrollToSection} servicesRef={servicesRef} />
@@ -121,7 +133,7 @@ function WebsiteHeader({ homeRef, servicesRef, aboutRef }) {
     if (sectionMap[sectionName]?.current) {
       sectionMap[sectionName].current.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
-      navigate("/", { state: { scrollTo: sectionName } });
+      navigate("/southpawsvet", { state: { scrollTo: sectionName } });
     }
   };
 
@@ -143,8 +155,10 @@ function WebsiteHeader({ homeRef, servicesRef, aboutRef }) {
             <button className="nav-link border-0 bg-transparent" onClick={() => handleScroll("home")}>Home</button>
             <button className="nav-link border-0 bg-transparent" onClick={() => handleScroll("services")}>Services</button>
             <button className="nav-link border-0 bg-transparent" onClick={() => handleScroll("about")}>About Us</button>
-            <li className="nav-item ms-2">
-              <NavLink to="/southpawsvet/booking" className="btn btn-gradient-web">Book Appointment</NavLink>
+            <li className="nav-item ms-2 d-none d-lg-block">
+              <NavLink to="/southpawsvet/booking" className="btn btn-gradient-web">
+                Book Appointment
+              </NavLink>
             </li>
           </ul>
         </div>
@@ -418,7 +432,7 @@ function WebsiteFooter({ homeRef, servicesRef, aboutRef }) {
     if (sectionMap[sectionName]?.current) {
       sectionMap[sectionName].current.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
-      navigate("/", { state: { scrollTo: sectionName } });
+      navigate("/southpawsvet", { state: { scrollTo: sectionName } });
     }
   };
 
