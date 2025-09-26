@@ -22,16 +22,15 @@
     background-color: #28a745; /* Optional: Keep the button color distinct */
 }
 
-/* Keep the overall form control gray */
 .form-control {
     font-weight: 300;
     background-color: #D9D9D9;
-    border: solid 1.5px #D9D9D9;
-    border-radius: 100px;
+    border: solid 1.5px #d1d0d0;
+    border-radius: 80px;
     padding: 12px 15px;
     margin: 8px 0;
     width: 100%;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
 }
 
 /* Ensure only actual input fields remain white */
