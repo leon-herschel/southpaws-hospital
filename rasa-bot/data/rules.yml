@@ -20,6 +20,12 @@ rules:
   - intent: retrieve_patient
   - action: action_retrieve_patient
 
+# --- FAQs ---
+- rule: Respond to FAQs
+  steps:
+    - intent: faq
+    - action: utter_faq
+
 # Chitchat rules
 - rule: Greet
   steps:
@@ -65,3 +71,9 @@ rules:
   steps:
   - intent: what_can_you_do
   - action: utter_what_can_you_do
+
+- rule: Show appointments by date
+  steps:
+    - intent: list_appointments
+    - action: action_list_appointments
+

@@ -13,6 +13,8 @@ intents:
   - retrieve_client
   - retrieve_appointment
   - retrieve_patient
+  - list_appointments
+  - faq
 
 entities:
   - client_name
@@ -99,8 +101,33 @@ responses:
     - text: "I’m PawPal, your personal AI assistant."
 
   utter_what_can_you_do:
-    - text: "I can retrieve client, patient, appointment, and other records."
-    - text: "I’m here to help you with hospital-related data."
+    - text: |
+        I can help you manage hospital tasks. Here’s what I can do right now:
+        • Retrieve client, patient, and appointment records
+        • Look up appointments using reference number, name, or date
+        • List and filter bookings by date (e.g., today, tomorrow, specific dates)
+        • Answer FAQs and provide quick guidance on using the system features
+
+  utter_faq/appointments_add:
+    - text: "To add an appointment, click the **Add Appointment** button or click an empty slot in the calendar to prefill the date and time."
+
+  utter_faq/appointments_statuses:
+    - text: "The boxes show the number of appointments by status: Pending, Confirmed, Cancelled, and Done. Clicking a box opens the list for that status."
+
+  utter_faq/appointments_tag_arrived:
+    - text: "Use the **Tag as Arrived** button when a patient arrives. A modal will open for marking them as arrived."
+
+  utter_faq/appointments_filter:
+    - text: "Use the dropdown above the calendar to filter by doctor or view all appointments."
+
+  utter_faq/appointments_view:
+    - text: "Clicking on an appointment opens a modal with details like client info, pet details, services, doctor, and status. From there you can also edit or delete (if cancelled)."
+
+  utter_faq/appointments_delete:
+    - text: "You can only delete cancelled appointments. Open the appointment, click delete, and confirm to remove it."
+
+  utter_faq/appointments_calendar_views:
+    - text: "You can switch the calendar view to **Day, Week, or Month** to see appointments in different timeframes."
 
 session_config:
   session_expiration_time: 60
@@ -110,3 +137,4 @@ actions:
   - action_retrieve_client
   - action_retrieve_appointment
   - action_retrieve_patient
+  - action_list_appointments

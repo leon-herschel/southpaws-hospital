@@ -2,7 +2,6 @@ import React from 'react';
 import HomeIcon from '@mui/icons-material/Home';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import SortIcon from '@mui/icons-material/Sort';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
@@ -11,14 +10,13 @@ import VaccinesIcon from '@mui/icons-material/Vaccines';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import HistoryIcon from '@mui/icons-material/History';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
-import LabelIcon from '@mui/icons-material/Label'; // For Brand
-import ScaleIcon from '@mui/icons-material/Scale'; // For Unit of Measurement
-import AssignmentIcon from '@mui/icons-material/Assignment'; // For general forms
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd'; // To differentiate types of forms
+import LabelIcon from '@mui/icons-material/Label'; 
+import ScaleIcon from '@mui/icons-material/Scale'; 
+import AssignmentIcon from '@mui/icons-material/Assignment'; 
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 
@@ -28,7 +26,7 @@ export const SidebarData = [
     {
         title: "Dashboard",
         icon: <HomeIcon />,
-        link: "/home"
+        link: "/dashboard"
     },
     {
         title: "Products",

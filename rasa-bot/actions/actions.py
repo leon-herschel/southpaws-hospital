@@ -2,6 +2,10 @@ import pymysql
 from typing import Any, Text, Dict, List
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
+from datetime import datetime, date, timedelta
+import re
+import dateutil.parser
+
 
 DB_CONFIG = {
     "host": "localhost",
@@ -43,6 +47,55 @@ def build_split_word_query(field: str, value: str):
     params = [f"%{w.lower()}%" for w in words]
     return conditions, params
 
+def parse_date_value(value, message_text: str = ""):
+    txt = (message_text or "").lower()
+    v = (value or "").strip().lower()
+
+    if "today" in (v or txt):
+        return date.today()
+    if "tomorrow" in (v or txt):
+        return date.today() + timedelta(days=1)
+
+    if not v:
+        return None
+
+    try:
+        parsed = dateutil.parser.parse(v, dayfirst=True, fuzzy=True)
+        return parsed.date()
+    except Exception:
+        return None
+
+class ActionListAppointments(Action):
+    def name(self):
+        return "action_list_appointments"
+
+    async def run(self, dispatcher, tracker, domain):
+        message_text = tracker.latest_message.get("text", "").lower()
+        date_value = tracker.get_slot("date")
+
+        dt = parse_date_value(date_value, message_text)
+
+        if not dt:
+            dispatcher.utter_message(text="Sorry, I couldn’t understand the date. Please try again with a clearer format (e.g., 'July 24, 2025').")
+            return []
+
+        date_iso = dt.strftime("%Y-%m-%d")
+        human = dt.strftime("%B %d, %Y")
+
+        url = f"/appointment/confirmed?date={date_iso}"
+
+        dispatcher.utter_message(json_message={
+            "appointments": [{
+                "text": f"Here’s the link to confirmed appointments for {human}:",
+                "link": {
+                    "url": url,
+                    "label": f"View appointments for {human}"
+                }
+            }]
+        })
+
+        return []
+
 # --- CLIENTS ---
 class ActionRetrieveClient(Action):
     def name(self): return "action_retrieve_client"
@@ -50,7 +103,7 @@ class ActionRetrieveClient(Action):
     def run(self, dispatcher, tracker, domain):
         client_name = next(tracker.get_latest_entity_values("client_name"), None)
         if not client_name:
-            dispatcher.utter_message(text="Please provide the client's full name.")
+            dispatcher.utter_message(text="Looking for client details? Please retype your request and include the client's full name.")
             return []
         try:
             conditions, params = build_split_word_query("name", client_name)
@@ -103,7 +156,7 @@ class ActionRetrieveAppointment(Action):
                 query = f"SELECT * FROM appointments WHERE {conditions} AND status != 'Done'"
                 results = db_query(query, params)
             else:
-                dispatcher.utter_message(text="Provide a reference number or client name.")
+                dispatcher.utter_message(text="Looking for appointment details? Please retype your request with the client's full name or reference number.")
                 return []
 
             if results:
@@ -150,7 +203,7 @@ class ActionRetrievePatient(Action):
     def run(self, dispatcher, tracker, domain):
         pet_name = next(tracker.get_latest_entity_values("pet_name"), None)
         if not pet_name:
-            dispatcher.utter_message(text="Please provide the pet name.")
+            dispatcher.utter_message(text="Looking for a patient record? Please retype your request and include the pet's name.")
             return []
 
         try:

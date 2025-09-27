@@ -3,7 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaArrowLeft, FaEdit, FaEye } from "react-icons/fa";
-import { format } from "date-fns";
+import { format, parseISO, isSameDay } from "date-fns";
 import { Pagination, Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 import EditAppointment from "../EditAppointment";
 
@@ -19,6 +19,7 @@ function ConfirmedAppointments() {
   const location = useLocation();
   const [showEventModal, setShowEventModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [filterDate, setFilterDate] = useState(null);
 
   useEffect(() => {
     if (location.state?.searchName) {
@@ -30,6 +31,17 @@ function ConfirmedAppointments() {
     setSelectedEvent(appointment);
     setShowEventModal(true);
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const dateParam = params.get("date"); // expects YYYY-MM-DD
+    if (dateParam) {
+      setFilterDate(dateParam);
+      setSearchTerm(""); 
+    } else {
+      setFilterDate(null);
+    }
+  }, [location.search]);
 
   const fetchConfirmed = async () => {
     try {
@@ -44,7 +56,6 @@ function ConfirmedAppointments() {
       console.log("Error fetching confirmed appointments", err);
     }
   };
-
 
   useEffect(() => {
     fetchConfirmed();
@@ -109,7 +120,11 @@ function ConfirmedAppointments() {
     return null;
   };
 
-  const filteredAppointments = confirmedAppointments.filter((a) =>
+  const baseList = filterDate
+  ? confirmedAppointments.filter((a) => isSameDay(parseISO(a.date), parseISO(filterDate)))
+  : confirmedAppointments;
+
+  const filteredAppointments = baseList.filter((a) =>
     Object.values(a).join(" ").toLowerCase().includes(searchTerm)
   );
 
@@ -203,7 +218,7 @@ function ConfirmedAppointments() {
           </tr>
         </thead>
         <tbody>
-          {confirmedAppointments.length === 0 ? (
+          {filteredAppointments.length === 0 ? (
             <tr>
               <td colSpan="11" className="text-center">
                 No confirmed appointments.

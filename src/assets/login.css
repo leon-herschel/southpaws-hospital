@@ -1,170 +1,30 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-}
-
 body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-}
-
-/* Unique class for the login container */
-.loginContainer {
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    width: 1000px;
-    max-width: 100%;
-    min-height: 600px;
-    margin: auto; /* Centering horizontally */
-}
-
-.loginLeftContainer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 50%;
-    z-index: 2;
-}
-
-.loginRightContainer {
-    position: absolute;
-    top: 0;
-    height: 100%;
-    width: 50%;
-    right: 0;
-    z-index: 2;
-}
-
-.loginForm {
-    background-color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    padding: 0 50px;
-    height: 100%;
-    text-align: center;
-}
-
-.loginForm2 {
-    background-image: linear-gradient(#006cb6, #31b44b);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    padding: 0 50px;
-    height: 100%;
-    text-align: center;
-}
-
-.loginTitleContainer {
-    display: flex;
-    align-items: center;
-    font-size: 50px;
-    font-weight: 400;
-    margin-bottom: 40px;
-    text-shadow: 2px 2px 4px gray;
-}
-
-.loginTitleContainer img {
-    width: 200px;
-    margin-left: 75px;
-    max-width: 100%;
-    max-height: 100%;
-}
-
-.loginTitleContainer2 {
-    display: flex;
-    align-items: center;
-    color: white;
-    font-weight: bold;
-    font-size: 30px;
-    margin-top: 10px;
-    text-shadow: 2px 2px 4px gray;
-}
-
-.loginInputContainer {
-    background-color: #D9D9D9;
-    border: solid 1.5px #D9D9D9;
-    border-radius: 100px;
-    padding: 12px 15px;
-    margin: 8px 0;
-    width: 100%;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-    position: relative; /* To position the icon inside */
-}
-
-.loginInputBox {
-    width: 100%;
-    border: none;
-    background: none;
-    padding: 8px 0;
-    font-size: 16px;
-    outline: none;
-}
-
-.loginInputBox + svg { /* Styles for the toggle icon */
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    color: #333; /* Adjust icon color if needed */
-}
-
-.loginErrorLabel {
-    color: red;
-    font-size: 12px;
-    margin-top: 4px;
+  font-family: 'Poppins', sans-serif;
 }
 
 .loginInputButton {
-    margin-top: 20px;
-    width: 350px;
-    font-size: 18px;
-    font-weight: 500;
-    height: 50px;
-    border: none;
-    border-radius: 50px;
-    background-image: linear-gradient(to right, #006cb6, #31b44b);
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-    color: white;
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: 500;
+  height: 50px;
+  border: none;
+  border-radius: 50px;
+  background-image: linear-gradient(to right, #006cb6, #31b44b);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  color: white;
 }
 
-.loginInputButton:hover {
-    color: black;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+.loginForm2 {
+  background-image: linear-gradient(#006cb6, #31b44b);
 }
 
-/* Styles for the labels */
-.loginLabel {
-    font-size: 18px;
-    font-weight: 400;
-    color: #333;
-    margin-bottom: 5px;
-    display: block;  /* Makes labels block-level so inputs appear below */
-    text-align: left;  /* Aligns the label text to the left */
+.forgot-pass-link {
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
 }
 
-.forgot-password-link {
-    color: #007bff; /* Default blue color */
-    font-size: 14px; /* Adjust the font size */
-    cursor: pointer; /* Change the cursor to pointer when hovered */
-    text-decoration: none; /* Remove underline */
-    margin-top: 10px; /* Optional, for spacing */
-  }
-  
-  .forgot-password-link:hover {
-    color: #0056b3; /* Darker blue color on hover */
-    text-decoration: underline; /* Underline the text when hovered */
-  }
-  
+.forgot-pass-link:hover {
+  color: #004080;
+  text-decoration: underline;
+}
+
