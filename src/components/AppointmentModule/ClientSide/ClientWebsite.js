@@ -25,6 +25,7 @@ import heroBanner from "../../../assets/web-hero-banner.jpg";
 import aboutUsImage from "../../../assets/about-us-image.jpg";
 import "./ClientSide.css";
 import ClientAppointment from "./ClientAppointment";
+import StaffPortalModal from "./StaffPortalModal";
 
 function ClientWebsite() {
   const homeRef = useRef(null);
@@ -116,6 +117,9 @@ function ClientWebsite() {
           }
         />
       </Routes>
+
+      <StaffPortalModal/>
+
     </div>
   );
 }
@@ -489,6 +493,15 @@ function WebsiteFooter({ homeRef, servicesRef, aboutRef }) {
                 >
                   Book Appointment
                 </NavLink>
+              </li>
+              <li className="mb-2">
+                <button
+                  className="footer-link text-light text-decoration-none border-0 bg-transparent"
+                  data-bs-toggle="modal"
+                  data-bs-target="#staffPortalModal"
+                >
+                  Staff Portal
+                </button>
               </li>
             </ul>
           </div>
