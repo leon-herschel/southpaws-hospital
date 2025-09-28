@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import Draggable from "react-draggable";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import {
   format,
@@ -15,7 +16,7 @@ import {
 import enUS from "date-fns/locale/en-US";
 import AddAppointments from "./AddAppointments";
 import TagArrived from "./TagArrived/TagArrived";
-import { Modal } from "react-bootstrap";
+import { Modal, ModalDialog } from "react-bootstrap";
 import { toast } from "react-toastify";
 import EditAppointment from "./EditAppointment";
 import { useNavigate } from "react-router-dom";
@@ -35,6 +36,23 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales,
 });
+
+function DraggableModal(props) {
+  const nodeRef = useRef(null);
+  return (
+    <Modal
+      {...props}
+      dialogAs={(dialogProps) => (
+        <Draggable
+          nodeRef={nodeRef}
+          cancel="input,textarea,button,select,label"
+        >
+          <ModalDialog {...dialogProps} ref={nodeRef} />
+        </Draggable>
+      )}
+    />
+  );
+}
 
 const Appointment = () => {
   const statuses = ["Pending", "Confirmed", "Cancelled", "Done"];
@@ -84,12 +102,14 @@ const Appointment = () => {
 
   const fetchPendingAppointments = async () => {
     try {
-      const res = await axios.get("http://localhost/api/pending_appointments.php");
+      const res = await axios.get(
+        "http://localhost/api/pending_appointments.php"
+      );
       const raw = res.data.appointments || [];
 
       const normalized = raw.map((appt) => ({
         ...appt,
-        date: appt.preferred_date, 
+        date: appt.preferred_date,
         time: appt.preferred_time,
       }));
 
@@ -101,9 +121,11 @@ const Appointment = () => {
 
   const fetchSchedule = async () => {
     try {
-      const res = await axios.get("http://localhost/api/Settings/get_time_appointments.php");
+      const res = await axios.get(
+        "http://localhost/api/Settings/get_time_appointments.php"
+      );
       if (res.data.start_time && res.data.end_time) {
-        setStartTime(res.data.start_time.slice(0, 5)); 
+        setStartTime(res.data.start_time.slice(0, 5));
         setEndTime(res.data.end_time.slice(0, 5));
       }
     } catch (err) {
@@ -200,13 +222,19 @@ const Appointment = () => {
     const counts = {
       Pending: pendingAppointments.length,
       Confirmed: doctorFilter(
-        filterAppointmentsByDate(appointments.filter((appt) => appt.status === "Confirmed"))
+        filterAppointmentsByDate(
+          appointments.filter((appt) => appt.status === "Confirmed")
+        )
       ).length,
       Cancelled: doctorFilter(
-        filterAppointmentsByDate(appointments.filter((appt) => appt.status === "Cancelled"))
+        filterAppointmentsByDate(
+          appointments.filter((appt) => appt.status === "Cancelled")
+        )
       ).length,
       Done: doctorFilter(
-        filterAppointmentsByDate(appointments.filter((appt) => appt.status === "Done"))
+        filterAppointmentsByDate(
+          appointments.filter((appt) => appt.status === "Done")
+        )
       ).length,
     };
 
@@ -225,7 +253,9 @@ const Appointment = () => {
             }}
             key={idx}
             onClick={() => {
-              if (["Pending", "Confirmed", "Cancelled", "Done"].includes(status)) {
+              if (
+                ["Pending", "Confirmed", "Cancelled", "Done"].includes(status)
+              ) {
                 navigate(`/appointment/${status.toLowerCase()}`);
               }
             }}
@@ -363,7 +393,8 @@ const Appointment = () => {
             onSelectEvent={handleEventClick}
             onSelectSlot={(slotInfo) => {
               const selectedTime = format(slotInfo.start, "HH:mm");
-              const safeTime = selectedTime === "00:00" ? startTime : selectedTime;
+              const safeTime =
+                selectedTime === "00:00" ? startTime : selectedTime;
 
               setShowModal(true);
               setPrefillDate({
@@ -380,7 +411,7 @@ const Appointment = () => {
       </div>
 
       {showModal && (
-        <Modal
+        <DraggableModal
           show={showModal}
           onHide={() => setShowModal(false)}
           size="md"
@@ -404,7 +435,7 @@ const Appointment = () => {
               }}
             />
           </Modal.Body>
-        </Modal>
+        </DraggableModal>
       )}
 
       {showTagModal && (
