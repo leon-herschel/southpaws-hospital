@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Button, Modal } from "react-bootstrap";
+import { FaPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
+import AddServicesModal from "../Add/AddServicesModal";
+import AddUserModal from "../Add/AddUserModal";
 
 const AddAppointments = ({ onClose, prefill }) => {
   const [formData, setFormData] = useState({
@@ -34,11 +37,37 @@ const AddAppointments = ({ onClose, prefill }) => {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [pendingFormData, setPendingFormData] = useState(null);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [toggleAddServicesModal, setToggleAddServicesModal] = useState(false);
+  const [addNewDoctorModal, setAddNewDoctorModal] = useState(false);
 
   const [bookingLimits, setBookingLimits] = useState({
     start: "08:00",
     end: "17:00",
   });
+
+  const fetchServices = async () => {
+    try {
+      const response = await axios.get("http://localhost:80/api/services.php");
+      setServices(response.data); // ✅ reuse your existing state
+    } catch (error) {
+      console.error("Error fetching services:", error);
+    }
+  };
+
+  const fetchDoctors = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:80/api/get_doctors.php"
+      );
+      setDoctors(response.data); // ✅ reuse your existing state
+    } catch (error) {
+      console.error("Error fetching doctors:", error);
+    }
+  };
+  // load doctors initially
+  useEffect(() => {
+    fetchDoctors();
+  }, []);
 
   useEffect(() => {
     axios
@@ -277,12 +306,12 @@ const AddAppointments = ({ onClose, prefill }) => {
     };
 
     if (shouldSendEmail) {
-      setPendingFormData(formToSend); 
-      setShowEmailModal(true);        
-      setIsLoading(false);           
+      setPendingFormData(formToSend);
+      setShowEmailModal(true);
+      setIsLoading(false);
       return;
     }
-    
+
     handleFinalSubmit(formToSend, false);
   };
 
@@ -341,7 +370,10 @@ const AddAppointments = ({ onClose, prefill }) => {
       }
     } catch (error) {
       console.error("Submission Error:", error.response?.data || error.message);
-      toast.error(error.response?.data?.error || "Failed to submit. Please check your server.");
+      toast.error(
+        error.response?.data?.error ||
+          "Failed to submit. Please check your server."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -513,6 +545,23 @@ const AddAppointments = ({ onClose, prefill }) => {
                 <label htmlFor="floatingServices">
                   Services: <span className="text-danger">*</span>
                 </label>
+
+                <Button
+                  type="button"
+                  variant="primary"
+                  onClick={() => setToggleAddServicesModal(true)}
+                >
+                  <FaPlus className="me-2" /> Add Service
+                </Button>
+
+                {/* Add Service Modal */}
+                <AddServicesModal
+                  show={toggleAddServicesModal}
+                  handleClose={() => setToggleAddServicesModal(false)}
+                  onServicesAdded={fetchServices}
+                  navigateOnSuccess={false}
+                />
+
                 <div className="mb-3 position-relative" ref={dropdownRef}>
                   {/* INPUT that opens the dropdown */}
                   <input
@@ -658,6 +707,22 @@ const AddAppointments = ({ onClose, prefill }) => {
                     <label htmlFor="doctor_id">
                       Assigned Doctor: <span className="text-danger">*</span>
                     </label>
+
+                    <Button
+                      type="button"
+                      variant="primary"
+                      onClick={() => setAddNewDoctorModal(true)}
+                    >
+                      <FaPlus className="me-2" /> Add New Doctor
+                    </Button>
+
+                    {/* Show Add Doctor Modal */}
+                    <AddUserModal
+                      show={addNewDoctorModal}
+                      handleClose={() => setAddNewDoctorModal(false)}
+                      onUsersAdded={fetchDoctors}
+                    />
+
                     <select
                       id="doctor_id"
                       name="doctor_id"
@@ -753,23 +818,32 @@ const AddAppointments = ({ onClose, prefill }) => {
       </div>
 
       {/* EMAIL CONFIRMATION MODAL */}
-      <Modal show={showEmailModal} onHide={() => setShowEmailModal(false)} centered>
+      <Modal
+        show={showEmailModal}
+        onHide={() => setShowEmailModal(false)}
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Send Confirmation Email</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          An email was found for this client. Do you want to send a confirmation email?
+          An email was found for this client. Do you want to send a confirmation
+          email?
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" disabled={isSendingEmail} onClick={() => {
-            setShowEmailModal(false);
-            handleFinalSubmit(pendingFormData, false); // save without email
-          }}>
+          <Button
+            variant="secondary"
+            disabled={isSendingEmail}
+            onClick={() => {
+              setShowEmailModal(false);
+              handleFinalSubmit(pendingFormData, false); // save without email
+            }}
+          >
             No
           </Button>
-          <Button 
-            variant="primary" 
-            disabled={isSendingEmail} 
+          <Button
+            variant="primary"
+            disabled={isSendingEmail}
             onClick={async () => {
               setIsSendingEmail(true);
               await handleFinalSubmit(pendingFormData, true);
