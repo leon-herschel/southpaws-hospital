@@ -1,0 +1,56 @@
+version: "3.1"
+stories:
+- story: ask hours
+  steps:
+    - intent: ask_hours
+    - action: utter_ask_hours
+
+- story: ask location
+  steps:
+    - intent: ask_location
+    - action: utter_ask_location
+
+- story: ask services
+  steps:
+    - intent: ask_services
+    - action: action_list_services
+
+- story: ask vaccination
+  steps:
+    - intent: ask_vaccination
+    - action: utter_ask_vaccination
+
+- story: ask deworming
+  steps:
+    - intent: ask_deworming
+    - action: utter_ask_deworming
+
+- story: ask about clinic
+  steps:
+    - intent: ask_about
+    - action: utter_ask_about
+
+- story: ask contact
+  steps:
+    - intent: ask_contact
+    - action: utter_ask_contact
+
+- story: ask facebook
+  steps:
+    - intent: ask_facebook
+    - action: utter_ask_facebook
+
+- story: mood great
+  steps:
+    - intent: mood_great
+    - action: utter_mood_great
+
+- story: mood unhappy
+  steps:
+    - intent: mood_unhappy
+    - action: utter_mood_unhappy
+
+- story: bot challenge
+  steps:
+    - intent: bot_challenge
+    - action: utter_bot_challenge

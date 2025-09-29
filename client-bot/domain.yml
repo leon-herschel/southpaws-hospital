@@ -1,0 +1,124 @@
+version: "3.1"
+
+session_config:
+  session_expiration_time: 60  # in minutes
+  carry_over_slots_to_new_session: true
+
+intents:
+  - greet
+  - goodbye
+  - thank_you
+  - mood_great
+  - mood_unhappy
+  - bot_challenge
+  - how_are_you
+  - who_are_you
+  - ask_hours
+  - ask_location
+  - ask_walkins
+  - ask_emergency
+  - ask_services
+  - ask_vaccination
+  - ask_deworming
+  - ask_about
+  - book_appointment
+  - reschedule_appointment
+  - ask_contact
+  - ask_facebook
+  - trigger_intro
+
+responses:
+  # --- Intro ---
+  utter_intro:
+    - text: "Hi there! I’m PawPal, the AI chatbot for South Paws Veterinary Hospital. Please type your messages clearly so I can better understand and help you. How can I assist you today?"
+
+  # --- Fallback ---
+  utter_default:
+    - text: "Sorry, I didn’t quite get that. Could you rephrase?"
+    - text: "Hmm, I’m not sure I understood. Can you try again?"
+    - text: "I’m not sure I understood that. Could you clarify?"
+
+  # --- Chitchats ---
+  utter_greet:
+    - text: "Hey! How can I help?"
+    - text: "Hello! What can I help you with today?"
+
+  utter_goodbye:
+    - text: "See you later!"
+    - text: "Goodbye!"
+
+  utter_thank_you:
+    - text: "You’re welcome!"
+    - text: "Glad I could help!"
+    - text: "No problem!"
+
+  utter_mood_great:
+    - text: "That’s awesome to hear!"
+    - text: "Great! Keep it up."
+    - text: "Glad you’re doing well!"
+
+  utter_mood_unhappy:
+    - text: "You’ve got this. And if you don’t, I’ve got you."
+    - text: "Sadness detected. Deploying digital hugs."
+    - text: "Don’t worry, you’re not alone. I’m literally programmed to stick around."
+
+  utter_bot_challenge:
+    - text: "I’m just your friendly neighborhood chatbot. No cape, just code."
+    - text: "Not a human, but I can still help you find what you need!"
+
+  utter_how_are_you:
+    - text: "I’m doing great, thanks for asking!"
+    - text: "All good here, ready to help you!"
+    - text: "I’m feeling awesome and ready to assist!"
+
+  utter_who_are_you:
+    - text: "I’m PawPal, the AI chatbot for South Paws Veterinary Clinic."
+    - text: "Think of me as your digital guide for all things South Paws!"
+
+  # --- FAQs ---
+  utter_ask_hours:
+    - text: "We’re open from 8:00 AM to 5:00 PM, Monday to Friday."
+    - text: "Our hours are 8 AM – 5 PM, weekdays only."
+    - text: "We’re available Monday through Friday, 8 in the morning until 5 in the afternoon."
+
+  utter_ask_location:
+    - text: "We are located at J. Urgello St, Sambag 2, Cebu City."
+    - text: "Our clinic is on J. Urgello Street, Cebu City."
+
+  utter_ask_walkins:
+    - text: "Sorry, we only accept booked appointments at the moment."
+    - text: "No walk-ins for now. Kindly schedule ahead online or by contacting us."
+
+  utter_ask_emergency:
+    - text: "We don’t have 24/7 emergency services. Please call us during business hours for urgent care."
+
+  utter_ask_vaccination:
+    - text: "Yes, we offer vaccinations for dogs and cats. You can book online, call us, or message our Facebook page."
+    - text: "We provide pet vaccinations — just book online, contact us on Facebook, or give us a call."
+
+  utter_ask_deworming:
+    - text: "Yes, deworming services are available for both dogs and cats."
+    - text: "We offer deworming treatments for cats and dogs."
+    - text: "Your pets can get deworming done here — just book a slot."
+
+  utter_ask_about:
+    - text: "South Paws is a veterinary clinic dedicated to providing quality healthcare for your pets."
+    - text: "We’re a vet clinic that focuses on professional care and compassion for your pets."
+
+  utter_book_appointment:
+    - text: "You can book an appointment online through our booking page: /southpawsvet/booking"
+    - text: "To book, use our online booking portal or reach out via phone or Facebook."
+
+  utter_reschedule_appointment:
+    - text: "To reschedule, please contact us via phone or Facebook so we can adjust your booking."
+    - text: "For reschedules, kindly get in touch with us via phone or Facebook."
+
+  utter_ask_contact:
+    - text: "You can reach us at 0960-631-7128."
+    - text: "Feel free to call us at 0960-631-7128."
+
+  utter_ask_facebook:
+    - text: "Yes! You can message us on Facebook: https://www.facebook.com/swusouthpaws/"
+
+actions:
+  - action_list_services
