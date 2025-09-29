@@ -25,6 +25,7 @@ yarn-error.log*
 
 # rasa
 venv/
+venv-client/
 .venv/
 __pycache__/
 models/

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Routes, Route, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
@@ -17,7 +17,7 @@ import {
   FaAward,
   FaShieldAlt,
   FaArrowRight,
-  FaProcedures
+  FaProcedures,
 } from "react-icons/fa";
 import southpawsLogo from "../../../assets/southpawslogo-header.png";
 import southpawsLogoWhite from "../../../assets/southpawslogowhite.png";
@@ -26,6 +26,7 @@ import aboutUsImage from "../../../assets/about-us-image.jpg";
 import "./ClientSide.css";
 import ClientAppointment from "./ClientAppointment";
 import StaffPortalModal from "./StaffPortalModal";
+import ClientChatbot from "../../Chatbot/ClientChatbot";
 
 function ClientWebsite() {
   const homeRef = useRef(null);
@@ -119,6 +120,8 @@ function ClientWebsite() {
       </Routes>
 
       <StaffPortalModal/>
+
+      <ClientChatbot />
 
     </div>
   );

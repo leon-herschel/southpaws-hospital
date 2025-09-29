@@ -6,8 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from 'react-router-dom';
 import ReactMarkdown from "react-markdown";
 
-
-export default function ChatbotModal({ onClose }) {
+export default function ChatbotModal({ onClose, triggerIntro, rasaUrl = "http://localhost:5005/webhooks/rest/webhook" }) {
   const [messages, setMessages] = useState(() => {
     const saved = localStorage.getItem("chatHistory");
     return saved ? JSON.parse(saved) : [];
@@ -17,6 +16,38 @@ export default function ChatbotModal({ onClose }) {
 
   const userId = localStorage.getItem("userID") || "guest";
   const chatEndRef = useRef(null);
+  const introSent = useRef(localStorage.getItem("introSent") === "true");
+
+  useEffect(() => {
+    if (triggerIntro && !introSent.current) {
+      introSent.current = true;
+      localStorage.setItem("introSent", "true");
+
+      const sendIntro = async () => {
+        setBotTyping(true);
+        try {
+          const res = await axios.post(rasaUrl, {
+            sender: "guest",
+            message: "__intro__",
+            metadata: { trigger_intro: true },
+          });
+
+          res.data.forEach((msg) => {
+            if (msg.text) {
+              setMessages((prev) => [...prev, { sender: "bot", text: msg.text }]);
+            }
+          });
+
+          setBotTyping(false);
+        } catch (err) {
+          console.error(err);
+          setBotTyping(false);
+        }
+      };
+
+      sendIntro();
+    }
+  }, [triggerIntro, rasaUrl]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -34,7 +65,7 @@ export default function ChatbotModal({ onClose }) {
     setBotTyping(true);
 
     try {
-      const res = await axios.post("http://localhost:5005/webhooks/rest/webhook", {
+      const res = await axios.post(rasaUrl, {
         sender: userId,
         message: input,
       });
@@ -128,7 +159,10 @@ export default function ChatbotModal({ onClose }) {
           <FaTimes
             style={{ cursor: "pointer" }}
             onClick={() => {
-              localStorage.removeItem("chatHistory");
+                localStorage.removeItem("chatHistory");
+                localStorage.removeItem("introSent"); 
+                introSent.current = false;
+                onClose();
               onClose();
             }}
           />
@@ -152,7 +186,7 @@ export default function ChatbotModal({ onClose }) {
                 className={`p-2 rounded ${
                   msg.sender === "user" ? "bg-secondary text-white" : "bg-light border"
                 }`}
-                style={{ maxWidth: "70%", whiteSpace: "pre-line" }}
+                style={{ maxWidth: "70%" }}
               >
                 {msg.text && (
                       <ReactMarkdown

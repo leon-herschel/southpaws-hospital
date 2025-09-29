@@ -1,0 +1,53 @@
+version: "3.1"
+rules:
+
+- rule: Send intro on startup
+  steps:
+    - intent: trigger_intro
+    - action: utter_intro
+
+- rule: Greet user with intro on session start
+  conversation_start: true
+  steps:
+      - intent: greet
+      - action: utter_greet
+
+- rule: say goodbye anytime
+  steps:
+    - intent: goodbye
+    - action: utter_goodbye
+
+- rule: thank you response
+  steps:
+    - intent: thank_you
+    - action: utter_thank_you
+
+- rule: bot intro
+  steps:
+    - intent: who_are_you
+    - action: utter_who_are_you
+
+- rule: respond to "how are you"
+  steps:
+    - intent: how_are_you
+    - action: utter_how_are_you
+
+- rule: respond to walk-ins
+  steps:
+    - intent: ask_walkins
+    - action: utter_ask_walkins
+
+- rule: respond to emergency
+  steps:
+    - intent: ask_emergency
+    - action: utter_ask_emergency
+
+- rule: respond to booking
+  steps:
+    - intent: book_appointment
+    - action: utter_book_appointment
+
+- rule: respond to rescheduling
+  steps:
+    - intent: reschedule_appointment
+    - action: utter_reschedule_appointment

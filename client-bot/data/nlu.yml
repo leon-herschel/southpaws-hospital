@@ -1,0 +1,279 @@
+version: "3.1"
+nlu:
+
+- intent: trigger_intro
+  examples: |
+    - __intro__
+    
+- intent: greet
+  examples: |
+    - hey there
+    - hiya
+    - yo!
+    - morning!
+    - hi 👋
+    - sup?
+    - hello
+    - greetings
+    - good day
+    - hey hey
+
+- intent: goodbye
+  examples: |
+    - see ya
+    - later!
+    - catch you later
+    - bye bye
+    - take it easy
+    - farewell
+    - I’m off
+    - talk soon
+    - cya
+    - peace ✌️
+
+- intent: thank_you
+  examples: |
+    - thanks a lot
+    - many thanks
+    - thx
+    - thank you so much
+    - thanks buddy
+    - appreciate your help
+    - grateful 🙏
+    - cheers mate
+    - thanks heaps
+    - thanks a million
+
+- intent: mood_great
+  examples: |
+    - feeling awesome 😎
+    - I’m doing fantastic
+    - couldn’t be better
+    - all good
+    - feeling amazing
+    - I’m pumped
+    - great day!
+    - super happy
+    - top notch
+    - full of energy
+
+- intent: mood_unhappy
+  examples: |
+    - not feeling great
+    - a bit down
+    - I’m upset
+    - feeling meh
+    - kinda sad
+    - feeling low
+    - I’m stressed
+    - not okay
+    - I feel blue
+    - bad day 😔
+
+- intent: bot_challenge
+  examples: |
+    - are you real or a bot?
+    - is this AI?
+    - am I talking to a machine?
+    - human or bot?
+    - what are you, a bot?
+    - you a robot?
+    - is this automated?
+    - are you smart like AI?
+    - robot or human?
+    - AI or person?
+
+- intent: how_are_you
+  examples: |
+    - how’s life?
+    - how you doing?
+    - everything good?
+    - how’s your day?
+    - how’s it going for you?
+    - how you feeling?
+    - how are things with you?
+    - what’s new?
+    - doing okay?
+    - how’s everything?
+
+- intent: who_are_you
+  examples: |
+    - introduce yourself
+    - tell me who you are
+    - who am I chatting with?
+    - your identity?
+    - who is this?
+    - can you tell me about yourself?
+    - what do you do?
+    - name please?
+    - describe yourself
+    - I want to know you
+
+- intent: ask_hours
+  examples: |
+    - your working hours?
+    - open time?
+    - closing hours?
+    - when do you close?
+    - clinic schedule
+    - what time do you close?
+    - operating hours
+    - hours today?
+    - when are you available?
+    - opening times
+
+- intent: ask_location
+  examples: |
+    - where can I find you?
+    - address of clinic
+    - location please
+    - which area are you in?
+    - where exactly?
+    - directions to the clinic
+    - physical location
+    - can I visit you?
+    - how to reach you?
+    - map location?
+
+- intent: ask_walkins
+  examples: |
+    - can I drop by without booking?
+    - walk-in okay?
+    - is walk-in allowed?
+    - do you take walk-ins?
+    - just show up?
+    - no appointment needed?
+    - can I visit now?
+    - accepting walk-ins?
+    - is that fine for walk-ins?
+    - can I come over?
+
+- intent: ask_emergency
+  examples: |
+    - what about emergencies?
+    - do you do urgent care?
+    - sudden illness care?
+    - 24-hour service?
+    - if it’s urgent, can I come?
+    - emergency available?
+    - immediate help for pets?
+    - pet crisis service?
+    - urgent visit possible?
+    - can I bring my pet now for emergency?
+
+- intent: ask_services
+  examples: |
+    - list of services
+    - what do you do for pets?
+    - pet care services?
+    - treatments you provide?
+    - services for dogs and cats?
+    - offerings for pets?
+    - what kind of care?
+    - vet services available?
+    - can you tell me services?
+    - your specialties?
+
+- intent: ask_vaccination
+  examples: |
+    - shots for pets?
+    - can you vaccinate dogs?
+    - cat vaccines available?
+    - immunizations for pets?
+    - do you do rabies shots?
+    - puppy shots?
+    - kitten vaccinations?
+    - pet vaccine services?
+    - vaccination schedule?
+    - do you vaccinate all animals?
+
+- intent: ask_deworming
+  examples: |
+    - worm treatment?
+    - deworm pets here?
+    - cat worming service?
+    - dog deworming?
+    - parasite treatment?
+    - deworming schedule?
+    - intestinal worms care?
+    - deworming for kittens?
+    - deworming for puppies?
+    - is it available now?
+
+- intent: ask_labtests
+  examples: |
+    - pet lab tests?
+    - diagnostic services?
+    - blood work for pets?
+    - urine test for dogs?
+    - lab exams for animals?
+    - any testing available?
+    - vet lab service?
+    - run lab tests here?
+    - tests for cats and dogs?
+    - check-up lab work?
+
+- intent: ask_about
+  examples: |
+    - tell me about South Paws clinic
+    - what’s this clinic about?
+    - info on your clinic
+    - what do you specialize in?
+    - can you explain your clinic?
+    - background of South Paws
+    - what’s your story?
+    - details about your team
+    - clinic info please
+    - what do you do exactly?
+
+- intent: book_appointment
+  examples: |
+    - can I book now?
+    - schedule a visit
+    - make an appointment
+    - book a checkup
+    - appointment for my pet
+    - reserve a slot
+    - set up a visit
+    - book a vet session
+    - I need an appointment
+    - can I schedule today?
+
+- intent: reschedule_appointment
+  examples: |
+    - I need to change my appointment
+    - can I reschedule?
+    - move my visit
+    - update booking time
+    - change date of appointment
+    - adjust my schedule
+    - reschedule for tomorrow
+    - shift my appointment
+    - new appointment time?
+    - rearrange my visit
+
+- intent: ask_contact
+  examples: |
+    - phone please
+    - contact number?
+    - can I call you?
+    - how to reach you?
+    - your number?
+    - call details?
+    - direct line?
+    - can I message you?
+    - WhatsApp contact?
+    - customer support number?
+
+- intent: ask_facebook
+  examples: |
+    - link to your Facebook?
+    - Facebook profile?
+    - social media page?
+    - FB page?
+    - follow on Facebook?
+    - can I message on FB?
+    - your Facebook account?
+    - Facebook contact?
+    - social page link?
+    - connect on FB?
