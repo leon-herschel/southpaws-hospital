@@ -34,7 +34,7 @@ pipeline:
     response_key: text
     
   - name: FallbackClassifier
-    threshold: 0.35
+    threshold: 0.6
     ambiguity_threshold: 0.1
 
 policies:

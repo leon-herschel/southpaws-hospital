@@ -40,7 +40,7 @@ responses:
 
   # --- Chitchats ---
   utter_greet:
-    - text: "Hey! How can I help?"
+    - text: "Hi! How can I help?"
     - text: "Hello! What can I help you with today?"
 
   utter_goodbye:
