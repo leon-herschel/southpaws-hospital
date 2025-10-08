@@ -203,8 +203,8 @@ const EditInventoryModal = ({ show, handleClose, onItemUpdated, inventoryId }) =
                 <Form onSubmit={handleSubmit}>
                     <Row>
                         <Col md={6}>
-                        <Form.Group>
-                                <Form.Label>SKU</Form.Label>
+                        <Form.Group className="mb-3">
+                                <Form.Label style={{ margin: 0 }}>SKU</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="sku"
@@ -217,8 +217,8 @@ const EditInventoryModal = ({ show, handleClose, onItemUpdated, inventoryId }) =
                                     />
                                 </Form.Group>
 
-                            <Form.Group>
-                                <Form.Label>Price</Form.Label>
+                            <Form.Group className="mb-3">
+                                <Form.Label style={{ margin: 0 }}>Price</Form.Label>
                                 <Form.Control
                                     type="number"
                                     name="price"
@@ -238,8 +238,8 @@ const EditInventoryModal = ({ show, handleClose, onItemUpdated, inventoryId }) =
                         
                         <Col md={6}>
 
-                            <Form.Group>
-                                <Form.Label>Supplier</Form.Label>
+                            <Form.Group className="mb-3">
+                                <Form.Label style={{ margin: 0 }}>Supplier</Form.Label>
                                 <Form.Control
                                     as="select"
                                     name="supplier_id"
@@ -255,8 +255,8 @@ const EditInventoryModal = ({ show, handleClose, onItemUpdated, inventoryId }) =
                                     ))}
                                 </Form.Control>
                             </Form.Group>
-                            <Form.Group>
-                                <Form.Label>Expiration Date</Form.Label>
+                            <Form.Group className="mb-3">
+                                <Form.Label style={{ margin: 0 }}>Expiration Date</Form.Label>
                                 <Form.Control
                                     type="date"
                                     name="expiration_date"
@@ -270,8 +270,8 @@ const EditInventoryModal = ({ show, handleClose, onItemUpdated, inventoryId }) =
                                           {/* Barcode Preview Above Update Button */}
                             <Row className="mt-3">
                                 <Col md={12} className="text-center">
-                                    <Form.Group>
-                                        <Form.Label>Generated Barcode</Form.Label>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label style={{ margin: 0 }}>Generated Barcode</Form.Label>
                                         <div className="mt-2">
                                             <svg ref={barcodeRef}></svg>
                                         </div>
@@ -279,7 +279,7 @@ const EditInventoryModal = ({ show, handleClose, onItemUpdated, inventoryId }) =
                                 </Col>
                             </Row>
                         <div className="button-container">
-                            <Button variant="primary" type="submit" className="button">
+                            <Button variant="primary" type="submit" className="button btn-gradient">
                                 Update
                             </Button>
                         </div>

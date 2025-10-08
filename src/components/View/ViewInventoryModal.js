@@ -140,8 +140,8 @@ const ViewInventoryModal = ({ show, handleClose, inventoryId }) => {
                     <Form>
                         <Row>
                             <Col md={6}>
-                                <Form.Group>
-                                    <Form.Label>Product Name</Form.Label>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>Product Name</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="name"
@@ -149,8 +149,8 @@ const ViewInventoryModal = ({ show, handleClose, inventoryId }) => {
                                         readOnly
                                     />
                                 </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>SKU</Form.Label>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>SKU</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="sku"
@@ -158,8 +158,8 @@ const ViewInventoryModal = ({ show, handleClose, inventoryId }) => {
                                         readOnly
                                     />
                                 </Form.Group>
-                                <Form.Group>
-                                <Form.Label>Category</Form.Label>
+                                <Form.Group className="mb-3">
+                                <Form.Label style={{ margin: 0 }}>Category</Form.Label>
                                 <Form.Control 
                                 type="text" 
                                 name="name"
@@ -167,8 +167,8 @@ const ViewInventoryModal = ({ show, handleClose, inventoryId }) => {
                                 readOnly 
                                 />
                             </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>Brand Name</Form.Label>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>Brand Name</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="name"
@@ -176,8 +176,8 @@ const ViewInventoryModal = ({ show, handleClose, inventoryId }) => {
                                         readOnly
                                     />
                                 </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>Price</Form.Label>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>Price</Form.Label>
                                     <Form.Control
                                         type="number"
                                         step="any"
@@ -186,8 +186,8 @@ const ViewInventoryModal = ({ show, handleClose, inventoryId }) => {
                                         readOnly
                                     />
                                 </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>Quantity</Form.Label>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>Quantity</Form.Label>
                                     <Form.Control
                                         type="number"
                                         name="quantity"
@@ -197,8 +197,8 @@ const ViewInventoryModal = ({ show, handleClose, inventoryId }) => {
                                 </Form.Group>
                             </Col>
                             <Col md={6}>
-                            <Form.Group>
-                                    <Form.Label>Generic Name</Form.Label>
+                            <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>Generic Name</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="name"
@@ -206,8 +206,8 @@ const ViewInventoryModal = ({ show, handleClose, inventoryId }) => {
                                         readOnly
                                     />
                                 </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>Barcode</Form.Label>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>Barcode</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="barcode"
@@ -215,8 +215,8 @@ const ViewInventoryModal = ({ show, handleClose, inventoryId }) => {
                                         readOnly
                                     />
                                 </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>Supplier</Form.Label>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>Supplier</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="supplier_name"
@@ -224,8 +224,8 @@ const ViewInventoryModal = ({ show, handleClose, inventoryId }) => {
                                         readOnly
                                     />
                                 </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>Unit of Measurement</Form.Label>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>Unit of Measurement</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="unit_of_measurement"
@@ -233,8 +233,8 @@ const ViewInventoryModal = ({ show, handleClose, inventoryId }) => {
                                         readOnly
                                     />
                                 </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>Expiration Date</Form.Label>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>Expiration Date</Form.Label>
                                     <Form.Control
     type={inventoryData.expiration_date ? "date" : "text"}
     name="expiration_date"
@@ -250,8 +250,8 @@ const ViewInventoryModal = ({ show, handleClose, inventoryId }) => {
                         {inventoryData.barcode && (
                             <Row className="mt-3">
                                 <Col md={12} className="text-center">
-                                    <Form.Group>
-                                        <Form.Label>Generated Barcode</Form.Label>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label style={{ margin: 0 }}>Generated Barcode</Form.Label>
                                         <div className="mt-2">
                                             <svg ref={barcodeRef}></svg>
                                         </div>
@@ -261,7 +261,7 @@ const ViewInventoryModal = ({ show, handleClose, inventoryId }) => {
                         )}
 
                         <div className="text-center mt-4">
-                            <Button variant="secondary" onClick={handlePrintBarcode} className="button">
+                            <Button variant="secondary" onClick={handlePrintBarcode} className="button btn-gradient">
                                 Print Barcode
                             </Button>
                         </div>
@@ -278,8 +278,8 @@ const ViewInventoryModal = ({ show, handleClose, inventoryId }) => {
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
-                        <Form.Group>
-                            <Form.Label>Number of Barcodes</Form.Label>
+                        <Form.Group className="mb-3">
+                            <Form.Label style={{ margin: 0 }}>Number of Barcodes</Form.Label>
                             <Form.Control
                                 type="number"
                                 min="1"

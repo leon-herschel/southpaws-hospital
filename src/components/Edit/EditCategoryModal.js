@@ -48,7 +48,7 @@ const EditCategoryModal = ({ show, handleClose, editCategory, handleEditChange, 
                             />
                         </Form.Group>
                         <div className="button-container">
-                            <Button variant="primary" type="submit" className='button'>
+                            <Button variant="primary" type="submit" className='button btn-gradient'>
                                 Update
                             </Button>
                         </div>

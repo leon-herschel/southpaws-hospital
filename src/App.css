@@ -334,6 +334,18 @@ thead {
   margin-bottom: 0; 
 }
 
+/* Modal show/hide */
+.modal-animate {
+  opacity: 0;
+  transform: translateY(-15px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.modal-animate.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* POS */
 .card-clickable {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
