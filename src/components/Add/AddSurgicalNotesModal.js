@@ -106,7 +106,7 @@ const AddSurgicalNotesModal = ({ show, handleClose, onNoteUpdated, existingNote 
     <Modal.Body>
         <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
-                <Form.Label>Title</Form.Label>
+                <Form.Label style={{ margin: 0 }}>Title</Form.Label>
                 <Form.Control
                     type="text"
                     name="title"
@@ -118,18 +118,19 @@ const AddSurgicalNotesModal = ({ show, handleClose, onNoteUpdated, existingNote 
                 />
             </Form.Group>
             <Form.Group className="mb-3">
-                <Form.Label>Content</Form.Label>
+                <Form.Label style={{ margin: 0 }}>Content</Form.Label>
                 <Form.Control
                     as="textarea"
                     rows={5}
                     name="content"
+                    className='rounded-5'
                     value={formData.content}
                     onChange={handleChange}
                     placeholder="Enter note content"
                     required
                 />
             </Form.Group>
-            <div className="text-center">
+            <div className="text-end mt-3">
                 <Button type="submit" variant="primary" className="me-2">
                     {existingNote ? 'Update' : 'Add'}
                 </Button>

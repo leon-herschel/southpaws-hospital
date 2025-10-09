@@ -36,8 +36,8 @@ const EditSupplierModal = ({ show, handleClose, editSupplier, handleEditChange, 
                         <Row>
                             <Col md={6}>
                             
-                                <Form.Group>
-                                    <Form.Label>Supplier Name</Form.Label>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>Supplier Name</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="supplier_name"
@@ -47,8 +47,8 @@ const EditSupplierModal = ({ show, handleClose, editSupplier, handleEditChange, 
                                         placeholder="Enter supplier name"
                                     />
                                 </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>Contact Person</Form.Label>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>Contact Person</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="contact_person"
@@ -57,8 +57,8 @@ const EditSupplierModal = ({ show, handleClose, editSupplier, handleEditChange, 
                                         placeholder="Enter contact person"
                                     />
                                 </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>Contact Number</Form.Label>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>Contact Number</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="contact_number"
@@ -69,8 +69,8 @@ const EditSupplierModal = ({ show, handleClose, editSupplier, handleEditChange, 
                                 </Form.Group>
                             </Col>
                             <Col md={6}>
-                                <Form.Group>
-                                    <Form.Label>Email</Form.Label>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>Email</Form.Label>
                                     <Form.Control
                                         type="email"
                                         name="email"
@@ -79,8 +79,8 @@ const EditSupplierModal = ({ show, handleClose, editSupplier, handleEditChange, 
                                         placeholder="Enter email"
                                     />
                                 </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>Address</Form.Label>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>Address</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="address"
@@ -92,7 +92,7 @@ const EditSupplierModal = ({ show, handleClose, editSupplier, handleEditChange, 
                             </Col>
                         </Row>
                         <div className="button-container">
-                            <Button variant="primary" type="submit" className="button">
+                            <Button variant="primary" type="submit" className="button btn-gradient">
                                 Update
                             </Button>
                         </div>

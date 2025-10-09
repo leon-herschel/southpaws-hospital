@@ -65,7 +65,7 @@ function ViewSurgicalFormModal({ show, handleClose, formData }) {
     };
 
     return (
-        <Modal show={show} onHide={handleClose} size="xl" centered>
+        <Modal show={show} onHide={handleClose} size="lg" centered>
             <Modal.Header closeButton>
                 <Modal.Title>View Surgical Consent Form</Modal.Title>
             </Modal.Header>
@@ -73,42 +73,37 @@ function ViewSurgicalFormModal({ show, handleClose, formData }) {
                 {formData ? (
                     <div>
                         <h5 className="text-center mb-4">Veterinary Surgical Consent Form</h5>
-                        <div className="mb-3">
-                        <h6>Client Image:</h6>
-                        {formData.pet_image ? (
-                            <img 
-                                src={formData.pet_image} 
-                                alt="Pet" 
-                                style={{ maxWidth: '300px', height: 'auto', display: 'block' }} 
-                            />
-                        ) : (
-                            <p>No image available</p>
-                        )}
-                    </div>
-                        {/* Owner Information */}
-                        <Table bordered>
-                            <tbody>
-                                <tr>
-                                    <th>Owner's Name</th>
-                                    <td>{formData.client_name || 'N/A'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Owner's Address</th>
-                                    <td>{formData.address || 'N/A'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Owner's Contact</th>
-                                    <td>{formData.cellnumber || 'N/A'}</td>
-                                </tr>
-                            </tbody>
-                        </Table>
 
-                        {/* Multiple Pets Details */}
-                        {petDetails.length > 0 ? (
-                            <div className="mt-4">
-                                <h5 className="text-center">Pet Information</h5>
-                                <Table bordered>
-                                    <thead>
+                        {/* Client Info */}
+                        <div className="mb-4 p-3 border rounded bg-light">
+                            <h6 className="mb-3">Client Information</h6>
+                            <div className="row">
+                                <div className="col-md-3 text-center">
+                                    {formData.pet_image ? (
+                                        <img
+                                            src={formData.pet_image}
+                                            alt="Client"
+                                            className="img-fluid rounded mb-2"
+                                            style={{ maxHeight: "150px", objectFit: "cover" }}
+                                        />
+                                    ) : (
+                                        <div className="text-muted">No Image Available</div>
+                                    )}
+                                </div>
+                                <div className="col-md-9">
+                                    <p><strong>Name:</strong> {formData.client_name || 'N/A'}</p>
+                                    <p><strong>Address:</strong> {formData.address || 'N/A'}</p>
+                                    <p><strong>Contact:</strong> {formData.cellnumber || 'N/A'}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Pet Info */}
+                        <div className="mb-4 p-3 border rounded bg-light">
+                            <h6 className="mb-3">Pet Information</h6>
+                            {petDetails.length > 0 ? (
+                                <Table size="sm" className="table table-hover custom-table align-middle">
+                                    <thead className="table-light">
                                         <tr>
                                             <th>#</th>
                                             <th>Pet's Name</th>
@@ -125,52 +120,36 @@ function ViewSurgicalFormModal({ show, handleClose, formData }) {
                                         ))}
                                     </tbody>
                                 </Table>
-                            </div>
-                        ) : (
-                            <Table bordered className="mt-4">
-                                <tbody>
-                                    <tr>
-                                        <th>Pet's Name</th>
-                                        <td>{formData.pet_name || 'N/A'}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Pet's Age</th>
-                                        <td>{formData.age || 'N/A'}</td>
-                                    </tr>
-                                </tbody>
-                            </Table>
-                        )}
+                            ) : (
+                                <p>
+                                    <strong>Name:</strong> {formData.pet_name || 'N/A'} <br />
+                                    <strong>Age:</strong> {formData.age || 'N/A'}
+                                </p>
+                            )}
+                        </div>
 
                         {/* Surgery Details */}
-                        <Table bordered className="mt-4">
-                            <tbody>
-                                <tr>
-                                    <th>Surgery Date</th>
-                                    <td>{formatDate(formData.surgery_date)}</td>
-                                </tr>
-                                <tr>
-                                    <th>Surgical Procedure</th>
-                                    <td>{formData.surgical_procedure || 'N/A'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Signature Status</th>
-                                    <td>{formData.signature ? 'Signed' : 'Not Signed'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Date Signed</th>
-                                    <td>{formatDate(formData.date_signed)}</td>
-                                </tr>
-                            </tbody>
-                        </Table>
+                        <div className="mb-4 p-3 border rounded bg-light">
+                            <h6 className="mb-3">Surgery Details</h6>
+                            <p><strong>Surgery Date:</strong> {formatDate(formData.surgery_date)}</p>
+                            <p><strong>Procedure:</strong> {formData.procedure_name || 'N/A'}</p>
+                            <p>
+                                <strong>Signature Status:</strong>{" "}
+                                <span className={formData.signature ? "text-success" : "text-danger"}>
+                                    {formData.signature ? "Signed" : "Not Signed"}
+                                </span>
+                            </p>
+                            <p><strong>Date Signed:</strong> {formatDate(formData.date_signed)}</p>
+                        </div>
 
                         {/* Notes Section */}
                         {notes.length > 0 && (
-                            <div className="mt-4">
-                                <h5 className="text-center">Additional Notes</h5>
+                            <div className="mb-4">
+                                <h6 className="mb-3 text-center">Additional Notes</h6>
                                 {notes.map((note, index) => (
-                                    <div key={index} className="border p-3 mb-3 bg-light">
+                                    <div key={index} className="border p-3 mb-3 bg-white rounded shadow-sm">
                                         <h6 className="text-center">{note.title}</h6>
-                                        <p>{note.content}</p>
+                                        <p className="mb-0">{note.content}</p>
                                     </div>
                                 ))}
                             </div>

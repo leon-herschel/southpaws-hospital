@@ -109,8 +109,8 @@ const AddServicesModal = ({
         <Form>
           {error && <Alert variant="danger">{error}</Alert>}
 
-          <Form.Group>
-            <Form.Label>Service Name</Form.Label>
+          <Form.Group className="mb-3">
+            <Form.Label style={{ margin: 0 }}>Service Name</Form.Label>
             <Form.Control
               type="text"
               name="name"
@@ -122,8 +122,8 @@ const AddServicesModal = ({
             />
           </Form.Group>
 
-          <Form.Group>
-            <Form.Label>Price</Form.Label>
+          <Form.Group className="mb-3">
+            <Form.Label style={{ margin: 0 }}>Price</Form.Label>
             <Form.Control
               type="number"
               name="price"
@@ -134,8 +134,8 @@ const AddServicesModal = ({
             />
           </Form.Group>
 
-          <Form.Group>
-            <Form.Label>Duration (minutes)</Form.Label>
+          <Form.Group className="mb-3">
+            <Form.Label style={{ margin: 0 }}>Duration (minutes)</Form.Label>
             <Form.Control
               type="number"
               name="duration"
@@ -147,8 +147,8 @@ const AddServicesModal = ({
             />
           </Form.Group>
 
-          <Form.Group>
-            <Form.Label>Status</Form.Label>
+          <Form.Group className="mb-3">
+            <Form.Label style={{ margin: 0 }}>Status</Form.Label>
             <Form.Control
               as="select"
               name="status"
@@ -161,8 +161,8 @@ const AddServicesModal = ({
             </Form.Control>
           </Form.Group>
 
-          <Form.Group>
-            <Form.Label>Consent Form</Form.Label>
+          <Form.Group className="mb-3">
+            <Form.Label style={{ margin: 0 }}>Consent Form</Form.Label>
             <div>
               <Form.Check
                 inline
@@ -206,7 +206,7 @@ const AddServicesModal = ({
             <Button
               variant="primary"
               type="button"
-              className="button"
+              className="button btn-gradient"
               onClick={handleSubmit} // explicitly call submit logic
             >
               Add

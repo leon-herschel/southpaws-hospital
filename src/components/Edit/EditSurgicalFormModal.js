@@ -133,7 +133,7 @@ useEffect(() => {
     
 
     return (
-        <Modal show={show} onHide={handleClose} size="xl" centered>
+        <Modal show={show} onHide={handleClose} size="lg" centered>
             <Modal.Header closeButton>
                 <Modal.Title>Edit Veterinary Surgical Consent Form</Modal.Title>
             </Modal.Header>
@@ -141,7 +141,7 @@ useEffect(() => {
                 <Form onSubmit={handleSubmit}>
                     {/* Owner's Name */}
                     <Form.Group className="mb-3">
-                        <Form.Label>Owner's Name:</Form.Label>
+                        <Form.Label style={{ margin: 0 }}>Owner's Name:</Form.Label>
                         <Form.Select
                             name="owner"
                             value={formState.owner}
@@ -160,7 +160,7 @@ useEffect(() => {
 
                     {/* Pet Name */}
                     <Form.Group className="mb-3">
-    <Form.Label>Pet's Name:</Form.Label>
+    <Form.Label style={{ margin: 0 }}>Pet's Name:</Form.Label>
     <div>
         {pets
             .filter(pet => pet.ownerId === parseInt(formState.owner))
@@ -190,7 +190,7 @@ useEffect(() => {
 
                     {/* Surgery Date */}
                     <Form.Group className="mb-3">
-                        <Form.Label>Surgery Date:</Form.Label>
+                        <Form.Label style={{ margin: 0 }}>Surgery Date:</Form.Label>
                         <Form.Control
                             type="date"
                             name="surgery_date"
@@ -202,7 +202,7 @@ useEffect(() => {
                     </Form.Group>
 
                     <Form.Group className="mb-3">
-                        <Form.Label>Surgical Procedure:</Form.Label>
+                        <Form.Label style={{ margin: 0 }}>Surgical Procedure:</Form.Label>
                         <Form.Select
                             name="surgical_procedure"
                             value={formState.surgical_procedure}
@@ -241,8 +241,8 @@ useEffect(() => {
                     </Form.Group>
 
                     {/* Submit Button */}
-                    <div className="text-center mt-4">
-                        <Button variant="primary" type="submit">Update</Button>
+                    <div className="button-container mt-3">
+                        <Button variant="primary" type="submit" className='button btn-gradient'>Update</Button>
                     </div>
                 </Form>
             </Modal.Body>

@@ -313,7 +313,7 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <Form.Label style={{ margin: 0 }}>Generic Name</Form.Label>
                                         <Button 
-                                            variant="success" 
+                                            variant='primary' 
                                             onClick={() => setShowAddGenericModal(true)} 
                                             size="sm"
                                             className="sticky-button"
@@ -343,7 +343,7 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <Form.Label style={{ margin: 0 }}>Brand</Form.Label>
                                         <Button 
-                                            variant="success" 
+                                            variant='primary' 
                                             onClick={handleCreateBrand} 
                                             className="sticky-button" 
                                             size="sm"
@@ -376,7 +376,7 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <Form.Label style={{ margin: 0 }}>Unit of Measurement</Form.Label>
                                         <Button 
-                                            variant="success" 
+                                            variant='primary' 
                                             onClick={handleCreateUnit} 
                                             className="sticky-button" 
                                             size="sm"
@@ -406,7 +406,7 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <Form.Label style={{ margin: 0 }}>Category</Form.Label>
                                         <Button 
-                                            variant="success" 
+                                            variant='primary' 
                                             onClick={handleCreateCategory} 
                                             className="sticky-button" 
                                             size="sm"
