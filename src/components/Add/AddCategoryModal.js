@@ -24,11 +24,6 @@ const AddCategoryModal = ({ show, handleClose, onCategoryAdded }) => {
     const handleSubmit = (event) => {
         event.preventDefault();
     
-        if (!inputs.name.trim()) {
-            setError('Category name cannot be empty.');
-            return;
-        }
-    
         setIsLoading(true);
     
         const newCategory = {
@@ -85,13 +80,14 @@ const AddCategoryModal = ({ show, handleClose, onCategoryAdded }) => {
                             value={inputs.name}
                             onChange={handleChange}
                             placeholder="Enter category name"
+                            required
                         />
                     </Form.Group>
                     <div className="button-container">
                         <Button 
                             variant="primary" 
                             type="submit" 
-                            className="button" 
+                            className="button btn-gradient" 
                             disabled={isLoading}
                         >
                             {isLoading ? 'Adding...' : 'Add'}

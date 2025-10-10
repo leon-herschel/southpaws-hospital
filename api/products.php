@@ -131,12 +131,13 @@ case 'PUT':
 
                 // Proceed with updating the product
                 $sql = "UPDATE products 
-                        SET product_name = :product_name, 
-                            generic_id = :generic_id, 
-                            category_id = :category_id, 
-                            brand_id = :brand_id, 
-                            unit_id = :unit_id, 
-                        WHERE id = :id";
+                SET product_name = :product_name, 
+                    generic_id = :generic_id, 
+                    category_id = :category_id, 
+                    brand_id = :brand_id, 
+                    unit_id = :unit_id, 
+                    updated_by = :updated_by
+                WHERE id = :id";
                 $stmt = $conn->prepare($sql);
                 $stmt->bindParam(':id', $product->id, PDO::PARAM_INT);
                 $stmt->bindParam(':product_name', $product->product_name, PDO::PARAM_STR);
@@ -209,4 +210,3 @@ case 'PUT':
         }
         break;
 }
-?>

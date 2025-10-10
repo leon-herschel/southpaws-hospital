@@ -260,6 +260,18 @@ const SupplierManagement = () => {
             setErrorMessage('Supplier name already exists'); // Show error message in the modal
             return; // Prevent the update
         }
+
+        const phoneRegex = /^[0-9]{10,11}$/;
+        if (!phoneRegex.test(editSupplier.contact_number)) {
+            setErrorMessage('Please enter a valid contact number (10–11 digits).');
+            return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(editSupplier.email)) {
+            setErrorMessage('Please enter a valid email address.');
+            return;
+        }
     
         // Create a new object for the update request (excluding 'archived')
         const supplierDataToUpdate = {

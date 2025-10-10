@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Button, Form, OverlayTrigger, Tooltip  } from "react-bootstrap";
+import { FaQuestionCircle } from "react-icons/fa";
+
 import axios from "axios";
 import "../../assets/add.css";
 
@@ -92,8 +94,8 @@ const AddUserModal = ({ show, handleClose, onUsersAdded }) => {
           <div className="row">
             {/* Left column */}
             <div className="col-md-6">
-              <Form.Group>
-                <Form.Label>FIRST NAME</Form.Label>
+              <Form.Group className="mb-3">
+                <Form.Label style={{ margin: 0 }}>First Name</Form.Label>
                 <Form.Control
                   type="text"
                   name="first_name"
@@ -103,8 +105,8 @@ const AddUserModal = ({ show, handleClose, onUsersAdded }) => {
                   required
                 />
               </Form.Group>
-              <Form.Group>
-                <Form.Label>LAST NAME</Form.Label>
+              <Form.Group className="mb-3">
+                <Form.Label style={{ margin: 0 }}>Last Name</Form.Label>
                 <Form.Control
                   type="text"
                   name="last_name"
@@ -113,8 +115,8 @@ const AddUserModal = ({ show, handleClose, onUsersAdded }) => {
                   required
                 />
               </Form.Group>
-              <Form.Group>
-                <Form.Label>EMAIL</Form.Label>
+              <Form.Group className="mb-3">
+                <Form.Label style={{ margin: 0 }}>Email</Form.Label>
                 <Form.Control
                   type="email"
                   name="email"
@@ -128,8 +130,8 @@ const AddUserModal = ({ show, handleClose, onUsersAdded }) => {
             </div>
             {/* Right column */}
             <div className="col-md-6">
-              <Form.Group>
-                <Form.Label>USER LEVEL</Form.Label>
+              <Form.Group className="mb-3">
+                <Form.Label style={{ margin: 0 }}>User Level</Form.Label>
                 <Form.Control
                   as="select"
                   name="user_role"
@@ -143,8 +145,8 @@ const AddUserModal = ({ show, handleClose, onUsersAdded }) => {
                   <option value={3}>Admin</option>
                 </Form.Control>
               </Form.Group>
-              <Form.Group>
-                <Form.Label>PASSWORD</Form.Label>
+              <Form.Group className="mb-3">
+                <Form.Label style={{ margin: 0 }}>Password</Form.Label>
                 <Form.Control
                   type="password"
                   name="password"
@@ -153,8 +155,8 @@ const AddUserModal = ({ show, handleClose, onUsersAdded }) => {
                   required
                 />
               </Form.Group>
-              <Form.Group>
-                <Form.Label>CONFIRM PASSWORD</Form.Label>
+              <Form.Group className="mb-3">
+                <Form.Label style={{ margin: 0 }}>Confirm Password</Form.Label>
                 <Form.Control
                   type="password"
                   name="confirmPassword"
@@ -167,13 +169,34 @@ const AddUserModal = ({ show, handleClose, onUsersAdded }) => {
           </div>
           {(inputs.user_role === 1 || inputs.user_role === 3) && (
             <Form.Group className="mt-3">
-              <Form.Check
-                type="checkbox"
-                label="Is this user a Doctor?"
-                name="is_doctor"
-                checked={inputs.is_doctor === 1}
-                onChange={handleChange}
-              />
+              <div className="d-flex">
+                <Form.Check
+                  type="checkbox"
+                  name="is_doctor"
+                  checked={inputs.is_doctor === 1}
+                  onChange={handleChange}
+                  id="doctorCheck"
+                  label="Is this user a Doctor?"
+                />
+                <OverlayTrigger
+                  placement="right"
+                  overlay={
+                    <Tooltip id="doctor-tooltip">
+                      Checking this will add the user to the appointment module.
+                    </Tooltip>
+                  }
+                >
+                  <span className="ms-2">
+                    <FaQuestionCircle
+                      style={{
+                        cursor: "pointer",
+                        color: "#6c757d",
+                        fontSize: "1rem",
+                      }}
+                    />
+                  </span>
+                </OverlayTrigger>
+              </div>
             </Form.Group>
           )}
           {/* Note about required fields */}
@@ -186,7 +209,7 @@ const AddUserModal = ({ show, handleClose, onUsersAdded }) => {
             <Button
               variant="primary"
               type="button"
-              className="button"
+              className="button btn-gradient"
               onClick={handleSubmit}
             >
               Add

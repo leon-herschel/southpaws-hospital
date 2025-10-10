@@ -27,6 +27,7 @@ if (!$data || empty($data['email'])) {
     exit;
 }
 
+$formattedDate = !empty($data['date']) ? date("F j, Y", strtotime($data['date'])) : "N/A";
 $formattedTime = !empty($data['time']) ? date("g:i A", strtotime($data['time'])) : "N/A";
 
 $doctorName = "Unknown Doctor";
@@ -66,7 +67,7 @@ try {
         <ul>
           <li><b>Reference Number:</b> {$data['reference_number']}</li>
           <li><b>Pet Name:</b> {$data['pet_name']}</li>
-          <li><b>Date & Time:</b> {$data['date']} at {$formattedTime}</li>
+          <li><b>Date & Time:</b> {$formattedDate} at {$formattedTime}</li>
           <li><b>Service(s):</b> {$data['service']}</li>
           <li><b>Doctor:</b> {$doctorName}</li>
         </ul>
@@ -76,7 +77,7 @@ try {
     $mail->AltBody = "Appointment Confirmation\n
         Reference Number: {$data['reference_number']}
         Pet Name: {$data['pet_name']}
-        Date & Time: {$data['date']} at {$formattedTime}
+        Date & Time: {$formattedDate} at {$formattedTime}
         Service(s): {$data['service']}
         Doctor: {$doctorName}
     ";

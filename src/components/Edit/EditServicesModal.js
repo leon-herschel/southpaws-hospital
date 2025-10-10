@@ -76,8 +76,8 @@ const EditServicesModal = ({ show, handleClose, editService, handleEditChange, h
                     <Form onSubmit={handleSubmit}>
                         {error && <Alert variant="danger">{error}</Alert>}
 
-                        <Form.Group>
-                            <Form.Label>Service Name</Form.Label>
+                        <Form.Group className="mb-3">
+                            <Form.Label style={{ margin: 0 }}>Service Name</Form.Label>
                             <Form.Control
                                 type="text"
                                 name="name"
@@ -89,8 +89,8 @@ const EditServicesModal = ({ show, handleClose, editService, handleEditChange, h
                             />
                         </Form.Group>
 
-                        <Form.Group>
-                            <Form.Label>Price</Form.Label>
+                        <Form.Group className="mb-3">
+                            <Form.Label style={{ margin: 0 }}>Price</Form.Label>
                             <Form.Control
                                 type="number"
                                 name="price"
@@ -101,8 +101,8 @@ const EditServicesModal = ({ show, handleClose, editService, handleEditChange, h
                             />
                         </Form.Group>
 
-                        <Form.Group>
-                            <Form.Label>Duration (minutes)</Form.Label>
+                        <Form.Group className="mb-3">
+                            <Form.Label style={{ margin: 0 }}>Duration (minutes)</Form.Label>
                             <Form.Control
                                 type="number"
                                 min="1"
@@ -128,8 +128,8 @@ const EditServicesModal = ({ show, handleClose, editService, handleEditChange, h
                             />
                         </Form.Group>
 
-                        <Form.Group>
-                            <Form.Label>Status</Form.Label>
+                        <Form.Group className="mb-3">
+                            <Form.Label style={{ margin: 0 }}>Status</Form.Label>
                             <Form.Control
                                 as="select"
                                 name="status"
@@ -142,8 +142,8 @@ const EditServicesModal = ({ show, handleClose, editService, handleEditChange, h
                             </Form.Control>
                         </Form.Group>
 
-                        <Form.Group>
-                            <Form.Label>Consent Form</Form.Label>
+                        <Form.Group className="mb-3">
+                            <Form.Label style={{ margin: 0 }}>Consent Form</Form.Label>
                             <div>
                                 <Form.Check
                                     inline
@@ -183,7 +183,7 @@ const EditServicesModal = ({ show, handleClose, editService, handleEditChange, h
                         </Form.Text>
 
                         <div className="button-container mt-3">
-                            <Button variant="primary" type="submit" className="button">
+                            <Button variant="primary" type="submit" className="button btn-gradient">
                                 Update
                             </Button>
                         </div>

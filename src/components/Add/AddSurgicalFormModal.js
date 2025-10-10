@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 function AddSurgicalFormModal({ show, handleClose, onFormAdded, selectedClient, serviceForForm, selectedPetsData }) {
     const [formData, setFormData] = useState({
@@ -207,7 +208,7 @@ function AddSurgicalFormModal({ show, handleClose, onFormAdded, selectedClient, 
                 if (onFormAdded) onFormAdded();
                 handleClose();
             } else {
-                alert(response.data.message || 'Failed to submit form');
+                toast.error(response.data.message || 'Failed to submit form');
             }
         } catch (error) {
             console.error('Failed to submit form:', error);
@@ -215,7 +216,7 @@ function AddSurgicalFormModal({ show, handleClose, onFormAdded, selectedClient, 
     };
 
     return (
-        <Modal show={show} onHide={handleModalClose} size="xl" centered>
+        <Modal show={show} onHide={handleModalClose} size="lg" centered>
             <Modal.Header closeButton>
                 <Modal.Title>Veterinary Surgical Consent Form</Modal.Title>
             </Modal.Header>
@@ -223,7 +224,7 @@ function AddSurgicalFormModal({ show, handleClose, onFormAdded, selectedClient, 
                 <Form onSubmit={handleSubmit}>
                     {/* Owner's Name and Address */}
                     <Form.Group className="mb-3">
-                        <Form.Label>Owner's Name:</Form.Label>
+                        <Form.Label style={{ margin: 0 }}>Owner's Name:</Form.Label>
                         <Form.Select
                             name="owner"
                             value={formData.owner}
@@ -244,7 +245,7 @@ function AddSurgicalFormModal({ show, handleClose, onFormAdded, selectedClient, 
                   {/* Pet Name */}
 
                   <Form.Group className="mb-3">
-    <Form.Label>Pet's Name:</Form.Label>
+    <Form.Label style={{ margin: 0 }}>Pet's Name:</Form.Label>
     <div>
         {/* If selectedPetsData is available, show them */}
         {selectedPetsData && selectedPetsData.length > 0 ? (
@@ -280,11 +281,9 @@ function AddSurgicalFormModal({ show, handleClose, onFormAdded, selectedClient, 
     </div>
 </Form.Group>
 
-
-
                     {/* Surgery Date */}
                     <Form.Group className="mb-3">
-                        <Form.Label>Surgery Date:</Form.Label>
+                        <Form.Label style={{ margin: 0 }}>Surgery Date:</Form.Label>
                         <Form.Control
                             type="date"
                             name="surgery_date"
@@ -292,13 +291,12 @@ function AddSurgicalFormModal({ show, handleClose, onFormAdded, selectedClient, 
                             onChange={handleChange}
                             required
                             min={today}
-
                         />
                     </Form.Group>
 
                     {/* Surgical Procedure */}
                     <Form.Group className="mb-3">
-                    <Form.Label>Surgical Procedure:</Form.Label>
+                    <Form.Label style={{ margin: 0 }}>Surgical Procedure:</Form.Label>
                     <Form.Select
                         name="surgical_procedure"
                         value={formData.surgical_procedure} // ✅ Ensure this matches service ID
@@ -317,20 +315,9 @@ function AddSurgicalFormModal({ show, handleClose, onFormAdded, selectedClient, 
                     </Form.Select>
                 </Form.Group>
 
-
-
-
-                    {/* Notes Section */}
-                    {notes.map((note, index) => (
-                        <div key={index} className="border p-3 mb-3 bg-light">
-                            <h5 className="text-center">{note.title}</h5>
-                            <p>{note.content}</p>
-                        </div>
-                    ))}
-
                     {/* Camera Capture */}
                     <Form.Group className="mb-3">
-                        <Form.Label>
+                        <Form.Label style={{ margin: 0 }}>
                             Capture Client Image: <span style={{ color: "red" }}>*</span>
                         </Form.Label>
 
@@ -374,6 +361,13 @@ function AddSurgicalFormModal({ show, handleClose, onFormAdded, selectedClient, 
                         <canvas ref={canvasRef} style={{ display: "none" }} />
                     </Form.Group>
 
+                     {/* Notes Section */}
+                    {notes.map((note, index) => (
+                        <div key={index} className="border p-3 mb-3 bg-light">
+                            <h5 className="text-center">{note.title}</h5>
+                            <p>{note.content}</p>
+                        </div>
+                    ))}
 
                     {/* Signature Checkbox */}
                     <Form.Group className="form-check mb-3">
@@ -388,8 +382,8 @@ function AddSurgicalFormModal({ show, handleClose, onFormAdded, selectedClient, 
                     </Form.Group>
 
                     {/* Submit Button */}
-                    <div className="text-center mt-4">
-                        <Button variant="primary" type="submit">Submit</Button>
+                    <div className="button-container mt-3">
+                        <Button variant="primary" type="submit" className='button btn-gradient'>Submit</Button>
                     </div>
                 </Form>
             </Modal.Body>

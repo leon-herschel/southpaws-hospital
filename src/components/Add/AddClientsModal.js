@@ -243,11 +243,11 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                 </Modal.Header>
                 <Modal.Body>
                     <Form onSubmit={handleSubmit}>
-                        <h4>Client Information</h4>
+                        <h4 className='mb-3'>Client Information</h4>
                         <div className="row">
                             <div className="col-md-6">
-                                <Form.Group>
-                                    <Form.Label>Name: <span className="text-danger">*</span></Form.Label>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>Name: <span className="text-danger">*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="name"
@@ -259,8 +259,8 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                                         disabled={disablePrefilledFields && !!prefillData?.name}
                                     />
                                 </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>Address: <span className="text-danger">*</span></Form.Label>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>Address: <span className="text-danger">*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="address"
@@ -270,8 +270,8 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                                         required
                                     />
                                 </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>Mobile Number: <span className="text-danger">*</span></Form.Label>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>Mobile Number: <span className="text-danger">*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="cellnumber"
@@ -284,8 +284,8 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                                 </Form.Group>
                             </div>
                             <div className="col-md-6">
-                                <Form.Group>
-                                    <Form.Label>Email: </Form.Label>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>Email: </Form.Label>
                                     <Form.Control
                                         type="email"
                                         name="email"
@@ -295,8 +295,8 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                                         disabled={disablePrefilledFields && !!prefillData?.name}
                                     />
                                 </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>Gender: <span className="text-danger">*</span></Form.Label>
+                                <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>Gender: <span className="text-danger">*</span></Form.Label>
                                     <Form.Control
                                         as="select"
                                         name="gender"
@@ -315,7 +315,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
 
                         <hr />
 
-                        <h4 className="d-flex justify-content-between align-items-center">
+                        <h4 className="d-flex justify-content-between align-items-center mb-3">
                             Pet Information
                             {!(disablePrefilledFields && !!prefillData?.name) && (
                                 <Button 
@@ -328,81 +328,83 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                             )}
                         </h4>
                         {patients.map((patient, index) => (
-                            <div className="row" key={index}>
-                                <div className="col-md-6">
-                                    <Form.Group>
-                                        <Form.Label>Name: <span className="text-danger">*</span></Form.Label>
+                                <div key={index}>
+                                {index > 0 && <hr className="my-4" />}
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <Form.Group className="mb-3">
+                                            <Form.Label style={{ margin: 0 }}>Name: <span className="text-danger">*</span></Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                name="name"
+                                                value={patient.name}
+                                                onChange={(event) => handlePatientChange(event, index)}
+                                                placeholder="Enter name"
+                                                required
+                                                disabled={disablePrefilledFields && !!prefillData?.name}
+                                            />
+                                        </Form.Group>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label style={{ margin: 0 }}>Species: <span className="text-danger">*</span></Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                name="species"
+                                                value={patient.species}
+                                                onChange={(event) => handlePatientChange(event, index)}
+                                                placeholder="Enter species"
+                                                required
+                                                disabled={disablePrefilledFields && !!prefillData?.name}
+                                            />
+                                        </Form.Group>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label style={{ margin: 0 }}>Breed: <span className="text-danger">*</span></Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                name="breed"
+                                                value={patient.breed}
+                                                onChange={(event) => handlePatientChange(event, index)}
+                                                placeholder="Enter breed"
+                                                required
+                                                disabled={disablePrefilledFields && !!prefillData?.name}
+                                            />
+                                        </Form.Group>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label style={{ margin: 0 }}>Weight (in kgs.): </Form.Label>
+                                            <Form.Control
+                                                type="number"
+                                                step="0.1"
+                                                name="weight"
+                                                value={patient.weight}
+                                                onChange={(event) => handlePatientChange(event, index)}
+                                                placeholder="Enter weight"
+                                            />
+                                        </Form.Group>
+                                    </div>
+                                    <div className="col-md-6">
+                                    <Form.Group className="mb-3">
+                                        <Form.Label style={{ margin: 0 }}>Birthdate: <span className="text-danger">*</span></Form.Label>
                                         <Form.Control
-                                            type="text"
-                                            name="name"
-                                            value={patient.name}
+                                            type="date"
+                                            name="birthdate"
+                                            value={patient.birthdate}
                                             onChange={(event) => handlePatientChange(event, index)}
-                                            placeholder="Enter name"
                                             required
-                                            disabled={disablePrefilledFields && !!prefillData?.name}
+                                            max={new Date().toISOString().split("T")[0]} // Set max to today's date
                                         />
                                     </Form.Group>
-                                    <Form.Group>
-                                        <Form.Label>Species: <span className="text-danger">*</span></Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            name="species"
-                                            value={patient.species}
-                                            onChange={(event) => handlePatientChange(event, index)}
-                                            placeholder="Enter species"
-                                            required
-                                            disabled={disablePrefilledFields && !!prefillData?.name}
-                                        />
+                                        <Form.Group className="mb-3">
+                                    <Form.Label style={{ margin: 0 }}>Age: </Form.Label>
+                                    <Form.Control
+                                        type="text" // Change to 'text' so that it can display the full age in years and months
+                                        name="age"
+                                        value={patient.age}
+                                        readOnly
+                                        placeholder="Auto-calculated age"
+                                    />
                                     </Form.Group>
-                                    <Form.Group>
-                                        <Form.Label>Breed: <span className="text-danger">*</span></Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            name="breed"
-                                            value={patient.breed}
-                                            onChange={(event) => handlePatientChange(event, index)}
-                                            placeholder="Enter breed"
-                                            required
-                                            disabled={disablePrefilledFields && !!prefillData?.name}
-                                        />
-                                    </Form.Group>
-                                    <Form.Group>
-                                        <Form.Label>Weight (in kgs.): </Form.Label>
-                                        <Form.Control
-                                            type="number"
-                                            step="0.1"
-                                            name="weight"
-                                            value={patient.weight}
-                                            onChange={(event) => handlePatientChange(event, index)}
-                                            placeholder="Enter weight"
-                                        />
-                                    </Form.Group>
-                                </div>
-                                <div className="col-md-6">
-                                <Form.Group>
-                                <Form.Label>Birthdate: <span className="text-danger">*</span></Form.Label>
-                                <Form.Control
-                                    type="date"
-                                    name="birthdate"
-                                    value={patient.birthdate}
-                                    onChange={(event) => handlePatientChange(event, index)}
-                                    required
-                                    max={new Date().toISOString().split("T")[0]} // Set max to today's date
-                                />
-                            </Form.Group>
-                                    <Form.Group>
-                                <Form.Label>Age: </Form.Label>
-                                <Form.Control
-                                    type="text" // Change to 'text' so that it can display the full age in years and months
-                                    name="age"
-                                    value={patient.age}
-                                    readOnly
-                                    placeholder="Auto-calculated age"
-                                />
-                            </Form.Group>
 
-                                    <Form.Group>
-                                        <Form.Label>Distinct Features: </Form.Label>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label style={{ margin: 0 }}>Distinct Features: </Form.Label>
                                         <Form.Control
                                             type="text"
                                             name="distinct_features"
@@ -411,8 +413,8 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                                             placeholder="Enter distinct features"
                                         />
                                     </Form.Group>
-                                    <Form.Group>
-                                        <Form.Label>Other Details: </Form.Label>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label style={{ margin: 0 }}>Other Details: </Form.Label>
                                         <Form.Control
                                             as="textarea"
                                             rows={3}
@@ -423,17 +425,17 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
                                         />
                                     </Form.Group>
 
-                                    {patients.length > 1 && (
-                                        <div className="d-flex justify-content-end">
-                                            <Button variant="danger" onClick={() => removePatient(index)} className="mt-3 mb-3">
-                                                Remove Patient
-                                            </Button>
-                                        </div>
-                                    )}
+                                        {patients.length > 1 && (
+                                            <div className="d-flex justify-content-end">
+                                                <Button variant="danger" onClick={() => removePatient(index)} className="mt-3 mb-3">
+                                                    Remove Patient
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         ))}
-
                         <div className="flex button-container d-flex justify-content-end mt-4">
                             <Button variant="secondary" className='me-2' onClick={handleClose}>Close</Button>
                             <Button variant="primary" type="submit">Save</Button>

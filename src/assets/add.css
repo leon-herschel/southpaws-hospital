@@ -16,10 +16,9 @@
 }
 
 .sticky-button {
-    position: sticky; /* This makes the button stay in view while scrolling */
-    top: 10px; /* Adjust this value to give space from the top */
-    z-index: 1000; /* Ensures the button stays on top of other elements */
-    background-color: #28a745; /* Optional: Keep the button color distinct */
+    position: sticky;
+    top: 10px;
+    z-index: 999;
 }
 
 .form-control {

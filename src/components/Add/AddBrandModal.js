@@ -94,7 +94,7 @@ const AddBrandModal = ({ show, handleClose, onBrandAdded }) => {
                         <Button 
                             variant="primary" 
                             type="submit" 
-                            className="button" 
+                            className="button btn-gradient" 
                             disabled={isLoading}
                         >
                             {isLoading ? 'Adding...' : 'Add'}

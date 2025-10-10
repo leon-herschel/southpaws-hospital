@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 function AddImmunizationFormModal({ show, handleClose, onFormAdded, selectedClient, selectedPetsData }) {
     const [formData, setFormData] = useState({
@@ -18,7 +19,7 @@ function AddImmunizationFormModal({ show, handleClose, onFormAdded, selectedClie
     const [errorMessage, setErrorMessage] = useState('');
     const [petImage, setPetImage] = useState(null);
     const [selectedPets, setSelectedPets] = useState([]); // Track selected pets
-
+    const today = new Date().toISOString().split('T')[0];
 
     // Camera States
     const videoRef = useRef(null);
@@ -140,7 +141,7 @@ function AddImmunizationFormModal({ show, handleClose, onFormAdded, selectedClie
         e.preventDefault();
 
         if (!formData.owner || !formData.pet.length || formData.signature === 0) {
-            alert('Please make sure all fields are filled and consent is given.');
+            toast.error('Please make sure all fields are filled and consent is given.');
             return;
         }
 
@@ -210,7 +211,7 @@ function AddImmunizationFormModal({ show, handleClose, onFormAdded, selectedClie
     
 
     return (
-        <Modal show={show} onHide={handleModalClose} size="xl" centered>
+        <Modal show={show} onHide={handleModalClose} size="lg" centered>
             <Modal.Header closeButton>
                 <Modal.Title>Immunization Information and Consent</Modal.Title>
             </Modal.Header>
@@ -218,18 +219,18 @@ function AddImmunizationFormModal({ show, handleClose, onFormAdded, selectedClie
                 
                 <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3">
-                        <Form.Label>Date:</Form.Label>
+                        <Form.Label style={{ margin: 0 }}>Date:</Form.Label>
                         <Form.Control
                             type="date"
                             name="date"
                             value={formData.date}
                             onChange={handleChange}
-                            readOnly
+                            min={today}
                         />
                     </Form.Group>
 
                     <Form.Group className="mb-3">
-                        <Form.Label>Owner:</Form.Label>
+                        <Form.Label style={{ margin: 0 }}>Owner:</Form.Label>
                         <Form.Select
                             name="owner"
                             value={formData.owner}
@@ -247,7 +248,7 @@ function AddImmunizationFormModal({ show, handleClose, onFormAdded, selectedClie
                     </Form.Group>
 
                     <Form.Group className="mb-3">
-    <Form.Label>Pet's Name:</Form.Label>
+    <Form.Label style={{ margin: 0 }}>Pet's Name:</Form.Label>
     <div>
         {selectedPetsData && selectedPetsData.length > 0 ? (
             // Display pre-selected pets if `selectedPetsData` is provided
@@ -277,7 +278,7 @@ function AddImmunizationFormModal({ show, handleClose, onFormAdded, selectedClie
 
                     {/* Camera Capture */}
                     <Form.Group className="mb-3">
-                        <Form.Label>
+                        <Form.Label style={{ margin: 0 }}>
                             Capture Client Image: <span style={{ color: "red" }}>*</span>
                         </Form.Label>
 
@@ -342,8 +343,8 @@ function AddImmunizationFormModal({ show, handleClose, onFormAdded, selectedClie
 </Form.Group>
         {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}  
 
-                    <div className="text-center mt-4">
-                        <Button variant="primary" type="submit">
+                    <div className="button-container mt-3">
+                        <Button variant="primary" type="submit" className='button btn-gradient'>
                             Submit
                         </Button>
                     </div>

@@ -41,6 +41,18 @@ const AddSupplierModal = ({ show, handleClose, onSuppliersAdded }) => {
             setError('Supplier name cannot be empty.');
             return;
         }
+
+        const phoneRegex = /^[0-9]{10,11}$/;
+        if (!phoneRegex.test(inputs.contact_number)) {
+            setError('Please enter a valid contact number (10–11 digits).');
+            return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(inputs.email)) {
+            setError('Please enter a valid email address.');
+            return;
+        }
     
         setIsLoading(true);
     
@@ -104,8 +116,8 @@ const AddSupplierModal = ({ show, handleClose, onSuppliersAdded }) => {
                     <div className="row">
                         {/* Left column */}
                         <div className="col-md-6">
-                            <Form.Group>
-                                <Form.Label>Supplier Name</Form.Label>
+                            <Form.Group className="mb-3">
+                                <Form.Label style={{ margin: 0 }}>Supplier Name</Form.Label>
                                 <Form.Control
                                     type="text"
                                     name="supplier_name"
@@ -116,8 +128,8 @@ const AddSupplierModal = ({ show, handleClose, onSuppliersAdded }) => {
                                     required
                                 />
                             </Form.Group>
-                            <Form.Group>
-                                <Form.Label>Contact Person</Form.Label>
+                            <Form.Group className="mb-3">
+                                <Form.Label style={{ margin: 0 }}>Contact Person</Form.Label>
                                 <Form.Control
                                     type="text"
                                     name="contact_person"
@@ -127,8 +139,8 @@ const AddSupplierModal = ({ show, handleClose, onSuppliersAdded }) => {
                                     required
                                 />
                             </Form.Group>
-                            <Form.Group>
-                                <Form.Label>Contact Number</Form.Label>
+                            <Form.Group className="mb-3">
+                                <Form.Label style={{ margin: 0 }}>Contact Number</Form.Label>
                                 <Form.Control
                                     type="text"
                                     name="contact_number"
@@ -141,8 +153,8 @@ const AddSupplierModal = ({ show, handleClose, onSuppliersAdded }) => {
                         </div>
                         {/* Right column */}
                         <div className="col-md-6">
-                            <Form.Group>
-                                <Form.Label>Email</Form.Label>
+                            <Form.Group className="mb-3">
+                                <Form.Label style={{ margin: 0 }}>Email</Form.Label>
                                 <Form.Control
                                     type="email"
                                     name="email"
@@ -152,8 +164,8 @@ const AddSupplierModal = ({ show, handleClose, onSuppliersAdded }) => {
                                     required
                                 />
                             </Form.Group>
-                            <Form.Group>
-                                <Form.Label>Address</Form.Label>
+                            <Form.Group className="mb-3">
+                                <Form.Label style={{ margin: 0 }}>Address</Form.Label>
                                 <Form.Control
                                     type="text"
                                     name="address"
@@ -166,7 +178,7 @@ const AddSupplierModal = ({ show, handleClose, onSuppliersAdded }) => {
                         </div>
                     </div>
                     <div className="button-container">
-                        <Button variant="primary" type="submit" className='button' disabled={isLoading}>
+                        <Button variant="primary" type="submit" className='button btn-gradient' disabled={isLoading}>
                             {isLoading ? 'Adding...' : 'Add'}
                         </Button>
                     </div>

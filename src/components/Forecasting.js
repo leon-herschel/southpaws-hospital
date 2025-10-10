@@ -48,11 +48,7 @@ const Forecasting = () => {
         });
 
         if (productSales.length === 0) {
-            return {
-                totalSales: 0,
-                salesVelocity: 0,
-                predictedDaysLeft: 'N/A'
-            };
+            return { totalSales: 0, salesVelocity: 0, predictedDaysLeft: 'N/A' };
         }
 
         let totalQuantitySold = 0;
@@ -63,24 +59,20 @@ const Forecasting = () => {
             const quantity = parseInt(sale.total_quantity, 10) || 0;
             totalQuantitySold += quantity;
 
-            const saleDate = new Date(`${sale.month} 1, ${new Date().getFullYear()}`);
-            
+            const saleDate = new Date(`${sale.month} 1, ${sale.year}`);
             if (!firstSaleDate || saleDate < firstSaleDate) firstSaleDate = saleDate;
             if (!lastSaleDate || saleDate > lastSaleDate) lastSaleDate = saleDate;
         });
 
-        let salesVelocity = 0;
-        if (firstSaleDate && lastSaleDate && totalQuantitySold > 0) {
-            const timeDiff = lastSaleDate - firstSaleDate;
-            const daysDiff = Math.max(timeDiff / (1000 * 60 * 60 * 24), 1);
-            salesVelocity = totalQuantitySold / daysDiff;
-        }
+        const timeDiff = lastSaleDate - firstSaleDate;
+        const daysDiff = productSales.length > 1 ? timeDiff / (1000 * 60 * 60 * 24) : 30;
+        const salesVelocity = totalQuantitySold / daysDiff;
 
-        const product = inventory.find(item => 
+        const product = inventory.find(item =>
             item.product_name.trim().toLowerCase() === productName.trim().toLowerCase() &&
             (!sku || item.sku === sku)
         );
-        
+
         const currentStock = product ? parseInt(product.quantity, 10) || 0 : 0;
 
         let predictedDaysLeft = 'N/A';
@@ -91,7 +83,7 @@ const Forecasting = () => {
         return {
             totalSales: totalQuantitySold,
             salesVelocity: salesVelocity.toFixed(2),
-            predictedDaysLeft: predictedDaysLeft
+            predictedDaysLeft
         };
     };
 
@@ -234,48 +226,65 @@ const Forecasting = () => {
     const productVariants = getProductVariants();
 
     return (
-        <div className='container mt-2'>
-            <h2 className="text-center text-white bg-success p-3 mb-0">Product Inventory Forecast</h2>
-            <div className="table-responsive">
-                <Table striped bordered hover className="text-center">
-                    <thead className="table-light">
-                        <tr>
-                            <th>SKU</th>
-                            <th>Product Name</th>
-                            <th>Current Stock</th>
-                            <th>Sales Velocity (units/day)</th>
-                            <th>Estimated Depletion Date</th>
-                            <th>Recommended Purchase Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {productVariants.length > 0 ? (
-                            productVariants.map((variant, index) => {
-                                const inventoryStatus = getInventoryStatus(variant.productName, variant.sku);
-                                const stockColorClass = getStockStatusColor(inventoryStatus.stock);
-                                
-                                return (
-                                    <tr key={index}>
-                                        <td>{inventoryStatus.sku}</td>
-                                        <td>{variant.productName}</td>
-                                        <td className={`fw-bold ${stockColorClass}`}>
-                                            {inventoryStatus.stock}
+        <div className='container mt-4'>
+            <div className="card shadow-sm border-0">
+                <div className="card-header bg-success text-white py-3">
+                    <h2 className="card-title text-center mb-0 h4">Product Inventory Forecast</h2>
+                </div>
+                <div className="card-body p-0">
+                    <div className="table-responsive">
+                        <Table hover className="mb-0 table-striped">
+                            <thead className="table-light">
+                                <tr>
+                                    <th className="px-4">SKU</th>
+                                    <th className="px-4">Product Name</th>
+                                    <th className="px-4">Current Stock</th>
+                                    <th className="px-4">Sales Velocity</th>
+                                    <th className="px-4">Estimated Depletion</th>
+                                    <th className="px-4">Recommended Purchase</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {productVariants.length > 0 ? (
+                                    productVariants.map((variant, index) => {
+                                        const inventoryStatus = getInventoryStatus(variant.productName, variant.sku);
+                                        const stockColorClass = getStockStatusColor(inventoryStatus.stock);
+                                        
+                                        return (
+                                            <tr key={index} className="align-middle">
+                                                <td className="px-4 fw-semibold">{inventoryStatus.sku}</td>
+                                                <td className="px-4">{variant.productName}</td>
+                                                <td className={`px-4 fw-bold ${stockColorClass}`}>
+                                                    {inventoryStatus.stock}
+                                                </td>
+                                                <td className="px-4">
+                                                    <span className="text-muted small">units/day</span><br />
+                                                    {inventoryStatus.salesVelocity}
+                                                </td>
+                                                <td className="px-4">
+                                                    {inventoryStatus.estimatedDepletionDate}
+                                                </td>
+                                                <td className="px-4">
+                                                    {inventoryStatus.recommendedPurchaseDate === "ASAP" ? (
+                                                        <span className="badge bg-danger rounded-pill">ASAP</span>
+                                                    ) : (
+                                                        inventoryStatus.recommendedPurchaseDate
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
+                                ) : (
+                                    <tr>
+                                        <td colSpan="6" className="text-center py-4 text-muted">
+                                            No products with SKU information available
                                         </td>
-                                        <td>{inventoryStatus.salesVelocity}</td>
-                                        <td>{inventoryStatus.estimatedDepletionDate}</td>
-                                        <td>{inventoryStatus.recommendedPurchaseDate}</td>
                                     </tr>
-                                );
-                            })
-                        ) : (
-                            <tr>
-                                <td colSpan="6" className="text-center">
-                                    No products with SKU information available
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </Table>
+                                )}
+                            </tbody>
+                        </Table>
+                    </div>
+                </div>
             </div>
         </div>
     );

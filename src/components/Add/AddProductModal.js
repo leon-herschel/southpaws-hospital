@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Modal, Button, Form, Row, Col, Alert } from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import axios from 'axios';
 import JsBarcode from 'jsbarcode';
 import '../../assets/add.css';
-import AddCategoryModal from './AddCategoryModal'; // Import AddCategoryModal
-import AddBrandModal from './AddBrandModal'; // Import AddBrandModal
-import AddUnitModal from './AddUnitModal'; // Import AddBrandModal
-import AddGenericModal from './AddGenericModal'; // Import AddBrandModal
-
+import AddCategoryModal from './AddCategoryModal'; 
+import AddBrandModal from './AddBrandModal'; 
+import AddUnitModal from './AddUnitModal'; 
+import AddGenericModal from './AddGenericModal'; 
+import { FaPlus } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
 
@@ -17,19 +17,18 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
     const [brands, setBrands] = useState([]);
     const [showAddCategoryModal, setShowAddCategoryModal] = useState(false); // State to control AddCategoryModal visibility
     const [showAddBrandModal, setShowAddBrandModal] = useState(false); // State to control AddBrandModal visibility
-    const [genericNames, setGenericNames] = useState([]); // ✅ State for Generic Names
+    const [genericNames, setGenericNames] = useState([]); // State for Generic Names
 
     const barcodeRef = useRef(null);
-    const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [unitsOfMeasurement, setUnitsOfMeasurement] = useState([]); // List of units of measurement
     const [showAddUnitModal, setShowAddUnitModal] = useState(false); 
-    const [showAddGenericModal, setShowAddGenericModal] = useState(false); // ✅ Added modal for Generic Name
+    const [showAddGenericModal, setShowAddGenericModal] = useState(false); // Added modal for Generic Name
     const brandNameRef = useRef(null);
 
     useEffect(() => {
         if (show && brandNameRef.current) {
-            brandNameRef.current.focus(); // ✅ Auto-focus when modal opens
+            brandNameRef.current.focus(); // Auto-focus when modal opens
         }
     }, [show]);
 
@@ -126,15 +125,17 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
         event.preventDefault();
     
         if (!inputs.product_name || !inputs.generic_id) {
-            setError('Product Name and Generic Name are required.');
+            toast.error('Product Name and Generic Name are required.');
             return;
         }
     
         const userId = localStorage.getItem('userID');
         if (!userId) {
-            setError('User not authenticated.');
+            toast.error('User not authenticated.');
             return;
         }
+
+        setIsLoading(true);
     
         const productData = {
             ...inputs,
@@ -147,31 +148,21 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
             .then((response) => {
     
                 if (response.data.status === 0) {
-                    setError(response.data.message);
+                    toast.error(response.data.message);
                 } else {
                     handleClose();
                     onProductAdded();
-                    setInputs({ name: '', sku: '', price: '', category: '', brand: '', generic_id: '' }); // ✅ Reset generic_id
-                    setError('');
+                    setInputs({ name: '', sku: '', price: '', category: '', brand: '', generic_id: '' });
                 }
             })
             .catch((error) => {
                 console.error("🔥 API Request Failed:", error);
-                setError('Failed to save product. Please try again.');
+                toast.error('Failed to save product. Please try again.');
             })
             .finally(() => {
                 setIsLoading(false);
             });
     };
-    
-    
-    
-    // Reset the error state when closing the modal
-    const handleCloseModal = () => {
-        setError(''); // Clear the error message when closing the modal
-        handleClose(); // Close the modal
-    };
-
 
     const handleCreateUnit = () => {
         setShowAddUnitModal(true); // Open AddCategoryModal
@@ -301,18 +292,16 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
                     <Modal.Title>Add Product</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                {error && <Alert variant="danger">{error}</Alert>}
-
                     <Form onSubmit={handleSubmit}>
                         <Row>
                             <Col md={6}>
-                                <Form.Group>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <Form.Group className="mb-4">
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                                         <Form.Label>Product Name</Form.Label>
                                     </div>
                                     <Form.Control
                                         type="text"
-                                        ref={brandNameRef} // ✅ Attach ref to input field
+                                        ref={brandNameRef} 
                                         name="product_name"
                                         onChange={handleChange}
                                         placeholder="Enter Product name"
@@ -320,15 +309,16 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
                                     />
                                 </Form.Group>
 
-                                <Form.Group style={{ position: 'relative' }}>
+                                <Form.Group className="mb-4" style={{ position: 'relative' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <Form.Label>Generic Name</Form.Label>
+                                        <Form.Label style={{ margin: 0 }}>Generic Name</Form.Label>
                                         <Button 
-                                            variant="success" 
+                                            variant='primary' 
                                             onClick={() => setShowAddGenericModal(true)} 
                                             size="sm"
+                                            className="sticky-button"
                                         >
-                                            +
+                                            <FaPlus />
                                         </Button>
                                     </div>
                                     <Form.Control
@@ -349,16 +339,16 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
                                         )}
                                     </Form.Control>
                                 </Form.Group>
-                                <Form.Group style={{ position: 'relative' }}>
+                                <Form.Group className="mb-4" style={{ position: 'relative' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <Form.Label style={{ margin: 0 }}>Brand</Form.Label>
                                         <Button 
-                                            variant="success" 
+                                            variant='primary' 
                                             onClick={handleCreateBrand} 
                                             className="sticky-button" 
                                             size="sm"
                                         >
-                                            +
+                                            <FaPlus />
                                         </Button>
                                     </div>
                                     <Form.Control
@@ -382,16 +372,16 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
                             </Col>
 
                             <Col md={6}>
-                                <Form.Group style={{ position: 'relative' }}>
+                                <Form.Group className="mb-4" style={{ position: 'relative' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <Form.Label style={{ margin: 0 }}>Unit of Measurement</Form.Label>
                                         <Button 
-                                            variant="success" 
+                                            variant='primary' 
                                             onClick={handleCreateUnit} 
                                             className="sticky-button" 
                                             size="sm"
                                         >
-                                            +
+                                            <FaPlus />
                                         </Button>
                                     </div>
                                     <Form.Control
@@ -412,16 +402,16 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
                                         )}
                                     </Form.Control>
                                 </Form.Group>
-                                <Form.Group style={{ position: 'relative' }}>
+                                <Form.Group className="mb-4" style={{ position: 'relative' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <Form.Label style={{ margin: 0 }}>Category</Form.Label>
                                         <Button 
-                                            variant="success" 
+                                            variant='primary' 
                                             onClick={handleCreateCategory} 
                                             className="sticky-button" 
                                             size="sm"
                                         >
-                                            +
+                                            <FaPlus />
                                         </Button>
                                     </div>
                                     <Form.Control
@@ -447,10 +437,10 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
                             </Col>
                         </Row>
 
-
                         <div className="text-center">
-                            <Button variant="primary" type="submit" className="button">
-                                Add
+                            <Button variant="primary btn-gradient" type="submit" className="button" disabled={isLoading}
+                            >
+                                {isLoading ? 'Adding...' : 'Add'}
                             </Button>
                         </div>
                     </Form>

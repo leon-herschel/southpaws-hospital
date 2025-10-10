@@ -151,7 +151,7 @@ const EditImmunizationFormModal = ({
     };
 
     return (
-        <Modal show={show} onHide={handleClose} size="xl" centered>
+        <Modal show={show} onHide={handleClose} size="lg" centered>
             <Modal.Header closeButton>
                 <Modal.Title>Edit Immunization Form</Modal.Title>
             </Modal.Header>
@@ -159,7 +159,7 @@ const EditImmunizationFormModal = ({
                 <Form onSubmit={handleSubmit}>
                     {/* Date Signed */}
                     <Form.Group className="mb-3">
-                        <Form.Label>Date Signed:</Form.Label>
+                        <Form.Label style={{ margin: 0 }}>Date Signed:</Form.Label>
                         <Form.Control
                             type="text"
                             value={new Date(formState.created_at).toLocaleDateString("en-US", {
@@ -173,7 +173,7 @@ const EditImmunizationFormModal = ({
 
                     {/* Owner Selection */}
                     <Form.Group className="mb-3">
-                        <Form.Label>Owner:</Form.Label>
+                        <Form.Label style={{ margin: 0 }}>Owner:</Form.Label>
                         <Form.Select
                             name="client_id"
                             value={formState.client_id}
@@ -191,7 +191,7 @@ const EditImmunizationFormModal = ({
 
                     {/* Pet Selection */}
                     <Form.Group className="mb-3">
-    <Form.Label>Pet:</Form.Label>
+    <Form.Label style={{ margin: 0 }}>Pet:</Form.Label>
     <div>
         {pets
             .filter(pet => pet.ownerId === parseInt(formState.client_id, 10)) // Filter pets by owner
@@ -211,7 +211,7 @@ const EditImmunizationFormModal = ({
 
                     {/* Camera Capture */}
                     {/*<Form.Group className="mb-3">
-                        <Form.Label>Capture Client Image:</Form.Label>
+                        <Form.Label style={{ margin: 0 }}>Capture Client Image:</Form.Label>
                         <div>
                             {capturedImage ? (
                                 <img src={capturedImage} alt="Captured" className="mb-2" style={{ width: "100%", maxHeight: "300px", objectFit: "cover", borderRadius: "8px" }} />
@@ -253,8 +253,8 @@ const EditImmunizationFormModal = ({
                     </Form.Group>
 
                     {/* Submit Button */}
-                    <div className="text-center mt-4">
-                        <Button variant="primary" type="submit">Save Changes</Button>
+                    <div className="button-container mt-3">
+                        <Button variant="primary" type="submit" className='button btn-gradient'>Update</Button>
                     </div>
                 </Form>
             </Modal.Body>

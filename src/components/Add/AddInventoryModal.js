@@ -6,6 +6,7 @@ import '../../assets/add.css';
 import { toast } from 'react-toastify'; // Import Toastify
 import AddSupplierModal from './AddSupplierModal'; // Import the Add Supplier modal
 import { v4 as uuidv4 } from 'uuid'; // For generating unique barcodes
+import { FaPlus } from 'react-icons/fa';
 
 const CreateInventoryModal = ({ show, handleClose, onItemAdded, productId }) => {
     const [inputs, setInputs] = useState([]);
@@ -302,8 +303,8 @@ const CreateInventoryModal = ({ show, handleClose, onItemAdded, productId }) => 
 
                         <Col md={6}>
                         
-                        <Form.Group>
-                                <Form.Label>Product Name</Form.Label>
+                        <Form.Group className="mb-4">
+                                <Form.Label style={{ margin: 0 }}>Product Name</Form.Label>
                                 <Form.Control
                                     type="text"
                                     name="name"
@@ -312,9 +313,9 @@ const CreateInventoryModal = ({ show, handleClose, onItemAdded, productId }) => 
                                     key={inputs.product_name} // Force re-render when value changes
                                 />
                             </Form.Group>
-                            <Form.Group>
+                            <Form.Group className="mb-4">
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <Form.Label>SKU</Form.Label>
+                                        <Form.Label style={{ margin: 0 }}>SKU</Form.Label>
                                     </div>
                                     <Form.Control
                                         type="text"
@@ -325,8 +326,8 @@ const CreateInventoryModal = ({ show, handleClose, onItemAdded, productId }) => 
                                     />
                                 </Form.Group>
                             
-                            <Form.Group>
-                                <Form.Label>Price</Form.Label>
+                            <Form.Group className="mb-4">
+                                <Form.Label style={{ margin: 0 }}>Price</Form.Label>
                                 <Form.Control
                                     type="number"
                                     step="any"
@@ -338,8 +339,8 @@ const CreateInventoryModal = ({ show, handleClose, onItemAdded, productId }) => 
                                     min="0"
                                 />
                             </Form.Group>
-                            <Form.Group>
-                                <Form.Label>Quantity</Form.Label>
+                            <Form.Group className="mb-4">
+                                <Form.Label style={{ margin: 0 }}>Quantity</Form.Label>
                                 <Form.Control
                                     type="number"
                                     name="quantity"
@@ -354,8 +355,8 @@ const CreateInventoryModal = ({ show, handleClose, onItemAdded, productId }) => 
                             
                         </Col>
                         <Col md={6}>
-                            <Form.Group>
-                                <Form.Label>Generic Name</Form.Label>
+                            <Form.Group className="mb-4">
+                                <Form.Label style={{ margin: 0 }}>Generic Name</Form.Label>
                                 <Form.Control
                                     type="text"
                                     name="generic_name"
@@ -365,8 +366,8 @@ const CreateInventoryModal = ({ show, handleClose, onItemAdded, productId }) => 
 
                                 />
                             </Form.Group>
-                            <Form.Group>
-                                <Form.Label>Barcode</Form.Label>
+                            <Form.Group className="mb-4">
+                                <Form.Label style={{ margin: 0 }}>Barcode</Form.Label>
                                 <Form.Control
                                     type="text"
                                     name="barcode"
@@ -377,16 +378,18 @@ const CreateInventoryModal = ({ show, handleClose, onItemAdded, productId }) => 
                                     required
                                 />
                             </Form.Group>
-                            <Form.Group>
-                                <Form.Label>Supplier</Form.Label>
-                                <Button 
-                                    variant="success" 
-                                    onClick={handleAddSupplier} 
-                                    className="sticky-button" 
-                                    size="sm"
-                                >
-                                    +
-                                </Button>
+                            <Form.Group className="mb-4">
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <Form.Label style={{ margin: 0 }}>Supplier</Form.Label>
+                                    <Button 
+                                        variant="success" 
+                                        onClick={handleAddSupplier} 
+                                        className="sticky-button" 
+                                        size="sm"
+                                    >
+                                        <FaPlus />
+                                    </Button>
+                                </div>
                                 <Form.Control
                                     as="select"
                                     name="supplier_id"
@@ -408,8 +411,8 @@ const CreateInventoryModal = ({ show, handleClose, onItemAdded, productId }) => 
                             </Form.Group>
 
                     
-                            <Form.Group>
-                                <Form.Label>Expiration Date</Form.Label>
+                            <Form.Group className="mb-4">
+                                <Form.Label style={{ margin: 0 }}>Expiration Date</Form.Label>
                                 <Form.Control
                                     type="date"
                                     name="expiration_date"
@@ -429,8 +432,8 @@ const CreateInventoryModal = ({ show, handleClose, onItemAdded, productId }) => 
                     {inputs.barcode && (
                         <Row className="mt-3">
                             <Col md={12} className="text-center">
-                                <Form.Group>
-                                    <Form.Label>Generated Barcode</Form.Label>
+                                <Form.Group className="mb-4">
+                                    <Form.Label style={{ margin: 0 }}>Generated Barcode</Form.Label>
                                     <div className="mt-2">
                                         <svg ref={barcodeRef}></svg>
                                     </div>
@@ -442,7 +445,7 @@ const CreateInventoryModal = ({ show, handleClose, onItemAdded, productId }) => 
                         <Button
                             variant="primary"
                             type="submit"
-                            className="button"
+                            className="button btn-gradient"
                             disabled={isSubmitting}  // Disable button during submission
                         >
                             {isSubmitting ? 'Submitting...' : 'Save'}

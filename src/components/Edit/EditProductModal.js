@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Modal, Button, Form, Row, Col, Alert } from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import axios from 'axios';
 import '../../assets/add.css';
+import { toast } from 'react-toastify';
 
 const EditProductModal = ({ show, handleClose, editProduct, handleEditSubmit, errorMessage }) => {
     const [product, setProduct] = useState(null);
@@ -10,6 +11,7 @@ const EditProductModal = ({ show, handleClose, editProduct, handleEditSubmit, er
     const [brands, setBrands] = useState([]);
     const [generic, setGeneric] = useState([]);
     const [unitsOfMeasurement, setUnitsOfMeasurement] = useState([]);
+    const [updating, setUpdating] = useState(false);
     const brandNameRef = useRef(null);
 
     useEffect(() => {
@@ -86,40 +88,36 @@ const EditProductModal = ({ show, handleClose, editProduct, handleEditSubmit, er
 
     const handleSubmit = (e) => {
         e.preventDefault();
-    
+
         if (!product || !product.product_name || !product.id) {
-            console.error('Product name and ID are required');
+            toast.error('Product name and ID are required.');
             return;
         }
-    
-        // Log the product data being submitted
-    
-        // Get user ID from localStorage
+
         const userId = localStorage.getItem('userID');
-    
         if (!userId) {
-            console.error('User ID is missing. Please log in.');
+            toast.error('User ID is missing. Please log in.');
             return;
         }
-    
-        // Include `updated_by` in the request payload
+
         const updatedProduct = {
             ...product,
-            updated_by: userId // ✅ Add updated_by field
+            updated_by: userId
         };
-    
-    
+
+        setUpdating(true);
         axios.put('http://localhost:80/api/products.php', updatedProduct)
             .then(response => {
-                // Log the response from the server
-                handleEditSubmit(); // Trigger the parent method for state update
+                handleEditSubmit();
+                handleClose();
             })
             .catch(error => {
-                // Log the error if there was an issue with the update
-                console.error('Error updating product:', error);
+                toast.error('Failed to update product. Please try again.');
+            })
+            .finally(() => {
+                setUpdating(false);
             });
     };
-    
 
     return (
         <Modal show={show} onHide={handleClose} className="custom-modal">
@@ -131,11 +129,10 @@ const EditProductModal = ({ show, handleClose, editProduct, handleEditSubmit, er
                     <div>Loading...</div>
                 ) : product ? (
                     <Form onSubmit={handleSubmit}>
-                        {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
                         <Row>
                             <Col md={6}>
-                                <Form.Group>
-                                    <Form.Label>Product Name</Form.Label>
+                                <Form.Group className='mb-3'>
+                                    <Form.Label className='mb-1'>Product Name</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="product_name"
@@ -145,8 +142,8 @@ const EditProductModal = ({ show, handleClose, editProduct, handleEditSubmit, er
                                         required    
                                    />
                                 </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>Generic</Form.Label>
+                                <Form.Group className='mb-3'>
+                                    <Form.Label className='mb-1'>Generic</Form.Label>
                                     <Form.Control
                                         as="select"
                                         name="generic_id"
@@ -160,8 +157,8 @@ const EditProductModal = ({ show, handleClose, editProduct, handleEditSubmit, er
                                         ))}
                                     </Form.Control>
                                 </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>Brand</Form.Label>
+                                <Form.Group className='mb-3'>
+                                    <Form.Label className='mb-1'>Brand</Form.Label>
                                     <Form.Control
                                         as="select"
                                         name="brand_id"
@@ -177,8 +174,8 @@ const EditProductModal = ({ show, handleClose, editProduct, handleEditSubmit, er
                                 </Form.Group>
                             </Col>
                             <Col md={6}>
-                                <Form.Group>
-                                    <Form.Label>Unit of Measurement</Form.Label>
+                                <Form.Group className='mb-3'>
+                                    <Form.Label className='mb-1'>Unit of Measurement</Form.Label>
                                     <Form.Control
                                         as="select"
                                         name="unit_id"
@@ -192,8 +189,8 @@ const EditProductModal = ({ show, handleClose, editProduct, handleEditSubmit, er
                                         ))}
                                     </Form.Control>
                                 </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>Category</Form.Label>
+                                <Form.Group className='mb-3'>
+                                    <Form.Label className='mb-1'>Category</Form.Label>
                                     <Form.Control
                                         as="select"
                                         name="category_id"
@@ -210,9 +207,9 @@ const EditProductModal = ({ show, handleClose, editProduct, handleEditSubmit, er
 
                             </Col>
                         </Row>
-                        <div className="text-center mt-4">
-                            <Button variant="primary" type="submit" className="button">
-                                Update
+                        <div className="text-center">
+                            <Button variant="primary" type="submit" className="button btn-gradient" disabled={updating}>
+                                {updating ? 'Updating...' : 'Update'}
                             </Button>
                         </div>
                     </Form>

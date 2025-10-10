@@ -11,43 +11,49 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
-        try {
-            // Fetch all surgical consent forms including pet images
-            $sql = "SELECT sc.id, sc.client_id, sc.patient_id, sc.surgery_date, sc.surgical_procedure, 
-                           sc.signature, sc.date_signed, sc.created_at, sc.updated_at, sc.pet_image, 
-                           c.name as client_name, c.address, c.cellnumber,  
-                           p.name as pet_name, p.age  
-                    FROM surgical_consent sc
-                    JOIN clients c ON sc.client_id = c.id
-                    JOIN patients p ON sc.patient_id = p.id";
-    
-            $stmt = $conn->prepare($sql);
-            $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-            // Process pet images
-            foreach ($result as &$row) {
-                // If pet_image exists, return the full URL
-                if (!empty($row['pet_image'])) {
-                    $row['pet_image'] = "http://localhost/api/uploads/" . basename($row['pet_image']);
-                } else {
-                    $row['pet_image'] = null; // No image available
-                }
+    try {
+        $sql = "SELECT 
+                    sc.id, 
+                    sc.client_id, 
+                    sc.patient_id, 
+                    sc.surgery_date, 
+                    sc.surgical_procedure, 
+                    s.name AS procedure_name,
+                    sc.signature, 
+                    sc.date_signed, 
+                    sc.created_at, 
+                    sc.updated_at, 
+                    sc.pet_image, 
+                    c.name AS client_name, 
+                    c.address, 
+                    c.cellnumber,  
+                    p.name AS pet_name, 
+                    p.age  
+                FROM surgical_consent sc
+                JOIN clients c ON sc.client_id = c.id
+                JOIN patients p ON sc.patient_id = p.id
+                LEFT JOIN services s ON sc.surgical_procedure = s.id";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Process pet images
+        foreach ($result as &$row) {
+            if (!empty($row['pet_image'])) {
+                $row['pet_image'] = "http://localhost/api/uploads/" . basename($row['pet_image']);
+            } else {
+                $row['pet_image'] = null;
             }
-    
-            // Return the result as JSON
-            echo json_encode(['status' => 'success', 'data' => $result ?: []]);
-    
-        } catch (Exception $e) {
-            // Log and return errors
-            error_log('❌ Error in GET method: ' . $e->getMessage());
-            echo json_encode(['status' => 'error', 'message' => 'Failed to retrieve surgical consent records.']);
         }
-        break;
-    
-    
-    
-    
+
+        echo json_encode(['status' => 'success', 'data' => $result ?: []]);
+
+    } catch (Exception $e) {
+        error_log('❌ Error in GET method: ' . $e->getMessage());
+        echo json_encode(['status' => 'error', 'message' => 'Failed to retrieve surgical consent records.']);
+    }
+    break;
 
     case 'POST':
     try {
@@ -183,4 +189,3 @@ switch ($method) {
         }
         break;
 }
-?>

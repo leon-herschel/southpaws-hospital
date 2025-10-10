@@ -99,7 +99,7 @@ const AddUnitOfMeasurementModal = ({ show, onClose, onUnitAdded }) => {
                             <Button 
                                 variant="primary" 
                                 type="submit" 
-                                className="button" 
+                                className="button btn-gradient" 
                                 disabled={isLoading}
                             >
                                 {isLoading ? 'Adding...' : 'Add'}

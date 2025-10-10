@@ -66,7 +66,7 @@ function ViewImmunizationFormModal({ show, handleClose, formData }) {
     };
 
     return (
-        <Modal show={show} onHide={handleClose} size="xl" centered>
+        <Modal show={show} onHide={handleClose} size="lg" centered>
             <Modal.Header closeButton>
                 <Modal.Title>View Immunization Consent Form</Modal.Title>
             </Modal.Header>
@@ -103,8 +103,8 @@ function ViewImmunizationFormModal({ show, handleClose, formData }) {
                         <div className="mb-4 p-3 border rounded bg-light">
                             <h6 className="mb-3">Pet Information</h6>
                             {petDetails.length > 0 ? (
-                                <Table bordered size="sm">
-                                    <thead>
+                                <Table size="sm" className="table table-hover custom-table align-middle">
+                                    <thead className="table-light">
                                         <tr>
                                             <th>#</th>
                                             <th>Pet's Name</th>

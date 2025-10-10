@@ -51,7 +51,7 @@ const EditGenericModal = ({ show, handleClose, editGeneric, handleEditChange, ha
                             />
                         </Form.Group>
                         <div className="button-container">
-                            <Button variant="primary" type="submit" className='button'>
+                            <Button variant="primary" type="submit" className='button btn-gradient'>
                                 Update
                             </Button>
                         </div>
