@@ -542,17 +542,20 @@ const AddAppointments = ({ onClose, prefill }) => {
 
                 <hr className="mt-3" />
 
-                <label htmlFor="floatingServices">
-                  Services: <span className="text-danger">*</span>
-                </label>
-
-                <Button
-                  type="button"
-                  variant="primary"
-                  onClick={() => setToggleAddServicesModal(true)}
-                >
-                  <FaPlus className="me-2" /> Add Service
-                </Button>
+                <div className="d-flex align-items-center mb-2">
+                  <label htmlFor="floatingServices" className="mb-0">
+                    Services: <span className="text-danger">*</span>
+                  </label>
+                  <Button
+                    type="button"
+                    variant="primary"
+                    size="sm"
+                    className="ms-2"
+                    onClick={() => setToggleAddServicesModal(true)}
+                  >
+                    <FaPlus />
+                  </Button>
+                </div>
 
                 {/* Add Service Modal */}
                 <AddServicesModal
@@ -711,9 +714,11 @@ const AddAppointments = ({ onClose, prefill }) => {
                     <Button
                       type="button"
                       variant="primary"
+                      size="sm"
+                      className="ms-2"
                       onClick={() => setAddNewDoctorModal(true)}
                     >
-                      <FaPlus className="me-2" /> Add New Doctor
+                      <FaPlus />
                     </Button>
 
                     {/* Show Add Doctor Modal */}

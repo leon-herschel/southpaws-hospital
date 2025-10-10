@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { FaQuestionCircle } from 'react-icons/fa';
 import '../../assets/add.css';
 
 const EditUserModal = ({ show, handleClose, editUser, handleEditChange, handleEditSubmit }) => {
@@ -56,8 +57,8 @@ const EditUserModal = ({ show, handleClose, editUser, handleEditChange, handleEd
                     <Form onSubmit={handleEditSubmit}>
                         <Row>
                             <Col md={6}>
-                                <Form.Group>
-                                    <Form.Label>First Name</Form.Label>
+                                <Form.Group className="mt-0">
+                                    <Form.Label style={{ margin: 0 }}>First Name</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="first_name"
@@ -67,8 +68,8 @@ const EditUserModal = ({ show, handleClose, editUser, handleEditChange, handleEd
                                         placeholder="Enter first name"
                                     />
                                 </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>Last Name</Form.Label>
+                                <Form.Group className="mt-3">
+                                    <Form.Label style={{ margin: 0 }}>Last Name</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="last_name"
@@ -79,8 +80,8 @@ const EditUserModal = ({ show, handleClose, editUser, handleEditChange, handleEd
                                 </Form.Group>
                             </Col>
                             <Col md={6}>
-                                <Form.Group>
-                                    <Form.Label>Email</Form.Label>
+                                <Form.Group className="mt-0">
+                                    <Form.Label style={{ margin: 0 }}>Email</Form.Label>
                                     <Form.Control
                                         type="email"
                                         name="email"
@@ -89,8 +90,8 @@ const EditUserModal = ({ show, handleClose, editUser, handleEditChange, handleEd
                                         placeholder="Enter email"
                                     />
                                 </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>Account Type</Form.Label>
+                                <Form.Group className="mt-3">
+                                    <Form.Label style={{ margin: 0 }}>Account Type</Form.Label>
                                     <Form.Control
                                         as="select"
                                         name="user_role"
@@ -107,18 +108,39 @@ const EditUserModal = ({ show, handleClose, editUser, handleEditChange, handleEd
                         
                         {(user.user_role === 1 || user.user_role === 3) && (
                             <Form.Group className="mt-3">
+                                <div className="d-flex">
                                 <Form.Check
                                     type="checkbox"
-                                    label="Is this user a Doctor?"
+                                    id="doctorCheckEdit"
                                     name="is_doctor"
                                     checked={user.is_doctor === 1}
                                     onChange={handleInputChange}
+                                    label="Is this user a Doctor?"
                                 />
+                                <OverlayTrigger
+                                    placement="right"
+                                    overlay={
+                                    <Tooltip id="doctor-tooltip-edit">
+                                        Checking this will add the user to the appointment module.
+                                    </Tooltip>
+                                    }
+                                >
+                                    <span className="ms-2">
+                                    <FaQuestionCircle
+                                        style={{
+                                        cursor: "pointer",
+                                        color: "#6c757d",
+                                        fontSize: "1rem",
+                                        }}
+                                    />
+                                    </span>
+                                </OverlayTrigger>
+                                </div>
                             </Form.Group>
-                        )}
+                            )}
 
                         <div className="button-container">
-                            <Button variant="primary" type="submit" className="button">
+                            <Button variant="primary" type="submit" className="button btn-gradient">
                                 Update
                             </Button>
                         </div>
