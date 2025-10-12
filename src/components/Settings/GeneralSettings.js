@@ -9,6 +9,27 @@ function Settings() {
   const [loading, setLoading] = useState(true);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
+  const [logDays, setLogDays] = useState("");
+
+  const handleLogSave = () => {
+    if (!logDays || logDays <= 0) {
+      toast.error("Please enter a valid number of days.");
+      return;
+    }
+
+    axios
+      .post("http://localhost/api/Settings/set_log_retention.php", { days: logDays })
+      .then((res) => {
+        if (res.data.status === "success") {
+          toast.success("Log retention setting saved!");
+        } else {
+          toast.error(res.data.message || "Failed to save log retention setting.");
+        }
+      })
+      .catch((err) => {
+        toast.error("Server error: " + err.message);
+      });
+  };
 
   // Format DB time (HH:MM:SS → HH:MM)
   const formatTime = (timeStr) => {
@@ -16,7 +37,6 @@ function Settings() {
     return timeStr.slice(0, 5); // keep only HH:MM
   };
 
-  // ✅ Save booking time
   const handleSave = () => {
     if (startTime >= endTime) {
       alert("End time must be later than start time!");
@@ -40,7 +60,7 @@ function Settings() {
       });
   };
 
-  // ✅ Fetch booking status + saved time range
+  // Fetch booking status + saved time range
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -54,11 +74,16 @@ function Settings() {
         const timeRes = await axios.get(
           "http://localhost/api/Settings/get_time_appointments.php"
         );
-        if (timeRes.data && timeRes.data.start_time && timeRes.data.end_time) {
-          setStartTime(formatTime(timeRes.data.start_time));
-          setEndTime(formatTime(timeRes.data.end_time));
+          if (timeRes.data && timeRes.data.start_time && timeRes.data.end_time) {
+            setStartTime(formatTime(timeRes.data.start_time));
+            setEndTime(formatTime(timeRes.data.end_time));
         }
 
+        const logRes = await axios.get("http://localhost/api/Settings/get_log_retention.php");
+          if (logRes.data && logRes.data.days) {
+            setLogDays(logRes.data.days);
+        }
+        
         setLoading(false);
       } catch (err) {
         console.error("Failed to fetch settings", err);
@@ -103,8 +128,7 @@ function Settings() {
               placement="right"
               overlay={
                 <Tooltip>
-                  Toggle this to enable or disable the client appointment
-                  website.
+                  Toggle this to enable or disable the appointment feature on the website
                 </Tooltip>
               }
             >
@@ -132,7 +156,6 @@ function Settings() {
         </div>
       </div>
 
-      {/* Time Limit for Booking */}
       {/* Clinic Schedule Setting */}
       <div className="card shadow-sm mb-4">
         <div className="card-header d-flex align-items-center justify-content-between">
@@ -194,6 +217,61 @@ function Settings() {
               Save Schedule
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* Log Retention Settings */}
+      <div className="card shadow-sm mb-4">
+        <div className="card-header d-flex align-items-center justify-content-between">
+          <h5 className="mb-0">
+            Log Retention{" "}
+            <OverlayTrigger
+              placement="right"
+              overlay={
+                <Tooltip>
+                  Set how many days logs should be kept. Older logs will be
+                  automatically deleted every time the system runs.
+                </Tooltip>
+              }
+            >
+              <span style={{ cursor: "pointer", color: "#6c757d" }}>
+                <FaQuestionCircle />
+              </span>
+            </OverlayTrigger>
+          </h5>
+        </div>
+
+        <div className="card-body">
+          <div className="row g-3 align-items-center">
+            <div className="col-md-6">
+              <label htmlFor="logDays" className="form-label fw-semibold">
+                Retain logs for (days)
+              </label>
+              <input
+                type="number"
+                id="logDays"
+                className="form-control shadow-sm"
+                placeholder="e.g. 30"
+                min="1"
+                value={logDays}
+                onChange={(e) => setLogDays(e.target.value)}
+              />
+            </div>
+
+            <div className="col-md-6 d-flex justify-content-end align-items-end">
+              <button
+                className="btn btn-primary px-4"
+                onClick={handleLogSave}
+                disabled={!logDays}
+              >
+                Save Retention Period
+              </button>
+            </div>
+          </div>
+
+          <p className="text-muted mt-3">
+            Logs older than the saved number of days will be automatically deleted.
+          </p>
         </div>
       </div>
     </div>

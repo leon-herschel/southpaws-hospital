@@ -1,7 +1,7 @@
 <?php
-header("Access-Control-Allow-Origin: *"); // Allow all domains (for testing)
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS"); // Allow specific methods
-header("Access-Control-Allow-Headers: Content-Type, Authorization"); // Allow headers
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PATCH, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
@@ -17,6 +17,21 @@ $method = $_SERVER['REQUEST_METHOD'];
 if ($method === 'GET') {
     try {
         $history = [];
+        //Auto-clean old user and appointment logs based on retention setting
+        try {
+            $retentionStmt = $conn->query("SELECT log_retention_days FROM global_settings WHERE id = 1");
+            $retentionDays = intval($retentionStmt->fetchColumn() ?? 0);
+
+            if ($retentionDays > 0) {
+                $cleanup1 = $conn->prepare('DELETE FROM user_logs WHERE event_time < DATE_SUB(NOW(), INTERVAL :days DAY)');
+                $cleanup1->execute([':days' => $retentionDays]);
+
+                $cleanup2 = $conn->prepare('DELETE FROM audit_logs WHERE timestamp < DATE_SUB(NOW(), INTERVAL :days DAY)');
+                $cleanup2->execute([':days' => $retentionDays]);
+            }
+        } catch (Exception $e) {
+            error_log("Log cleanup failed: " . $e->getMessage());
+        }
 
         // Define table configurations
         $tables = [
@@ -45,21 +60,18 @@ if ($method === 'GET') {
                         '$type' AS type, 
                         $table.$date_column AS created_at";
 
-            // created_by
             if ($hasCreatedBy) {
                 $sql .= ", CONCAT(u1.first_name, ' ', u1.last_name) AS created_by";
             } else {
                 $sql .= ", NULL AS created_by";
             }
 
-            // updated_by
             if ($hasUpdatedBy) {
                 $sql .= ", CONCAT(u2.first_name, ' ', u2.last_name) AS updated_by";
             } else {
                 $sql .= ", NULL AS updated_by";
             }
 
-            // confirmed_by (for orders)
             if ($hasConfirmedBy) {
                 $sql .= ", CONCAT(u3.first_name, ' ', u3.last_name) AS confirmed_by";
             } else {
@@ -68,15 +80,9 @@ if ($method === 'GET') {
 
             $sql .= " FROM $table";
 
-            if ($hasCreatedBy) {
-                $sql .= " LEFT JOIN internal_users u1 ON $table.created_by = u1.id";
-            }
-            if ($hasUpdatedBy) {
-                $sql .= " LEFT JOIN internal_users u2 ON $table.updated_by = u2.id";
-            }
-            if ($hasConfirmedBy) {
-                $sql .= " LEFT JOIN internal_users u3 ON $table.confirmed_by = u3.id";
-            }
+            if ($hasCreatedBy) $sql .= " LEFT JOIN internal_users u1 ON $table.created_by = u1.id";
+            if ($hasUpdatedBy) $sql .= " LEFT JOIN internal_users u2 ON $table.updated_by = u2.id";
+            if ($hasConfirmedBy) $sql .= " LEFT JOIN internal_users u3 ON $table.confirmed_by = u3.id";
 
             $stmt = $conn->prepare($sql);
             $stmt->execute();
@@ -84,55 +90,37 @@ if ($method === 'GET') {
             $history = array_merge($history, $records);
         }
 
-        // Fetch audit_logs and join with internal_users for full name
+        // Fetch audit_logs (Appointments)
         $auditSql = "
-    SELECT 
-        a.description AS record_name,
-        'Appointment' AS type,
-        a.timestamp AS created_at,
-        
-        -- Show user's full name only if action is 'update'
-        CASE
-            WHEN a.action = 'update' THEN CONCAT(u.first_name, ' ', u.last_name)
-            ELSE NULL
-        END AS updated_by,
-
-        -- Show user's full name only if action is 'create'
-        CASE 
-            WHEN a.action = 'create' THEN CONCAT(u.first_name, ' ', u.last_name)
-            ELSE NULL
-        END AS created_by,
-
-        -- Show user's full name only if action is 'confirm'
-        CASE 
-            WHEN a.action = 'confirm' THEN CONCAT(u.first_name, ' ', u.last_name)
-            ELSE NULL
-        END AS confirmed_by
-
-    FROM audit_logs a
-    LEFT JOIN internal_users u 
-        ON a.user_id = u.id
-    ORDER BY a.timestamp DESC
-";
+            SELECT 
+                a.description AS record_name,
+                'Appointment' AS type,
+                a.timestamp AS created_at,
+                CASE WHEN a.action = 'update' THEN CONCAT(u.first_name, ' ', u.last_name) ELSE NULL END AS updated_by,
+                CASE WHEN a.action = 'create' THEN CONCAT(u.first_name, ' ', u.last_name) ELSE NULL END AS created_by,
+                CASE WHEN a.action = 'confirm' THEN CONCAT(u.first_name, ' ', u.last_name) ELSE NULL END AS confirmed_by
+            FROM audit_logs a
+            LEFT JOIN internal_users u ON a.user_id = u.id
+            ORDER BY a.timestamp DESC
+        ";
         $auditStmt = $conn->prepare($auditSql);
         $auditStmt->execute();
         $auditLogs = $auditStmt->fetchAll(PDO::FETCH_ASSOC);
         $history = array_merge($history, $auditLogs);
 
-        // Sort all by created_at DESC
+        // Sort all by date (DESC)
         usort($history, function ($a, $b) {
             return strtotime($b['created_at']) - strtotime($a['created_at']);
         });
 
-        header('Content-Type: application/json');
         echo json_encode(['status' => 1, 'data' => $history], JSON_PRETTY_PRINT);
         exit;
 
     } catch (Exception $e) {
         echo json_encode(['status' => 0, 'message' => 'Failed to fetch history: ' . $e->getMessage()]);
     }
+
 } else {
     http_response_code(405);
     echo json_encode(['status' => 0, 'message' => 'Method not allowed']);
 }
-?>
