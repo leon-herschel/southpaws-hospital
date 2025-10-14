@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaTrash, FaPlus, FaMinus, FaShoppingCart, FaMedkit } from 'react-icons/fa';
-import { Button, Card, Modal, Form, Table, ToggleButton, Row, Col } from 'react-bootstrap';
+import { Button, Card, Modal, Form, Table, ToggleButton, Row, Col, Pagination } from 'react-bootstrap';
 import '../assets/table.css';
 import Receipt from './Receipt';
 import AddImmunizationFormModal from '../components/Add/AddImmunizationFormModal';
@@ -45,6 +45,46 @@ const PointofSales = () => {
     const [isSurgicalFormComplete, setIsSurgicalFormComplete] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [showAddClientModal, setShowAddClientModal] = useState(false);
+
+    // Pagination states
+    const [inventoryCurrentPage, setInventoryCurrentPage] = useState(1);
+    const [servicesCurrentPage, setServicesCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(5);
+
+    // Handlers
+    const paginateInventory = (pageNumber) => setInventoryCurrentPage(pageNumber);
+    const paginateServices = (pageNumber) => setServicesCurrentPage(pageNumber);
+
+    const handleItemsPerPageChange = (e) => {
+    const val = Number(e.target.value);
+        setItemsPerPage(val);
+        // reset both pages to 1 so user sees updated first page when changing per-page
+        setInventoryCurrentPage(1);
+        setServicesCurrentPage(1);
+    };
+
+    // Inventory filtered
+    const filteredInventory = inventory.filter(item =>
+        searchTerm === "" ||
+        item.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.brand_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.supplier_name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const inventoryTotalPages = Math.ceil(filteredInventory.length / itemsPerPage);
+    const inventoryIndexOfLast = inventoryCurrentPage * itemsPerPage;
+    const inventoryIndexOfFirst = inventoryIndexOfLast - itemsPerPage;
+    const currentInventory = filteredInventory.slice(inventoryIndexOfFirst, inventoryIndexOfLast);
+
+    // Services filtered
+    const filteredServices = services.filter(service =>
+    searchTerm === "" || service.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const servicesTotalPages = Math.ceil(filteredServices.length / itemsPerPage);
+    const servicesIndexOfLast = servicesCurrentPage * itemsPerPage;
+    const servicesIndexOfFirst = servicesIndexOfLast - itemsPerPage;
+    const currentServices = filteredServices.slice(servicesIndexOfFirst, servicesIndexOfLast);
 
     const [selectedPets, setSelectedPets] = useState(() => {
         const storedPets = localStorage.getItem("selectedPets");
@@ -296,7 +336,7 @@ const PointofSales = () => {
     const addServiceToCart = (service) => {
         // Check if pets are selected
         if (selectedPets.length === 0) {
-            toast.error('Please select a pet before adding the service to the cart!');
+            toast.error('Please select a pet before adding the service to the cart.');
             return; // Exit if no pet is selected
         }
     
@@ -758,32 +798,81 @@ const PointofSales = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {inventory
-                    .filter(item =>
-                        searchTerm === "" ||
-                        item.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        item.brand_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        item.supplier_name.toLowerCase().includes(searchTerm.toLowerCase())
-                    )
-                    .map((item, index) => (
+                    {currentInventory.map((item, index) => (
                         <tr key={index}>
-                        <td>{item.barcode}</td>
-                        <td>{item.product_name}</td>
-                        <td>{item.supplier_name}</td>
-                        <td>{item.brand_name}</td>
-                        <td>₱{formatPrice(item.price)}</td>
-                        <td className="text-center">
+                            <td>{item.barcode}</td>
+                            <td>{item.product_name}</td>
+                            <td>{item.supplier_name}</td>
+                            <td>{item.brand_name}</td>
+                            <td>₱{formatPrice(item.price)}</td>
+                            <td className="text-center">
                             <Button
-                            variant="success"
-                            onClick={() => addProductToCart(item)}
+                                variant="success"
+                                onClick={() => addProductToCart(item)}
                             >
-                            Add to Cart
+                                Add to Cart
                             </Button>
-                        </td>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
                 </table>
+                {/* Pagination */}
+                <div className="d-flex justify-content-between mb-3">
+                {/* Items per page selector */}
+                <div className="d-flex align-items-center">
+                    <label className="me-2 fw-bold">Items per page:</label>
+                    <select
+                    value={itemsPerPage}
+                    onChange={handleItemsPerPageChange}
+                    className="form-select form-select-sm shadow-sm"
+                    style={{ width: "80px" }}
+                    >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={15}>15</option>
+                    <option value={20}>20</option>
+                    </select>
+                </div>
+
+                {/* Pagination aligned right */}
+                <Pagination className="mb-0">
+                    <Pagination.Prev
+                    onClick={() => inventoryCurrentPage > 1 && paginateInventory(inventoryCurrentPage - 1)}
+                    disabled={inventoryCurrentPage === 1}
+                    />
+
+                    {Array.from(
+                    { length: Math.ceil(filteredInventory.length / itemsPerPage) },
+                    (_, index) => index + 1
+                    )
+                    .filter(
+                        (page) =>
+                        page === 1 ||
+                        page === Math.ceil(filteredInventory.length / itemsPerPage) ||
+                        (page >= inventoryCurrentPage - 2 && page <= inventoryCurrentPage + 2)
+                    )
+                    .map((page, i, arr) => (
+                        <React.Fragment key={page}>
+                        {i > 0 && arr[i] !== arr[i - 1] + 1 && <Pagination.Ellipsis disabled />}
+                        <Pagination.Item
+                            active={page === inventoryCurrentPage}
+                            onClick={() => paginateInventory(page)}
+                        >
+                            {page}
+                        </Pagination.Item>
+                        </React.Fragment>
+                    ))}
+
+                    <Pagination.Next
+                    onClick={() =>
+                        inventoryCurrentPage < Math.ceil(filteredInventory.length / itemsPerPage) &&
+                        paginateInventory(inventoryCurrentPage + 1)
+                    }
+                    disabled={inventoryCurrentPage === Math.ceil(filteredInventory.length / itemsPerPage)}
+                    />
+                </Pagination>
+                </div>
             </div>
             )}
 
@@ -808,27 +897,78 @@ const PointofSales = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {services
-                    .filter(service =>
-                        searchTerm === "" ||
-                        service.name.toLowerCase().includes(searchTerm.toLowerCase())
-                    )
-                    .map((service, index) => (
+                    {currentServices.map((service, index) => (
                         <tr key={index}>
-                        <td>{service.name}</td>
-                        <td>₱{formatPrice(service.price)}</td>
-                        <td className='text-center'>
+                            <td>{service.name}</td>
+                            <td>₱{formatPrice(service.price)}</td>
+                            <td className='text-center'>
                             <Button
-                            variant="success"
-                            onClick={() => addServiceToCart(service)}
+                                variant="success"
+                                onClick={() => addServiceToCart(service)}
                             >
-                            Add to Cart
+                                Add to Cart
                             </Button>
-                        </td>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
                 </table>
+                {/* Pagination */}
+                    <div className="d-flex justify-content-between mb-3">
+                    {/* Items per page selector */}
+                    <div className="d-flex align-items-center">
+                        <label className="me-2 fw-bold">Items per page:</label>
+                        <select
+                        value={itemsPerPage}
+                        onChange={handleItemsPerPageChange}
+                        className="form-select form-select-sm shadow-sm"
+                        style={{ width: "80px" }}
+                        >
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={15}>15</option>
+                        <option value={20}>20</option>
+                        </select>
+                    </div>
+
+                    {/* Pagination aligned right */}
+                    <Pagination className="mb-0">
+                        <Pagination.Prev
+                        onClick={() => servicesCurrentPage > 1 && paginateServices(servicesCurrentPage - 1)}
+                        disabled={servicesCurrentPage === 1}
+                        />
+
+                        {Array.from(
+                        { length: Math.ceil(filteredServices.length / itemsPerPage) },
+                        (_, index) => index + 1
+                        )
+                        .filter(
+                            (page) =>
+                            page === 1 ||
+                            page === Math.ceil(filteredServices.length / itemsPerPage) ||
+                            (page >= servicesCurrentPage - 2 && page <= servicesCurrentPage + 2)
+                        )
+                        .map((page, i, arr) => (
+                            <React.Fragment key={page}>
+                            {i > 0 && arr[i] !== arr[i - 1] + 1 && <Pagination.Ellipsis disabled />}
+                            <Pagination.Item
+                                active={page === servicesCurrentPage}
+                                onClick={() => paginateServices(page)}
+                            >
+                                {page}
+                            </Pagination.Item>
+                            </React.Fragment>
+                        ))}
+
+                        <Pagination.Next
+                        onClick={() =>
+                            servicesCurrentPage < Math.ceil(filteredServices.length / itemsPerPage) &&
+                            paginateServices(servicesCurrentPage + 1)
+                        }
+                        disabled={servicesCurrentPage === Math.ceil(filteredServices.length / itemsPerPage)}
+                        />
+                    </Pagination>
+                    </div>
             </div>
             )}
 
