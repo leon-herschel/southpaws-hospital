@@ -101,7 +101,7 @@ function DoneAppointments() {
   };
 
   return (
-    <div className="container mt-3">
+    <div className="container mt-2">
       <button
         className="btn btn-outline-secondary d-inline-flex align-items-center gap-2 mb-3"
         onClick={() => navigate(-1)}

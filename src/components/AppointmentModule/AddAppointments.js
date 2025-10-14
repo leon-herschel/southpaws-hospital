@@ -526,6 +526,7 @@ const AddAppointments = ({ onClose, prefill }) => {
                       id="pet_species"
                       name="pet_species"
                       className="form-control"
+                      list="speciesOptions"
                       value={formData.pet_species}
                       onChange={handleChange}
                       required
@@ -537,6 +538,11 @@ const AddAppointments = ({ onClose, prefill }) => {
                         }
                       }}
                     />
+
+                    <datalist id="speciesOptions">
+                      <option value="Canine" />
+                      <option value="Feline" />
+                    </datalist>
                   </div>
                 </div>
 
@@ -573,9 +579,9 @@ const AddAppointments = ({ onClose, prefill }) => {
                     id="floatingServices"
                     ref={servicesInputRef}
                     onClick={() => setShowServiceDropdown(!showServiceDropdown)}
-                    readOnly
                     placeholder="Click to select services"
                     value=""
+                    autoComplete="off"
                   />
                   {/* DROPDOWN */}
                   {showServiceDropdown && (

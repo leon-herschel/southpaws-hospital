@@ -15,7 +15,7 @@ body {
 .content {
   display: flex;
   flex-direction: column;
-  align-items: flex-;
+  align-items: stretch;
   height: calc(100vh - 50px); 
   width: calc(100% - 250px);  
   margin-left: 250px;
@@ -23,6 +23,10 @@ body {
   overflow-y: auto;
   padding: 1rem;
   box-sizing: border-box;
+}
+
+.container {
+  max-width: 100%;
 }
 
 nav ul {
@@ -152,6 +156,55 @@ nav ul li {
   flex: 1;
   display: flex;
   align-items: center;
+}
+
+/* Responsive Sidebar*/
+@media (max-width: 768px) {
+  /* Sidebar becomes icon-only */
+  .Sidebar {
+    width: 80px;
+    transition: width 0.3s ease-in-out;
+  }
+
+  /* Hide title text inside sidebar */
+  .Sidebar #title {
+    display: none;
+  }
+
+  /* Adjust top-bar width to match smaller sidebar */
+  .top-bar {
+    left: 80px;
+    width: calc(100% - 80px);
+  }
+
+  /* Adjust content to fit smaller sidebar */
+  .content {
+    width: calc(100% - 80px);
+    margin-left: 80px;
+  }
+
+  /* Prevent dropdowns from overflowing small screens */
+  .dropdown.open {
+    max-height: 0;
+    overflow: hidden;
+  }
+}
+
+/* Extra small screens (phones < 500px) */
+@media (max-width: 500px) {
+  .Sidebar {
+    width: 70px;
+  }
+
+  .top-bar {
+    left: 70px;
+    width: calc(100% - 70px);
+  }
+
+  .content {
+    width: calc(100% - 70px);
+    margin-left: 70px;
+  }
 }
 
 .Users {

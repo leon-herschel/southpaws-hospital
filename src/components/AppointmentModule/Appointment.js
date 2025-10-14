@@ -239,37 +239,35 @@ const Appointment = () => {
     };
 
     return (
-      <div className="d-flex justify-content-between mt-4 mb-4 gap-3">
+      <div className="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3 mt-4 mb-4">
         {statuses.map((status, idx) => (
-          <div
-            className={`card text-white ${cardColors[status]} status-card`}
-            style={{
-              flex: 1,
-              cursor:
-                status === "Pending" || "Confirmed" || "Cancelled" || "Done"
-                  ? "pointer"
-                  : "default",
-              minWidth: "160px",
-            }}
-            key={idx}
-            onClick={() => {
-              if (
-                ["Pending", "Confirmed", "Cancelled", "Done"].includes(status)
-              ) {
-                navigate(`/appointment/${status.toLowerCase()}`);
-              }
-            }}
-          >
-            <div className="card-body d-flex justify-content-between align-items-center">
-              <div>
-                <h3 className="mb-0 fw-bold">{counts[status]}</h3>
-                <p className="mb-0">{status}</p>
+          <div className="col" key={idx}>
+            <div
+              className={`card text-white ${cardColors[status]} status-card`}
+              style={{
+                cursor:
+                  status === "Pending" || "Confirmed" || "Cancelled" || "Done"
+                    ? "pointer"
+                    : "default",
+                minWidth: "160px",
+              }}
+              onClick={() => {
+                if (["Pending", "Confirmed", "Cancelled", "Done"].includes(status)) {
+                  navigate(`/appointment/${status.toLowerCase()}`);
+                }
+              }}
+            >
+              <div className="card-body d-flex justify-content-between align-items-center">
+                <div>
+                  <h3 className="mb-0 fw-bold">{counts[status]}</h3>
+                  <p className="mb-0">{status}</p>
+                </div>
+                <div className="ms-3">{statusIcons[status]}</div>
               </div>
-              <div className="ms-3">{statusIcons[status]}</div>
             </div>
           </div>
         ))}
-      </div>
+    </div>
     );
   };
 
@@ -333,7 +331,7 @@ const Appointment = () => {
 
   return (
     <div className="container mt-2">
-      <div className="container mt-2 d-flex align-items-center justify-content-between p-0">
+      <div className="container d-flex align-items-center justify-content-between p-0">
         <h1 style={{ fontWeight: "bold" }}>Appointments</h1>
         <Notifications />
       </div>

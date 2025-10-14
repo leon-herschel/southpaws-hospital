@@ -513,11 +513,17 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
                   type="text"
                   id="pet_species"
                   name="pet_species"
+                  list="speciesOptions"
                   className="form-control"
                   value={formData.pet_species}
                   onChange={handleChange}
                   required
                 />
+
+                <datalist id="speciesOptions">
+                      <option value="Canine" />
+                      <option value="Feline" />
+                </datalist>
               </div>
             </div>
           </div>
@@ -531,9 +537,9 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
               className="form-control"
               id="floatingServices"
               onClick={() => setShowServiceDropdown(!showServiceDropdown)}
-              readOnly
               placeholder="Click to select services"
               value=""
+              autoComplete="off"
             />
 
             {showServiceDropdown && (
