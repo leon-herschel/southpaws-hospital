@@ -124,30 +124,73 @@ const AddAppointments = ({ onClose, prefill }) => {
   }, []);
 
   useEffect(() => {
-    if (prefill) {
-      let firstName = "";
-      let lastName = "";
-      if (prefill.name) {
-        const parts = prefill.name.trim().split(" ");
-        firstName = parts[0];
-        lastName = parts.slice(1).join(" ");
+    const todayIso = () => new Date().toISOString().split("T")[0];
+
+    const deriveTimeFromPreferred = (preferred) => {
+      const start = bookingLimits.start || "08:00";
+      const end = bookingLimits.end || "17:00";
+
+      const startHour = Number(start.split(":")[0]);
+      if (!preferred) return start;
+
+      if (preferred.toLowerCase() === "morning") {
+        return start;
       }
 
-      setFormData((prev) => ({
-        ...prev,
-        date: prefill.date || prev.date,
-        time: prefill.time || prev.time,
-        name: prefill.name || "",
-        contact: prefill.contact || "",
-        email: prefill.email || "",
-        pet_name: prefill.pet_name || "",
-        pet_breed: prefill.pet_breed || "",
-        pet_species: prefill.pet_species || "",
-        firstName,
-        lastName,
-      }));
+      if (preferred.toLowerCase() === "afternoon") {
+        if (startHour < 13) {
+          const endHour = Number(end.split(":")[0]);
+          if (13 <= endHour) return "13:00";
+          return start;
+        } else {
+          return start;
+        }
+      }
+
+      return start;
+    };
+
+    if (!prefill) return;
+
+    const parts = prefill.name ? prefill.name.trim().split(" ") : ["", ""];
+    const firstName = parts[0] || "";
+    const lastName = parts.slice(1).join(" ") || "";
+
+    let computedDate = prefill.preferred_date || "";
+    const today = todayIso();
+    if (!computedDate || computedDate < today) {
+      computedDate = today;
     }
-  }, [prefill]);
+
+    const computedTime = deriveTimeFromPreferred(prefill.preferred_time);
+
+    setFormData((prev) => ({
+      ...prev,
+      date: computedDate || prev.date,
+      time: prev.time || computedTime || prev.time,
+      name: prefill.name || prev.name,
+      contact: prefill.contact || prev.contact,
+      email: prefill.email || prev.email,
+      pet_name: prefill.pet_name || prev.pet_name,
+      pet_breed: prefill.pet_breed || prev.pet_breed,
+      pet_species: prefill.pet_species || prev.pet_species,
+      firstName,
+      lastName,
+    }));
+
+    if (formData.doctor_id) {
+      (async () => {
+        try {
+          const res = await axios.get(
+            `http://localhost/api/get-booked-slots.php?date=${computedDate}&doctor_id=${formData.doctor_id}`
+          );
+          setAvailableSlots(res.data.bookedRanges || []);
+        } catch (err) {
+          console.error("Failed fetching booked slots for prefill", err);
+        }
+      })();
+    }
+  }, [prefill, bookingLimits]);
 
   const generateReferenceNumber = () => {
     const letters = Array.from({ length: 3 }, () =>
@@ -283,6 +326,29 @@ const AddAppointments = ({ onClose, prefill }) => {
       );
       setIsLoading(false);
       return;
+    }
+
+    try {
+      const res = await axios.get(
+        `http://localhost/api/get-booked-slots.php?date=${formData.date}&doctor_id=${formData.doctor_id}`
+      );
+      const currentSlots = res.data.bookedRanges || [];
+
+      const overlaps = currentSlots.some((slot) => {
+        const bookedStart = new Date(`1970-01-01T${slot.time}`);
+        const bookedEnd = new Date(`1970-01-01T${slot.end_time}`);
+        const newStart = new Date(`1970-01-01T${formData.time}`);
+        const newEnd = new Date(`1970-01-01T${formData.end_time}`);
+        return newStart < bookedEnd && newEnd > bookedStart;
+      });
+
+      if (overlaps) {
+        toast.error("This time slot is already booked.");
+        setIsLoading(false);
+        return;
+      }
+    } catch (err) {
+      console.error("Failed to recheck booked slots", err);
     }
 
     if (isOverlapping(formData.time, formData.end_time)) {

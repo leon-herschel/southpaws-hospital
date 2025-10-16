@@ -56,10 +56,13 @@ const PendingAppointments = () => {
         pet_name: appt.pet_name,
         pet_breed: appt.pet_breed,
         pet_species: appt.pet_species,
+        preferred_date: appt.preferred_date || null, 
+        preferred_time: appt.preferred_time || null,
       });
+
       setPendingToDeleteId(id);
-      setViewingAppointment(null); 
-      setShowAddAppointment(true); 
+      setViewingAppointment(null);
+      setShowAddAppointment(true);
     } catch (err) {
       toast.error("Error opening Add Appointment modal");
     }

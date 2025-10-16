@@ -239,7 +239,7 @@ const Appointment = () => {
     };
 
     return (
-      <div className="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3 mt-4 mb-4">
+      <div className="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3 mt-2 mb-4">
         {statuses.map((status, idx) => (
           <div className="col" key={idx}>
             <div
