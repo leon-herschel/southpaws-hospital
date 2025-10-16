@@ -31,3 +31,6 @@ __pycache__/
 models/
 .rasa/
 *.pyc
+
+#acc
+.env.acc

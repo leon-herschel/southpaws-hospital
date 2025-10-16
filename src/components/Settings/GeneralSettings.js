@@ -10,6 +10,102 @@ function Settings() {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [logDays, setLogDays] = useState("");
+  const [mission, setMission] = useState("");
+  const [vision, setVision] = useState("");
+  const [bgFile, setBgFile] = useState(null);
+  const [bgPreview, setBgPreview] = useState(null);
+  const [bgCurrent, setBgCurrent] = useState("");
+
+  // Preview the selected file
+  useEffect(() => {
+    if (bgFile) {
+      const reader = new FileReader();
+      reader.onloadend = () => setBgPreview(reader.result);
+      reader.readAsDataURL(bgFile);
+    } else {
+      setBgPreview("");
+    }
+  }, [bgFile]);
+
+  // Upload handler
+  const handlePhotoUpload = async () => {
+    if (!bgFile) return;
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("photo", bgFile);
+
+    try {
+      const res = await axios.post(
+        "http://localhost/api/ClientSide/upload_public_photo.php",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      if (res.data.success) {
+        toast.success("Background photo uploaded successfully!");
+        setBgCurrent(res.data.file_path);
+        setBgFile(null); // clear file input after successful upload
+        setBgPreview(null);
+      } else {
+        toast.error(res.data.error || "Upload failed.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Server error during upload.");
+    }
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    axios
+      .get("http://localhost/api/ClientSide/get_public_content.php")
+      .then((res) => {
+        if (res.data.success) {
+          setMission(res.data.mission || "");
+          setVision(res.data.vision || "");
+          setBgCurrent(res.data.background_photo || "");
+        }
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
+  const handleMissionSave = async () => {
+    setLoading(true);
+    try {
+      await axios.post(
+        "http://localhost/api/ClientSide/update_public_content.php",
+        {
+          type: "mission",
+          content: mission,
+        }
+      );
+      alert("Mission statement updated successfully!");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to update mission statement.");
+    }
+    setLoading(false);
+  };
+
+  const handleVisionSave = async () => {
+    setLoading(true);
+    try {
+      await axios.post(
+        "http://localhost/api/ClientSide/update_public_content.php",
+        {
+          type: "vision",
+          content: vision,
+        }
+      );
+      alert("Vision statement updated successfully!");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to update vision statement.");
+    }
+    setLoading(false);
+  };
 
   const handleLogSave = () => {
     if (!logDays || logDays <= 0) {
@@ -18,12 +114,16 @@ function Settings() {
     }
 
     axios
-      .post("http://localhost/api/Settings/set_log_retention.php", { days: logDays })
+      .post("http://localhost/api/Settings/set_log_retention.php", {
+        days: logDays,
+      })
       .then((res) => {
         if (res.data.status === "success") {
           toast.success("Log retention setting saved!");
         } else {
-          toast.error(res.data.message || "Failed to save log retention setting.");
+          toast.error(
+            res.data.message || "Failed to save log retention setting."
+          );
         }
       })
       .catch((err) => {
@@ -74,16 +174,18 @@ function Settings() {
         const timeRes = await axios.get(
           "http://localhost/api/Settings/get_time_appointments.php"
         );
-          if (timeRes.data && timeRes.data.start_time && timeRes.data.end_time) {
-            setStartTime(formatTime(timeRes.data.start_time));
-            setEndTime(formatTime(timeRes.data.end_time));
+        if (timeRes.data && timeRes.data.start_time && timeRes.data.end_time) {
+          setStartTime(formatTime(timeRes.data.start_time));
+          setEndTime(formatTime(timeRes.data.end_time));
         }
 
-        const logRes = await axios.get("http://localhost/api/Settings/get_log_retention.php");
-          if (logRes.data && logRes.data.days) {
-            setLogDays(logRes.data.days);
+        const logRes = await axios.get(
+          "http://localhost/api/Settings/get_log_retention.php"
+        );
+        if (logRes.data && logRes.data.days) {
+          setLogDays(logRes.data.days);
         }
-        
+
         setLoading(false);
       } catch (err) {
         console.error("Failed to fetch settings", err);
@@ -128,7 +230,8 @@ function Settings() {
               placement="right"
               overlay={
                 <Tooltip>
-                  Toggle this to enable or disable the appointment feature on the website
+                  Toggle this to enable or disable the appointment feature on
+                  the website
                 </Tooltip>
               }
             >
@@ -270,8 +373,130 @@ function Settings() {
           </div>
 
           <p className="text-muted mt-3">
-            Logs older than the saved number of days will be automatically deleted.
+            Logs older than the saved number of days will be automatically
+            deleted.
           </p>
+        </div>
+      </div>
+
+      {/*Public Website Editor */}
+      <div className="card shadow-sm mb-4">
+        <div className="card-header d-flex align-items-center justify-content-between">
+          <h5 className="mb-0">
+            Public Website Editor{" "}
+            <OverlayTrigger
+              placement="right"
+              overlay={
+                <Tooltip>
+                  Edit the content of mission, vision, and homepage background
+                  photo.
+                </Tooltip>
+              }
+            >
+              <span style={{ cursor: "pointer", color: "#6c757d" }}>
+                <FaQuestionCircle />
+              </span>
+            </OverlayTrigger>
+          </h5>
+        </div>
+
+        {/* Mission */}
+        <div className="card-body">
+          <label htmlFor="mission" className="form-label fw-semibold">
+            MISSION
+            <textarea
+              id="mission"
+              className="form-control shadow-sm"
+              rows="4"
+              value={mission}
+              onChange={(e) => setMission(e.target.value)}
+            />
+          </label>
+
+          <div>
+            <button
+              className="btn btn-primary px-4"
+              onClick={handleMissionSave}
+              disabled={loading}
+            >
+              {loading ? "Saving..." : "Save Edited Mission Statement"}
+            </button>
+          </div>
+        </div>
+
+        {/* Vision */}
+        <div className="card-body">
+          <label htmlFor="vision" className="form-label fw-semibold">
+            VISION
+            <textarea
+              id="vision"
+              className="form-control shadow-sm mb-3"
+              rows="4"
+              value={vision}
+              onChange={(e) => setVision(e.target.value)}
+            />
+          </label>
+
+          <div>
+            <button
+              className="btn btn-primary px-4"
+              onClick={handleVisionSave}
+              disabled={loading}
+            >
+              {loading ? "Saving..." : "Save Edited Vision Statement"}
+            </button>
+          </div>
+        </div>
+
+        {/* Background Photo */}
+        <div className="card-body">
+          <label htmlFor="backgroundPhoto" className="form-label fw-semibold">
+            HOMEPAGE BACKGROUND PHOTO
+          </label>
+          <input
+            type="file"
+            id="backgroundPhoto"
+            accept="image/*"
+            className="form-control mb-3"
+            onChange={(e) => setBgFile(e.target.files[0])}
+          />
+
+          {/* Display current photo or preview */}
+          {bgPreview ? (
+            <div className="mb-3">
+              <p className="fw-semibold">Current / Preview:</p>
+              <img
+                src={bgPreview}
+                alt="Background Preview"
+                style={{
+                  width: "100%",
+                  maxHeight: "250px",
+                  objectFit: "cover",
+                }}
+              />
+            </div>
+          ) : bgCurrent ? (
+            <div className="mb-3">
+              <p className="fw-semibold">Current Background Photo:</p>
+              <img
+                src={`http://localhost/api/public/${bgCurrent}`}
+                alt="Current Background"
+                style={{
+                  width: "100%",
+                  maxHeight: "250px",
+                  objectFit: "cover",
+                }}
+              />
+            </div>
+          ) : null}
+
+          <button
+            className="btn btn-primary px-4"
+            onClick={handlePhotoUpload}
+            disabled={loading || !bgFile}
+          >
+            {loading ? "Uploading..." : "Upload Background Photo"}
+          </button>
         </div>
       </div>
     </div>
