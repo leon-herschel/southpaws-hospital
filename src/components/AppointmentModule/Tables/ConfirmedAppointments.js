@@ -6,6 +6,7 @@ import { FaArrowLeft, FaEdit, FaEye } from "react-icons/fa";
 import { format, parseISO, isSameDay } from "date-fns";
 import { Pagination, Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 import EditAppointment from "../EditAppointment";
+import DateRangePicker from "../../AppointmentModule/Tables/DateRangePicker";
 
 function ConfirmedAppointments() {
   const [confirmedAppointments, setConfirmedAppointments] = useState([]);
@@ -20,6 +21,7 @@ function ConfirmedAppointments() {
   const [showEventModal, setShowEventModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [filterDate, setFilterDate] = useState(null);
+  const [dateRange, setDateRange] = useState({ startDate: null, endDate: null });
 
   useEffect(() => {
     if (location.state?.searchName) {
@@ -120,9 +122,23 @@ function ConfirmedAppointments() {
     return null;
   };
 
-  const baseList = filterDate
-  ? confirmedAppointments.filter((a) => isSameDay(parseISO(a.date), parseISO(filterDate)))
-  : confirmedAppointments;
+  const baseList = confirmedAppointments.filter((a) => {
+    const appointmentDate = new Date(a.date);
+
+    if (filterDate && !dateRange.startDate && !dateRange.endDate) {
+      return isSameDay(parseISO(a.date), parseISO(filterDate));
+    }
+
+    // If a date range is selected
+    if (dateRange.startDate && dateRange.endDate) {
+      return (
+        appointmentDate >= new Date(dateRange.startDate) &&
+        appointmentDate <= new Date(dateRange.endDate)
+      );
+    }
+
+    return true;
+  });
 
   const filteredAppointments = baseList.filter((a) =>
     Object.values(a).join(" ").toLowerCase().includes(searchTerm)
@@ -151,13 +167,23 @@ function ConfirmedAppointments() {
         <FaArrowLeft /> Back
       </button>
       <h2 className="mb-3">Confirmed Appointments</h2>
-      <div className="d-flex justify-content-between align-items-center">
-        <div className="input-group" style={{ width: "25%" }}>
+      <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      {/* Search Bar */}
+        <div className="input-group" style={{ width: "25%", minWidth: "220px" }}>
           <input
             type="text"
             className="form-control shadow-sm"
             onChange={handleFilter}
             placeholder="Search"
+          />
+        </div>
+
+        {/* Date Range Picker */}
+        <div style={{ minWidth: "250px" }}>
+          <DateRangePicker
+            startDate={dateRange.startDate}
+            endDate={dateRange.endDate}
+            onChange={setDateRange}
           />
         </div>
       </div>

@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { FaEye, FaArrowLeft, FaRedo } from "react-icons/fa";
 import { format } from "date-fns";
 import AddAppointments from "../../AppointmentModule/AddAppointments";
+import DateRangePicker from "../../AppointmentModule/Tables/DateRangePicker";
 
 function DoneAppointments() {
   const [doneAppointments, setDoneAppointments] = useState([]);
@@ -18,6 +19,7 @@ function DoneAppointments() {
   const location = useLocation();
   const [showRebookModal, setShowRebookModal] = useState(false);
   const [rebookData, setRebookData] = useState(null);
+  const [dateRange, setDateRange] = useState({ startDate: null, endDate: null });
 
   useEffect(() => {
     if (location.state?.searchName) {
@@ -82,9 +84,20 @@ function DoneAppointments() {
     return null;
   };
 
-  const filteredAppointments = doneAppointments.filter((a) =>
-    Object.values(a).join(" ").toLowerCase().includes(searchTerm)
-  );
+ const filteredAppointments = doneAppointments.filter((a) => {
+    const matchSearch = Object.values(a).join(" ").toLowerCase().includes(searchTerm);
+
+    if (dateRange.startDate && dateRange.endDate) {
+      const apptDate = new Date(a.date);
+      return (
+        matchSearch &&
+        apptDate >= dateRange.startDate &&
+        apptDate <= dateRange.endDate
+      );
+    }
+
+    return matchSearch;
+  });
 
   const indexOfLast = currentPage * appointmentsPerPage;
   const indexOfFirst = indexOfLast - appointmentsPerPage;
@@ -110,7 +123,7 @@ function DoneAppointments() {
       </button>
       <h2 className="mb-3">Completed Appointments</h2>
 
-      <div className="d-flex justify-content-between align-items-center">
+      <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div className="input-group" style={{ width: "25%" }}>
           <input
             type="text"
@@ -119,7 +132,14 @@ function DoneAppointments() {
             placeholder="Search"
           />
         </div>
+
+        <DateRangePicker
+          startDate={dateRange.startDate}
+          endDate={dateRange.endDate}
+          onChange={setDateRange}
+        />
       </div>
+
       <table className="table table-striped table-hover custom-table align-middle text-center">
         <thead className="table-light shadow-sm">
           <tr>
