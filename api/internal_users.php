@@ -9,6 +9,11 @@ $conn = $objDB->connect();
 
 require 'vendor/autoload.php'; // Ensure Composer autoloader is loaded
 
+use Dotenv\Dotenv;
+
+$dotenv = Dotenv::createImmutable(__DIR__, '.env.acc');
+$dotenv->load();
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -116,14 +121,15 @@ switch ($method) {
             try {
                 $mail->SMTPDebug = 2;
                 $mail->isSMTP();
-                $mail->Host = 'smtp.gmail.com';
-                $mail->SMTPAuth = true;
-                $mail->Username = 'alfr.impas.swu@phinmaed.com';  // Replace with your Gmail address
-                $mail->Password = 'ljfy lyeb rxam wkql';  // Replace with your Gmail password or App Password
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                $mail->Port = 587;
+                $mail->Host       = $_ENV['MAIL_HOST'];
+$mail->SMTPAuth   = true;
+$mail->Username   = $_ENV['MAIL_USERNAME'];
+$mail->Password   = $_ENV['MAIL_PASSWORD'];
+$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+$mail->Port       = $_ENV['MAIL_PORT'];
+$mail->setFrom($_ENV['MAIL_FROM_ADDRESS'], $_ENV['MAIL_FROM_NAME']);
 
-                $mail->setFrom('alfr.impas.swu@phinmaed.com', 'SouthPaws'); // Replace with your email and name
+                $mail->setFrom($_ENV['MAIL_USERNAME'], 'South Paws Veterinary Hospital');
                 $mail->addAddress($user->email, $user->first_name);
 
                 $verificationLink = "http://localhost:80/api/verify.php?token=$verificationToken";
