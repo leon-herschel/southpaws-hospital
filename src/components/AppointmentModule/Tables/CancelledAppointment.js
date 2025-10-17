@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { FaTrash, FaArrowLeft } from "react-icons/fa";
 import { format } from "date-fns";
 import { Modal, Pagination, OverlayTrigger, Tooltip } from "react-bootstrap";
+import DateRangePicker from "../../AppointmentModule/Tables/DateRangePicker";
 
 function CancelledAppointment() {
   const [cancelledAppointments, setCancelledAppointments] = useState([]);
@@ -18,6 +19,7 @@ function CancelledAppointment() {
   const [appointmentToDelete, setAppointmentToDelete] = useState(null);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
   const [deleteConfirmationText, setDeleteConfirmationText] = useState("");
+  const [dateRange, setDateRange] = useState({ startDate: null, endDate: null });
 
   const currentUserID = localStorage.getItem("userID");
   const currentUserEmail = localStorage.getItem("userEmail");
@@ -92,9 +94,20 @@ function CancelledAppointment() {
     return null;
   };
 
-  const filteredAppointments = cancelledAppointments.filter((a) =>
-    Object.values(a).join(" ").toLowerCase().includes(searchTerm)
-  );
+  const filteredAppointments = cancelledAppointments.filter((a) => {
+    const matchSearch = Object.values(a).join(" ").toLowerCase().includes(searchTerm);
+
+    if (dateRange.startDate && dateRange.endDate) {
+      const apptDate = new Date(a.date);
+      return (
+        matchSearch &&
+        apptDate >= dateRange.startDate &&
+        apptDate <= dateRange.endDate
+      );
+    }
+
+    return matchSearch;
+  });
 
   const indexOfLast = currentPage * appointmentsPerPage;
   const indexOfFirst = indexOfLast - appointmentsPerPage;
@@ -182,7 +195,7 @@ function CancelledAppointment() {
       </button>
       <h2 className="mb-3">Cancelled Appointments</h2>
 
-      <div className="d-flex justify-content-between align-items-center">
+      <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div className="input-group" style={{ width: "25%" }}>
           <input
             type="text"
@@ -191,6 +204,12 @@ function CancelledAppointment() {
             placeholder="Search"
           />
         </div>
+
+        <DateRangePicker
+          startDate={dateRange.startDate}
+          endDate={dateRange.endDate}
+          onChange={setDateRange}
+        />
 
         {selectedIds.length > 1 && (
           <button className="btn btn-danger" onClick={confirmBulkDelete}>
