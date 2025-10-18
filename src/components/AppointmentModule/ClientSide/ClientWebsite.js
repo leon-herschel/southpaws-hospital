@@ -14,7 +14,6 @@ import {
   FaMapMarkerAlt,
   FaPhoneAlt,
   FaClock,
-  FaPaw,
   FaUserMd,
   FaStethoscope,
   FaDog,
@@ -25,7 +24,6 @@ import {
   FaShieldAlt,
   FaArrowRight,
   FaProcedures,
-  FaEye,
 } from "react-icons/fa";
 import southpawsLogo from "../../../assets/southpawslogo-header.png";
 import southpawsLogoWhite from "../../../assets/southpawslogowhite.png";
@@ -234,13 +232,37 @@ function WebsiteHeader({ homeRef, servicesRef, aboutRef }) {
 }
 
 function HomeSection({ scrollToSection, servicesRef }) {
+  const [intro, setIntro] = useState({
+    header: "",
+    paragraph: "",
+    heroImage: "",
+  });
+
+  useEffect(() => {
+    axios.get("http://localhost/api/ClientSide/get_public_content.php")
+      .then((res) => {
+        if (res.data.success) {
+          setIntro({
+            header: res.data.intro_header,
+            paragraph: res.data.intro_paragraph,
+            heroImage: res.data.homepage_cover_photo, 
+          });
+        }
+      })
+      .catch(console.error);
+  }, []);
+
   return (
     <div className="home-page pt-5">
       {/* Hero Section */}
       <section
         className="hero-section d-flex align-items-center"
         style={{
-          backgroundImage: `url(${heroBanner})`,
+          backgroundImage: `url(${
+            intro.heroImage
+              ? `http://localhost/api/public/${intro.heroImage}`
+              : heroBanner
+          })`,
           backgroundSize: "cover",
           backgroundPosition: "left center",
           minHeight: "100vh",
@@ -264,13 +286,11 @@ function HomeSection({ scrollToSection, servicesRef }) {
         <div className="container-fluid px-5 position-relative text-start">
           <div className="col-md-6 hero-content animate-hero">
             <h1 className="display-4 fw-bold mb-3">
-              Where Every Pawprint Matters
-            </h1>
-            <p className="lead mb-4">
-              With modern care, personal attention, and genuine love for
-              animals, we make sure every pawprint leads to a healthier, happier
-              story.
-            </p>
+                {intro.header || "Where Every Pawprint Matters"}
+              </h1>
+              <p className="lead mb-4">
+                {intro.paragraph || "With modern care, personal attention, and genuine love for animals, we make sure every pawprint leads to a healthier, happier story."}
+              </p>
             <div className="d-flex gap-3">
               <NavLink
                 to="/southpawsvet/booking"
@@ -447,21 +467,29 @@ function ServicesSection() {
 }
 
 function AboutSection() {
-  const [mission, setMission] = useState([]);
-  const [vision, setVision] = useState([]);
-  const [bgCurrent, setBgCurrent] = useState("");
+  const [aboutData, setAboutData] = useState({
+    mission: "",
+    vision: "",
+    background_photo: "",
+    about_paragraph: "",
+    values: [],
+  });
 
   useEffect(() => {
     axios
       .get("http://localhost/api/ClientSide/get_public_content.php")
       .then((res) => {
         if (res.data.success) {
-          setMission(res.data.mission || "");
-          setVision(res.data.vision || "");
-          setBgCurrent(res.data.background_photo || "");
+          setAboutData({
+            mission: res.data.mission,
+            vision: res.data.vision,
+            background_photo: res.data.background_photo,
+            about_paragraph: res.data.about_paragraph,
+            values: res.data.values ? res.data.values.split("|") : [],
+          });
         }
       })
-      .catch((err) => console.error(err));
+      .catch(console.error);
   }, []);
 
   return (
@@ -471,64 +499,44 @@ function AboutSection() {
           <div className="col-lg-6 scroll-animate">
             <div className="about-image position-relative">
               <img
-                src={`http://localhost/api/public/${bgCurrent}`}
-                alt="Vet with pets"
+                src={
+                  aboutData.background_photo
+                    ? `http://localhost/api/public/${aboutData.background_photo}`
+                    : aboutUsImage
+                }
+                alt="About Us"
                 className="img-fluid rounded shadow-lg"
               />
             </div>
           </div>
           <div className="col-lg-6 scroll-animate">
             <h2 className="fw-bold display-5 mb-4">About Us</h2>
-            <p className="lead mb-4">
-              South Paws Veterinary Hospital officially opened on December 1,
-              2023, under SWU PHINMA College of Veterinary Medicine. We are
-              dedicated to providing accessible, high-quality care for pets in
-              Cebu.
-            </p>
+            <p className="lead mb-4">{aboutData.about_paragraph}</p>
 
             <div className="mission-values mb-4">
               <h4 className="fw-bold mb-3">Our Mission</h4>
               <div className="d-flex align-items-center mb-3">
-                <FaHeart className="text-primary me-3" />
                 <span>
-                  {mission ? mission : "Loading mission statement..."}
+                  {aboutData.mission || "Loading mission statement..."}
                 </span>
               </div>
 
               <h4 className="fw-bold mb-3">Our Vision</h4>
               <div className="d-flex align-items-center mb-3">
-                <FaEye className="text-primary me-3" />
-                <span>{vision ? vision : "Loading vision statement..."}</span>
+                {aboutData.vision || "Loading vision statement..."}
               </div>
 
               <h4 className="fw-bold mb-3">Our Values</h4>
-              <div className="row">
-                <div className="col-md-6 mb-3">
-                  <div className="d-flex align-items-center">
-                    <FaHeart className="text-danger me-3" />
-                    <span>Compassion in every treatment</span>
-                  </div>
+                <div className="row">
+                  {aboutData.values.map((val, i) => (
+                    <div className="col-md-6 mb-3" key={i}>
+                      <div className="d-flex align-items-center">
+                        <FaArrowRight className="text-primary me-3" />
+                        <span>{val}</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-
-                <div className="col-md-6 mb-3">
-                  <div className="d-flex align-items-center">
-                    <FaAward className="text-warning me-3" />
-                    <span>Professional excellence</span>
-                  </div>
-                </div>
-                <div className="col-md-6 mb-3">
-                  <div className="d-flex align-items-center">
-                    <FaStethoscope className="text-primary me-3" />
-                    <span>Continuous learning</span>
-                  </div>
-                </div>
-                <div className="col-md-6 mb-3">
-                  <div className="d-flex align-items-center">
-                    <FaPaw className="text-success me-3" />
-                    <span>Community service</span>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -539,6 +547,36 @@ function AboutSection() {
 
 function WebsiteFooter({ homeRef, servicesRef, aboutRef }) {
   const navigate = useNavigate();
+    const [footer, setFooter] = useState({
+    description: "",
+    address: "",
+    mapLink: "",
+    number: "",
+    fbLink: "",
+    fbText: "",
+    weekdays: "",
+    hours: "",
+  });
+
+  useEffect(() => {
+    axios.get("http://localhost/api/ClientSide/get_public_content.php")
+      .then((res) => {
+        if (res.data.success) {
+          setFooter({
+            description: res.data.footer_description,
+            address: res.data.footer_address,
+            mapLink: res.data.footer_map_link,
+            number: res.data.footer_number,
+            fbLink: res.data.footer_fb_link,
+            fbText: res.data.footer_fb_text,
+            weekdays: res.data.footer_weekdays,
+            hours: res.data.footer_hours,
+          });
+        }
+      })
+      .catch(console.error);
+  }, []);
+
   const handleScroll = (sectionName) => {
     const sectionMap = {
       home: homeRef,
@@ -569,10 +607,7 @@ function WebsiteFooter({ homeRef, servicesRef, aboutRef }) {
               />
               South Paws Veterinary Hospital
             </h5>
-            <p className="text-light">
-              Providing compassionate and professional veterinary care to the
-              Cebu community with dedication and expertise since 2023.
-            </p>
+            <p className="text-light">{footer.description}</p>
           </div>
 
           <div className="col-lg-2 mb-4">
@@ -627,22 +662,22 @@ function WebsiteFooter({ homeRef, servicesRef, aboutRef }) {
             <div className="d-flex align-items-center mb-3">
               <FaMapMarkerAlt className="me-3 text-primary" />
               <a
-                href="https://www.google.com/maps?q=10.30325930731464,123.89237343579734"
+                href={footer.mapLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer-link text-light text-decoration-none"
               >
-                J. Urgello St, Cebu City, Cebu
+                {footer.address}
               </a>
             </div>
             <div className="d-flex align-items-center mb-3">
               <FaPhoneAlt className="me-3 text-primary" />
-              <span>0960 631 7128</span>
+              <span>{footer.number}</span>
             </div>
             <div className="d-flex align-items-center mb-3">
               <FaFacebook className="me-3 text-primary" />
               <a
-                href="https://www.facebook.com/swusouthpaws/"
+                href={footer.fbLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer-link text-light text-decoration-none"
@@ -656,12 +691,8 @@ function WebsiteFooter({ homeRef, servicesRef, aboutRef }) {
             <h6 className="mb-3">Business Hours</h6>
             <div className="text-light">
               <div className="d-flex justify-content-between mb-2">
-                <span>Monday - Friday:</span>
-                <span>8:00 AM - 5:00 PM</span>
-              </div>
-              <div className="d-flex justify-content-between mb-2">
-                <span>Saturday - Sunday:</span>
-                <span>Closed</span>
+                <span>{footer.weekdays}</span>
+                <span>{footer.hours}</span>
               </div>
             </div>
           </div>

@@ -15,6 +15,18 @@ function Settings() {
   const [bgFile, setBgFile] = useState(null);
   const [bgPreview, setBgPreview] = useState(null);
   const [bgCurrent, setBgCurrent] = useState("");
+  const [introHeader, setIntroHeader] = useState("");
+  const [introParagraph, setIntroParagraph] = useState("");
+  const [aboutParagraph, setAboutParagraph] = useState("");
+  const [values, setValues] = useState("");
+  const [footerDescription, setFooterDescription] = useState("");
+  const [footerAddress, setFooterAddress] = useState("");
+  const [footerMapLink, setFooterMapLink] = useState("");
+  const [footerNumber, setFooterNumber] = useState("");
+  const [footerFbLink, setFooterFbLink] = useState("");
+  const [footerFbText, setFooterFbText] = useState("");
+  const [footerWeekdays, setFooterWeekdays] = useState("");
+  const [footerHours, setFooterHours] = useState("");
 
   // Preview the selected file
   useEffect(() => {
@@ -29,33 +41,35 @@ function Settings() {
 
   // Upload handler
   const handlePhotoUpload = async () => {
-    if (!bgFile) return;
-    setLoading(true);
+    if (!bgFile) return true; 
 
+    setLoading(true);
     const formData = new FormData();
     formData.append("photo", bgFile);
 
     try {
       const res = await axios.post(
-        "http://localhost/api/ClientSide/upload_public_photo.php",
+        "http://localhost/api/ClientSide/update_public_content.php",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
       if (res.data.success) {
-        toast.success("Background photo uploaded successfully!");
         setBgCurrent(res.data.file_path);
-        setBgFile(null); // clear file input after successful upload
+        setBgFile(null);
         setBgPreview(null);
+        return true;
       } else {
         toast.error(res.data.error || "Upload failed.");
+        return false;
       }
     } catch (err) {
       console.error(err);
       toast.error("Server error during upload.");
+      return false;
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -66,45 +80,35 @@ function Settings() {
           setMission(res.data.mission || "");
           setVision(res.data.vision || "");
           setBgCurrent(res.data.background_photo || "");
+          setIntroHeader(res.data.intro_header || "");
+          setIntroParagraph(res.data.intro_paragraph || "");
+          setAboutParagraph(res.data.about_paragraph || "");
+          setValues(res.data.values || "");
+          setFooterDescription(res.data.footer_description || "");
+          setFooterAddress(res.data.footer_address || "");
+          setFooterMapLink(res.data.footer_map_link || "");
+          setFooterNumber(res.data.footer_number || "");
+          setFooterFbLink(res.data.footer_fb_link || "");
+          setFooterFbText(res.data.footer_fb_text || "");
+          setFooterWeekdays(res.data.footer_weekdays || "");
+          setFooterHours(res.data.footer_hours || "");
         }
       })
       .catch((err) => console.error(err));
   }, []);
 
-  const handleMissionSave = async () => {
+  const handleContentSave = async (type, content) => {
     setLoading(true);
     try {
-      await axios.post(
-        "http://localhost/api/ClientSide/update_public_content.php",
-        {
-          type: "mission",
-          content: mission,
-        }
-      );
-      alert("Mission statement updated successfully!");
-    } catch (error) {
-      console.error(error);
-      alert("Failed to update mission statement.");
+      await axios.post("http://localhost/api/ClientSide/update_public_content.php", { type, content });
+      return true;
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update content.");
+      return false;
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  };
-
-  const handleVisionSave = async () => {
-    setLoading(true);
-    try {
-      await axios.post(
-        "http://localhost/api/ClientSide/update_public_content.php",
-        {
-          type: "vision",
-          content: vision,
-        }
-      );
-      alert("Vision statement updated successfully!");
-    } catch (error) {
-      console.error(error);
-      alert("Failed to update vision statement.");
-    }
-    setLoading(false);
   };
 
   const handleLogSave = () => {
@@ -367,7 +371,7 @@ function Settings() {
                 onClick={handleLogSave}
                 disabled={!logDays}
               >
-                Save Retention Period
+                Save Changes
               </button>
             </div>
           </div>
@@ -379,17 +383,16 @@ function Settings() {
         </div>
       </div>
 
-      {/*Public Website Editor */}
+      {/* Website Content Editor */}
       <div className="card shadow-sm mb-4">
         <div className="card-header d-flex align-items-center justify-content-between">
           <h5 className="mb-0">
-            Public Website Editor{" "}
+            Website Content Editor{" "}
             <OverlayTrigger
               placement="right"
               overlay={
                 <Tooltip>
-                  Edit the content of mission, vision, and homepage background
-                  photo.
+                  Manage all text, images, and information displayed on your website.
                 </Tooltip>
               }
             >
@@ -400,103 +403,351 @@ function Settings() {
           </h5>
         </div>
 
-        {/* Mission */}
-        <div className="card-body">
-          <label htmlFor="mission" className="form-label fw-semibold">
-            MISSION
-            <textarea
-              id="mission"
-              className="form-control shadow-sm"
-              rows="4"
-              value={mission}
-              onChange={(e) => setMission(e.target.value)}
-            />
-          </label>
+        <div className="card-body p-0">
+          {/* Tabs Navigation */}
+          <ul className="nav nav-tabs" role="tablist">
+            <li className="nav-item">
+              <button
+                className="nav-link active"
+                data-bs-toggle="tab"
+                data-bs-target="#homepage-tab"
+                type="button"
+                role="tab"
+              >
+                Homepage
+              </button>
+            </li>
+            <li className="nav-item">
+              <button
+                className="nav-link"
+                data-bs-toggle="tab"
+                data-bs-target="#about-tab"
+                type="button"
+                role="tab"
+              >
+                About Us
+              </button>
+            </li>
+            <li className="nav-item">
+              <button
+                className="nav-link"
+                data-bs-toggle="tab"
+                data-bs-target="#footer-tab"
+                type="button"
+                role="tab"
+              >
+                Footer
+              </button>
+            </li>
+          </ul>
 
-          <div>
-            <button
-              className="btn btn-primary px-4"
-              onClick={handleMissionSave}
-              disabled={loading}
-            >
-              {loading ? "Saving..." : "Save Edited Mission Statement"}
-            </button>
-          </div>
-        </div>
+          {/* Tabs Content */}
+          <div className="tab-content">
 
-        {/* Vision */}
-        <div className="card-body">
-          <label htmlFor="vision" className="form-label fw-semibold">
-            VISION
-            <textarea
-              id="vision"
-              className="form-control shadow-sm mb-3"
-              rows="4"
-              value={vision}
-              onChange={(e) => setVision(e.target.value)}
-            />
-          </label>
+            {/* Homepage Tab */}
+            <div className="tab-pane fade show active" id="homepage-tab" role="tabpanel">
+              <div className="p-3">
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Header</label>
+                  <input
+                    type="text"
+                    className="form-control mb-2 shadow-sm"
+                    value={introHeader}
+                    onChange={(e) => setIntroHeader(e.target.value)}
+                  />
+                </div>
 
-          <div>
-            <button
-              className="btn btn-primary px-4"
-              onClick={handleVisionSave}
-              disabled={loading}
-            >
-              {loading ? "Saving..." : "Save Edited Vision Statement"}
-            </button>
-          </div>
-        </div>
+                <div className="mb-4">
+                  <label className="form-label fw-semibold">Paragraph</label>
+                  <textarea
+                    className="form-control mb-2 shadow-sm"
+                    rows="3"
+                    value={introParagraph}
+                    onChange={(e) => setIntroParagraph(e.target.value)}
+                  />
+                </div>
 
-        {/* Background Photo */}
-        <div className="card-body">
-          <label htmlFor="backgroundPhoto" className="form-label fw-semibold">
-            HOMEPAGE BACKGROUND PHOTO
-          </label>
-          <input
-            type="file"
-            id="backgroundPhoto"
-            accept="image/*"
-            className="form-control mb-3"
-            onChange={(e) => setBgFile(e.target.files[0])}
-          />
-
-          {/* Display current photo or preview */}
-          {bgPreview ? (
-            <div className="mb-3">
-              <p className="fw-semibold">Current / Preview:</p>
-              <img
-                src={bgPreview}
-                alt="Background Preview"
-                style={{
-                  width: "100%",
-                  maxHeight: "250px",
-                  objectFit: "cover",
-                }}
-              />
+                <div className="text-end">
+                  <button
+                    className="btn btn-primary px-4"
+                    onClick={async () => {
+                      const success1 = await handleContentSave("intro_header", introHeader);
+                      const success2 = await handleContentSave("intro_paragraph", introParagraph);
+                      
+                      if (success1 && success2) {
+                        toast.success("Homepage content updated successfully!");
+                      }
+                    }}
+                  >
+                    {loading ? "Saving..." : "Save Changes"}
+                  </button>
+                </div>
+              </div>
             </div>
-          ) : bgCurrent ? (
-            <div className="mb-3">
-              <p className="fw-semibold">Current Background Photo:</p>
-              <img
-                src={`http://localhost/api/public/${bgCurrent}`}
-                alt="Current Background"
-                style={{
-                  width: "100%",
-                  maxHeight: "250px",
-                  objectFit: "cover",
-                }}
-              />
-            </div>
-          ) : null}
 
-          <button
-            className="btn btn-primary px-4"
-            onClick={handlePhotoUpload}
-            disabled={loading || !bgFile}
-          >
-            {loading ? "Uploading..." : "Upload Background Photo"}
-          </button>
+            {/* About Us Tab */}
+            <div className="tab-pane fade" id="about-tab" role="tabpanel">
+              <div className="p-3">
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">About Paragraph</label>
+                  <textarea
+                    className="form-control mb-2 shadow-sm"
+                    rows="3"
+                    value={aboutParagraph}
+                    onChange={(e) => setAboutParagraph(e.target.value)}
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Mission</label>
+                  <textarea
+                    className="form-control mb-2 shadow-sm"
+                    rows="3"
+                    value={mission}
+                    onChange={(e) => setMission(e.target.value)}
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Vision</label>
+                  <textarea
+                    className="form-control mb-2 shadow-sm"
+                    rows="3"
+                    value={vision}
+                    onChange={(e) => setVision(e.target.value)}
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Values (separate by |)</label>
+                  <input
+                    type="text"
+                    className="form-control mb-2 shadow-sm"
+                    value={values}
+                    onChange={(e) => setValues(e.target.value)}
+                  />
+                  <small className="text-muted">Separate multiple values with the | character</small>
+                </div>
+
+                {/* About Us Photo Section */}
+                <div className="mb-4">
+                  <label className="form-label fw-semibold">About Us Photo</label>
+                  <small className="text-muted d-block mb-2">
+                    Recommended: Square image 700x700px for optimal display
+                  </small>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="form-control mb-3"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        // Check file size (max 2MB)
+                        if (file.size > 2 * 1024 * 1024) {
+                          toast.error("Image size must be less than 2MB");
+                          e.target.value = "";
+                          return;
+                        }
+                        setBgFile(file);
+                      }
+                    }}
+                  />
+                  
+                  {/* Image Preview */}
+                  <div className="text-start">
+                    {bgPreview ? (
+                      <div className="d-inline-block position-relative">
+                        <img 
+                          src={bgPreview} 
+                          alt="Preview" 
+                          className="img-fluid rounded shadow-sm mb-3"
+                          style={{ 
+                            maxWidth: '700px', 
+                            maxHeight: '700px',
+                            width: 'auto',
+                            height: 'auto'
+                          }}
+                        />
+                      </div>
+                    ) : bgCurrent ? (
+                      <div className="d-inline-block position-relative">
+                        <img 
+                          src={`http://localhost/api/public/${bgCurrent}`} 
+                          alt="Current" 
+                          className="img-fluid rounded shadow-sm mb-3"
+                          style={{ 
+                            maxWidth: '700px', 
+                            maxHeight: '700px',
+                            width: 'auto',
+                            height: 'auto'
+                          }}
+                        />
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="text-end">
+                  <button
+                    className="btn btn-primary px-4"
+                    onClick={async () => {
+                      const success1 = await handleContentSave("mission", mission);
+                      const success2 = await handleContentSave("vision", vision);
+                      const success3 = await handleContentSave("about_paragraph", aboutParagraph);
+                      const success4 = await handleContentSave("values", values);
+                      
+                      let photoSuccess = true;
+                      if (bgFile) {
+                        photoSuccess = await handlePhotoUpload();
+                      }
+                      
+                      if (success1 && success2 && success3 && success4 && photoSuccess) {
+                        toast.success("About Us content updated successfully!");
+                      }
+                    }}
+                    disabled={loading}
+                  >
+                    {loading ? "Saving..." : "Save Changes"}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Tab */}
+            <div className="tab-pane fade" id="footer-tab" role="tabpanel">
+              <div className="p-3">
+                {/* Clinic Information */}
+                <div className="row mb-4">
+                  <div className="col-12">
+                    <h6 className="fw-bold border-bottom pb-2 mb-3">Clinic Information</h6>
+                  </div>
+                  <div className="col-12 mb-3">
+                    <label className="form-label fw-semibold">Description</label>
+                    <textarea
+                      className="form-control shadow-sm"
+                      rows="2"
+                      value={footerDescription}
+                      onChange={(e) => setFooterDescription(e.target.value)}
+                      placeholder="Brief company description that appears under the logo"
+                    />
+                    <small className="text-muted">This appears below your company logo in the footer</small>
+                  </div>
+                </div>
+
+                {/* Contact Information */}
+                <div className="row mb-4">
+                  <div className="col-12">
+                    <h6 className="fw-bold border-bottom pb-2 mb-3">Contact Information</h6>
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label fw-semibold">Phone Number</label>
+                    <input
+                      type="text"
+                      className="form-control shadow-sm"
+                      value={footerNumber}
+                      onChange={(e) => setFooterNumber(e.target.value)}
+                      placeholder="e.g., +1 (555) 123-4567"
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label fw-semibold">Address</label>
+                    <input
+                      type="text"
+                      className="form-control shadow-sm"
+                      value={footerAddress}
+                      onChange={(e) => setFooterAddress(e.target.value)}
+                      placeholder="Full street address"
+                    />
+                  </div>
+
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label fw-semibold">Facebook Page Link</label>
+                    <input
+                      type="text"
+                      className="form-control shadow-sm"
+                      value={footerFbLink}
+                      onChange={(e) => setFooterFbLink(e.target.value)}
+                      placeholder="https://facebook.com/yourpage"
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label fw-semibold">Facebook Display Text</label>
+                    <input
+                      type="text"
+                      className="form-control shadow-sm"
+                      value={footerFbText}
+                      onChange={(e) => setFooterFbText(e.target.value)}
+                      placeholder="e.g., Follow us on Facebook"
+                    />
+                  </div>
+                  
+                  <div className="col-12 mb-3">
+                    <label className="form-label fw-semibold">Google Map Link</label>
+                    <input
+                      type="text"
+                      className="form-control shadow-sm"
+                      value={footerMapLink}
+                      onChange={(e) => setFooterMapLink(e.target.value)}
+                      placeholder="https://maps.google.com/..."
+                    />
+                    <small className="text-muted">Link that opens your location in Google Maps</small>
+                  </div>
+                </div>
+
+                {/* Business Hours */}
+                <div className="row mb-4">
+                  <div className="col-12">
+                    <h6 className="fw-bold border-bottom pb-2 mb-3">Business Hours</h6>
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label fw-semibold">Operating Days</label>
+                    <input
+                      type="text"
+                      className="form-control shadow-sm"
+                      value={footerWeekdays}
+                      onChange={(e) => setFooterWeekdays(e.target.value)}
+                      placeholder="e.g., Monday - Friday"
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label fw-semibold">Operating Hours</label>
+                    <input
+                      type="text"
+                      className="form-control shadow-sm"
+                      value={footerHours}
+                      onChange={(e) => setFooterHours(e.target.value)}
+                      placeholder="e.g., 9:00 AM - 5:00 PM"
+                    />
+                  </div>
+                </div>
+
+                {/* Save Button */}
+                <div className="text-end">
+                  <button
+                    className="btn btn-primary px-5"
+                    onClick={async () => {
+                      const results = await Promise.all([
+                        handleContentSave("footer_description", footerDescription),
+                        handleContentSave("footer_address", footerAddress),
+                        handleContentSave("footer_map_link", footerMapLink),
+                        handleContentSave("footer_number", footerNumber),
+                        handleContentSave("footer_fb_link", footerFbLink),
+                        handleContentSave("footer_fb_text", footerFbText),
+                        handleContentSave("footer_weekdays", footerWeekdays),
+                        handleContentSave("footer_hours", footerHours),
+                      ]);
+                      
+                      if (results.every(result => result === true)) {
+                        toast.success("Footer content updated successfully!");
+                      }
+                    }}
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -21,27 +21,29 @@ try {
 }
 
 try {
-    // Fetch mission, vision, and background_photo
-    $stmt = $conn->prepare("SELECT type, content, image_path FROM public_content WHERE type IN ('mission', 'vision', 'background_photo')");
+    $stmt = $conn->prepare("
+        SELECT type, content, image_path 
+        FROM public_content 
+        WHERE type IN (
+            'mission', 'vision', 'background_photo', 'homepage_cover_photo',
+            'intro_header', 'intro_paragraph',
+            'about_paragraph', 'values',
+            'footer_description', 'footer_address', 'footer_map_link',
+            'footer_number', 'footer_fb_link', 'footer_fb_text',
+            'footer_weekdays', 'footer_hours'
+
+        )
+    ");
     $stmt->execute();
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $mission = "";
-    $vision = "";
-    $background_photo = "";
-
+    $data = [];
     foreach ($rows as $row) {
-        if ($row['type'] === 'mission') $mission = $row['content'];
-        if ($row['type'] === 'vision') $vision = $row['content'];
-        if ($row['type'] === 'background_photo') $background_photo = $row['image_path']; // store image path
+        $data[$row['type']] = $row['content'] ?: $row['image_path'];
     }
 
-    echo json_encode([
-        "success" => true,
-        "mission" => $mission,
-        "vision" => $vision,
-        "background_photo" => $background_photo
-    ]);
+    echo json_encode(["success" => true] + $data);
+
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(["success" => false, "error" => "Query failed: " . $e->getMessage()]);
