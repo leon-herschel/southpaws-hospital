@@ -3,7 +3,7 @@
         'name' => 'southpaws/api',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '291c2c91133eeec6b2502b4e053e08354d8ba9c7',
+        'reference' => 'ed499059dc444614c5152cae3a4a64dffc098d10',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -40,7 +40,7 @@
         'southpaws/api' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '291c2c91133eeec6b2502b4e053e08354d8ba9c7',
+            'reference' => 'ed499059dc444614c5152cae3a4a64dffc098d10',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
