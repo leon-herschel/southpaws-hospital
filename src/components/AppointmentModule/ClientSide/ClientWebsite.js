@@ -238,6 +238,7 @@ function HomeSection({ scrollToSection, servicesRef }) {
     paragraph: "",
     heroImage: "",
   });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios
@@ -245,21 +246,25 @@ function HomeSection({ scrollToSection, servicesRef }) {
       .then((res) => {
         if (res.data.success) {
           setIntro({
-            header: res.data.intro_header,
-            paragraph: res.data.intro_paragraph,
-            heroImage: res.data.homepage_cover_photo,
+            header: res.data.intro_header || "",
+            paragraph: res.data.intro_paragraph || "",
+            heroImage: res.data.homepage_cover_photo || "",
           });
         }
+        setLoading(false);
       })
-      .catch(console.error);
+      .catch(() => setLoading(false));
   }, []);
 
   return (
     <div className="home-page pt-5">
       {/* Hero Section */}
       <section
-        className="hero-section d-flex align-items-center"
+        className={`hero-section d-flex align-items-center ${
+          loading ? "opacity-0" : "opacity-100"
+        }`}
         style={{
+          transition: "opacity 0.3s ease",
           backgroundImage: `url(${
             intro.heroImage
               ? `http://localhost/api/public/${intro.heroImage}`
@@ -498,7 +503,7 @@ function AboutSection() {
   return (
     <section className="about-section py-5 bg-light">
       <div className="container-fluid px-5">
-        <div className="row align-items-center g-5">
+        <div className="row align-items-start g-5">
           <div className="col-lg-6 scroll-animate">
             <div className="about-image position-relative">
               <img
@@ -703,11 +708,46 @@ function WebsiteFooter({ homeRef, servicesRef, aboutRef }) {
         </div>
 
         <hr className="my-4" />
-        <div className="text-center">
-          <small>
-            &copy; {new Date().getFullYear()} South Paws Veterinary Hospital.
-            All rights reserved.
-          </small>
+
+        {/* Credit Section */}
+        <div className="row align-items-center">
+          <div className="col-md-6 text-center text-md-start">
+            <small>
+              &copy; {new Date().getFullYear()} South Paws Veterinary Hospital.
+              All rights reserved.
+            </small>
+          </div>
+          <div className="col-md-6 text-center text-md-end">
+            <small className="text-light opacity-75">
+              Website developed by{" "}
+              <a
+                href="https://www.linkedin.com/in/romnick-leon-herschel-677036295/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary text-decoration-none"
+              >
+                Romnick Herschel
+              </a>
+              ,{" "}
+              <a
+                href="https://www.linkedin.com/in/rexer-john-anoos-76346328b/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary text-decoration-none"
+              >
+                Rexer Anoos
+              </a>
+              , and{" "}
+              <a
+                href="https://www.linkedin.com/in/jovie-anne-suzette-teofilo-49b5722a4/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary text-decoration-none"
+              >
+                Jovie Teofilo
+              </a>
+            </small>
+          </div>
         </div>
       </div>
     </footer>
