@@ -705,11 +705,46 @@ function WebsiteFooter({ homeRef, servicesRef, aboutRef }) {
         </div>
 
         <hr className="my-4" />
-        <div className="text-center">
-          <small>
-            &copy; {new Date().getFullYear()} South Paws Veterinary Hospital.
-            All rights reserved.
-          </small>
+      
+        {/* Credit Section */}
+        <div className="row align-items-center">
+          <div className="col-md-6 text-center text-md-start">
+            <small>
+              &copy; {new Date().getFullYear()} South Paws Veterinary Hospital.
+              All rights reserved.
+            </small>
+          </div>
+          <div className="col-md-6 text-center text-md-end">
+            <small className="text-light opacity-75">
+              Website developed by{" "}
+              <a 
+                href="https://www.linkedin.com/in/romnick-leon-herschel-677036295/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary text-decoration-none"
+              >
+                Romnick Herschel
+              </a>
+              ,{" "}
+              <a 
+                href="https://www.linkedin.com/in/rexer-john-anoos-76346328b/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary text-decoration-none"
+              >
+                Rexer Anoos
+              </a>
+              , and{" "}
+              <a 
+                href="https://www.linkedin.com/in/jovie-anne-suzette-teofilo-49b5722a4/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary text-decoration-none"
+              >
+                Jovie Teofilo
+              </a>
+            </small>
+          </div>
         </div>
       </div>
     </footer>
