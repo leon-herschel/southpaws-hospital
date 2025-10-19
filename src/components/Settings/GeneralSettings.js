@@ -15,6 +15,9 @@ function Settings() {
   const [bgFile, setBgFile] = useState(null);
   const [bgPreview, setBgPreview] = useState(null);
   const [bgCurrent, setBgCurrent] = useState("");
+  const [homepageFile, setHomepageFile] = useState(null);
+  const [homepagePreview, setHomepagePreview] = useState(null);
+  const [homepageCurrent, setHomepageCurrent] = useState("");
   const [introHeader, setIntroHeader] = useState("");
   const [introParagraph, setIntroParagraph] = useState("");
   const [aboutParagraph, setAboutParagraph] = useState("");
@@ -28,7 +31,18 @@ function Settings() {
   const [footerWeekdays, setFooterWeekdays] = useState("");
   const [footerHours, setFooterHours] = useState("");
 
-  // Preview the selected file
+  // Preview homepage selected file
+  useEffect(() => {
+    if (homepageFile) {
+      const reader = new FileReader();
+      reader.onloadend = () => setHomepagePreview(reader.result);
+      reader.readAsDataURL(homepageFile);
+    } else {
+      setHomepagePreview("");
+    }
+  }, [homepageFile]);
+
+  // Preview about us selected file
   useEffect(() => {
     if (bgFile) {
       const reader = new FileReader();
@@ -80,6 +94,7 @@ function Settings() {
           setMission(res.data.mission || "");
           setVision(res.data.vision || "");
           setBgCurrent(res.data.background_photo || "");
+          setHomepageCurrent(res.data.homepage_cover_photo || "");
           setIntroHeader(res.data.intro_header || "");
           setIntroParagraph(res.data.intro_paragraph || "");
           setAboutParagraph(res.data.about_paragraph || "");
@@ -96,6 +111,39 @@ function Settings() {
       })
       .catch((err) => console.error(err));
   }, []);
+
+  const handleHomepageUpload = async () => {
+    if (!homepageFile) return true;
+
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("photo", homepageFile);
+    formData.append("type", "homepage_cover_photo");
+
+    try {
+      const res = await axios.post(
+        "http://localhost/api/ClientSide/update_public_content.php",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      if (res.data.success) {
+        setHomepageCurrent(res.data.file_path);
+        setHomepageFile(null);
+        setHomepagePreview(null);
+        return true;
+      } else {
+        toast.error(res.data.error || "Upload failed.");
+        return false;
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Server error during upload.");
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleContentSave = async (type, content) => {
     setLoading(true);
@@ -467,14 +515,72 @@ function Settings() {
                   />
                 </div>
 
+                <div className="mb-4">
+                  <label className="form-label fw-semibold">Homepage Photo</label>
+                  <small className="text-muted d-block mb-2">
+                    Recommended: Landscape image (e.g., 1920×1080px) for best appearance
+                  </small>
+                  <input
+                      type="file"
+                      accept="image/*"
+                      className="form-control mb-3"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          // size limit check (2MB)
+                          if (file.size > 2 * 1024 * 1024) {
+                            toast.error("Image size must be less than 2MB");
+                            e.target.value = "";
+                            return;
+                          }
+                          setHomepageFile(file);
+                        }
+                      }}
+                    />
+
+                    {/* Image Preview */}
+                    <div className="text-start">
+                      {homepagePreview ? (
+                        <img
+                          src={homepagePreview}
+                          alt="Preview"
+                          className="img-fluid rounded shadow-sm mb-3"
+                          style={{
+                            maxWidth: "700px",
+                            maxHeight: "700px",
+                            width: "auto",
+                            height: "auto",
+                          }}
+                        />
+                      ) : homepageCurrent ? (
+                        <img
+                          src={`http://localhost/api/public/${homepageCurrent}`}
+                          alt="Current"
+                          className="img-fluid rounded shadow-sm mb-3"
+                          style={{
+                            maxWidth: "700px",
+                            maxHeight: "700px",
+                            width: "auto",
+                            height: "auto",
+                          }}
+                        />
+                      ) : null}
+                    </div>
+                </div>
+
                 <div className="text-end">
                   <button
                     className="btn btn-primary px-4"
                     onClick={async () => {
                       const success1 = await handleContentSave("intro_header", introHeader);
                       const success2 = await handleContentSave("intro_paragraph", introParagraph);
-                      
-                      if (success1 && success2) {
+
+                      let photoSuccess = true;
+                      if (homepageFile) {
+                        photoSuccess = await handleHomepageUpload();
+                      }
+
+                      if (success1 && success2 && photoSuccess) {
                         toast.success("Homepage content updated successfully!");
                       }
                     }}

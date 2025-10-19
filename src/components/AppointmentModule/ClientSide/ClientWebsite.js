@@ -237,40 +237,46 @@ function HomeSection({ scrollToSection, servicesRef }) {
     paragraph: "",
     heroImage: "",
   });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get("http://localhost/api/ClientSide/get_public_content.php")
+    axios
+      .get("http://localhost/api/ClientSide/get_public_content.php")
       .then((res) => {
         if (res.data.success) {
           setIntro({
-            header: res.data.intro_header,
-            paragraph: res.data.intro_paragraph,
-            heroImage: res.data.homepage_cover_photo, 
+            header: res.data.intro_header || "",
+            paragraph: res.data.intro_paragraph || "",
+            heroImage: res.data.homepage_cover_photo || "",
           });
         }
+        setLoading(false);
       })
-      .catch(console.error);
+      .catch(() => setLoading(false));
   }, []);
 
   return (
     <div className="home-page pt-5">
       {/* Hero Section */}
-      <section
-        className="hero-section d-flex align-items-center"
-        style={{
-          backgroundImage: `url(${
-            intro.heroImage
-              ? `http://localhost/api/public/${intro.heroImage}`
-              : heroBanner
-          })`,
-          backgroundSize: "cover",
-          backgroundPosition: "left center",
-          minHeight: "100vh",
-          width: "100%",
-          color: "#fff",
-          position: "relative",
-        }}
-      >
+        <section
+          className={`hero-section d-flex align-items-center ${
+            loading ? "opacity-0" : "opacity-100"
+          }`}
+          style={{
+            transition: "opacity 0.3s ease",
+            backgroundImage: `url(${
+              intro.heroImage
+                ? `http://localhost/api/public/${intro.heroImage}`
+                : heroBanner
+            })`,
+            backgroundSize: "cover",
+            backgroundPosition: "left center",
+            minHeight: "100vh",
+            width: "100%",
+            color: "#fff",
+            position: "relative",
+          }}
+        >
         {/* Overlay */}
         <div
           style={{
@@ -495,7 +501,7 @@ function AboutSection() {
   return (
     <section className="about-section py-5 bg-light">
       <div className="container-fluid px-5">
-        <div className="row align-items-center g-5">
+        <div className="row align-items-start g-5">
           <div className="col-lg-6 scroll-animate">
             <div className="about-image position-relative">
               <img

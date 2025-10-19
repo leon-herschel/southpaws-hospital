@@ -29,10 +29,10 @@ try {
         $content = isset($data['content']) ? $data['content'] : '';
 
         // If updating background_photo with a new path, delete the old photo first
-        if ($type === 'background_photo' && !empty($content)) {
-            // Get the current photo path before updating
-            $stmt = $conn->prepare("SELECT content FROM public_content WHERE type = 'background_photo'");
-            $stmt->execute();
+        if (in_array($type, ['background_photo', 'homepage_cover_photo']) && !empty($content)) {
+            // Fetch current photo path for the same type being updated
+            $stmt = $conn->prepare("SELECT content FROM public_content WHERE type = :type");
+            $stmt->execute(['type' => $type]);
             $oldPhotoPath = $stmt->fetchColumn();
             
             // Delete the old photo file if it exists and is different from the new one
@@ -51,8 +51,9 @@ try {
         exit();
     }
 
-    // Handle background photo upload
+    // Handle homepage or about photo upload
     if (!empty($_FILES['photo'])) {
+        $type = $_POST['type'] ?? 'background_photo';
         $file = $_FILES['photo'];
 
         if ($file['error'] !== UPLOAD_ERR_OK) {
@@ -64,16 +65,17 @@ try {
 
         // Generate unique filename
         $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $filename = 'background_' . time() . '.' . $ext;
+        $prefix = $type === 'homepage_cover_photo' ? 'homepage_cover' : 'about_photo';
+        $filename = $prefix . '_' . time() . '.' . $ext;
         $targetPath = $uploadsDir . $filename;
 
         if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
             throw new Exception("Failed to move uploaded file.");
         }
 
-        // Get the current photo path before updating (for deletion)
-        $stmt = $conn->prepare("SELECT content FROM public_content WHERE type = 'background_photo'");
-        $stmt->execute();
+        // Get the current photo path for the same type being uploaded
+        $stmt = $conn->prepare("SELECT content FROM public_content WHERE type = :type");
+        $stmt->execute(['type' => $type]);
         $oldPhotoPath = $stmt->fetchColumn();
         
         // Delete the old photo file if it exists
@@ -86,8 +88,8 @@ try {
 
         // Update DB with relative path
         $relativePath = 'uploads/' . $filename;
-        $stmt = $conn->prepare("UPDATE public_content SET content = :content WHERE type = 'background_photo'");
-        $stmt->execute([':content' => $relativePath]);
+        $stmt = $conn->prepare("UPDATE public_content SET content = :content WHERE type = :type");
+        $stmt->execute([':content' => $relativePath, ':type' => $type]);
 
         echo json_encode(["success" => true, "message" => "Background photo uploaded successfully.", "file_path" => $relativePath]);
         exit();
