@@ -28,13 +28,22 @@ export default function ChatbotModal({ onClose, triggerIntro, rasaUrl = "http://
         try {
           const res = await axios.post(rasaUrl, {
             sender: "guest",
-            message: "__intro__",
+            message: "/trigger_intro", 
             metadata: { trigger_intro: true },
           });
 
           res.data.forEach((msg) => {
             if (msg.text) {
-              setMessages((prev) => [...prev, { sender: "bot", text: msg.text }]);
+              const newMsg = { sender: "bot", text: msg.text };
+
+              if (msg.buttons) {
+                newMsg.buttons = msg.buttons.map((btn) => ({
+                  title: btn.title,
+                  payload: btn.payload,
+                }));
+              }
+
+              setMessages((prev) => [...prev, newMsg]);
             }
           });
 
@@ -74,7 +83,16 @@ export default function ChatbotModal({ onClose, triggerIntro, rasaUrl = "http://
       setTimeout(() => {
         res.data.forEach((msg) => {
           if (msg.text) {
-            setMessages((prev) => [...prev, { sender: "bot", text: msg.text }]);
+            const newMsg = { sender: "bot", text: msg.text };
+
+            if (msg.buttons) {
+              newMsg.buttons = msg.buttons.map((btn) => ({
+                title: btn.title,
+                payload: btn.payload,
+              }));
+            }
+
+            setMessages((prev) => [...prev, newMsg]);
           }
 
           if (msg.custom) {
@@ -197,6 +215,58 @@ export default function ChatbotModal({ onClose, triggerIntro, rasaUrl = "http://
                         {msg.text}
                       </ReactMarkdown>
                 )}
+                {msg.buttons && (
+                  <div className="mt-2 d-flex flex-wrap gap-2">
+                    {msg.buttons.map((btn, idx) => (
+                      <button
+                        key={idx}
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={() => {
+                          // show user message immediately
+                          setMessages((prev) => [...prev, { sender: "user", text: btn.title }]);
+                          
+                          // show typing indicator
+                          setBotTyping(true);
+
+                          axios
+                            .post(rasaUrl, {
+                              sender: userId,
+                              message: btn.payload,
+                            })
+                            .then((res) => {
+                              setTimeout(() => {
+                                res.data.forEach((rmsg) => {
+                                  if (rmsg.text) {
+                                    setMessages((prev) => [...prev, { sender: "bot", text: rmsg.text }]);
+                                  }
+
+                                  if (rmsg.buttons) {
+                                    const newMsg = {
+                                      sender: "bot",
+                                      text: rmsg.text || "",
+                                      buttons: rmsg.buttons.map((b) => ({
+                                        title: b.title,
+                                        payload: b.payload,
+                                      })),
+                                    };
+                                    setMessages((prev) => [...prev, newMsg]);
+                                  }
+                                });
+                                setBotTyping(false);
+                              }, 500); 
+                            })
+                            .catch((err) => {
+                              console.error(err);
+                              setBotTyping(false);
+                            });
+                        }}
+                      >
+                        {btn.title}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
                   {msg.link && (
                     <div className="mt-2">
                       <Link
