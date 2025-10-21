@@ -20,6 +20,7 @@ intents:
   - ask_services
   - ask_vaccination
   - ask_deworming
+  - ask_labtests
   - ask_about
   - book_appointment
   - reschedule_appointment
@@ -30,13 +31,32 @@ intents:
 responses:
   # --- Intro ---
   utter_intro:
-    - text: "Hi there! I’m PawPal, the AI chatbot for South Paws Veterinary Hospital. Please type your messages clearly so I can better understand and help you. How can I assist you today?"
+  - text: "Hi there! I’m PawPal, the AI chatbot for South Paws Veterinary Hospital. How can I assist you today?"
+    buttons:
+      - title: "How to book an appointment?"
+        payload: "/book_appointment"
+      - title: "What are your clinic hours?"
+        payload: "/ask_hours"
+      - title: "Where is the clinic located?"
+        payload: "/ask_location"
+      - title: "What services do you offer?"
+        payload: "/ask_services"
+      - title: "Do you offer lab tests?"
+        payload: "/ask_labtests"
+      - title: "Do you offer vaccinations?"
+        payload: "/ask_vaccination"
+      - title: "Do you do deworming?"
+        payload: "/ask_deworming"
 
   # --- Fallback ---
   utter_default:
     - text: "Sorry, I didn’t quite get that. Could you rephrase?"
     - text: "Hmm, I’m not sure I understood. Can you try again?"
     - text: "I’m not sure I understood that. Could you clarify?"
+
+  utter_out_of_scope:
+  - text: "I’m not sure about that. You can message our staff directly on Facebook or call us at 0960-631-7128 for more help!"
+  - text: "That’s outside my knowledge, but our staff can assist you! Try reaching us on Facebook or call 0960-631-7128."
 
   # --- Chitchats ---
   utter_greet:
@@ -82,8 +102,9 @@ responses:
     - text: "We’re available Monday through Friday, 8 in the morning until 5 in the afternoon."
 
   utter_ask_location:
-    - text: "We are located at J. Urgello St, Sambag 2, Cebu City."
-    - text: "Our clinic is on J. Urgello Street, Cebu City."
+    - text: "We are located in the CVM Building at SWU PHINMA, on Urgello St., Cebu City."
+    - text: "Our clinic is inside the SWU PHINMA Main Campus, CVM Building, Urgello St., Cebu City."
+    - text: "South Paws Vet Clinic is at the CVM Building, within the SWU PHINMA Main Campus on Urgello Street, Cebu City."
 
   utter_ask_walkins:
     - text: "Sorry, we only accept booked appointments at the moment."
@@ -91,22 +112,27 @@ responses:
 
   utter_ask_emergency:
     - text: "We don’t have 24/7 emergency services. Please call us during business hours for urgent care."
+  
+  utter_ask_labtests:
+    - text: "Yes, we offer a wide range of lab tests for dogs and cats, including Complete Blood Count (CBC), Chemistry Profiles, Fecalysis, Urinalysis, Parvo and Distemper Tests, and other diagnostic checks to help assess your pet’s health."
+    - text: "We provide laboratory testing services such as CBC (blood work), Fecalysis, Urinalysis, Parvo and Distemper Tests, Chemistry Profiles (10, 15, or 17 parameters), and 4-Way Tests for dogs."
+    - text: "Our clinic performs essential lab tests like blood tests (CBC, Chemistry Panels), Urinalysis, Fecalysis, Parvo and Distemper testing, and other health screenings for pets."
 
   utter_ask_vaccination:
-    - text: "Yes, we offer vaccinations for dogs and cats. You can book online, call us, or message our Facebook page."
-    - text: "We provide pet vaccinations — just book online, contact us on Facebook, or give us a call."
+    - text: "Yes! We provide a range of pet vaccinations including Rabies, DHPPI (4-in-1), 5-in-1, Kennel Cough for dogs, and 3-in-1 for cats."
+    - text: "We offer vaccinations like Rabies, 4-in-1, 5-in-1, and Kennel Cough for dogs, plus 3-in-1 for cats."
+    - text: "Yes, vaccination services are available for both dogs and cats — including Rabies, DHPPI, 5-in-1, Kennel Cough, and Cat 3-in-1 vaccines."
 
   utter_ask_deworming:
-    - text: "Yes, deworming services are available for both dogs and cats."
-    - text: "We offer deworming treatments for cats and dogs."
-    - text: "Your pets can get deworming done here — just book a slot."
+    - text: "Yes, deworming services are available for both dogs and cats, based on your pet’s weight."
+    - text: "We offer deworming for dogs and cats — from 0.5 kg up to 15 kg and above."
 
   utter_ask_about:
     - text: "South Paws is a veterinary clinic dedicated to providing quality healthcare for your pets."
     - text: "We’re a vet clinic that focuses on professional care and compassion for your pets."
 
   utter_book_appointment:
-    - text: "You can book an appointment online through our booking page: /southpawsvet/booking"
+    - text: "You can book an appointment online through our booking page or reach out via phone or Facebook."
     - text: "To book, use our online booking portal or reach out via phone or Facebook."
 
   utter_reschedule_appointment:

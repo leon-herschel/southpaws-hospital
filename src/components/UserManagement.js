@@ -41,8 +41,9 @@ const UserManagement = () => {
     function getUsers() {
         axios.get('http://localhost:80/api/internal_users.php/')
             .then(function (response) {
-                setUsers(response.data);
-                setOriginalUsers(response.data); // Store original data
+                const filteredUsers = response.data.filter(user => Number(user.user_role) !== 4);
+                setUsers(filteredUsers);
+                setOriginalUsers(filteredUsers); // Store original data for filtering
             })
             .catch(function (error) {
                 console.error("Error fetching users:", error);
@@ -75,7 +76,7 @@ const UserManagement = () => {
     }
 
     const mapUserLevelToLabel = (user_role) => {
-        const role = Number(user_role); // Ensure it's a number
+        const role = Number(user_role);
         switch (role) {
             case 1:
                 return 'Veterinarian';
@@ -83,6 +84,8 @@ const UserManagement = () => {
                 return 'Receptionist';
             case 3:
                 return 'Admin';
+            case 4:
+                return 'Super Admin';
             default:
                 return 'Unknown';
         }

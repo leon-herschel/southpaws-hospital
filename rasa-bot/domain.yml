@@ -15,6 +15,7 @@ intents:
   - retrieve_patient
   - list_appointments
   - faq
+  - trigger_intro
 
 entities:
   - client_name
@@ -64,6 +65,22 @@ responses:
     - text: "Sorry, I didn’t quite get that. Could you rephrase?"
     - text: "Hmm, I’m not sure I understood. Can you try again?"
     - text: "I’m not sure I understood that. Could you clarify?"
+
+  utter_intro:
+  - text: |
+      Hi there! I’m PawPal, your assistant for the South Paws Veterinary Hospital HMS.  
+      Here are some quick things I can help you with:
+    buttons:
+      - title: "View today’s appointments"
+        payload: "/list_appointments"
+      - title: "Retrieve a client record"
+        payload: "/retrieve_client"
+      - title: "Retrieve a patient record"
+        payload: "/retrieve_patient"
+      - title: "Retrieve an appointment"
+        payload: "/retrieve_appointment"
+      - title: "Help using appointments page"
+        payload: "/faq"
     
   utter_greet:
     - text: "Hey! How can I help?"
@@ -102,11 +119,11 @@ responses:
 
   utter_what_can_you_do:
     - text: |
-        I can help you manage hospital tasks. Here’s what I can do right now:
+        Here’s what I can do right now:
         • Retrieve client, patient, and appointment records
         • Look up appointments using reference number, name, or date
         • List and filter bookings by date (e.g., today, tomorrow, specific dates)
-        • Answer FAQs and provide quick guidance on using the system features
+        • Provide quick guidance on using the new appointment system
 
   utter_faq/appointments_add:
     - text: "To add an appointment, click the **Add Appointment** button or click an empty slot in the calendar to prefill the date and time."

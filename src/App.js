@@ -46,17 +46,22 @@ function App() {
     localStorage.getItem("userID") !== null
   );
 
-  const handleLogin = () => {
-    setIsAuthenticated(true);
-  };
-
   const [showChatbot, setShowChatbot] = useState(
     localStorage.getItem("chatbotOpen") === "true"
   );
 
+  const [triggerIntro, setTriggerIntro] = useState(false);
+
+  const handleLogin = () => setIsAuthenticated(true);
+
   useEffect(() => {
     localStorage.setItem("chatbotOpen", showChatbot);
   }, [showChatbot]);
+
+  const handleOpenChatbot = () => {
+    setShowChatbot(true);
+    setTriggerIntro(true); 
+  };
 
   return (
     <div className="App">
@@ -87,7 +92,7 @@ function App() {
               path="/*"
               element={
                 <>
-                  <Sidebar onOpenChatbot={() => setShowChatbot(true)} />
+                  <Sidebar onOpenChatbot={handleOpenChatbot} />
                   <div className="content">
                     <Topbar />
                     <Routes>
@@ -122,7 +127,15 @@ function App() {
                       <Route path="information/clients" element={<ListClients />} />
                     </Routes>
                   </div>
-                  {showChatbot && <ChatbotModal onClose={() => setShowChatbot(false)} />}
+                    {showChatbot && (
+                      <ChatbotModal
+                        triggerIntro={triggerIntro}
+                        onClose={() => {
+                          setShowChatbot(false);
+                          setTriggerIntro(false);
+                        }}
+                      />
+                    )}
                 </>
               }
             />

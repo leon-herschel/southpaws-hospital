@@ -277,3 +277,16 @@ nlu:
     - Facebook contact?
     - social page link?
     - connect on FB?
+
+- intent: out_of_scope
+  examples: |
+    - do you know Jovie?
+    - who is Michael?
+    - what’s your favorite color?
+    - how’s the weather?
+    - tell me a joke
+    - do you have a boyfriend?
+    - do you know me?
+    - can you sing?
+    - do you like cats?
+    - are you alive?
