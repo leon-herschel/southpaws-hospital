@@ -181,7 +181,6 @@ export default function ChatbotModal({ onClose, triggerIntro, rasaUrl = "http://
                 localStorage.removeItem("introSent"); 
                 introSent.current = false;
                 onClose();
-              onClose();
             }}
           />
         </div>
@@ -209,7 +208,7 @@ export default function ChatbotModal({ onClose, triggerIntro, rasaUrl = "http://
                 {msg.text && (
                       <ReactMarkdown
                         components={{
-                          p: ({ children }) => <p style={{ marginBottom: 0 }}>{children}</p>,
+                          p: ({ children }) => <p style={{ marginBottom: 0, whiteSpace: "pre-line" }}>{children}</p>,
                         }}
                       >
                         {msg.text}
