@@ -10,6 +10,11 @@ $conn = $objDB->connect();
 
 require 'vendor/autoload.php'; // Ensure Composer autoloader is loaded
 
+use Dotenv\Dotenv;
+
+$dotenv = Dotenv::createImmutable(__DIR__, '.env.acc');
+$dotenv->load();
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -272,14 +277,13 @@ switch ($method) {
                     $mail = new PHPMailer(true);
                     try {
                         $mail->isSMTP();
-                        $mail->Host = 'smtp.gmail.com';
-                        $mail->SMTPAuth = true;
-                        $mail->Username = 'alfr.impas.swu@phinmaed.com';  
-                        $mail->Password = 'ljfy lyeb rxam wkql';  
-                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                        $mail->Port = 587;
-
-                        $mail->setFrom('alfr.impas.swu@phinmaed.com', 'SouthPaws'); 
+                        $mail->Host       = $_ENV['MAIL_HOST'];
+$mail->SMTPAuth   = true;
+$mail->Username   = $_ENV['MAIL_USERNAME'];
+$mail->Password   = $_ENV['MAIL_PASSWORD'];
+$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+$mail->Port       = $_ENV['MAIL_PORT'];
+$mail->setFrom($_ENV['MAIL_FROM_ADDRESS'], $_ENV['MAIL_FROM_NAME']);
                         $mail->addAddress($clientEmail, $clientName);
 
                         $mail->isHTML(true);

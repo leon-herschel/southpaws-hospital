@@ -64,7 +64,7 @@ $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'], $_ENV['MAIL_FROM_NAME']);
 
     // Content
     $mail->isHTML(true);
-    $mail->Subject = "Appointment Confirmation – South Paws Veterinary Hospital";
+    $mail->Subject = "Appointment Confirmation at South Paws Veterinary Hospital";
 
 $mail->Body = "
     <div style='font-family: Arial, sans-serif; color: #333; line-height: 1.6;'>
@@ -97,7 +97,7 @@ $mail->Body = "
             </tr>
         </table>
         <p>
-            Please arrive at least <strong>10–15 minutes</strong> before your scheduled time to ensure a smooth check-in.
+            Please arrive at least <strong>10 to 15 minutes</strong> before your scheduled time to ensure a smooth check-in.
             Should you need to reschedule or cancel, kindly contact us in advance.
         </p>
         <p>
