@@ -14,6 +14,18 @@ stories:
   steps:
     - intent: ask_services
     - action: action_list_services
+    
+- story: ask service price
+  steps:
+    - intent: ask_service_price
+    - action: action_get_service_price
+
+- story: ask service price variants
+  steps:
+    - intent: ask_services
+    - action: action_list_services
+    - intent: ask_service_price
+    - action: action_get_service_price
 
 - story: ask vaccination
   steps:
