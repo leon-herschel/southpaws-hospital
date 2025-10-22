@@ -139,6 +139,89 @@ if ($method === 'GET') {
                         echo json_encode(['status' => 1, 'data' => $result]);
                         exit;
                     
+                    case 'appointments':
+                        $sql = "SELECT
+                                    a.name,
+                                    a.date,
+                                    a.time,
+                                    a.contact,
+                                    a.email,
+                                    a.status,
+                                    a.pet_name,
+                                    a.pet_species,
+                                    a.created_at
+                                    FROM appointments a
+
+                                    UNION ALL
+
+                                    SELECT
+                                    p.name,
+                                    p.preferred_date AS date,
+                                    p.preferred_time AS time,
+                                    p.contact,
+                                    p.email,
+                                    p.status,
+                                    p.pet_name,
+                                    p.pet_species,
+                                    p.created_at
+                                    FROM pending_appointments p
+                                    ";
+                                    
+                                    if ($fromDate && $toDate) {
+                            $sql .= " WHERE a.created_at >= :fromDate AND a.created_at < DATE_ADD(:toDate, INTERVAL 1 DAY)";
+                        }
+                    
+                        $stmt = $conn->prepare($sql);
+                    
+                        if ($fromDate && $toDate) {
+        $sql = "
+            SELECT * FROM (
+                SELECT
+                    a.name,
+                    a.date,
+                    a.time,
+                    a.contact,
+                    a.email,
+                    a.status,
+                    a.pet_name,
+                    a.pet_species,
+                    a.created_at
+                FROM appointments a
+
+                UNION ALL
+
+                SELECT
+                    p.name,
+                    p.preferred_date AS date,
+                    p.preferred_time AS time,
+                    p.contact,
+                    p.email,
+                    p.status,
+                    p.pet_name,
+                    p.pet_species,
+                    p.created_at
+                FROM pending_appointments p
+            ) AS combined
+            WHERE combined.created_at >= :fromDate
+              AND combined.created_at < DATE_ADD(:toDate, INTERVAL 1 DAY)
+            ORDER BY combined.created_at DESC
+        ";
+    } else {
+        $sql .= " ORDER BY created_at DESC";
+    }
+
+    $stmt = $conn->prepare($sql);
+
+    if ($fromDate && $toDate) {
+        $stmt->bindParam(':fromDate', $fromDate);
+        $stmt->bindParam(':toDate', $toDate);
+    }
+
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    echo json_encode(['status' => 1, 'data' => $result]);
+    exit;
         }
     } catch (Exception $e) {
         echo json_encode(['status' => 0, 'message' => 'Failed to fetch data: ' . $e->getMessage()]);
