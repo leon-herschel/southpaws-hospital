@@ -174,6 +174,33 @@ nlu:
     - can you tell me services?
     - your specialties?
 
+- intent: ask_service_price
+  examples: |
+    - how much for [parvo test](service_name)?
+    - how much for [distemper test](service_name)?
+    - cost of [urinalysis](service_name)?
+    - rate for [cbc](service_name)?
+    - how much is [rabies vaccine](service_name)?
+    - fee for [dog 5 in 1 vaccine](service_name)?
+    - [neuter](service_name) price?
+    - how much for [check-up](service_name)?
+    - price of [cbc](service_name)
+    - what's the fee for [rabies vaccine](service_name)?
+    - [chemistry-10 profile](service_name) cost?
+    - [blood test](service_name) price please
+    - how much does [dog 5 in 1 vaccine](service_name) cost?
+    - [parvo test](service_name) fee?
+    - what’s the rate of [complete blood count](service_name)?
+    - how much is the [cbc blood test](service_name)?
+    - can you tell me the price of [rabies vaccine](service_name)?
+    - what’s the price for [urinalysis](service_name)?
+    - how much is it?
+    - what about that one?
+    - how much for that?
+    - and that one?
+    - how about that test?
+    - how much is the other one?
+
 - intent: ask_vaccination
   examples: |
     - shots for pets?
@@ -290,3 +317,283 @@ nlu:
     - can you sing?
     - do you like cats?
     - are you alive?
+
+# --- Synonyms for Services ---
+- synonym: check-up
+  examples: |
+    - checkup
+    - consultation
+    - vet consult
+    - pet checkup
+    - pet consultation
+    - clinic visit
+    - check up
+    - veterinary checkup
+    - check-up fee
+
+- synonym: deworming
+  examples: |
+    - deworm
+    - dewormer
+    - worm treatment
+    - anti worm
+    - deworming service
+    - deworming for dogs
+    - deworming for cats
+    - worm medicine
+
+- synonym: minor wound cleaning
+  examples: |
+    - small wound cleaning
+    - minor wound care
+    - simple wound cleaning
+    - light wound cleaning
+    - minor cleaning
+
+- synonym: major wound cleaning
+  examples: |
+    - big wound cleaning
+    - deep wound cleaning
+    - wound surgery
+    - major wound care
+    - serious wound cleaning
+
+- synonym: fecalysis
+  examples: |
+    - stool exam
+    - stool test
+    - fecal test
+    - poop test
+    - feces exam
+    - fecal exam
+
+- synonym: skin scraping
+  examples: |
+    - skin test
+    - mange test
+    - demodex test
+    - scraping test
+    - skin sample
+
+- synonym: trichogram
+  examples: |
+    - hair test
+    - hair analysis
+    - fur test
+    - fur analysis
+
+- synonym: ear swabbing
+  examples: |
+    - ear test
+    - ear sample
+    - ear cleaning test
+    - ear swab
+    - ear exam
+
+- synonym: ear cytology
+  examples: |
+    - ear cell test
+    - ear infection test
+    - ear bacteria test
+    - ear yeast test
+    - ear cytology test
+
+- synonym: vaginal cytology
+  examples: |
+    - vaginal test
+    - vaginal smear
+    - reproductive test
+    - heat test
+    - breeding test
+    - cytology test
+    - vagi cytology
+
+- synonym: fluorescein (eye-dye) test
+  examples: |
+    - eye test
+    - eye dye test
+    - eye staining test
+    - corneal test
+    - fluorescein test
+    - dye test
+    - eye-dye test
+
+- synonym: wood's lamp
+  examples: |
+    - woods lamp test
+    - ringworm test
+    - fungal light test
+    - uv lamp test
+    - wood lamp test
+    - lamp test
+
+- synonym: urinalysis (ua)
+  examples: |
+    - urine test
+    - pee test
+    - urinalysis test
+    - ua test
+    - urine exam
+    - urinary test
+
+- synonym: complete blood count (cbc)
+  examples: |
+    - blood test
+    - cbc test
+    - bloodwork
+    - complete blood test
+    - full blood count
+    - blood panel
+    - blood check
+    - cbc blood test
+    - blood test for pets
+    - pet cbc
+    - pet blood test
+
+- synonym: parvo test
+  examples: |
+    - parvovirus test
+    - parvo kit
+    - parvo snap
+    - parvo check
+    - parvo exam
+
+- synonym: distemper test
+  examples: |
+    - distemper kit
+    - distemper snap
+    - cdv test
+    - distemper check
+    - distemper exam
+
+- synonym: 3 way test (dogs)
+  examples: |
+    - 3 in 1 test
+    - three way test
+    - combo test
+    - 3way test
+
+- synonym: 4 way snap test (dog)
+  examples: |
+    - 4 in 1 test
+    - four way test
+    - 4way test
+    - snap 4dx test
+    - 4dx test
+
+- synonym: 4 way babesia test (dog)
+  examples: |
+    - babesia test
+    - blood parasite test
+    - 4 way babesia
+    - babesia 4dx
+
+- synonym: chemistry-10 profile
+  examples: |
+    - chem 10
+    - chemistry 10
+    - chemistry profile 10
+    - blood chem 10
+    - biochemistry 10
+    - chemistry ten
+
+- synonym: chemistry-15 profile
+  examples: |
+    - chem 15
+    - chemistry 15
+    - chemistry profile 15
+    - blood chem 15
+    - biochemistry 15
+
+- synonym: chemistry-17 profile
+  examples: |
+    - chem 17
+    - chemistry 17
+    - chemistry profile 17
+    - blood chem 17
+    - biochemistry 17
+
+- synonym: rabies vaccine (dog/cat)
+  examples: |
+    - rabies shot
+    - rabbies
+    - anti rabies
+    - rabies vax
+    - anti-rabies vaccine
+    - rabies vacine
+    - rabies vaxxine
+    - rabies injection
+    - anti rabies shot
+    - rabies
+    - anti-rabies
+    - rabies vaxine
+
+- synonym: dhppi 4 in 1 vaccine
+  examples: |
+    - 4in1 vaccine
+    - 4 in 1 shot
+    - dhppi vaccine
+    - 4 way vaccine
+    - distemper vaccine
+    - 4in1 dog vaccine
+    - 4-in-1 vaccine
+
+- synonym: dog 5 in 1 vaccine
+  examples: |
+    - 5in1 vaccine
+    - 5 in 1 shot
+    - 5in1 dog vaccine
+    - 5 way vaccine
+    - 5-in-1 vaccine
+    - 5 in 1 dog shot
+    - 5in1 dog vax
+
+- synonym: kennel cough (single)
+  examples: |
+    - kennel cough vaccine
+    - bordetella vaccine
+    - cough vaccine
+    - kc vaccine
+    - kennel vax
+
+- synonym: cat 3 in 1 vaccine
+  examples: |
+    - 3in1 cat vaccine
+    - 3 in 1 shot
+    - 3 way cat vaccine
+    - triple vaccine
+    - cat vaccine
+
+- lookup: service_name
+  examples: |
+    - check-up
+    - deworming (0.5 kgs.)
+    - deworming (6 - 10 kgs.)
+    - deworming (11 - 15 kgs.)
+    - minor wound cleaning
+    - major wound cleaning
+    - fecalysis
+    - skin scraping
+    - trichogram
+    - ear swabbing
+    - ear cytology
+    - vaginal cytology
+    - fluorescein (eye-dye) test
+    - wood's lamp
+    - urinalysis (ua)
+    - complete blood count (cbc)
+    - parvo test
+    - distemper test
+    - 3 way test (dogs)
+    - 4 way snap test (dog)
+    - 4 way babesia test (dog)
+    - chemistry-10 profile
+    - chemistry-15 profile
+    - chemistry-17 profile
+    - rabies vaccine (dog/cat)
+    - dhppi 4 in 1 vaccine
+    - dog 5 in 1 vaccine
+    - kennel cough (single)
+    - cat 3 in 1 vaccine
+    - rabies shot
+    - cbc blood test
