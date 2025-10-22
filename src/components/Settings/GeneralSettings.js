@@ -55,7 +55,7 @@ function Settings() {
 
   // Upload handler
   const handlePhotoUpload = async () => {
-    if (!bgFile) return true; 
+    if (!bgFile) return true;
 
     setLoading(true);
     const formData = new FormData();
@@ -148,7 +148,10 @@ function Settings() {
   const handleContentSave = async (type, content) => {
     setLoading(true);
     try {
-      await axios.post("http://localhost/api/ClientSide/update_public_content.php", { type, content });
+      await axios.post(
+        "http://localhost/api/ClientSide/update_public_content.php",
+        { type, content }
+      );
       return true;
     } catch (err) {
       console.error(err);
@@ -440,7 +443,8 @@ function Settings() {
               placement="right"
               overlay={
                 <Tooltip>
-                  Manage all text, images, and information displayed on your website.
+                  Manage all text, images, and information displayed on your
+                  website.
                 </Tooltip>
               }
             >
@@ -491,9 +495,12 @@ function Settings() {
 
           {/* Tabs Content */}
           <div className="tab-content">
-
             {/* Homepage Tab */}
-            <div className="tab-pane fade show active" id="homepage-tab" role="tabpanel">
+            <div
+              className="tab-pane fade show active"
+              id="homepage-tab"
+              role="tabpanel"
+            >
               <div className="p-3">
                 <div className="mb-3">
                   <label className="form-label fw-semibold">Header</label>
@@ -516,64 +523,73 @@ function Settings() {
                 </div>
 
                 <div className="mb-4">
-                  <label className="form-label fw-semibold">Homepage Photo</label>
+                  <label className="form-label fw-semibold">
+                    Homepage Photo
+                  </label>
                   <small className="text-muted d-block mb-2">
-                    Recommended: Landscape image (e.g., 1920×1080px) for best appearance
+                    Recommended: Landscape image (e.g., 1920×1080px) for best
+                    appearance
                   </small>
                   <input
-                      type="file"
-                      accept="image/*"
-                      className="form-control mb-3"
-                      onChange={(e) => {
-                        const file = e.target.files[0];
-                        if (file) {
-                          // size limit check (2MB)
-                          if (file.size > 2 * 1024 * 1024) {
-                            toast.error("Image size must be less than 2MB");
-                            e.target.value = "";
-                            return;
-                          }
-                          setHomepageFile(file);
+                    type="file"
+                    accept="image/*"
+                    className="form-control mb-3"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        // size limit check (2MB)
+                        if (file.size > 2 * 1024 * 1024) {
+                          toast.error("Image size must be less than 2MB");
+                          e.target.value = "";
+                          return;
                         }
-                      }}
-                    />
+                        setHomepageFile(file);
+                      }
+                    }}
+                  />
 
-                    {/* Image Preview */}
-                    <div className="text-start">
-                      {homepagePreview ? (
-                        <img
-                          src={homepagePreview}
-                          alt="Preview"
-                          className="img-fluid rounded shadow-sm mb-3"
-                          style={{
-                            maxWidth: "700px",
-                            maxHeight: "700px",
-                            width: "auto",
-                            height: "auto",
-                          }}
-                        />
-                      ) : homepageCurrent ? (
-                        <img
-                          src={`http://localhost/api/public/${homepageCurrent}`}
-                          alt="Current"
-                          className="img-fluid rounded shadow-sm mb-3"
-                          style={{
-                            maxWidth: "700px",
-                            maxHeight: "700px",
-                            width: "auto",
-                            height: "auto",
-                          }}
-                        />
-                      ) : null}
-                    </div>
+                  {/* Image Preview */}
+                  <div className="text-start">
+                    {homepagePreview ? (
+                      <img
+                        src={homepagePreview}
+                        alt="Preview"
+                        className="img-fluid rounded shadow-sm mb-3"
+                        style={{
+                          maxWidth: "700px",
+                          maxHeight: "700px",
+                          width: "auto",
+                          height: "auto",
+                        }}
+                      />
+                    ) : homepageCurrent ? (
+                      <img
+                        src={`http://localhost/api/public/${homepageCurrent}`}
+                        alt="Current"
+                        className="img-fluid rounded shadow-sm mb-3"
+                        style={{
+                          maxWidth: "700px",
+                          maxHeight: "700px",
+                          width: "auto",
+                          height: "auto",
+                        }}
+                      />
+                    ) : null}
+                  </div>
                 </div>
 
                 <div className="text-end">
                   <button
                     className="btn btn-primary px-4"
                     onClick={async () => {
-                      const success1 = await handleContentSave("intro_header", introHeader);
-                      const success2 = await handleContentSave("intro_paragraph", introParagraph);
+                      const success1 = await handleContentSave(
+                        "intro_header",
+                        introHeader
+                      );
+                      const success2 = await handleContentSave(
+                        "intro_paragraph",
+                        introParagraph
+                      );
 
                       let photoSuccess = true;
                       if (homepageFile) {
@@ -595,7 +611,9 @@ function Settings() {
             <div className="tab-pane fade" id="about-tab" role="tabpanel">
               <div className="p-3">
                 <div className="mb-3">
-                  <label className="form-label fw-semibold">About Paragraph</label>
+                  <label className="form-label fw-semibold">
+                    About Paragraph
+                  </label>
                   <textarea
                     className="form-control mb-2 shadow-sm"
                     rows="3"
@@ -625,19 +643,25 @@ function Settings() {
                 </div>
 
                 <div className="mb-3">
-                  <label className="form-label fw-semibold">Values (separate by |)</label>
+                  <label className="form-label fw-semibold">
+                    Values (separate by |)
+                  </label>
                   <input
                     type="text"
                     className="form-control mb-2 shadow-sm"
                     value={values}
                     onChange={(e) => setValues(e.target.value)}
                   />
-                  <small className="text-muted">Separate multiple values with the | character</small>
+                  <small className="text-muted">
+                    Separate multiple values with the | character
+                  </small>
                 </div>
 
                 {/* About Us Photo Section */}
                 <div className="mb-4">
-                  <label className="form-label fw-semibold">About Us Photo</label>
+                  <label className="form-label fw-semibold">
+                    About Us Photo
+                  </label>
                   <small className="text-muted d-block mb-2">
                     Recommended: Square image 700x700px for optimal display
                   </small>
@@ -658,34 +682,34 @@ function Settings() {
                       }
                     }}
                   />
-                  
+
                   {/* Image Preview */}
                   <div className="text-start">
                     {bgPreview ? (
                       <div className="d-inline-block position-relative">
-                        <img 
-                          src={bgPreview} 
-                          alt="Preview" 
+                        <img
+                          src={bgPreview}
+                          alt="Preview"
                           className="img-fluid rounded shadow-sm mb-3"
-                          style={{ 
-                            maxWidth: '700px', 
-                            maxHeight: '700px',
-                            width: 'auto',
-                            height: 'auto'
+                          style={{
+                            maxWidth: "700px",
+                            maxHeight: "700px",
+                            width: "auto",
+                            height: "auto",
                           }}
                         />
                       </div>
                     ) : bgCurrent ? (
                       <div className="d-inline-block position-relative">
-                        <img 
-                          src={`http://localhost/api/public/${bgCurrent}`} 
-                          alt="Current" 
+                        <img
+                          src={`http://localhost/api/public/${bgCurrent}`}
+                          alt="Current"
                           className="img-fluid rounded shadow-sm mb-3"
-                          style={{ 
-                            maxWidth: '700px', 
-                            maxHeight: '700px',
-                            width: 'auto',
-                            height: 'auto'
+                          style={{
+                            maxWidth: "700px",
+                            maxHeight: "700px",
+                            width: "auto",
+                            height: "auto",
                           }}
                         />
                       </div>
@@ -697,17 +721,35 @@ function Settings() {
                   <button
                     className="btn btn-primary px-4"
                     onClick={async () => {
-                      const success1 = await handleContentSave("mission", mission);
-                      const success2 = await handleContentSave("vision", vision);
-                      const success3 = await handleContentSave("about_paragraph", aboutParagraph);
-                      const success4 = await handleContentSave("values", values);
-                      
+                      const success1 = await handleContentSave(
+                        "mission",
+                        mission
+                      );
+                      const success2 = await handleContentSave(
+                        "vision",
+                        vision
+                      );
+                      const success3 = await handleContentSave(
+                        "about_paragraph",
+                        aboutParagraph
+                      );
+                      const success4 = await handleContentSave(
+                        "values",
+                        values
+                      );
+
                       let photoSuccess = true;
                       if (bgFile) {
                         photoSuccess = await handlePhotoUpload();
                       }
-                      
-                      if (success1 && success2 && success3 && success4 && photoSuccess) {
+
+                      if (
+                        success1 &&
+                        success2 &&
+                        success3 &&
+                        success4 &&
+                        photoSuccess
+                      ) {
                         toast.success("About Us content updated successfully!");
                       }
                     }}
@@ -725,10 +767,14 @@ function Settings() {
                 {/* Clinic Information */}
                 <div className="row mb-4">
                   <div className="col-12">
-                    <h6 className="fw-bold border-bottom pb-2 mb-3">Clinic Information</h6>
+                    <h6 className="fw-bold border-bottom pb-2 mb-3">
+                      Clinic Information
+                    </h6>
                   </div>
                   <div className="col-12 mb-3">
-                    <label className="form-label fw-semibold">Description</label>
+                    <label className="form-label fw-semibold">
+                      Description
+                    </label>
                     <textarea
                       className="form-control shadow-sm"
                       rows="2"
@@ -736,17 +782,23 @@ function Settings() {
                       onChange={(e) => setFooterDescription(e.target.value)}
                       placeholder="Brief company description that appears under the logo"
                     />
-                    <small className="text-muted">This appears below your company logo in the footer</small>
+                    <small className="text-muted">
+                      This appears below your company logo in the footer
+                    </small>
                   </div>
                 </div>
 
                 {/* Contact Information */}
                 <div className="row mb-4">
                   <div className="col-12">
-                    <h6 className="fw-bold border-bottom pb-2 mb-3">Contact Information</h6>
+                    <h6 className="fw-bold border-bottom pb-2 mb-3">
+                      Contact Information
+                    </h6>
                   </div>
                   <div className="col-md-6 mb-3">
-                    <label className="form-label fw-semibold">Phone Number</label>
+                    <label className="form-label fw-semibold">
+                      Phone Number
+                    </label>
                     <input
                       type="text"
                       className="form-control shadow-sm"
@@ -767,7 +819,9 @@ function Settings() {
                   </div>
 
                   <div className="col-md-6 mb-3">
-                    <label className="form-label fw-semibold">Facebook Page Link</label>
+                    <label className="form-label fw-semibold">
+                      Facebook Page Link
+                    </label>
                     <input
                       type="text"
                       className="form-control shadow-sm"
@@ -777,7 +831,9 @@ function Settings() {
                     />
                   </div>
                   <div className="col-md-6 mb-3">
-                    <label className="form-label fw-semibold">Facebook Display Text</label>
+                    <label className="form-label fw-semibold">
+                      Facebook Display Text
+                    </label>
                     <input
                       type="text"
                       className="form-control shadow-sm"
@@ -786,9 +842,11 @@ function Settings() {
                       placeholder="e.g., Follow us on Facebook"
                     />
                   </div>
-                  
+
                   <div className="col-12 mb-3">
-                    <label className="form-label fw-semibold">Google Map Link</label>
+                    <label className="form-label fw-semibold">
+                      Google Map Link
+                    </label>
                     <input
                       type="text"
                       className="form-control shadow-sm"
@@ -796,17 +854,23 @@ function Settings() {
                       onChange={(e) => setFooterMapLink(e.target.value)}
                       placeholder="https://maps.google.com/..."
                     />
-                    <small className="text-muted">Link that opens your location in Google Maps</small>
+                    <small className="text-muted">
+                      Link that opens your location in Google Maps
+                    </small>
                   </div>
                 </div>
 
                 {/* Business Hours */}
                 <div className="row mb-4">
                   <div className="col-12">
-                    <h6 className="fw-bold border-bottom pb-2 mb-3">Business Hours</h6>
+                    <h6 className="fw-bold border-bottom pb-2 mb-3">
+                      Business Hours
+                    </h6>
                   </div>
                   <div className="col-md-6 mb-3">
-                    <label className="form-label fw-semibold">Operating Days</label>
+                    <label className="form-label fw-semibold">
+                      Operating Days
+                    </label>
                     <input
                       type="text"
                       className="form-control shadow-sm"
@@ -816,7 +880,9 @@ function Settings() {
                     />
                   </div>
                   <div className="col-md-6 mb-3">
-                    <label className="form-label fw-semibold">Operating Hours</label>
+                    <label className="form-label fw-semibold">
+                      Operating Hours
+                    </label>
                     <input
                       type="text"
                       className="form-control shadow-sm"
@@ -833,7 +899,10 @@ function Settings() {
                     className="btn btn-primary px-5"
                     onClick={async () => {
                       const results = await Promise.all([
-                        handleContentSave("footer_description", footerDescription),
+                        handleContentSave(
+                          "footer_description",
+                          footerDescription
+                        ),
                         handleContentSave("footer_address", footerAddress),
                         handleContentSave("footer_map_link", footerMapLink),
                         handleContentSave("footer_number", footerNumber),
@@ -842,8 +911,8 @@ function Settings() {
                         handleContentSave("footer_weekdays", footerWeekdays),
                         handleContentSave("footer_hours", footerHours),
                       ]);
-                      
-                      if (results.every(result => result === true)) {
+
+                      if (results.every((result) => result === true)) {
                         toast.success("Footer content updated successfully!");
                       }
                     }}

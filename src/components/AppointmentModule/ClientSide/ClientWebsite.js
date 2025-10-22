@@ -24,6 +24,7 @@ import {
   FaShieldAlt,
   FaArrowRight,
   FaProcedures,
+  FaEye,
 } from "react-icons/fa";
 import southpawsLogo from "../../../assets/southpawslogo-header.png";
 import southpawsLogoWhite from "../../../assets/southpawslogowhite.png";
@@ -258,25 +259,25 @@ function HomeSection({ scrollToSection, servicesRef }) {
   return (
     <div className="home-page pt-5">
       {/* Hero Section */}
-        <section
-          className={`hero-section d-flex align-items-center ${
-            loading ? "opacity-0" : "opacity-100"
-          }`}
-          style={{
-            transition: "opacity 0.3s ease",
-            backgroundImage: `url(${
-              intro.heroImage
-                ? `http://localhost/api/public/${intro.heroImage}`
-                : heroBanner
-            })`,
-            backgroundSize: "cover",
-            backgroundPosition: "left center",
-            minHeight: "100vh",
-            width: "100%",
-            color: "#fff",
-            position: "relative",
-          }}
-        >
+      <section
+        className={`hero-section d-flex align-items-center ${
+          loading ? "opacity-0" : "opacity-100"
+        }`}
+        style={{
+          transition: "opacity 0.3s ease",
+          backgroundImage: `url(${
+            intro.heroImage
+              ? `http://localhost/api/public/${intro.heroImage}`
+              : heroBanner
+          })`,
+          backgroundSize: "cover",
+          backgroundPosition: "left center",
+          minHeight: "100vh",
+          width: "100%",
+          color: "#fff",
+          position: "relative",
+        }}
+      >
         {/* Overlay */}
         <div
           style={{
@@ -292,11 +293,12 @@ function HomeSection({ scrollToSection, servicesRef }) {
         <div className="container-fluid px-5 position-relative text-start">
           <div className="col-md-6 hero-content animate-hero">
             <h1 className="display-4 fw-bold mb-3">
-                {intro.header || "Where Every Pawprint Matters"}
-              </h1>
-              <p className="lead mb-4">
-                {intro.paragraph || "With modern care, personal attention, and genuine love for animals, we make sure every pawprint leads to a healthier, happier story."}
-              </p>
+              {intro.header || "Where Every Pawprint Matters"}
+            </h1>
+            <p className="lead mb-4">
+              {intro.paragraph ||
+                "With modern care, personal attention, and genuine love for animals, we make sure every pawprint leads to a healthier, happier story."}
+            </p>
             <div className="d-flex gap-3">
               <NavLink
                 to="/southpawsvet/booking"
@@ -533,16 +535,16 @@ function AboutSection() {
               </div>
 
               <h4 className="fw-bold mb-3">Our Values</h4>
-                <div className="row">
-                  {aboutData.values.map((val, i) => (
-                    <div className="col-md-6 mb-3" key={i}>
-                      <div className="d-flex align-items-center">
-                        <FaArrowRight className="text-primary me-3" />
-                        <span>{val}</span>
-                      </div>
+              <div className="row">
+                {aboutData.values.map((val, i) => (
+                  <div className="col-md-6 mb-3" key={i}>
+                    <div className="d-flex align-items-center">
+                      <FaArrowRight className="text-primary me-3" />
+                      <span>{val}</span>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -553,7 +555,7 @@ function AboutSection() {
 
 function WebsiteFooter({ homeRef, servicesRef, aboutRef }) {
   const navigate = useNavigate();
-    const [footer, setFooter] = useState({
+  const [footer, setFooter] = useState({
     description: "",
     address: "",
     mapLink: "",
@@ -565,7 +567,8 @@ function WebsiteFooter({ homeRef, servicesRef, aboutRef }) {
   });
 
   useEffect(() => {
-    axios.get("http://localhost/api/ClientSide/get_public_content.php")
+    axios
+      .get("http://localhost/api/ClientSide/get_public_content.php")
       .then((res) => {
         if (res.data.success) {
           setFooter({
@@ -705,7 +708,7 @@ function WebsiteFooter({ homeRef, servicesRef, aboutRef }) {
         </div>
 
         <hr className="my-4" />
-      
+
         {/* Credit Section */}
         <div className="row align-items-center">
           <div className="col-md-6 text-center text-md-start">
@@ -717,27 +720,27 @@ function WebsiteFooter({ homeRef, servicesRef, aboutRef }) {
           <div className="col-md-6 text-center text-md-end">
             <small className="text-light opacity-75">
               Website developed by{" "}
-              <a 
-                href="https://www.linkedin.com/in/romnick-leon-herschel-677036295/" 
-                target="_blank" 
+              <a
+                href="https://www.linkedin.com/in/romnick-leon-herschel-677036295/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary text-decoration-none"
               >
                 Romnick Herschel
               </a>
               ,{" "}
-              <a 
-                href="https://www.linkedin.com/in/rexer-john-anoos-76346328b/" 
-                target="_blank" 
+              <a
+                href="https://www.linkedin.com/in/rexer-john-anoos-76346328b/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary text-decoration-none"
               >
                 Rexer Anoos
               </a>
               , and{" "}
-              <a 
-                href="https://www.linkedin.com/in/jovie-anne-suzette-teofilo-49b5722a4/" 
-                target="_blank" 
+              <a
+                href="https://www.linkedin.com/in/jovie-anne-suzette-teofilo-49b5722a4/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary text-decoration-none"
               >
