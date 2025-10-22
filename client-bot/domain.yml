@@ -27,6 +27,7 @@ intents:
   - ask_contact
   - ask_facebook
   - trigger_intro
+  - ask_service_price
 
 responses:
   # --- Intro ---
@@ -45,8 +46,6 @@ responses:
         payload: "/ask_labtests"
       - title: "Do you offer vaccinations?"
         payload: "/ask_vaccination"
-      - title: "Do you do deworming?"
-        payload: "/ask_deworming"
 
   # --- Fallback ---
   utter_default:
@@ -115,7 +114,7 @@ responses:
   
   utter_ask_labtests:
     - text: "Yes, we offer a wide range of lab tests for dogs and cats, including Complete Blood Count (CBC), Chemistry Profiles, Fecalysis, Urinalysis, Parvo and Distemper Tests, and other diagnostic checks to help assess your pet’s health."
-    - text: "We provide laboratory testing services such as CBC (blood work), Fecalysis, Urinalysis, Parvo and Distemper Tests, Chemistry Profiles (10, 15, or 17 parameters), and 4-Way Tests for dogs."
+    - text: "We provide laboratory testing services such as CBC (blood work), Fecalysis, Urinalysis, Parvo and Distemper Tests, Chemistry Profiles (10, 15, or 17 parameters), and more."
     - text: "Our clinic performs essential lab tests like blood tests (CBC, Chemistry Panels), Urinalysis, Fecalysis, Parvo and Distemper testing, and other health screenings for pets."
 
   utter_ask_vaccination:
@@ -148,3 +147,22 @@ responses:
 
 actions:
   - action_list_services
+  - action_get_service_price
+
+entities:
+  - service_name
+
+slots:
+  service_name:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: service_name
+      - type: from_text
+
+  last_service:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
