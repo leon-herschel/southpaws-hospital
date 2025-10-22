@@ -264,28 +264,16 @@ function CancelledAppointment() {
               Email {getSortIcon("email")}
             </th>
             <th
-              onClick={() => handleSort("pet_name")}
-              style={{ cursor: "pointer", width: "100px" }}
-            >
-              Pet Name {getSortIcon("pet_name")}
-            </th>
-            <th
               onClick={() => handleSort("pet_breed")}
               style={{ cursor: "pointer" }}
             >
-              Breed {getSortIcon("pet_breed")}
+              Pet {getSortIcon("pet_breed")}
             </th>
             <th
               onClick={() => handleSort("service")}
               style={{ cursor: "pointer" }}
             >
               Service {getSortIcon("service")}
-            </th>
-            <th
-              onClick={() => handleSort("doctor_name")}
-              style={{ cursor: "pointer" }}
-            >
-              Doctor {getSortIcon("doctor_name")}
             </th>
             <th style={{ width: "15%" }}>Actions</th>
           </tr>
@@ -316,10 +304,8 @@ function CancelledAppointment() {
                 </td>
                 <td>{appt.contact}</td>
                 <td>{appt.email}</td>
-                <td>{appt.pet_name}</td>
                 <td>{appt.pet_breed}</td>
                 <td>{appt.service}</td>
-                <td>{appt.doctor_name || "—"}</td>
                 <td>
                   <OverlayTrigger placement="top" overlay={<Tooltip>Delete</Tooltip>}>
                     <button
