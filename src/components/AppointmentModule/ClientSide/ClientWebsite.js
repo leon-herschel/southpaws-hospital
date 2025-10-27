@@ -23,8 +23,7 @@ import {
   FaAward,
   FaShieldAlt,
   FaArrowRight,
-  FaProcedures,
-  FaEye,
+  FaProcedures
 } from "react-icons/fa";
 import southpawsLogo from "../../../assets/southpawslogo-header.png";
 import southpawsLogoWhite from "../../../assets/southpawslogowhite.png";
@@ -216,6 +215,13 @@ function WebsiteHeader({ homeRef, servicesRef, aboutRef }) {
               onClick={() => handleScroll("about")}
             >
               About Us
+            </button>
+            <button
+              className="nav-link border-0 bg-transparent d-flex align-items-center gap-1"
+              data-bs-toggle="modal"
+              data-bs-target="#staffPortalModal"
+            >
+              Staff Portal
             </button>
             <li className="nav-item ms-2 d-none d-lg-block">
               <NavLink

@@ -27,10 +27,10 @@ export default function ClientAppointment() {
         });
     }, []);
 
-    if (appointmentFormEnabled === null) {
+  if (appointmentFormEnabled === null) {
     return (
-      <div className="container-fluid p-0 text-center py-5" style={{ marginTop: '100px' }}>
-        <div className="spinner-border text-primary" role="status">
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="spinner-grow text-primary" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
       </div>

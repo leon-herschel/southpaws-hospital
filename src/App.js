@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 import "./App.css";
 import Appointment from "./components/AppointmentModule/Appointment";
@@ -40,6 +41,8 @@ import DoneAppointments from "./components/AppointmentModule/Tables/DoneAppointm
 import PendingAppointments from "./components/AppointmentModule/Tables/PendingAppointment";
 import ChatbotModal from "./components/Chatbot/Chatbot";
 import ClientWebsite from "./components/AppointmentModule/ClientSide/ClientWebsite";
+import LoaderPage from "./components/StatusPages/LoaderPage";
+import WebsiteDown from "./components/StatusPages/WebsiteDown";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -53,22 +56,58 @@ function App() {
   const [triggerIntro, setTriggerIntro] = useState(false);
 
   const handleLogin = () => setIsAuthenticated(true);
+  const [loading, setLoading] = useState(true);
+  const [serverUp, setServerUp] = useState(true);
+  const [publicContent, setPublicContent] = useState(null);
 
   useEffect(() => {
     localStorage.setItem("chatbotOpen", showChatbot);
   }, [showChatbot]);
+
+  useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost/api/ClientSide/get_public_content.php"
+        );
+
+        if (!res.data.success) throw new Error("Website down");
+
+        setPublicContent(res.data);
+        setServerUp(true);
+      } catch (error) {
+        setServerUp(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeApp();
+  }, []);
 
   const handleOpenChatbot = () => {
     setShowChatbot(true);
     setTriggerIntro(true); 
   };
 
+  if (loading) return <LoaderPage />;
+
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
           {/* ---------------- PUBLIC ROUTES ---------------- */}
-          <Route path="/southpawsvet/*" element={<ClientWebsite />} />
+          <Route
+            path="/southpawsvet/*"
+            element={
+              serverUp ? (
+                <ClientWebsite publicContent={publicContent} />
+              ) : (
+                <WebsiteDown />
+              )
+            }
+          />
+
           <Route
             path="/"
             element={
