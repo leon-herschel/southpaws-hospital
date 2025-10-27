@@ -32,5 +32,6 @@ models/
 .rasa/
 *.pyc
 
-#acc
+# env backend
 .env.acc
+.env.domain

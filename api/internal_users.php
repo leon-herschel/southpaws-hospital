@@ -1,13 +1,11 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: *");
-header("Access-Control-Allow-Methods: *");
+include 'cors.php';
 
 include 'DbConnect.php';
 $objDB = new DbConnect;
 $conn = $objDB->connect();
 
-require 'vendor/autoload.php'; // Ensure Composer autoloader is loaded
+require 'vendor/autoload.php';
 
 use Dotenv\Dotenv;
 
