@@ -1,20 +1,18 @@
 <?php
-// Allow CORS from localhost
-header("Access-Control-Allow-Origin: http://localhost:3000");
-header("Access-Control-Allow-Credentials: true");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header("Content-Type: application/json"); // ✅ Ensures proper JSON response
+include 'cors.php';
+header("Content-Type: application/json");
 
-// Include database connection
+
+
 include 'DbConnect.php';
 $objDB = new DbConnect;
-$conn = $objDB->connect();
 
-// Handle preflight requests
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
+try {
+    $conn = $objDB->connect();
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(["error" => "Database connection failed: " . $e->getMessage()]);
+    exit();
 }
 
 // Get the requested history type (brands, categories, products, inventory, suppliers, unit_of_measurement)

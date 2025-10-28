@@ -1,11 +1,18 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: *");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+include 'cors.php';
+header("Content-Type: application/json");
+
 
 include 'DbConnect.php';
 $objDB = new DbConnect;
-$conn = $objDB->connect();
+
+try {
+    $conn = $objDB->connect();
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(["error" => "Database connection failed: " . $e->getMessage()]);
+    exit();
+}
 
 function logAudit($conn, $userId, $action, $table, $targetId, $desc = '', $email = '') {
     $stmt = $conn->prepare("

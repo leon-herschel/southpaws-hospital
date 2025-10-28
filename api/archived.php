@@ -1,19 +1,23 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
+include 'cors.php';
+header("Content-Type: application/json");
+
+
 
 include 'DbConnect.php';
 $objDB = new DbConnect;
-$conn = $objDB->connect();
 
-$method = $_SERVER['REQUEST_METHOD'];
+try {
+    $conn = $objDB->connect();
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(["error" => "Database connection failed: " . $e->getMessage()]);
+    exit();
+}
+
+
 $action = $_GET['action'] ?? null;
 
-if ($method === 'OPTIONS') {
-    http_response_code(200);
-    exit;
-}
 
 // Define allowed tables
 $allowedTables = [
