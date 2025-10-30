@@ -23,6 +23,7 @@ const UserManagement = () => {
     const [editUserManagement, setEditUserManagement] = useState({});
     const [editLoading, setEditLoading] = useState(true);
     const [showEditModal, setShowEditModal] = useState(false);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     const handleClose = () => setShowModal(false);
     const handleShow = () => setShowModal(true);
@@ -39,7 +40,7 @@ const UserManagement = () => {
     }, []);
 
     function getUsers() {
-        axios.get('http://localhost:80/api/internal_users.php/')
+        axios.get(`${API_BASE_URL}/api/internal_users.php/`)
             .then(function (response) {
                 const filteredUsers = response.data.filter(user => Number(user.user_role) !== 4);
                 setUsers(filteredUsers);
@@ -51,7 +52,7 @@ const UserManagement = () => {
     }
 
     const deleteUser = (id) => {
-        axios.delete(`http://localhost:80/api/internal_users.php/${id}/delete`)
+        axios.delete(`${API_BASE_URL}/api/internal_users.php/${id}/delete`)
             .then(function (response) {
                 getUsers();
                 toast.success('User deleted successfully!'); // Show success notification
@@ -155,7 +156,7 @@ const UserManagement = () => {
     const handleEditSubmit = (event) => {
         event.preventDefault();
 
-        axios.put(`http://localhost:80/api/internal_users.php/${userManagementIdToEdit}`, editUserManagement)
+        axios.put(`${API_BASE_URL}/api/internal_users.php/${userManagementIdToEdit}`, editUserManagement)
             .then(function (response) {
                 handleCloseEditModal();
                 getUsers();
@@ -169,7 +170,7 @@ const UserManagement = () => {
 
     useEffect(() => {
         if (showEditModal && userManagementIdToEdit) { // Check if userManagementIdToEdit is not null
-            axios.get(`http://localhost:80/api/internal_users.php/${userManagementIdToEdit}`)
+            axios.get(`${API_BASE_URL}/api/internal_users.php/${userManagementIdToEdit}`)
                 .then(function (response) {
                     const userData = response.data.user || response.data;
                     if (userData && userManagementIdToEdit) {

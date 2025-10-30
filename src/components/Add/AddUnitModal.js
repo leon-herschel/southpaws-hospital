@@ -7,7 +7,7 @@ const AddUnitOfMeasurementModal = ({ show, onClose, onUnitAdded }) => {
     const [inputs, setInputs] = useState({ unit_name: '' });
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const brandNameRef = useRef(null);
     
     useEffect(() => {
@@ -45,7 +45,7 @@ const AddUnitOfMeasurementModal = ({ show, onClose, onUnitAdded }) => {
             created_by: userId,
         };
     
-        axios.post('http://localhost:80/api/units.php', unitData)
+        axios.post(`${API_BASE_URL}/api/units.php`, unitData)
             .then((response) => {
                 if (response.data.status === 1) {
                     const newUnit = {

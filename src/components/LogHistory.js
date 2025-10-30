@@ -13,6 +13,7 @@ const History = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     fetchData();
@@ -26,7 +27,7 @@ const History = () => {
       };
 
       const response = await axios.get(
-        `http://localhost:80/api/history_api.php`,
+        `${API_BASE_URL}/api/history_api.php`,
         { params }
       );
 

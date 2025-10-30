@@ -12,7 +12,7 @@ export default function NotificationBell() {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
-
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const navigate = useNavigate();
 
   // Helpers for localStorage
@@ -35,7 +35,7 @@ export default function NotificationBell() {
           : "";
 
       const res = await axios.get(
-        `http://localhost/api/notifications.php${dismissedParam}`
+        `${API_BASE_URL}/api/notifications.php${dismissedParam}`
       );
 
       const now = new Date();

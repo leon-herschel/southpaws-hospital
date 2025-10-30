@@ -7,6 +7,7 @@ function StaffPortalModal() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,7 +16,7 @@ function StaffPortalModal() {
 
     try {
       const res = await axios.post(
-        "http://localhost/api/ClientSide/verify-pass.php",
+        `${API_BASE_URL}/api/ClientSide/verify-pass.php`,
         { passkey }
       );
 

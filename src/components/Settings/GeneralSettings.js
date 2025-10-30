@@ -30,6 +30,7 @@ function Settings() {
   const [footerFbText, setFooterFbText] = useState("");
   const [footerWeekdays, setFooterWeekdays] = useState("");
   const [footerHours, setFooterHours] = useState("");
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   // Preview homepage selected file
   useEffect(() => {
@@ -63,7 +64,7 @@ function Settings() {
 
     try {
       const res = await axios.post(
-        "http://localhost/api/ClientSide/update_public_content.php",
+        `${API_BASE_URL}/api/ClientSide/update_public_content.php`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -88,7 +89,7 @@ function Settings() {
 
   useEffect(() => {
     axios
-      .get("http://localhost/api/ClientSide/get_public_content.php")
+      .get(`${API_BASE_URL}/api/ClientSide/get_public_content.php`)
       .then((res) => {
         if (res.data.success) {
           setMission(res.data.mission || "");
@@ -122,7 +123,7 @@ function Settings() {
 
     try {
       const res = await axios.post(
-        "http://localhost/api/ClientSide/update_public_content.php",
+        `${API_BASE_URL}/api/ClientSide/update_public_content.php`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -149,7 +150,7 @@ function Settings() {
     setLoading(true);
     try {
       await axios.post(
-        "http://localhost/api/ClientSide/update_public_content.php",
+        `${API_BASE_URL}/api/ClientSide/update_public_content.php`,
         { type, content }
       );
       return true;
@@ -169,7 +170,7 @@ function Settings() {
     }
 
     axios
-      .post("http://localhost/api/Settings/set_log_retention.php", {
+      .post(`${API_BASE_URL}/api/Settings/set_log_retention.php`, {
         days: logDays,
       })
       .then((res) => {
@@ -199,7 +200,7 @@ function Settings() {
     }
 
     axios
-      .post("http://localhost/api/Settings/set_time_appointments.php", {
+      .post(`${API_BASE_URL}/api/Settings/set_time_appointments.php`, {
         startTime,
         endTime,
       })
@@ -221,13 +222,13 @@ function Settings() {
       try {
         // fetch toggle status
         const statusRes = await axios.get(
-          "http://localhost/api/ClientSide/get-booking-status.php"
+          `${API_BASE_URL}/api/ClientSide/get-booking-status.php`
         );
         setToggle(statusRes.data.appointmentFormEnabled);
 
         // fetch time limits
         const timeRes = await axios.get(
-          "http://localhost/api/Settings/get_time_appointments.php"
+          `${API_BASE_URL}/api/Settings/get_time_appointments.php`
         );
         if (timeRes.data && timeRes.data.start_time && timeRes.data.end_time) {
           setStartTime(formatTime(timeRes.data.start_time));
@@ -235,7 +236,7 @@ function Settings() {
         }
 
         const logRes = await axios.get(
-          "http://localhost/api/Settings/get_log_retention.php"
+          `${API_BASE_URL}/api/Settings/get_log_retention.php`
         );
         if (logRes.data && logRes.data.days) {
           setLogDays(logRes.data.days);
@@ -254,7 +255,7 @@ function Settings() {
   const toggleFunction = () => {
     const newStatus = !toggle;
     axios
-      .post("http://localhost/api/ClientSide/update-booking-status.php", {
+      .post(`${API_BASE_URL}/api/ClientSide/update-booking-status.php`, {
         appointmentFormEnabled: newStatus ? 1 : 0,
       })
       .then(() => setToggle(newStatus))
@@ -564,7 +565,7 @@ function Settings() {
                       />
                     ) : homepageCurrent ? (
                       <img
-                        src={`http://localhost/api/public/${homepageCurrent}`}
+                        src={`${API_BASE_URL}/api/public/${homepageCurrent}`}
                         alt="Current"
                         className="img-fluid rounded shadow-sm mb-3"
                         style={{
@@ -702,7 +703,7 @@ function Settings() {
                     ) : bgCurrent ? (
                       <div className="d-inline-block position-relative">
                         <img
-                          src={`http://localhost/api/public/${bgCurrent}`}
+                          src={`${API_BASE_URL}/api/public/${bgCurrent}`}
                           alt="Current"
                           className="img-fluid rounded shadow-sm mb-3"
                           style={{

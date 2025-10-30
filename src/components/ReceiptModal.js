@@ -7,6 +7,7 @@ const ReceiptModal = ({ show, handleClose, receiptNumber }) => {
     const [receiptData, setReceiptData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         if (show && receiptNumber) {
@@ -20,7 +21,7 @@ const ReceiptModal = ({ show, handleClose, receiptNumber }) => {
         console.log("📤 Fetching receipt for:", receiptNumber); // ✅ Debug Log
 
         try {
-            const response = await axios.get(`http://localhost:80/api/transaction.php?receipt_number=${receiptNumber}`);
+            const response = await axios.get(`${API_BASE_URL}/api/transaction.php?receipt_number=${receiptNumber}`);
             console.log("✅ Response:", response.data); // ✅ Debug Log
 
             if (response.data.status === 1) {

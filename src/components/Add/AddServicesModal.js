@@ -19,6 +19,7 @@ const AddServicesModal = ({
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const brandNameRef = useRef(null);
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     if (show && brandNameRef.current) {
@@ -74,7 +75,7 @@ const AddServicesModal = ({
     };
 
     axios
-      .post("http://localhost:80/api/services.php", dataToSubmit)
+      .post(`${API_BASE_URL}/api/services.php`, dataToSubmit)
       .then(function (response) {
         if (response.data.status === 0) {
           setError("Service name already exists.");

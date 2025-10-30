@@ -20,6 +20,7 @@ function AddImmunizationFormModal({ show, handleClose, onFormAdded, selectedClie
     const [petImage, setPetImage] = useState(null);
     const [selectedPets, setSelectedPets] = useState([]); // Track selected pets
     const today = new Date().toISOString().split('T')[0];
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     // Camera States
     const videoRef = useRef(null);
@@ -61,11 +62,9 @@ function AddImmunizationFormModal({ show, handleClose, onFormAdded, selectedClie
         }
     }, [show, selectedClient, selectedPetsData]);  // Ensure selectedPetsData is included in the dependency list
     
-    
-    
     const fetchImmunizations = async () => {
         try {
-            const response = await axios.get('http://localhost:80/api/immunization.php');
+            const response = await axios.get(`${API_BASE_URL}/api/immunization.php`);
     
             if (response.data && Array.isArray(response.data.immunizations)) {
                 const formattedData = response.data.immunizations.map(immunization => ({
@@ -82,13 +81,10 @@ function AddImmunizationFormModal({ show, handleClose, onFormAdded, selectedClie
             setImmunizations([]); // Ensure the state is at least an empty array
         }
     };
-    
-    
-    
 
     const fetchOwnersAndPets = async () => {
         try {
-            const response = await axios.get('http://localhost:80/api/clients.php');
+            const response = await axios.get(`${API_BASE_URL}/api/clients.php`);
             const { clients } = response.data;
             setOwners(clients);
 
@@ -107,7 +103,7 @@ function AddImmunizationFormModal({ show, handleClose, onFormAdded, selectedClie
 
     const fetchImmunizationNotes = async () => {
         try {
-            const response = await axios.get('http://localhost:80/api/immunization_notes.php');
+            const response = await axios.get(`${API_BASE_URL}/api/immunization_notes.php`);
             setNotes(response.data); // Assuming the API returns an array of notes
         } catch (error) {
             console.error('Failed to fetch immunization notes:', error);
@@ -134,8 +130,6 @@ function AddImmunizationFormModal({ show, handleClose, onFormAdded, selectedClie
             };
         });
     };
-
-    
     
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -154,7 +148,7 @@ function AddImmunizationFormModal({ show, handleClose, onFormAdded, selectedClie
         if (petImage) payload.append('pet_image', petImage);
 
         try {
-            const response = await axios.post('http://localhost:80/api/immunization.php', payload, {
+            const response = await axios.post(`${API_BASE_URL}/api/immunization.php`, payload, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             if (response.data.status === 1) {

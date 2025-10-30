@@ -8,7 +8,7 @@ const AddGenericModal = ({ show, handleClose, onGenericAdded }) => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const genericNameRef = useRef(null);
-    
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     
     useEffect(() => {
         if (show && genericNameRef.current) {
@@ -39,7 +39,7 @@ const AddGenericModal = ({ show, handleClose, onGenericAdded }) => {
             created_by: userId ? parseInt(userId) : null,
         };
     
-        axios.post('http://localhost:80/api/generic.php', genericData)
+        axios.post(`${API_BASE_URL}/api/generic.php`, genericData)
             .then((response) => {
     
                 if (response.data.status === 0) {

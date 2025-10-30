@@ -13,13 +13,14 @@ const ArchivedRecords = () => {
     const [selectedTables, setSelectedTables] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         fetchData();
     }, []);
 
     const fetchData = () => {
-        axios.get(`http://localhost:80/api/archived.php?action=all`)
+        axios.get(`${API_BASE_URL}/api/archived.php?action=all`)
             .then((response) => {
                 if (response.data.status === 1 && Array.isArray(response.data.data)) {
                     setData(response.data.data);
@@ -146,7 +147,7 @@ const ArchivedRecords = () => {
                 });
             }
     
-            return axios.post(`http://localhost:80/api/archived.php`, {
+            return axios.post(`${API_BASE_URL}/api/archived.php`, {
                 table: tableName,
                 records: validIds
             });

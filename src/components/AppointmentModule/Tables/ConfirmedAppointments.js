@@ -22,6 +22,7 @@ function ConfirmedAppointments() {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [filterDate, setFilterDate] = useState(null);
   const [dateRange, setDateRange] = useState({ startDate: null, endDate: null });
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     if (location.state?.searchName) {
@@ -47,7 +48,7 @@ function ConfirmedAppointments() {
 
   const fetchConfirmed = async () => {
     try {
-      const res = await axios.get("http://localhost/api/appointments.php");
+      const res = await axios.get(`${API_BASE_URL}/api/appointments.php`);
       let confirmed = res.data.appointments.filter((a) => a.status === "Confirmed");
 
       // Sort by date ASC on initial load

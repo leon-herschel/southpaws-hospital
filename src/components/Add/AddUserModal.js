@@ -13,7 +13,7 @@ const AddUserModal = ({ show, handleClose, onUsersAdded }) => {
 
   const [confirmPassword, setConfirmPassword] = useState("");
   const [emailError, setEmailError] = useState(""); // State for email error
-
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const brandNameRef = useRef(null);
 
   useEffect(() => {
@@ -66,7 +66,7 @@ const AddUserModal = ({ show, handleClose, onUsersAdded }) => {
     setEmailError("");
 
     axios
-      .post("http://localhost:80/api/internal_users.php", inputs) // Updated API endpoint
+      .post(`${API_BASE_URL}/api/internal_users.php`, inputs) // Updated API endpoint
       .then(function (response) {
         if (
           response.data.status === 0 &&

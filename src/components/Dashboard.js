@@ -54,11 +54,12 @@ const Dashboard = () => {
   const [analyticsRangeDays, setAnalyticsRangeDays] = useState(30); // default last 30 days
   const [startTime, setStartTime] = useState("08:00");
   const [endTime, setEndTime] = useState("17:00");
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
-        const res = await axios.get("http://localhost/api/Settings/get_time_appointments.php");
+        const res = await axios.get(`${API_BASE_URL}/api/Settings/get_time_appointments.php`);
         if (res.data.start_time && res.data.end_time) {
           setStartTime(res.data.start_time.slice(0, 5));
           setEndTime(res.data.end_time.slice(0, 5));
@@ -71,25 +72,25 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    axios.get("http://localhost:80/api/category.php/")
+    axios.get(`${API_BASE_URL}/api/category.php/`)
       .then((res) => setTotalCategories(res.data.total_categories))
       .catch((err) => console.error("Error fetching categories:", err));
   }, []);
 
   useEffect(() => {
-    axios.get("http://localhost:80/api/products.php/")
+    axios.get(`${API_BASE_URL}/api/products.php/`)
       .then((res) => setTotalProducts(res.data.total_products))
       .catch((err) => console.error("Error fetching products:", err));
   }, []);
 
   useEffect(() => {
-    axios.get("http://localhost:80/api/suppliers.php/")
+    axios.get(`${API_BASE_URL}/api/suppliers.php/`)
       .then((res) => setTotalSuppliers(res.data.total_suppliers))
       .catch((err) => console.error("Error fetching suppliers:", err));
   }, []);
 
   useEffect(() => {
-    axios.get("http://localhost:80/api/clients.php/")
+    axios.get(`${API_BASE_URL}/api/clients.php/`)
       .then((res) => setTotalClients(res.data.total_clients))
       .catch((err) => console.error("Error fetching clients:", err));
   }, []);
@@ -107,7 +108,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:80/api/orders.php?t=${new Date().getTime()}`)
+      .get(`${API_BASE_URL}/api/orders.php?t=${new Date().getTime()}`)
       .then((res) => {
         if (Array.isArray(res.data.orders)) {
           // removes duplicate orders to prevent revenue miscalculation
@@ -135,7 +136,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        const res = await axios.get(`http://localhost:80/api/analytics.php?days=${analyticsRangeDays}`);
+        const res = await axios.get(`${API_BASE_URL}/api/analytics.php?days=${analyticsRangeDays}`);
         if (res.data && res.data.success) {
           setAnalytics(res.data);
         } else {

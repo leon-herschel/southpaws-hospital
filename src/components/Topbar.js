@@ -9,6 +9,7 @@ const TopBar = () => {
   const [firstName, setFirstName] = useState(null);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     const userId = localStorage.getItem('userID');
@@ -66,7 +67,7 @@ const TopBar = () => {
   
     // Attempt API-based logout if data exists
     axios
-      .post('http://localhost:80/api/logout.php', { user_id: userId, user_role: userRole })
+      .post(`${API_BASE_URL}/api/logout.php`, { user_id: userId, user_role: userRole })
       .then((response) => {
         console.log('API Response:', response);
         if (response.data.status === 1) {

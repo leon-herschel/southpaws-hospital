@@ -40,7 +40,7 @@ const ImmunizationForm = () => {
     const [showAddNoteModal, setShowAddNoteModal] = useState(false);
     const [notes, setNotes] = useState([]); // Holds the list of immunization notes
     const [noteToEdit, setNoteToEdit] = useState(null); // Note to be edited or null for adding
-
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const userRole = parseInt(localStorage.getItem('userRole'), 10); // Retrieve user role from localStorage
 
     useEffect(() => {
@@ -63,7 +63,7 @@ const ImmunizationForm = () => {
 
     const fetchNotes = async () => {
         try {
-            const response = await axios.get('http://localhost:80/api/immunization_notes.php');
+            const response = await axios.get(`${API_BASE_URL}/api/immunization_notes.php`);
             setNotes(response.data); // Assuming the API returns an array of notes
         } catch (error) {
             console.error('Error fetching immunization notes:', error);
@@ -135,7 +135,7 @@ const ImmunizationForm = () => {
     }
 
     function fetchOwnersAndPets() {
-        axios.get('http://localhost:80/api/clients.php')
+        axios.get(`${API_BASE_URL}/api/clients.php`)
             .then(response => {
                 const { clients } = response.data;
                 setOwners(clients);
@@ -155,7 +155,7 @@ const ImmunizationForm = () => {
     }
 
     const getForms = () => {
-        axios.get("http://localhost:80/api/immunization.php/")
+        axios.get(`${API_BASE_URL}/api/immunization.php/`)
             .then(response => {
                 if (response.data && Array.isArray(response.data.immunizations)) {
                     // Process the forms and add additional fields
@@ -184,7 +184,7 @@ const ImmunizationForm = () => {
     };
 
     const deleteForm = (id) => {
-        axios.delete(`http://localhost:80/api/immunization.php/${id}/delete`)
+        axios.delete(`${API_BASE_URL}/api/immunization.php/${id}/delete`)
             .then(() => {
                 toast.success("Immunization form deleted successfully!");
                 getForms();

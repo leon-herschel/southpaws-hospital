@@ -21,6 +21,7 @@ const Category = () => {
     const [editCategory, setEditCategory] = useState({});
     const [editLoading, setEditLoading] = useState(true);
     const [userRole, setUserRole] = useState(null); // Store the user role
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         const role = parseInt(localStorage.getItem('userRole'), 10);
@@ -41,7 +42,7 @@ const Category = () => {
     const handleShowEditModal = (categoryId) => {
         setEditLoading(true);
     
-        axios.get(`http://localhost:80/api/category.php/${categoryId}`)
+        axios.get(`${API_BASE_URL}/api/category.php/${categoryId}`)
         .then(response => {
             if (response.data && response.data.id) {
                 setEditCategory(response.data);
@@ -67,7 +68,7 @@ const Category = () => {
     );
 
     const getCategories = () => {
-        axios.get('http://localhost:80/api/category.php/')
+        axios.get(`${API_BASE_URL}/api/category.php/`)
             .then(response => {
                 console.log('API Response:', response.data); // Log the response
                 if (Array.isArray(response.data.categories)) {
@@ -111,7 +112,7 @@ const Category = () => {
 
         console.log('Archiving category ID:', categoryIdToDelete);
 
-        axios.put(`http://localhost:80/api/category.php/${categoryIdToDelete}`, {
+        axios.put(`${API_BASE_URL}/api/category.php/${categoryIdToDelete}`, {
             id: categoryIdToDelete,
             archived: 1
         })
@@ -195,7 +196,7 @@ const Category = () => {
             updated_by: localStorage.getItem('userID') || null // Ensure a valid userID is set
         };
     
-        axios.put(`http://localhost:80/api/category.php/${editCategory.id}`, updatedCategory)
+        axios.put(`${API_BASE_URL}/api/category.php/${editCategory.id}`, updatedCategory)
             .then((response) => {
                 if (response.data.status === 1) {
                     handleCloseEditModal();

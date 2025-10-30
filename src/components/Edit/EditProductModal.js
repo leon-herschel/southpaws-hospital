@@ -13,6 +13,7 @@ const EditProductModal = ({ show, handleClose, editProduct, handleEditSubmit, er
     const [unitsOfMeasurement, setUnitsOfMeasurement] = useState([]);
     const [updating, setUpdating] = useState(false);
     const brandNameRef = useRef(null);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         if (editProduct) {
@@ -36,19 +37,19 @@ const EditProductModal = ({ show, handleClose, editProduct, handleEditSubmit, er
     }, [editProduct, show]);
 
     const fetchCategories = () => {
-        axios.get('http://localhost:80/api/category.php?archived=0')
+        axios.get(`${API_BASE_URL}/api/category.php?archived=0`)
             .then(response => setCategories(response.data.categories || []))
             .catch(error => console.error('Error fetching categories:', error));
     };
 
     const fetchBrands = () => {
-        axios.get('http://localhost:80/api/brands.php?archived=0')
+        axios.get(`${API_BASE_URL}/api/brands.php?archived=0`)
             .then(response => setBrands(response.data.brands || []))
             .catch(error => console.error('Error fetching brands:', error));
     };
 
     const fetchGeneric = () => {
-        axios.get('http://localhost:80/api/generic.php?archived=0')
+        axios.get(`${API_BASE_URL}/api/generic.php?archived=0`)
             .then(response => {
                 setGeneric(response.data.records || []); // ✅ Ensure correct key is used
             })
@@ -60,7 +61,7 @@ const EditProductModal = ({ show, handleClose, editProduct, handleEditSubmit, er
     
     const fetchUnits = () => {
         // Ensure the 'archived' query parameter is passed as expected (e.g., 0 for active units)
-        axios.get('http://localhost:80/api/units.php?archived=0') // Fetch only active units
+        axios.get(`${API_BASE_URL}/api/units.php?archived=0`) // Fetch only active units
             .then(response => {
                 // Check if response.data and response.data.units exist and are an array
                 if (response.data && Array.isArray(response.data.units)) {
@@ -106,7 +107,7 @@ const EditProductModal = ({ show, handleClose, editProduct, handleEditSubmit, er
         };
 
         setUpdating(true);
-        axios.put('http://localhost:80/api/products.php', updatedProduct)
+        axios.put(`${API_BASE_URL}/api/products.php`, updatedProduct)
             .then(response => {
                 handleEditSubmit();
                 handleClose();

@@ -117,7 +117,7 @@ if ($method === 'POST') {
                 $stmt->execute();
             }
 
-            echo json_encode(['status' => 1, 'message' => 'Records from all tables have been restored.']);
+            echo json_encode(['status' => 1, 'message' => 'Selected records have been restored.']);
             exit;
         }
 

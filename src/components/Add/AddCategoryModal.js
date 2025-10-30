@@ -8,7 +8,7 @@ const AddCategoryModal = ({ show, handleClose, onCategoryAdded }) => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const categoryNameRef = useRef(null);
-    
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -31,7 +31,7 @@ const AddCategoryModal = ({ show, handleClose, onCategoryAdded }) => {
             created_by: localStorage.getItem('userID') || null // Ensure a valid userID is set
         };
     
-        axios.post('http://localhost:80/api/category.php', newCategory)
+        axios.post(`${API_BASE_URL}/api/category.php`, newCategory)
             .then((response) => {
                 if (response.data.status === 1) {
                     const addedCategory = {

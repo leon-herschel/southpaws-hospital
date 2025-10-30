@@ -15,6 +15,7 @@ const ArchivedRestore = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState(""); // "restore" or "delete"
   const [activeTable, setActiveTable] = useState(null);
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     fetchData();
@@ -22,7 +23,7 @@ const ArchivedRestore = () => {
 
   const fetchData = () => {
     axios
-      .get(`http://localhost:80/api/restore.php?action=all`)
+      .get(`${API_BASE_URL}/api/restore.php?action=all`)
       .then((response) => {
         if (response.data.status === 1 && Array.isArray(response.data.data)) {
           setData(response.data.data);
@@ -127,7 +128,7 @@ const ArchivedRestore = () => {
     const apiEndpoint = modalAction === "delete" ? "delete.php" : "restore.php";
 
     axios
-      .post(`http://localhost:80/api/${apiEndpoint}`, {
+      .post(`${API_BASE_URL}/api/${apiEndpoint}`, {
         table: "all", // This ensures multiple tables are supported
         records: recordsByTable,
         action: modalAction, // Ensure correct action is sent

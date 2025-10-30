@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 
 function UserProfile() {
     const [activeTab, setActiveTab] = useState('general');
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [userData, setUserData] = useState({
         id: '',
         email: '',
@@ -23,7 +24,7 @@ function UserProfile() {
 
     // Fetch logged-in user profile from backend
     const fetchUserData = () => {
-        axios.get(`http://localhost:80/api/profile.php`, { withCredentials: true })
+        axios.get(`${API_BASE_URL}/api/profile.php`, { withCredentials: true })
     .then(response => {
         console.log("Profile response:", response.data); 
         if (response.data && response.data.id) {
@@ -43,7 +44,7 @@ function UserProfile() {
 
     // Fetch tax settings
     const fetchTaxData = () => {
-        axios.get('http://localhost:80/api/tax.php')
+        axios.get(`${API_BASE_URL}/api/tax.php`)
             .then(response => {
                 if (response.data.status === 1) {
                     setUserData(prev => ({
@@ -81,7 +82,7 @@ function UserProfile() {
             updatedUserData.new_password = userData.new_password;
         }
 
-        axios.put(`http://localhost:80/api/profile.php`, updatedUserData, { withCredentials: true })
+        axios.put(`${API_BASE_URL}/api/profile.php`, updatedUserData, { withCredentials: true })
             .then(response => {
                 if (response.data.status === 1) {
                     toast.success("User updated successfully!");
@@ -107,7 +108,7 @@ function UserProfile() {
             return;
         }
     
-        axios.post('http://localhost:80/api/tax.php', { tax: newTaxValue.toFixed(2) })
+        axios.post(`${API_BASE_URL}/api/tax.php`, { tax: newTaxValue.toFixed(2) })
             .then(response => {
                 if (response.data.status === 1) {
                     toast.success("Tax updated successfully!");

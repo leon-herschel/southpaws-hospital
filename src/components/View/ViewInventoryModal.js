@@ -9,6 +9,7 @@ const ViewInventoryModal = ({ show, handleClose, inventoryId }) => {
     const barcodeRef = useRef(null);
     const [showQuantityDialog, setShowQuantityDialog] = useState(false); // State for quantity dialog
     const [barcodeQuantity, setBarcodeQuantity] = useState(1); // Barcode quantity to print
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     // Convert datetime string to a date-only string (yyyy-MM-dd)
     const formatDate = (dateStr) => {
@@ -30,7 +31,7 @@ const ViewInventoryModal = ({ show, handleClose, inventoryId }) => {
 
     useEffect(() => {
         if (inventoryId && show) {
-            axios.get(`http://localhost:80/api/inventory.php?id=${inventoryId}`)
+            axios.get(`${API_BASE_URL}/api/inventory.php?id=${inventoryId}`)
                 .then(response => {
                     const inventory = response.data.inventory;
                     console.log("Category Name:", inventoryData?.category_name);

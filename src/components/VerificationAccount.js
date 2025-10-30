@@ -10,6 +10,7 @@ export default function VerifyAccount() {
   const navigate = useNavigate();
   const [verificationCode, setVerificationCode] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -18,7 +19,7 @@ export default function VerifyAccount() {
       return;
     }
 
-    axios.post("http://localhost:80/api/verify.php", {
+    axios.post(`${API_BASE_URL}/api/verify.php`, {
       verification_token: verificationCode,
     }, {
       withCredentials: true,

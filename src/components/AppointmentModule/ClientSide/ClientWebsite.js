@@ -245,10 +245,11 @@ function HomeSection({ scrollToSection, servicesRef }) {
     heroImage: "",
   });
   const [loading, setLoading] = useState(true);
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     axios
-      .get("http://localhost/api/ClientSide/get_public_content.php")
+      .get(`${API_BASE_URL}/api/ClientSide/get_public_content.php`)
       .then((res) => {
         if (res.data.success) {
           setIntro({
@@ -273,7 +274,7 @@ function HomeSection({ scrollToSection, servicesRef }) {
           transition: "opacity 0.3s ease",
           backgroundImage: `url(${
             intro.heroImage
-              ? `http://localhost/api/public/${intro.heroImage}`
+              ? `${API_BASE_URL}/api/public/${intro.heroImage}`
               : heroBanner
           })`,
           backgroundSize: "cover",
@@ -488,10 +489,11 @@ function AboutSection() {
     about_paragraph: "",
     values: [],
   });
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     axios
-      .get("http://localhost/api/ClientSide/get_public_content.php")
+      .get(`${API_BASE_URL}/api/ClientSide/get_public_content.php`)
       .then((res) => {
         if (res.data.success) {
           setAboutData({
@@ -515,7 +517,7 @@ function AboutSection() {
               <img
                 src={
                   aboutData.background_photo
-                    ? `http://localhost/api/public/${aboutData.background_photo}`
+                    ? `${API_BASE_URL}/api/public/${aboutData.background_photo}`
                     : aboutUsImage
                 }
                 alt="About Us"
@@ -571,10 +573,11 @@ function WebsiteFooter({ homeRef, servicesRef, aboutRef }) {
     weekdays: "",
     hours: "",
   });
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     axios
-      .get("http://localhost/api/ClientSide/get_public_content.php")
+      .get(`${API_BASE_URL}/api/ClientSide/get_public_content.php`)
       .then((res) => {
         if (res.data.success) {
           setFooter({

@@ -4,13 +4,14 @@ import axios from "axios";
 
 const Logout = () => {
   const navigate = useNavigate();
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const handleLogout = () => {
     const userId = localStorage.getItem("userID");
   
     // Send logout request to backend
     axios
-      .post("http://localhost:80/api/logout.php", { user_id: userId })
+      .post(`${API_BASE_URL}/api/logout.php`, { user_id: userId })
       .then(response => {
         if (response.data.status === 1) {
           // Clear all session-related data

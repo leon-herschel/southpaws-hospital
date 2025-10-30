@@ -62,6 +62,7 @@ const Appointment = () => {
     Cancelled: "bg-danger",
     Done: "bg-success",
   };
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const [appointments, setAppointments] = useState([]);
   const [pendingAppointments, setPendingAppointments] = useState([]);
   const [events, setEvents] = useState([]);
@@ -92,7 +93,7 @@ const Appointment = () => {
 
   const fetchAppointments = async () => {
     try {
-      const res = await axios.get("http://localhost/api/appointments.php");
+      const res = await axios.get(`${API_BASE_URL}/api/appointments.php`);
       setAppointments(res.data.appointments || []);
       formatEvents(res.data.appointments || []);
     } catch (err) {
@@ -103,7 +104,7 @@ const Appointment = () => {
   const fetchPendingAppointments = async () => {
     try {
       const res = await axios.get(
-        "http://localhost/api/pending_appointments.php"
+        `${API_BASE_URL}/api/pending_appointments.php`
       );
       const raw = res.data.appointments || [];
 
@@ -122,7 +123,7 @@ const Appointment = () => {
   const fetchSchedule = async () => {
     try {
       const res = await axios.get(
-        "http://localhost/api/Settings/get_time_appointments.php"
+        `${API_BASE_URL}/api/Settings/get_time_appointments.php`
       );
       if (res.data.start_time && res.data.end_time) {
         setStartTime(res.data.start_time.slice(0, 5));
@@ -147,7 +148,7 @@ const Appointment = () => {
 
   const fetchServiceColors = async () => {
     try {
-      const res = await axios.get("http://localhost/api/service-colors.php");
+      const res = await axios.get(`${API_BASE_URL}/api/service-colors.php`);
       setServiceColors(res.data);
     } catch (err) {
       console.error("Failed to fetch service colors", err);
@@ -305,7 +306,7 @@ const Appointment = () => {
       const userId = localStorage.getItem("userID");
       const userEmail = localStorage.getItem("userEmail");
 
-      await axios.delete("http://localhost/api/appointments.php", {
+      await axios.delete(`${API_BASE_URL}/api/appointments.php`, {
         data: {
           id: selectedEvent.id,
           user_id: userId,

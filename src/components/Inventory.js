@@ -32,7 +32,6 @@ const Inventory = () => {
     const [units, setUnits] = useState([]);
     const [genericNames, setGenericNames] = useState([]);
 
-
     const [expandedProduct, setExpandedProduct] = useState(null); 
     const [inventoryData, setInventoryData] = useState({});
     const [selectedProductId, setSelectedProductId] = useState(null);
@@ -48,6 +47,7 @@ const Inventory = () => {
     const [showAddStockModal, setShowAddStockModal] = useState(false);
     const [inventoryItemToAddStock, setInventoryItemToAddStock] = useState(null);
     const [stockQuantity, setStockQuantity] = useState(''); // Use string initially to handle backspace
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     const handleAddStockClick = (inventoryItem) => {
         setInventoryItemToAddStock(inventoryItem); // Store the inventory item to add stock
@@ -74,7 +74,7 @@ const Inventory = () => {
     };    
 
     const deleteInventory = () => {
-        axios.delete(`http://localhost:80/api/inventory.php/${inventoryIdToDelete}`)
+        axios.delete(`${API_BASE_URL}/api/inventory.php/${inventoryIdToDelete}`)
             .then(() => {
                 getInventory();
                 handleCloseDeleteModal();
@@ -87,7 +87,7 @@ const Inventory = () => {
     
 
     const fetchSuppliers = () => {
-        axios.get('http://localhost:80/api/suppliers.php') // Use the actual API endpoint for suppliers
+        axios.get(`${API_BASE_URL}/api/suppliers.php`) // Use the actual API endpoint for suppliers
             .then(response => {
                 // Check if the response contains 'suppliers' and it is an array
                 if (response.data && Array.isArray(response.data.suppliers)) {
@@ -119,7 +119,7 @@ const Inventory = () => {
             setExpandedProduct(productId); // ✅ Expand and set the correct product immediately
             setInventoryData([]); // ✅ Clear previous inventory before fetching new data
     
-            axios.get(`http://localhost:80/api/inventory.php/${productId}`)
+            axios.get(`${API_BASE_URL}/api/inventory.php/${productId}`)
                 .then(response => {
                     if (Array.isArray(response.data.inventory)) {
                         setInventoryData(response.data.inventory); // ✅ Load only this product’s details
@@ -136,7 +136,7 @@ const Inventory = () => {
     
     useEffect(() => {
         if (expandedProduct) {
-            axios.get(`http://localhost:80/api/inventory.php/${expandedProduct}`)
+            axios.get(`${API_BASE_URL}/api/inventory.php/${expandedProduct}`)
                 .then(response => {    
                     // Check if there are multiple inventory items
                     if (response.data.inventory && response.data.inventory.length > 0) {
@@ -164,7 +164,7 @@ const Inventory = () => {
     };
 
     const getInventory = () => {
-        axios.get('http://localhost:80/api/inventory.php/')
+        axios.get(`${API_BASE_URL}/api/inventory.php/`)
             .then(response => {
                 console.log("API Response:", response.data); // Log the entire response
                 if (Array.isArray(response.data.inventory)) {
@@ -192,7 +192,7 @@ const Inventory = () => {
     const handleEditSubmit = () => {
         if (!expandedProduct) return; // ✅ Prevent updating wrong inventory if none is expanded
     
-        axios.get(`http://localhost:80/api/inventory.php/${expandedProduct}`)
+        axios.get(`${API_BASE_URL}/api/inventory.php/${expandedProduct}`)
             .then(response => {
                 if (Array.isArray(response.data.inventory)) {
                     setInventoryData(response.data.inventory); // ✅ Update only the expanded product's inventory
@@ -219,19 +219,19 @@ const Inventory = () => {
         fetchSuppliers();
         
         // Fetch brands
-        axios.get('http://localhost:80/api/brands.php')
+        axios.get(`${API_BASE_URL}/api/brands.php`)
             .then(response => setBrands(response.data.brands))
             .catch(error => console.error('Error fetching brands:', error));
 
         // Fetch categories
-        axios.get('http://localhost:80/api/category.php')
+        axios.get(`${API_BASE_URL}/api/category.php`)
             .then(response => setCategories(response.data.categories))
             .catch(error => console.error('Error fetching categories:', error));
 
     }, []);
 
     const fetchGenerics = () => {
-        axios.get('http://localhost:80/api/generic.php') // Adjust URL if needed
+        axios.get(`${API_BASE_URL}/api/generic.php`) // Adjust URL if needed
             .then(response => {
                 if (response.data && Array.isArray(response.data.records)) {
                     setGenericNames(response.data.records);
@@ -248,7 +248,7 @@ const Inventory = () => {
 
     const fetchUnits = () => {
         // Ensure the 'archived' query parameter is passed as expected (e.g., 0 for active units)
-        axios.get('http://localhost:80/api/units.php?archived=0') // Fetch only active units
+        axios.get(`${API_BASE_URL}/api/units.php?archived=0`) // Fetch only active units
             .then(response => {
                 // Check if response.data and response.data.units exist and are an array
                 if (response.data && Array.isArray(response.data.units)) {
@@ -268,7 +268,7 @@ const Inventory = () => {
     
     useEffect(() => {
         if (showEditModal && productIdToEdit) {
-            axios.get(`http://localhost:80/api/products.php/${productIdToEdit}`)
+            axios.get(`${API_BASE_URL}/api/products.php/${productIdToEdit}`)
                 .then(response => {
                     const productData = response.data.products;
                     if (productData) {
@@ -293,7 +293,7 @@ const Inventory = () => {
     
         // Ensure you're only sending the relevant data (id and archived)
     
-        axios.put(`http://localhost:80/api/inventory.php`, { 
+        axios.put(`${API_BASE_URL}/api/inventory.php`, { 
             id: inventoryId, 
             archived: 1  // Ensure archived is correctly set to 1
         })
@@ -315,7 +315,7 @@ const Inventory = () => {
     
 
     const getProducts = () => {
-        axios.get('http://localhost:80/api/products.php')
+        axios.get(`${API_BASE_URL}/api/products.php`)
             .then(response => {
                 if (Array.isArray(response.data.products)) {
                     const sortedProducts = response.data.products.sort((a, b) => {
@@ -323,7 +323,7 @@ const Inventory = () => {
                     });
     
                     // Fetch inventory data to sum values per product
-                    axios.get('http://localhost:80/api/inventory.php')
+                    axios.get(`${API_BASE_URL}/api/inventory.php`)
                         .then(inventoryResponse => {
                             const inventoryData = inventoryResponse.data.inventory || [];
     
@@ -473,7 +473,7 @@ const Inventory = () => {
         getProducts(); // Refresh product list
         if (expandedProduct) {
             // Refresh inventory details for the expanded product
-            axios.get(`http://localhost:80/api/inventory.php/${expandedProduct}`)
+            axios.get(`${API_BASE_URL}/api/inventory.php/${expandedProduct}`)
                 .then(response => {
                     setInventoryData(response.data.inventory);
                 })
@@ -513,11 +513,11 @@ const Inventory = () => {
         };
     
         try {
-            const response = await axios.put(`http://localhost:80/api/inventory.php`, updatedInventory);
+            const response = await axios.put(`${API_BASE_URL}/api/inventory.php`, updatedInventory);
             if (response.data.status === 1) {
                 getProducts();
                 if (expandedProduct) {
-                    axios.get(`http://localhost:80/api/inventory.php/${expandedProduct}`)
+                    axios.get(`${API_BASE_URL}/api/inventory.php/${expandedProduct}`)
                         .then(response => {
                             if (Array.isArray(response.data.inventory)) {
                                 setInventoryData(response.data.inventory);

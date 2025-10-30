@@ -14,13 +14,14 @@ const SalesList = () => {
     const [sortBy, setSortBy] = useState({ key: '', order: '' });
     const [showModal, setShowModal] = useState(false);
     const [selectedReceipt, setSelectedReceipt] = useState(null);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         fetchSales();
     }, []);
 
     const fetchSales = () => {
-        axios.get('http://localhost:80/api/transaction.php')
+        axios.get(`${API_BASE_URL}/api/transaction.php`)
             .then(response => {
                 if (Array.isArray(response.data)) {
                     setSales(response.data);

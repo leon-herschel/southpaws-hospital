@@ -7,6 +7,7 @@ const AddBrandModal = ({ show, handleClose, onBrandAdded }) => {
     const [inputs, setInputs] = useState({ name: '' });
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     
     const userId = localStorage.getItem('userID');
 
@@ -39,7 +40,7 @@ const AddBrandModal = ({ show, handleClose, onBrandAdded }) => {
             created_by: localStorage.getItem('userID') || null, 
         };
     
-        axios.post('http://localhost:80/api/brands.php', brandData)
+        axios.post(`${API_BASE_URL}/api/brands.php`, brandData)
             .then((response) => {
                 if (response.data.status === 1) {
                     const addedBrand = {

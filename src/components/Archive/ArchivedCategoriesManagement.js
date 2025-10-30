@@ -19,7 +19,7 @@ const ArchivedCategoriesManagement = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [categoryIdToRestore, setCategoryIdToRestore] = useState(null); 
     const [selectAll, setSelectAll] = useState(false);
-
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,7 +27,7 @@ const ArchivedCategoriesManagement = () => {
     }, []);
 
     const fetchArchivedCategories = () => {
-        axios.get('http://localhost:80/api/category.php?archived=1')
+        axios.get(`${API_BASE_URL}/api/category.php?archived=1`)
             .then((response) => {
                 const categoriesData = response.data.categories || [];
                 setArchivedCategories(categoriesData);
@@ -39,7 +39,7 @@ const ArchivedCategoriesManagement = () => {
     };
 
     const restoreCategory = () => {
-        const url = `http://localhost:80/api/categories.php`;
+        const url = `${API_BASE_URL}/api/categories.php`;
         
         axios.put(url, {
             id: categoryIdToRestore, 
@@ -61,7 +61,7 @@ const ArchivedCategoriesManagement = () => {
     };
 
     const deleteCategory = () => {
-        axios.delete(`http://localhost:80/api/categories.php/${categoryIdToDelete}`)
+        axios.delete(`${API_BASE_URL}/api/categories.php/${categoryIdToDelete}`)
             .then(() => {
                 fetchArchivedCategories();
                 setShowDeleteModal(false);

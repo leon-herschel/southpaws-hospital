@@ -27,6 +27,7 @@ const ListClients = () => {
     const [viewClientPatients, setViewClientPatients] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const location = useLocation();
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         if (location.state?.searchName) {
@@ -40,7 +41,7 @@ const ListClients = () => {
     };
 
     function getUsers() {
-        axios.get('http://localhost:80/api/clients.php?archived=0')
+        axios.get(`${API_BASE_URL}/api/clients.php?archived=0`)
             .then(response => {
                 if (Array.isArray(response.data.clients)) {
                     setUsers(response.data.clients.map(user => ({
@@ -64,7 +65,7 @@ const ListClients = () => {
     };
 
     const deleteUser = (id) => {
-        axios.delete(`http://localhost:80/api/clients.php/${id}/delete`)
+        axios.delete(`${API_BASE_URL}/api/clients.php/${id}/delete`)
             .then(response => {
                 console.log(response.data);
                 getUsers();
@@ -79,7 +80,7 @@ const ListClients = () => {
 
     const handleView = (clientId) => {
         setViewClientId(clientId);
-        axios.get(`http://localhost:80/api/clients.php/clients/${clientId}/patients`)
+        axios.get(`${API_BASE_URL}/api/clients.php/clients/${clientId}/patients`)
             .then(response => {
                 setViewClientPatients(response.data.patients || []);
                 setShowViewModal(true);
@@ -168,7 +169,7 @@ const ListClients = () => {
     };
 
     const handleEditSubmit = (formData) => {
-        axios.put(`http://localhost:80/api/clients.php/${formData.id}`, formData)
+        axios.put(`${API_BASE_URL}/api/clients.php/${formData.id}`, formData)
             .then(response => {
                 console.log('Record updated successfully.');
                 getUsers();
