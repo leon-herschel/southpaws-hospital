@@ -8,6 +8,7 @@ const EditServicesModal = ({ show, handleClose, editService, handleEditChange, h
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(''); // State to hold error message
     const brandNameRef = useRef(null);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     // Sync local state with parent `editService` when the modal opens
     useEffect(() => {
@@ -49,7 +50,7 @@ const EditServicesModal = ({ show, handleClose, editService, handleEditChange, h
             duration: durationTime
         };
 
-        axios.put(`http://localhost:80/api/services.php/${localEditService.id}`, updatedService)
+        axios.put(`${API_BASE_URL}/api/services.php/${localEditService.id}`, updatedService)
             .then((response) => {
                 if (response.data.status === 0) {
                     setError('Service name already exists.');

@@ -23,7 +23,7 @@ const Services = () => {
     const [editService, setEditService] = useState({});
     const [editLoading, setEditLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState('');
-    
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     // Get user role from localStorage
     const userRole = localStorage.getItem('userRole'); 
@@ -52,7 +52,7 @@ const Services = () => {
     }, []);
 
     function getServices() {
-        axios.get('http://localhost:80/api/services.php?archived=0')
+        axios.get(`${API_BASE_URL}/api/services.php?archived=0`)
         .then(function (response) {
             const updatedServices = response.data.map(service => ({
                 ...service,
@@ -64,7 +64,7 @@ const Services = () => {
     }
 
     const deleteService = (id) => {
-        axios.delete(`http://localhost:80/api/services.php/${id}/delete`)
+        axios.delete(`${API_BASE_URL}/api/services.php/${id}/delete`)
             .then(function (response) {
                 toast.success("Service deleted successfully!"); 
                 getServices();
@@ -138,7 +138,7 @@ const Services = () => {
     const handleEditSubmit = (event) => {
         event.preventDefault(); 
         setErrorMessage(''); 
-        axios.put(`http://localhost:80/api/services.php/${serviceIdToEdit}`, editService)
+        axios.put(`${API_BASE_URL}/api/services.php/${serviceIdToEdit}`, editService)
             .then(function (response) {
                 toast.success("Service updated successfully!");
                 handleCloseEditModal();
@@ -153,7 +153,7 @@ const Services = () => {
 
     useEffect(() => {
         if (showEditModal && serviceIdToEdit) {
-            axios.get(`http://localhost:80/api/services.php/${serviceIdToEdit}`)
+            axios.get(`${API_BASE_URL}/api/services.php/${serviceIdToEdit}`)
                 .then(function (response) {
                     const servicesData = response.data.services || response.data;
                     if (servicesData && servicesData.id) {

@@ -24,6 +24,7 @@ const Generic = () => {
     const [editLoading, setEditLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState('');
     const [userRole, setUserRole] = useState(null); 
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     const filteredGenerics = generics.filter((generic) =>
     generic.generic_name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -54,13 +55,13 @@ const Generic = () => {
         setErrorMessage(''); 
         setEditLoading(true);
     
-        axios.get(`http://localhost:80/api/generic.php/${genericId}`)
+        axios.get(`${API_BASE_URL}/api/generic.php/${genericId}`)
             .then(response => {
-                console.log('API Response:', response.data); // Debugging Line
+                console.log('API Response:', response.data); 
                 if (response.data && response.data.record) {
                     setEditGeneric(response.data.record);
                     setEditLoading(false);
-                    setShowEditModal(true); // ✅ Ensure the modal opens
+                    setShowEditModal(true); 
                 } else {
                     console.error('Error: Generic not found');
                     setEditLoading(false);
@@ -76,7 +77,7 @@ const Generic = () => {
     
 
     const getGenerics = () => {
-        axios.get('http://localhost:80/api/generic.php/')
+        axios.get(`${API_BASE_URL}/api/generic.php/`)
             .then(response => {
                 if (Array.isArray(response.data.records)) {
                     const fetchedGenerics = response.data.records;
@@ -119,7 +120,7 @@ const Generic = () => {
     };
 
     const deleteGeneric = () => {
-        axios.delete(`http://localhost:80/api/generic.php/${genericIdToDelete}`)
+        axios.delete(`${API_BASE_URL}/api/generic.php/${genericIdToDelete}`)
             .then(() => {
                 getGenerics();
                 handleCloseDeleteModal();
@@ -141,7 +142,7 @@ const Generic = () => {
         setEditLoading(true);
         setErrorMessage("");
     
-        axios.put(`http://localhost:80/api/generic.php/${editGeneric.id}`, editGeneric)
+        axios.put(`${API_BASE_URL}/api/generic.php/${editGeneric.id}`, editGeneric)
             .then((response) => {
                 if (response.data.status === 1) {
                     setShowEditModal(false);

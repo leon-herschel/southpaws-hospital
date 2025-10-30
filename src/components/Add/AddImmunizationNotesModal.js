@@ -10,6 +10,7 @@ const AddImmunizationNotesModal = ({ show, handleClose, onNoteUpdated, existingN
     });
 
     const brandNameRef = useRef(null);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     
     useEffect(() => {
         if (show && brandNameRef.current) {
@@ -48,8 +49,8 @@ const AddImmunizationNotesModal = ({ show, handleClose, onNoteUpdated, existingN
             console.log("Payload being sent to backend:", payload); // Debugging log for payload
     
             const endpoint = existingNote
-                ? `http://localhost:80/api/immunization_notes.php`
-                : `http://localhost:80/api/immunization_notes.php`;
+                ? `${API_BASE_URL}/api/immunization_notes.php`
+                : `${API_BASE_URL}/api/immunization_notes.php`;
     
             const method = existingNote ? 'PUT' : 'POST'; // Set the method based on whether it's add or edit
     
@@ -83,7 +84,7 @@ const AddImmunizationNotesModal = ({ show, handleClose, onNoteUpdated, existingN
         if (!existingNote) return;
     
         try {
-            const response = await axios.delete(`http://localhost:80/api/immunization_notes.php?id=${existingNote.id}`);
+            const response = await axios.delete(`${API_BASE_URL}/api/immunization_notes.php?id=${existingNote.id}`);
             if (response.data.message === 'Note Deleted') {
                 toast.success('Immunization Note Deleted Successfully!');
                 if (onNoteUpdated) onNoteUpdated(); // Refresh data in parent component

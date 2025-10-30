@@ -9,6 +9,7 @@ export default function ForgotPassword() {
   const [errorMessage, setErrorMessage] = useState(""); 
   const [successMessage, setSuccessMessage] = useState(""); 
   const [loading, setLoading] = useState(false);
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const handleForgotPasswordSubmit = (event) => {
     event.preventDefault();
@@ -21,7 +22,7 @@ export default function ForgotPassword() {
     setLoading(true);
 
     axios
-      .post("http://localhost:80/api/forgot_password.php", { email: resetEmail })
+      .post(`${API_BASE_URL}/api/forgot_password.php`, { email: resetEmail })
       .then((response) => {
         if (response.data.status === 1) {
           setSuccessMessage("A password reset link has been sent to your email.");

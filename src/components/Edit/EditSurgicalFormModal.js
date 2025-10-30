@@ -20,8 +20,8 @@ function EditSurgicalFormModal({ show, handleClose, onFormUpdated, formData }) {
     const [owners, setOwners] = useState([]);
     const [pets, setPets] = useState([]);
     const today = new Date().toISOString().split('T')[0]; // Today's date in YYYY-MM-DD format
-
     const [notes, setNotes] = useState([]); // State to hold immunization notes
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         if (show) {
@@ -32,7 +32,7 @@ function EditSurgicalFormModal({ show, handleClose, onFormUpdated, formData }) {
     useEffect(() => {
         const fetchSurgicalServices = async () => {
             try {
-                const response = await axios.get('http://localhost:80/api/services.php');
+                const response = await axios.get(`${API_BASE_URL}/api/services.php`);
     
                 if (Array.isArray(response.data)) {
                     setSurgicalServices(response.data);
@@ -53,7 +53,7 @@ function EditSurgicalFormModal({ show, handleClose, onFormUpdated, formData }) {
 
 const fetchImmunizationNotes = async () => {
     try {
-        const response = await axios.get('http://localhost:80/api/surgical_notes.php');
+        const response = await axios.get(`${API_BASE_URL}/api/surgical_notes.php`);
         setNotes(response.data); // Assuming the API returns an array of notes
     } catch (error) {
         console.error('Failed to fetch immunization notes:', error);
@@ -78,7 +78,7 @@ useEffect(() => {
 
     const fetchOwnersAndPets = async () => {
         try {
-            const response = await axios.get('http://localhost:80/api/clients.php');
+            const response = await axios.get(`${API_BASE_URL}/api/clients.php`);
             const { clients } = response.data;
             setOwners(clients);
 
@@ -117,7 +117,7 @@ useEffect(() => {
         };
     
         try {
-            const response = await axios.put(`http://localhost:80/api/surgical.php`, payload);
+            const response = await axios.put(`${API_BASE_URL}/api/surgical.php`, payload);
             if (response.data.status === 'success') {
                 toast.success('Form updated successfully!');  // ✅ Success toast
     

@@ -30,6 +30,7 @@ const SupplierManagement = () => {
     const [showArchiveModal, setShowArchiveModal] = useState(false);
     const [selectedSuppliers, setSelectedSuppliers] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     const handleClose = () => setShowModal(false);
     const handleShow = () => setShowModal(true);
@@ -89,7 +90,7 @@ const SupplierManagement = () => {
     
 
     function getSuppliers() {
-        axios.get('http://localhost:80/api/suppliers.php/')
+        axios.get(`${API_BASE_URL}/api/suppliers.php/`)
             .then(function (response) {
                 const suppliersData = response.data.suppliers || []; // Fallback to an empty array if no suppliers
                 setSuppliers(suppliersData);
@@ -102,7 +103,7 @@ const SupplierManagement = () => {
     }
     
     const deleteSupplier = (id) => {
-        axios.delete(`http://localhost:80/api/suppliers.php/${id}`)
+        axios.delete(`${API_BASE_URL}/api/suppliers.php/${id}`)
             .then(function (response) {
                 getSuppliers();
                 toast.success("Supplier deleted successfully!"); // Success toast for delete
@@ -112,7 +113,7 @@ const SupplierManagement = () => {
     const archiveSelectedSuppliers = () => {
         if (selectedSuppliers.length === 0) return toast.warning('No suppliers selected.');
     
-        axios.put(`http://localhost/api/suppliers.php/bulk-archive`, { ids: selectedSuppliers })
+        axios.put(`${API_BASE_URL}/api/suppliers.php/bulk-archive`, { ids: selectedSuppliers })
             .then(() => {
                 toast.success(`Archived ${selectedSuppliers.length} suppliers!`);
                 setSuppliers(prev => prev.filter(s => !selectedSuppliers.includes(s.id)));
@@ -130,7 +131,7 @@ const SupplierManagement = () => {
         };
     
         axios
-            .put(`http://localhost/api/suppliers.php/${id}`, payload, {
+            .put(`${API_BASE_URL}/api/suppliers.php/${id}`, payload, {
                 headers: { 'Content-Type': 'application/json' },
             })
             .then((response) => {
@@ -207,7 +208,7 @@ const SupplierManagement = () => {
         setEditLoading(true); // Set loading state to true while fetching
         setErrorMessage(''); // Clear the error message
 
-        axios.get(`http://localhost:80/api/suppliers.php/${supplierId}`)
+        axios.get(`${API_BASE_URL}/api/suppliers.php/${supplierId}`)
             .then(response => {
                 const supplierData = response.data.suppliers || response.data; // Get supplier data
                 if (supplierData && supplierData.id) {
@@ -282,7 +283,7 @@ const SupplierManagement = () => {
         delete supplierDataToUpdate.archived; // Ensure 'archived' is not included in the update request
     
         // Proceed with updating the supplier
-        axios.put(`http://localhost:80/api/suppliers.php/${editSupplier.id}`, supplierDataToUpdate)
+        axios.put(`${API_BASE_URL}/api/suppliers.php/${editSupplier.id}`, supplierDataToUpdate)
             .then((response) => {
                 if (response.data.status === 1) {
                     handleCloseEditModal();
@@ -302,7 +303,7 @@ const SupplierManagement = () => {
     useEffect(() => {
         if (showEditModal && supplierIdToEdit) {
             // Fetch the supplier data when the edit modal opens
-            axios.get(`http://localhost:80/api/suppliers.php/${supplierIdToEdit}`)
+            axios.get(`${API_BASE_URL}/api/suppliers.php/${supplierIdToEdit}`)
                 .then(function (response) {
                     const supplierData = response.data || {};  // Use response.data directly if it holds the supplier data
                     if (supplierData) {

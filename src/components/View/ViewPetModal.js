@@ -14,6 +14,7 @@ const ViewPetModal = ({ show, handleClose, pet }) => {
     const [showViewMedicalRecordModal, setShowViewMedicalRecordModal] = useState(false); // For viewing medical history
     const [selectedHistory, setSelectedHistory] = useState(null); // To store selected history for viewing
     const [availedServices, setAvailedServices] = useState([]);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     const handleOpenAddMedicalRecordModal = () => {
         setShowAddMedicalRecordModal(true);
@@ -115,7 +116,7 @@ const ViewPetModal = ({ show, handleClose, pet }) => {
             console.log("Fetching orders for petId:", petId);
     
             // Fetch orders by pet_id (simplified)
-            const response = await fetch(`http://localhost:80/api/orders.php?pet_id=${petId}`);
+            const response = await fetch(`${API_BASE_URL}/api/orders.php?pet_id=${petId}`);
             
             // Check if the response is OK (status 200)
             if (!response.ok) {
@@ -150,7 +151,7 @@ const ViewPetModal = ({ show, handleClose, pet }) => {
     
     const fetchMedicalHistory = async (petId) => {
         try {
-            const response = await fetch(`http://localhost:80/api/medical_records.php?pet_id=${petId}`);
+            const response = await fetch(`${API_BASE_URL}/api/medical_records.php?pet_id=${petId}`);
             const data = await response.json();
 
             if (data && Array.isArray(data.records)) {

@@ -13,6 +13,7 @@ const ReportGeneration = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [filter, setFilter] = useState("sales");
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     fetchData();
@@ -21,7 +22,7 @@ const ReportGeneration = () => {
   const fetchData = () => {
     const params = { from: fromDate, to: toDate };
     axios
-      .get(`http://localhost:80/api/reports.php?action=${filter}`, { params })
+      .get(`${API_BASE_URL}/api/reports.php?action=${filter}`, { params })
       .then((response) => {
         console.log("📥 Fetched Data:", response.data);
 
@@ -50,7 +51,7 @@ const ReportGeneration = () => {
     if (isNaN(date)) return "No Expiry Date";
 
     const options = { year: "numeric", month: "long", day: "numeric" };
-    const formattedDate = date.toLocaleDateString("en-US", options); // Example: "March 10, 2025"
+    const formattedDate = date.toLocaleDateString("en-US", options);
 
     // Convert to 12-hour format with AM/PM
     const hours = date.getHours() % 12 || 12; // Convert 0 to 12

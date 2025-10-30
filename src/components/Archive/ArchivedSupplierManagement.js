@@ -20,7 +20,7 @@ const ArchivedSupplierManagement = () => {
     const [supplierId, setSupplierId] = useState(null);
     const [selectAll, setSelectAll] = useState(false);
     const [supplierIdToRestore, setSupplierIdToRestore] = useState(null); // Track supplier to restore
-    
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -28,7 +28,7 @@ const ArchivedSupplierManagement = () => {
     }, []);
 
     const fetchArchivedSuppliers = () => {
-        axios.get('http://localhost:80/api/suppliers.php?archived=1')
+        axios.get(`${API_BASE_URL}/api/suppliers.php?archived=1`)
             .then((response) => {
                 const suppliersData = response.data.suppliers || [];
                 setArchivedSuppliers(suppliersData);
@@ -44,7 +44,7 @@ const ArchivedSupplierManagement = () => {
         const dataToSend = { archived: 0 }; // Data being sent to the server
     
         // Ensure the correct URL format
-        const url = `http://localhost:80/api/suppliers.php/${supplierIdToRestore}`;
+        const url = `${API_BASE_URL}/api/suppliers.php/${supplierIdToRestore}`;
     
         axios.put(url, dataToSend) // PUT request to correct URL with ID in the URL path
             .then((response) => {
@@ -62,7 +62,7 @@ const ArchivedSupplierManagement = () => {
 
 
     const deleteSupplier = () => {
-        axios.delete(`http://localhost:80/api/suppliers.php/${supplierIdToDelete}`)
+        axios.delete(`${API_BASE_URL}/api/suppliers.php/${supplierIdToDelete}`)
             .then(() => {
                 fetchArchivedSuppliers();
                 setShowDeleteModal();

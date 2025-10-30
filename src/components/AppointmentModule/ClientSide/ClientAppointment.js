@@ -9,6 +9,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 export default function ClientAppointment() {
   const [appointmentFormEnabled, setAppointmentFormEnabled] = useState(null);
   const location = useLocation();
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     const appointmentSection = document.querySelector(".client-appointment");
@@ -19,7 +20,7 @@ export default function ClientAppointment() {
 
   useEffect(() => {
     axios
-        .get("http://localhost/api/ClientSide/get-booking-status.php")
+        .get(`${API_BASE_URL}/api/ClientSide/get-booking-status.php`)
         .then((res) => setAppointmentFormEnabled(res.data.appointmentFormEnabled))
         .catch((err) => {
           console.error("Error fetching status", err);

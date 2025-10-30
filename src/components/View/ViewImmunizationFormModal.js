@@ -5,6 +5,7 @@ import axios from 'axios';
 function ViewImmunizationFormModal({ show, handleClose, formData }) {
     const [notes, setNotes] = useState([]); // Holds immunization notes
     const [petDetails, setPetDetails] = useState([]); // Store multiple pet details
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         if (show && formData) {
@@ -16,7 +17,7 @@ function ViewImmunizationFormModal({ show, handleClose, formData }) {
     // Fetch immunization notes from API
     const fetchImmunizationNotes = async () => {
         try {
-            const response = await axios.get('http://localhost:80/api/immunization_notes.php');
+            const response = await axios.get(`${API_BASE_URL}/api/immunization_notes.php`);
             setNotes(response.data); // Assuming API returns an array of notes
         } catch (error) {
             console.error('Failed to fetch immunization notes:', error);
@@ -35,7 +36,7 @@ function ViewImmunizationFormModal({ show, handleClose, formData }) {
             }]);
         } else {
             try {
-                const response = await axios.get(`http://localhost:80/api/patients.php?ids=${petIds.join(',')}`);
+                const response = await axios.get(`${API_BASE_URL}/api/patients.php?ids=${petIds.join(',')}`);
 
                 if (response.data && Array.isArray(response.data.patients)) {
                     // ✅ Ensure we get only the pets that belong to the selected client

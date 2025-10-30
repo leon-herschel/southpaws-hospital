@@ -23,7 +23,8 @@ const PendingAppointments = () => {
   const currentUserID = localStorage.getItem("userID");
   const currentUserEmail = localStorage.getItem("userEmail");
   const location = useLocation();
-  
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
     useEffect(() => {
       if (location.state?.searchName) {
         setSearchTerm(location.state.searchName.toLowerCase());
@@ -32,7 +33,7 @@ const PendingAppointments = () => {
 
   const fetchPending = async () => {
     try {
-      const res = await axios.get("http://localhost/api/pending_appointments.php");
+      const res = await axios.get(`${API_BASE_URL}/api/pending_appointments.php`);
       setPendingAppointments(res.data.appointments || []);
     } catch (err) {
       console.error("Error fetching pending appointments", err);
@@ -78,7 +79,7 @@ const PendingAppointments = () => {
     if (!pendingToDeleteId) return;
     try {
       const appt = pendingAppointments.find((a) => a.id === pendingToDeleteId);
-      await axios.delete("http://localhost/api/pending_appointments.php", {
+      await axios.delete(`${API_BASE_URL}/api/pending_appointments.php`, {
         data: {
           id: pendingToDeleteId,
           name: appt?.name,
@@ -148,7 +149,7 @@ const PendingAppointments = () => {
     // Delete the pending appointment
     if (pendingToDeleteId) {
       try {
-        await axios.delete("http://localhost/api/pending_appointments.php", {
+        await axios.delete(`${API_BASE_URL}/api/pending_appointments.php`, {
           data: { id: pendingToDeleteId },
         });
       } catch (error) {

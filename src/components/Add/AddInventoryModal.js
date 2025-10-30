@@ -15,7 +15,7 @@ const CreateInventoryModal = ({ show, handleClose, onItemAdded, productId }) => 
     const [showSupplierModal, setShowSupplierModal] = useState(false);  // State to control Supplier modal visibility
     const barcodeRef = useRef(null);
     const inventoryNameRef = useRef(null);
-    
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [existingExpirations, setExistingExpirations] = useState([]); // Stores existing expiration dates
 
     const [barcode, setBarcode] = useState('');
@@ -33,8 +33,6 @@ const CreateInventoryModal = ({ show, handleClose, onItemAdded, productId }) => 
             barcode: uniqueBarcode, // Ensure the barcode is saved in the form state
         }));
     };
-    
-
 
     useEffect(() => {
         if (show && inventoryNameRef.current) {
@@ -45,7 +43,7 @@ const CreateInventoryModal = ({ show, handleClose, onItemAdded, productId }) => 
     useEffect(() => {
     if (show && productId) {
         // Fetch product details for the selected productId
-        axios.get(`http://localhost:80/api/products.php?id=${productId}`)
+        axios.get(`${API_BASE_URL}/api/products.php?id=${productId}`)
             .then((response) => {
                 const productData = response.data.product; // Ensure API returns product data
 
@@ -140,7 +138,7 @@ const CreateInventoryModal = ({ show, handleClose, onItemAdded, productId }) => 
 
     const fetchSuppliers = () => {
         axios
-            .get('http://localhost:80/api/suppliers.php')
+            .get(`${API_BASE_URL}/api/suppliers.php`)
             .then((response) => {
                 setSuppliers(response.data.suppliers || []); // Safeguard with default empty array
             })
@@ -213,7 +211,7 @@ const CreateInventoryModal = ({ show, handleClose, onItemAdded, productId }) => 
     
         setIsSubmitting(true);
     
-        axios.post('http://localhost:80/api/inventory.php', dataToSubmit)
+        axios.post(`${API_BASE_URL}/api/inventory.php`, dataToSubmit)
             .then((response) => {
                 if (response.data.status === 1) {
                     toast.success('Stock added successfully!');
@@ -260,7 +258,7 @@ const CreateInventoryModal = ({ show, handleClose, onItemAdded, productId }) => 
         toast.success('Supplier added successfully!');
     
         // Fetch the updated list of suppliers
-        axios.get('http://localhost:80/api/suppliers.php')
+        axios.get(`${API_BASE_URL}/api/suppliers.php`)
             .then((response) => {
                 const updatedSuppliers = response.data.suppliers || [];
     

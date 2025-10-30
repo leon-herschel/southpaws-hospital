@@ -29,6 +29,7 @@ const EditImmunizationFormModal = ({
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
     const [stream, setStream] = useState(null);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     // Fetch immunization notes when the modal is shown
     useEffect(() => {
@@ -51,7 +52,7 @@ const EditImmunizationFormModal = ({
     // Fetch immunization notes
     const fetchImmunizationNotes = async () => {
         try {
-            const response = await axios.get('http://localhost:80/api/immunization_notes.php');
+            const response = await axios.get(`${API_BASE_URL}/api/immunization_notes.php`);
             setNotes(response.data); // Assuming the API returns an array of notes
         } catch (error) {
             console.error('Failed to fetch immunization notes:', error);
@@ -125,7 +126,7 @@ const EditImmunizationFormModal = ({
     
         try {
             const response = await axios.put(
-                `http://localhost:80/api/immunization.php/${formData.id}`,
+                `${API_BASE_URL}/api/immunization.php/${formData.id}`,
                 payload,
                 {
                     headers: {

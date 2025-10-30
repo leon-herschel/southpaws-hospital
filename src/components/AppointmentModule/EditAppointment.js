@@ -4,6 +4,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const [services, setServices] = useState([]);
   const [availableSlots, setAvailableSlots] = useState([]);
   const currentUserID = localStorage.getItem("userID");
@@ -21,7 +22,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost/api/Settings/get_time_appointments.php")
+      .get(`${API_BASE_URL}/api/Settings/get_time_appointments.php`)
       .then((res) => {
         if (
           res.data.status === "success" &&
@@ -68,7 +69,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost/api/get_services.php")
+      .get(`${API_BASE_URL}/api/get_services.php`)
       .then((res) =>
         setServices(
           res.data.map((s) => ({
@@ -83,7 +84,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
       });
 
     axios
-      .get("http://localhost/api/get_doctors.php")
+      .get(`${API_BASE_URL}/api/get_doctors.php`)
       .then((res) => setDoctors(res.data))
       .catch((err) => {
         console.error("Failed to load doctors:", err);
@@ -138,7 +139,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
     if (formData.date && formData.doctor_id) {
       axios
         .get(
-          `http://localhost/api/get-booked-slots.php?date=${formData.date}&doctor_id=${formData.doctor_id}`
+          `${API_BASE_URL}/api/get-booked-slots.php?date=${formData.date}&doctor_id=${formData.doctor_id}`
         )
         .then((res) => {
           setAvailableSlots(res.data.bookedRanges || []);
@@ -269,7 +270,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
         if (sendEmail) {
           try {
             const emailRes = await axios.post(
-              "http://localhost/api/send_email.php",
+              `${API_BASE_URL}/api/send_email.php`,
               updatedData
             );
             if (emailRes.data.success) {
@@ -283,7 +284,7 @@ const EditAppointment = ({ show, onClose, eventData, onUpdated }) => {
           }
         }
 
-        await axios.put("http://localhost/api/appointments.php", updatedData);
+        await axios.put(`${API_BASE_URL}/api/appointments.php`, updatedData);
         toast.success("Appointment updated successfully!");
         onUpdated();
         onClose();

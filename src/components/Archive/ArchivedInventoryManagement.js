@@ -19,7 +19,7 @@ const ArchivedInventoryManagement = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [inventoryIdToRestore, setInventoryIdToRestore] = useState(null);
     const [selectAll, setSelectAll] = useState(false);
-
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,7 +27,7 @@ const ArchivedInventoryManagement = () => {
     }, []);
 
     const fetchArchivedInventory = () => {
-        axios.get('http://localhost:80/api/inventory.php?archived=1')
+        axios.get(`${API_BASE_URL}/api/inventory.php?archived=1`)
             .then((response) => {
                 const inventoryData = response.data.inventory || [];
                 setArchivedInventory(inventoryData);
@@ -39,7 +39,7 @@ const ArchivedInventoryManagement = () => {
     };
 
     const restoreInventory = () => {
-        axios.put(`http://localhost:80/api/inventory.php/${inventoryIdToRestore}`, { 
+        axios.put(`${API_BASE_URL}/api/inventory.php/${inventoryIdToRestore}`, { 
             id: inventoryIdToRestore, 
             archived: 0 
         })
@@ -59,7 +59,7 @@ const ArchivedInventoryManagement = () => {
     };
 
     const deleteInventory = () => {
-        axios.delete(`http://localhost:80/api/inventory.php/${inventoryIdToDelete}`)
+        axios.delete(`${API_BASE_URL}/api/inventory.php/${inventoryIdToDelete}`)
             .then(() => {
                 fetchArchivedInventory();
                 setShowDeleteModal(false);

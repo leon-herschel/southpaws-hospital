@@ -16,6 +16,7 @@ const Orders = () => {
     const [orderIdToEdit, setOrderIdToEdit] = useState(null); 
     const [editOrder, setEditOrder] = useState(null);
     const [editLoading, setEditLoading] = useState(true);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     const internalUser = JSON.parse(localStorage.getItem('internalUser')); // Assuming internal users are saved in localStorage
 
@@ -24,7 +25,7 @@ const Orders = () => {
     }, []);
 
     const fetchOrders = () => {
-        axios.get('http://localhost:80/api/orders.php')
+        axios.get(`${API_BASE_URL}/api/orders.php`)
             .then(response => {
                 console.log(response.data); // Log the raw response to see what the API returns
                 if (Array.isArray(response.data)) {
@@ -102,7 +103,7 @@ const Orders = () => {
     const handleEditSubmit = (event) => {
         event.preventDefault();
 
-        axios.put(`http://localhost:80/api/orders.php/${orderIdToEdit}`, editOrder)
+        axios.put(`${API_BASE_URL}/api/orders.php/${orderIdToEdit}`, editOrder)
             .then(response => {
                 console.log(response.data);
                 handleCloseEditModal();
