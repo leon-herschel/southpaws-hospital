@@ -7,6 +7,7 @@ function ReferenceTracking() {
   const [referenceNumber, setReferenceNumber] = useState("");
   const [appointmentDetails, setAppointmentDetails] = useState(null);
   const [loading, setLoading] = useState(false);
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -33,7 +34,7 @@ function ReferenceTracking() {
     try {
       // Step 1: Check if reference number is valid
       const checkRes = await axios.post(
-        "http://localhost/api/ClientSide/check-reference.php",
+        `${API_BASE_URL}/api/ClientSide/check-reference.php`,
         { reference_number: referenceNumber }
       );
 
@@ -44,7 +45,7 @@ function ReferenceTracking() {
 
       // Step 2: Fetch appointment details
       const detailsRes = await axios.post(
-        "http://localhost/api/ClientSide/get-client-info.php",
+        `${API_BASE_URL}/api/ClientSide/get-client-info.php`,
         { reference_number: referenceNumber }
       );
 

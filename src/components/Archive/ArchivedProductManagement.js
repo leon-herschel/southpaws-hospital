@@ -19,7 +19,7 @@ const ArchivedProductManagement = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [productIdToRestore, setProductIdToRestore] = useState(null);
     const [selectAll, setSelectAll] = useState(false);
-    
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,7 +27,7 @@ const ArchivedProductManagement = () => {
     }, []);
 
     const fetchArchivedProducts = () => {
-        axios.get('http://localhost:80/api/products.php?archived=1')
+        axios.get(`${API_BASE_URL}/api/products.php?archived=1`)
             .then((response) => {
                 const productsData = response.data.products || [];
                 setArchivedProducts(productsData);
@@ -39,7 +39,7 @@ const ArchivedProductManagement = () => {
     };
 
     const restoreProduct = () => {
-        axios.put(`http://localhost:80/api/products.php/${productIdToRestore}`, { 
+        axios.put(`${API_BASE_URL}/api/products.php/${productIdToRestore}`, { 
             id: productIdToRestore, 
             archived: 0 
         })
@@ -59,7 +59,7 @@ const ArchivedProductManagement = () => {
     };
 
     const deleteProduct = () => {
-        axios.delete(`http://localhost:80/api/products.php/${productIdToDelete}`)
+        axios.delete(`${API_BASE_URL}/api/products.php/${productIdToDelete}`)
             .then(() => {
                 fetchArchivedProducts();
                 setShowDeleteModal(false);

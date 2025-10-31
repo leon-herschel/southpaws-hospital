@@ -20,7 +20,7 @@ function CancelledAppointment() {
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
   const [deleteConfirmationText, setDeleteConfirmationText] = useState("");
   const [dateRange, setDateRange] = useState({ startDate: null, endDate: null });
-
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const currentUserID = localStorage.getItem("userID");
   const currentUserEmail = localStorage.getItem("userEmail");
   const location = useLocation();
@@ -33,7 +33,7 @@ function CancelledAppointment() {
 
   const fetchCancelled = async () => {
     try {
-      const res = await axios.get("http://localhost/api/appointments.php");
+      const res = await axios.get(`${API_BASE_URL}/api/appointments.php`);
       let cancelled = res.data.appointments.filter(
         (a) => a.status === "Cancelled"
       );
@@ -134,7 +134,7 @@ function CancelledAppointment() {
     if (!appointmentToDelete) return;
 
     try {
-      await axios.delete("http://localhost/api/appointments.php", {
+      await axios.delete(`${API_BASE_URL}/api/appointments.php`, {
         data: {
           id: appointmentToDelete.id,
           user_id: currentUserID,
@@ -163,7 +163,7 @@ function CancelledAppointment() {
         const appointment = cancelledAppointments.find((a) => a.id === id);
         if (!appointment) continue;
 
-        await axios.delete("http://localhost/api/appointments.php", {
+        await axios.delete(`${API_BASE_URL}/api/appointments.php`, {
           data: {
             id: appointment.id,
             user_id: currentUserID,

@@ -39,6 +39,7 @@ const AddAppointments = ({ onClose, prefill }) => {
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [toggleAddServicesModal, setToggleAddServicesModal] = useState(false);
   const [addNewDoctorModal, setAddNewDoctorModal] = useState(false);
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const [bookingLimits, setBookingLimits] = useState({
     start: "08:00",
@@ -47,8 +48,8 @@ const AddAppointments = ({ onClose, prefill }) => {
 
   const fetchServices = async () => {
     try {
-      const response = await axios.get("http://localhost:80/api/services.php");
-      setServices(response.data); // ✅ reuse your existing state
+      const response = await axios.get(`${API_BASE_URL}/api/services.php`);
+      setServices(response.data);
     } catch (error) {
       console.error("Error fetching services:", error);
     }
@@ -57,9 +58,9 @@ const AddAppointments = ({ onClose, prefill }) => {
   const fetchDoctors = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:80/api/get_doctors.php"
+        `${API_BASE_URL}/api/get_doctors.php`
       );
-      setDoctors(response.data); // ✅ reuse your existing state
+      setDoctors(response.data);
     } catch (error) {
       console.error("Error fetching doctors:", error);
     }
@@ -71,7 +72,7 @@ const AddAppointments = ({ onClose, prefill }) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost/api/Settings/get_time_appointments.php")
+      .get(`${API_BASE_URL}/api/Settings/get_time_appointments.php`)
       .then((res) => {
         if (
           res.data.status === "success" &&
@@ -101,7 +102,7 @@ const AddAppointments = ({ onClose, prefill }) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost/api/get_services.php")
+      .get(`${API_BASE_URL}/api/get_services.php`)
       .then((res) => {
         setServices(res.data);
       })
@@ -114,7 +115,7 @@ const AddAppointments = ({ onClose, prefill }) => {
     }));
 
     axios
-      .get("http://localhost/api/get_doctors.php")
+      .get(`${API_BASE_URL}/api/get_doctors.php`)
       .then((res) => {
         setDoctors(res.data);
       })
@@ -182,7 +183,7 @@ const AddAppointments = ({ onClose, prefill }) => {
       (async () => {
         try {
           const res = await axios.get(
-            `http://localhost/api/get-booked-slots.php?date=${computedDate}&doctor_id=${formData.doctor_id}`
+            `${API_BASE_URL}/api/get-booked-slots.php?date=${computedDate}&doctor_id=${formData.doctor_id}`
           );
           setAvailableSlots(res.data.bookedRanges || []);
         } catch (err) {
@@ -233,7 +234,7 @@ const AddAppointments = ({ onClose, prefill }) => {
 
       try {
         const res = await axios.get(
-          `http://localhost/api/get-booked-slots.php?date=${value}&doctor_id=${formData.doctor_id}`
+          `${API_BASE_URL}/api/get-booked-slots.php?date=${value}&doctor_id=${formData.doctor_id}`
         );
         setAvailableSlots(res.data.bookedRanges || []);
       } catch (err) {
@@ -330,7 +331,7 @@ const AddAppointments = ({ onClose, prefill }) => {
 
     try {
       const res = await axios.get(
-        `http://localhost/api/get-booked-slots.php?date=${formData.date}&doctor_id=${formData.doctor_id}`
+        `${API_BASE_URL}/api/get-booked-slots.php?date=${formData.date}&doctor_id=${formData.doctor_id}`
       );
       const currentSlots = res.data.bookedRanges || [];
 
@@ -388,7 +389,7 @@ const AddAppointments = ({ onClose, prefill }) => {
       if (sendEmail) {
         try {
           const emailRes = await axios.post(
-            "http://localhost/api/send_email.php",
+            `${API_BASE_URL}/api/send_email.php`,
             formToSend
           );
           emailStatus = emailRes.data.success ? "success" : "fail";
@@ -399,7 +400,7 @@ const AddAppointments = ({ onClose, prefill }) => {
       }
 
       const res = await axios.post(
-        "http://localhost/api/add_appointments.php",
+        `${API_BASE_URL}/api/add_appointments.php`,
         formToSend
       );
 
@@ -414,7 +415,6 @@ const AddAppointments = ({ onClose, prefill }) => {
           toast.success("Appointment submitted successfully!");
         }
 
-        // reset form
         setFormData({
           service: [""],
           date: "",

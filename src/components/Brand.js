@@ -3,7 +3,7 @@ import { FaArchive, FaEdit } from 'react-icons/fa';
 import { AiOutlineArrowUp, AiOutlineArrowDown } from 'react-icons/ai';
 import axios from "axios";
 import { Pagination, Button, Modal, Tooltip, OverlayTrigger } from 'react-bootstrap';
-import { ToastContainer, toast } from 'react-toastify'; // Import Toastify
+import { ToastContainer, toast } from 'react-toastify';
 import '../assets/table.css'; 
 import AddBrandModal from '../components/Add/AddBrandModal';
 import EditBrandModal from '../components/Edit/EditBrandModal';
@@ -20,8 +20,9 @@ const Brand = () => {
     const [brandIdToDelete, setBrandIdToDelete] = useState(null);
     const [editBrand, setEditBrand] = useState({});
     const [editLoading, setEditLoading] = useState(true);
-    const [errorMessage, setErrorMessage] = useState(''); // Add error message state
-    const [userRole, setUserRole] = useState(null); // Store the user role
+    const [errorMessage, setErrorMessage] = useState(''); 
+    const [userRole, setUserRole] = useState(null);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         const role = parseInt(localStorage.getItem('userRole'), 10);
@@ -41,12 +42,12 @@ const Brand = () => {
     const handleCloseEditModal = () => setShowEditModal(false);
 
     const handleShowEditModal = (brandId) => {
-        setErrorMessage(''); // Clear the error message
+        setErrorMessage('');
         setEditLoading(true);
     
-        axios.get(`http://localhost:80/api/brands.php/${brandId}`)
+        axios.get(`${API_BASE_URL}/api/brands.php/${brandId}`)
             .then(response => {
-                const brandData = response.data.brand || response.data.brands || null; // Handle correct response structure
+                const brandData = response.data.brand || response.data.brands || null;
     
                 if (brandData && brandData.id) {
                     setEditBrand(brandData);
@@ -65,7 +66,7 @@ const Brand = () => {
     
 
     const getBrands = () => {
-        axios.get('http://localhost:80/api/brands.php/')
+        axios.get(`${API_BASE_URL}/api/brands.php/`)
             .then(response => {
                 if (Array.isArray(response.data.brands)) {
                     const fetchedBrands = response.data.brands;
@@ -139,7 +140,7 @@ const Brand = () => {
 
     const handleBrandAdded = () => {
         getBrands();
-        toast.success('Brand added successfully!'); // Show success notification
+        toast.success('Brand added successfully!');
     };
 
     const handleEditChange = (event) => {
@@ -149,11 +150,11 @@ const Brand = () => {
 
     const archiveBrand = () => {
         if (!brandIdToDelete) {
-            toast.error('Invalid brand ID.'); // Prevent sending an invalid request
+            toast.error('Invalid brand ID.');
             return;
         }
     
-        axios.put(`http://localhost:80/api/brands.php/${brandIdToDelete}`, { 
+        axios.put(`${API_BASE_URL}/api/brands.php/${brandIdToDelete}`, { 
             id: brandIdToDelete, 
             archived: 1 
         })
@@ -179,7 +180,7 @@ const Brand = () => {
         // Set updated_by from localStorage before sending
         const updatedBrand = {
             ...editBrand,
-            updated_by: localStorage.getItem('userID', 10) // Assuming 'userID' is the correct key
+            updated_by: localStorage.getItem('userID', 10)
         };
     
         if (updatedBrand.name === '') {
@@ -187,12 +188,12 @@ const Brand = () => {
             return;
         }
     
-        axios.put(`http://localhost:80/api/brands.php/${updatedBrand.id}`, updatedBrand)
+        axios.put(`${API_BASE_URL}/api/brands.php/${updatedBrand.id}`, updatedBrand)
             .then((response) => {
                 if (response.data.status === 1) {
                     handleCloseEditModal();
                     getBrands();
-                    toast.success('Brand updated successfully!'); // Show success notification
+                    toast.success('Brand updated successfully!');
                 } else {
                     setErrorMessage(response.data.message || 'Failed to update brand');
                 }
@@ -320,7 +321,7 @@ const Brand = () => {
         <Button variant="secondary" onClick={handleCloseDeleteModal}>
             Cancel
         </Button>
-        <Button variant="warning" onClick={archiveBrand}> {/* Changed to 'warning' */}
+        <Button variant="warning" onClick={archiveBrand}>
             Archive
         </Button>
     </Modal.Footer>

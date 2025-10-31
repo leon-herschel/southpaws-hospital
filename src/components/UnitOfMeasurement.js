@@ -22,6 +22,7 @@ const UnitOfMeasurement = () => {
     const [editLoading, setEditLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState('');
     const [userRole, setUserRole] = useState(null);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         const role = parseInt(localStorage.getItem('userRole'), 10);
@@ -45,7 +46,7 @@ const handleShowDeleteModal = (unitId) => {
     const handleShowEditModal = (unitId) => {    
         setErrorMessage('');
         setEditLoading(true);
-        axios.get(`http://localhost:80/api/units.php/${unitId}`)
+        axios.get(`${API_BASE_URL}/api/units.php/${unitId}`)
             .then(response => {
                 // Adjusted to match the API response structure
                 if (response.data.unit && response.data.unit.id) {
@@ -66,7 +67,7 @@ const handleShowDeleteModal = (unitId) => {
     
 
     const getUnits = () => {
-        axios.get('http://localhost:80/api/units.php?archived=0') // Fetch only active units
+        axios.get(`${API_BASE_URL}/api/units.php?archived=0`) // Fetch only active units
         .then(response => {
             if (Array.isArray(response.data.units)) {
                 const fetchedUnits = response.data.units;
@@ -177,7 +178,7 @@ const handleShowDeleteModal = (unitId) => {
         };
    
         // Send PUT request for updating unit name
-        axios.put(`http://localhost:80/api/units.php/${editUnit.id}`, updatedUnit)
+        axios.put(`${API_BASE_URL}/api/units.php/${editUnit.id}`, updatedUnit)
             .then((response) => {
                 console.log("API response:", response);  // Log API response for debugging
                 if (response.data.status === 1) {
@@ -207,7 +208,7 @@ const handleShowDeleteModal = (unitId) => {
         // Ensure you're only sending the relevant data (id and archived)
         console.log("Archiving unit with ID:", unitId);  // Debugging: Check unitId value
     
-        axios.put(`http://localhost:80/api/units.php/${unitId}`, { 
+        axios.put(`${API_BASE_URL}/api/units.php/${unitId}`, { 
             id: unitId, 
             archived: 1  // Ensure archived is correctly set to 1
         })

@@ -41,7 +41,8 @@ const SurgicalForm = () => {
     const [notes, setNotes] = useState([]); // 
     const [noteToEdit, setNoteToEdit] = useState(null); // Note to be edited or null for adding
 
-    const userRole = parseInt(localStorage.getItem('userRole'), 10); // Retrieve user role from localStorage
+    const userRole = parseInt(localStorage.getItem('userRole'), 10);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         fetchNotes();
@@ -70,7 +71,7 @@ const SurgicalForm = () => {
 
     const fetchNotes = async () => {
         try {
-            const response = await axios.get('http://localhost:80/api/surgical_notes.php');
+            const response = await axios.get(`${API_BASE_URL}/api/surgical_notes.php`);
             setNotes(response.data); // Assuming the API returns an array of notes
         } catch (error) {
             console.error('Error fetching surgical notes:', error);
@@ -116,7 +117,7 @@ const SurgicalForm = () => {
     }, []);
 
     function fetchOwnersAndPets() {
-        axios.get('http://localhost:80/api/clients.php')
+        axios.get(`${API_BASE_URL}/api/clients.php`)
             .then(response => {
                 const { clients } = response.data;
                 setOwners(clients);
@@ -136,7 +137,7 @@ const SurgicalForm = () => {
     }
 
     function getForms() {
-        axios.get('http://localhost:80/api/surgical.php/')
+        axios.get(`${API_BASE_URL}/api/surgical.php/`)
             .then(response => {
                 const { data } = response.data; // Extract `data` from the response
 
@@ -163,7 +164,7 @@ const SurgicalForm = () => {
     }
 
     const deleteForm = (id) => {
-        axios.delete(`http://localhost:80/api/surgical.php/${id}/delete`)
+        axios.delete(`${API_BASE_URL}/api/surgical.php/${id}/delete`)
             .then(() => {
                 toast.success("Surgical form deleted successfully!");
                 getForms();
@@ -233,7 +234,7 @@ const SurgicalForm = () => {
     const handleEditSubmit = (event) => {
         event.preventDefault();
         setErrorMessage('');
-        axios.put(`http://localhost:80/api/surgical.php/${formIdToEdit}`, editForm)
+        axios.put(`${API_BASE_URL}/api/surgical.php/${formIdToEdit}`, editForm)
             .then(() => {
                 toast.success("Surgical form updated successfully!");
                 handleCloseEditModal();

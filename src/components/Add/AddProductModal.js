@@ -25,6 +25,7 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
     const [showAddUnitModal, setShowAddUnitModal] = useState(false); 
     const [showAddGenericModal, setShowAddGenericModal] = useState(false); // Added modal for Generic Name
     const brandNameRef = useRef(null);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         if (show && brandNameRef.current) {
@@ -53,7 +54,7 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
 
         const fetchCategories = () => {
             axios
-                .get('http://localhost:80/api/category.php')
+                .get(`${API_BASE_URL}/api/category.php`)
                 .then((response) => {
                     // Check if response.data and response.data.categories exist and is an array
                     if (response.data && Array.isArray(response.data.categories)) {
@@ -72,7 +73,7 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
 
         const fetchUnit = () => {
             // Ensure the 'archived' query parameter is passed as expected (e.g., 0 for active units)
-            axios.get('http://localhost:80/api/units.php?archived=0') // Fetch only active units
+            axios.get(`${API_BASE_URL}/api/units.php?archived=0`) // Fetch only active units
                 .then(response => {
                     // Check if response.data and response.data.units exist and are an array
                     if (response.data && Array.isArray(response.data.units)) {
@@ -93,7 +94,7 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
 
     const fetchBrands = () => {
         axios
-            .get('http://localhost:80/api/brands.php')
+            .get(`${API_BASE_URL}/api/brands.php`)
             .then((response) => {
                 // Check if response.data and response.data.brands exist and is an array
                 if (response.data && Array.isArray(response.data.brands)) {
@@ -110,7 +111,7 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
     };
 
     const fetchGenerics = () => {
-        axios.get('http://localhost:80/api/generic.php')
+        axios.get(`${API_BASE_URL}/api/generic.php`)
             .then(response => setGenericNames(response.data.records || [])) // ✅ Fetch generic names
             .catch(() => setGenericNames([]));
     };
@@ -144,7 +145,7 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
     
     
         axios
-            .post('http://localhost:80/api/products.php/save', productData)
+            .post(`${API_BASE_URL}/api/products.php/save`, productData)
             .then((response) => {
     
                 if (response.data.status === 0) {
@@ -179,7 +180,7 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
 
     const handleGenericAdded = (newGeneric) => {
         toast.success('Generic added successfully!');
-        axios.get('http://localhost:80/api/generic.php')
+        axios.get(`${API_BASE_URL}/api/generic.php`)
             .then((response) => {
                 const updatedGenerics = response.data.records || [];
     
@@ -207,7 +208,7 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
         toast.success('Unit of Measurement added successfully!');
     
         // Fetch updated list of units
-        axios.get('http://localhost:80/api/units.php')
+        axios.get(`${API_BASE_URL}/api/units.php`)
             .then((response) => {
                 const updatedUnits = response.data.units || [];
                 
@@ -235,7 +236,7 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
         toast.success('Category added successfully!');
     
         // Fetch updated list of categories
-        axios.get('http://localhost:80/api/category.php')
+        axios.get(`${API_BASE_URL}/api/category.php`)
             .then((response) => {
                 const updatedCategories = response.data.categories || [];
 
@@ -261,7 +262,7 @@ const CreateProductModal = ({ show, handleClose, onProductAdded }) => {
     
     const handleBrandAdded = (newBrand) => {
         toast.success('Brand added successfully!');
-        axios.get('http://localhost:80/api/brands.php')
+        axios.get(`${API_BASE_URL}/api/brands.php`)
             .then((response) => {
                 const updatedBrands = response.data.brands || [];
 

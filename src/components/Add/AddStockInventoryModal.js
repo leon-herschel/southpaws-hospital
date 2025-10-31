@@ -8,6 +8,7 @@ const AddStockInventoryModal = ({ show, handleClose, inventoryItem, handleEditSu
     const [loading, setLoading] = useState(true);
     const [addQuantity, setAddQuantity] = useState('');
     const brandNameRef = useRef(null);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     
     useEffect(() => {
         if (show && brandNameRef.current) {
@@ -52,7 +53,7 @@ const AddStockInventoryModal = ({ show, handleClose, inventoryItem, handleEditSu
 
         // Update the inventory in the backend
         axios
-            .put('http://localhost:80/api/inventory.php', dataToSubmit)
+            .put(`${API_BASE_URL}/api/inventory.php`, dataToSubmit)
             .then((response) => {
                 if (response.data.status === 1) {
                     console.log('Stock added successfully:', response.data);

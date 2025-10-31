@@ -14,6 +14,7 @@ import Select from "react-select";
 const cartFromLocalStorage = JSON.parse(localStorage.getItem('cartItems') || '[]');
 
 const PointofSales = () => {
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [cartItems, setCartItems] = useState(cartFromLocalStorage);
     const [clients, setClients] = useState([]);
     const [selectedClient, setSelectedClient] = useState(null);
@@ -119,7 +120,7 @@ const PointofSales = () => {
             }
 
             // Build the URL with optional pet_name
-            const baseUrl = `http://localhost/api/POS-Integration/getAppointmentServices.php?client_id=${clientId}`;
+            const baseUrl = `${API_BASE_URL}/api/POS-Integration/getAppointmentServices.php?client_id=${clientId}`;
             const url = selectedPetName
                 ? `${baseUrl}&pet_name=${encodeURIComponent(selectedPetName)}`
                 : baseUrl;
@@ -178,7 +179,7 @@ const PointofSales = () => {
     
     const fetchPets = (clientId) => {
         if (clientId) {
-            axios.get(`http://localhost:80/api/clients.php/${clientId}`)
+            axios.get(`${API_BASE_URL}/api/clients.php/${clientId}`)
                 .then(response => {
                     const petsData = response.data.clients[0]?.pets;
                     if (petsData) {
@@ -275,7 +276,7 @@ const PointofSales = () => {
     }, [selectedClient, showServices]);
 
     const fetchClients = () => {
-        axios.get('http://localhost:80/api/clients.php/')
+        axios.get(`${API_BASE_URL}/api/clients.php/`)
             .then(response => {
                 if (Array.isArray(response.data.clients)) {
                     setClients(response.data.clients);
@@ -289,7 +290,7 @@ const PointofSales = () => {
     };
 
     const fetchInventory = () => {
-        axios.get('http://localhost:80/api/inventory.php')
+        axios.get(`${API_BASE_URL}/api/inventory.php`)
             .then(response => {
                 const availableInventory = (response.data.inventory || []).filter(item => item.quantity > 0); // Filter items with quantity > 0
                 setInventory(availableInventory); // Update the state with filtered inventory
@@ -300,7 +301,7 @@ const PointofSales = () => {
     };
     
     const fetchServices = () => {
-        axios.get('http://localhost:80/api/services.php')
+        axios.get(`${API_BASE_URL}/api/services.php`)
             .then(response => {
                 let availableServices = response.data.filter(service => service.status === 'Available');
     
@@ -484,7 +485,7 @@ const PointofSales = () => {
             let unregisteredClientIdToUse = unregisteredClientId; // Store temporary unregistered client ID
     
             // Fetch the current tax rate
-            const taxResponse = await axios.get("http://localhost:80/api/tax.php");
+            const taxResponse = await axios.get(`${API_BASE_URL}/api/tax.php`);
             const taxRate = taxResponse.data.status === 1 ? parseFloat(taxResponse.data.tax) : 0; // Default to 0 if not set
     
             // ✅ If no client is selected, ensure a client name is entered
@@ -498,7 +499,7 @@ const PointofSales = () => {
                 // ✅ Save unregistered client in the database
                 try {
                     const clientResponse = await axios.post(
-                        "http://localhost:80/api/unregistered_clients.php?action=create",
+                        `${API_BASE_URL}/api/unregistered_clients.php?action=create`,
                         { 
                             name: clientName, 
                             email: clientEmail // Include email
@@ -563,7 +564,7 @@ const PointofSales = () => {
             console.log("📤 Sending Order Request:", receiptData);
     
             // Send order request
-            const response = await axios.post('http://localhost:80/api/orders.php?action=create_order', receiptData);
+            const response = await axios.post(`${API_BASE_URL}/api/orders.php?action=create_order`, receiptData);
     
             if (response.data.status === 1) {
                 const generatedReceiptNumber = response.data.receipt_number || "Unknown";
@@ -575,7 +576,7 @@ const PointofSales = () => {
 
                 if (selectedPetName && clientId) {
                     try {
-                        await axios.post('http://localhost/api/POS-Integration/updateAppointmentStatus.php', {
+                        await axios.post(`${API_BASE_URL}/api/POS-Integration/updateAppointmentStatus.php`, {
                             client_id: clientId,
                             pet_name: selectedPetName,
                             status: 'Done'

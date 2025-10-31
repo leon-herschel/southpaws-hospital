@@ -7,6 +7,7 @@ const Forecasting = () => {
     const [forecast, setForecast] = useState([]);
     const [inventory, setInventory] = useState([]);
     const [loading, setLoading] = useState(true);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         fetchData();
@@ -15,8 +16,8 @@ const Forecasting = () => {
     const fetchData = async () => {
         try {
             const [forecastRes, inventoryRes] = await Promise.all([
-                axios.get("http://localhost:80/api/forecasting.php"),
-                axios.get("http://localhost:80/api/inventory.php")
+                axios.get(`${API_BASE_URL}/api/forecasting.php`),
+                axios.get(`${API_BASE_URL}/api/inventory.php`)
             ]);
 
             if (forecastRes.data.status === 1 && Array.isArray(forecastRes.data.popular_products)) {

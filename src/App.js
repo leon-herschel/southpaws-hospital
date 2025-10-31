@@ -59,6 +59,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [serverUp, setServerUp] = useState(true);
   const [publicContent, setPublicContent] = useState(null);
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     localStorage.setItem("chatbotOpen", showChatbot);
@@ -68,7 +69,7 @@ function App() {
     const initializeApp = async () => {
       try {
         const res = await axios.get(
-          "http://localhost/api/ClientSide/get_public_content.php"
+          `${API_BASE_URL}/api/ClientSide/get_public_content.php`
         );
 
         if (!res.data.success) throw new Error("Website down");

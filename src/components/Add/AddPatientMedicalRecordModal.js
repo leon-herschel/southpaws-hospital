@@ -33,6 +33,7 @@ const PatientMedicalRecordModal = ({ show, handleClose, onAddRecord, petId }) =>
     const [showConfirmModal, setShowConfirmModal] = useState(false); // For showing confirmation modal
     const [error, setError] = useState(""); // Error message state
     const brandNameRef = useRef(null);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         if (show && brandNameRef.current) {
@@ -122,7 +123,7 @@ const PatientMedicalRecordModal = ({ show, handleClose, onAddRecord, petId }) =>
             }
 
             // Adding the created_by to the form data
-            const response = await axios.post("http://localhost:80/api/medical_records.php", {
+            const response = await axios.post(`${API_BASE_URL}/api/medical_records.php`, {
                 patient_id: petId, // Associate the record with the pet
                 created_by: createdBy, // Add the userID from localStorage
                 ...formData,

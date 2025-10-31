@@ -15,6 +15,7 @@ const ViewClientModal = ({ show, handleClose, client = {} }) => {
     const [selectedPet, setSelectedPet] = useState(null);
     const [petList, setPetList] = useState([]);
     const [petIdToDelete, setPetIdToDelete] = useState(null);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         if (client?.id && show) {
@@ -24,7 +25,7 @@ const ViewClientModal = ({ show, handleClose, client = {} }) => {
 
     const fetchPets = () => {
         if (client?.id) {
-            axios.get(`http://localhost:80/api/clients.php/${client.id}`)
+            axios.get(`${API_BASE_URL}/api/clients.php/${client.id}`)
                 .then(response => {
                     const petsData = response.data.clients[0]?.pets;
                     if (petsData) {
@@ -72,7 +73,7 @@ const ViewClientModal = ({ show, handleClose, client = {} }) => {
     const handleDeleteModalClose = () => setShowDeleteModal(false);
 
     const deletePet = (petId) => {
-        axios.delete(`http://localhost:80/api/patients.php/${petId}/delete`)
+        axios.delete(`${API_BASE_URL}/api/patients.php/${petId}/delete`)
             .then(response => {
                 fetchPets(); // Refresh pet data after deletion
                 handleDeleteModalClose(); // Close the modal after deletion
@@ -89,7 +90,7 @@ const ViewClientModal = ({ show, handleClose, client = {} }) => {
     };
 
     const handleEditSubmit = (updatedPet) => {
-        axios.put(`http://localhost:80/api/patients.php/${updatedPet.pet_id}/update`, updatedPet)
+        axios.put(`${API_BASE_URL}/api/patients.php/${updatedPet.pet_id}/update`, updatedPet)
             .then(response => {
                 fetchPets(); // Refresh pet data after submitting the update
                 toast.success("Pet Updated Successfully");

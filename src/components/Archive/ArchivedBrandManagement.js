@@ -19,6 +19,7 @@ const ArchivedBrandManagement = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [brandId, setBrandId] = useState(null);
     const [selectAll, setSelectAll] = useState(false);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [brandIdToRestore, setBrandIdToRestore] = useState(null); // Track brand to restore
     
     const navigate = useNavigate();
@@ -28,7 +29,7 @@ const ArchivedBrandManagement = () => {
     }, []);
 
     const fetchArchivedBrands = () => {
-        axios.get('http://localhost:80/api/brands.php?archived=1')
+        axios.get(`${API_BASE_URL}/api/brands.php?archived=1`)
             .then((response) => {
                 const brandsData = response.data.brands || [];
                 setArchivedBrands(brandsData);
@@ -41,7 +42,7 @@ const ArchivedBrandManagement = () => {
 
     const restoreBrand = () => {
         // The URL does not include the brand ID in this setup
-        const url = `http://localhost:80/api/brands.php`;
+        const url = `${API_BASE_URL}/api/brands.php`;
         
         axios.put(url, {
             id: brandIdToRestore, 
@@ -66,7 +67,7 @@ const ArchivedBrandManagement = () => {
     
     
     const deleteBrand = () => {
-        axios.delete(`http://localhost:80/api/brands.php/${brandIdToDelete}`)
+        axios.delete(`${API_BASE_URL}/api/brands.php/${brandIdToDelete}`)
             .then(() => {
                 fetchArchivedBrands();
                 setShowDeleteModal(false);

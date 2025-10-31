@@ -19,7 +19,7 @@ const ArchivedUnitsManagement = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [unitIdToRestore, setUnitIdToRestore] = useState(null); 
     const [selectAll, setSelectAll] = useState(false);
-
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,7 +27,7 @@ const ArchivedUnitsManagement = () => {
     }, []);
 
     const fetchArchivedUnits = () => {
-        axios.get('http://localhost:80/api/units.php?archived=1')
+        axios.get(`${API_BASE_URL}/api/units.php?archived=1`)
             .then((response) => {
                 const unitsData = response.data.units || [];
                 setArchivedUnits(unitsData);
@@ -39,7 +39,7 @@ const ArchivedUnitsManagement = () => {
     };
 
     const restoreUnit = () => {
-        axios.put(`http://localhost:80/api/units.php`, {
+        axios.put(`${API_BASE_URL}/api/units.php`, {
             id: unitIdToRestore, 
             archived: 0
         })
@@ -59,7 +59,7 @@ const ArchivedUnitsManagement = () => {
     };
 
     const deleteUnit = () => {
-        axios.delete(`http://localhost:80/api/units.php/${unitIdToDelete}`)
+        axios.delete(`${API_BASE_URL}/api/units.php/${unitIdToDelete}`)
             .then(() => {
                 fetchArchivedUnits();
                 setShowDeleteModal(false);

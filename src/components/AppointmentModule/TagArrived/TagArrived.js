@@ -17,7 +17,7 @@ function TagArrived({ onClose }) {
   const [allClients, setAllClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState(null);
   const [showAddPetModal, setShowAddPetModal] = useState(false);
-
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +28,7 @@ function TagArrived({ onClose }) {
     }
 
     try {
-      const res = await axios.post("http://localhost/api/TagArrived/check-reference.php", {
+      const res = await axios.post(`${API_BASE_URL}/api/TagArrived/check-reference.php`, {
         reference_number: referenceNumber,
       });
 
@@ -47,7 +47,7 @@ function TagArrived({ onClose }) {
 
   const handleExistingClient = async () => {
     try {
-      const res = await axios.post("http://localhost/api/TagArrived/get-client-info.php", {
+      const res = await axios.post(`${API_BASE_URL}/api/TagArrived/get-client-info.php`, {
         reference_number: referenceNumber,
       });
 
@@ -143,7 +143,7 @@ function TagArrived({ onClose }) {
             className="me-2 btn-lg"
             onClick={async () => {
               try {
-                const clientRes = await axios.get("http://localhost/api/TagArrived/get-all-clients.php");
+                const clientRes = await axios.get(`${API_BASE_URL}/api/TagArrived/get-all-clients.php`);
                 if (clientRes.data.success) {
                   setAllClients(clientRes.data.clients);
                   setClientInfo(null);
@@ -158,7 +158,7 @@ function TagArrived({ onClose }) {
           </Button>
           <Button variant="success" className="btn-lg" onClick={async () => {
             try {
-              const res = await axios.post("http://localhost/api/TagArrived/get-appointment-info.php", {
+              const res = await axios.post(`${API_BASE_URL}/api/TagArrived/get-appointment-info.php`, {
                 reference_number: referenceNumber,
               });
 
@@ -201,7 +201,7 @@ function TagArrived({ onClose }) {
                   onChange={async (option) => {
                     setSelectedClient(option);
                     try {
-                      const res = await axios.post("http://localhost/api/TagArrived/get-client-info.php", {
+                      const res = await axios.post(`${API_BASE_URL}/api/TagArrived/get-client-info.php`, {
                         client_id: option.value,
                         reference_number: referenceNumber,
                       });
@@ -309,7 +309,7 @@ function TagArrived({ onClose }) {
                       onClick={async () => {
                         setUpdating(true);
                         try {
-                          const res = await axios.post("http://localhost/api/TagArrived/mark-arrived.php", {
+                          const res = await axios.post(`${API_BASE_URL}/api/TagArrived/mark-arrived.php`, {
                               reference_number: referenceNumber,
                               client_name: clientInfo?.name,
                               client_contact: clientInfo?.contact,

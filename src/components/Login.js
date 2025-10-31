@@ -15,6 +15,7 @@ export default function Login({ onLogin }) {
   const [errorMessage, setErrorMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     const userID = localStorage.getItem("userID");
@@ -60,7 +61,7 @@ export default function Login({ onLogin }) {
 
     setLoading(true);
     axios
-      .post("http://localhost:80/api/login.php", { email, password }, { withCredentials: true })
+      .post(`${API_BASE_URL}/api/login.php`, { email, password }, { withCredentials: true })
       .then((response) => {
         if (response.data.status === 1) {
           localStorage.setItem("userID", response.data.id);

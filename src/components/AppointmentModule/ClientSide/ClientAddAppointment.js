@@ -22,7 +22,7 @@ function AddAppointments() {
     pet_species: "",
     notes: "",
   });
-
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 5;
@@ -33,7 +33,7 @@ function AddAppointments() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:80/api/services.php?archived=0")
+      .get(`${API_BASE_URL}/api/services.php?archived=0`)
       .then((res) => {
         if (Array.isArray(res.data)) {
           setServices(res.data);
@@ -97,7 +97,7 @@ function AddAppointments() {
 
     try {
       const res = await axios.post(
-        "http://localhost/api/ClientSide/booking_appointment.php",
+        `${API_BASE_URL}/api/ClientSide/booking_appointment.php`,
         formToSend
       );
 

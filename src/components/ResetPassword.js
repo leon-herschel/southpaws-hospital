@@ -12,7 +12,7 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false);  // For loading state during API call
   const navigate = useNavigate();
   const location = useLocation();
-  
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const token = new URLSearchParams(location.search).get('token'); // Extract the token from URL
 
   // Check if token exists, if not show an error
@@ -36,7 +36,7 @@ const ResetPassword = () => {
 
     // Send request to backend to reset password
     axios
-      .post("http://localhost:80/api/reset_password.php", {
+      .post(`${API_BASE_URL}/api/reset_password.php`, {
         token: token,
         password: password,
       }, {

@@ -8,6 +8,7 @@ const AddPatientsModal = ({ show, handleClose, client}) => {
     const [inputs, setInputs] = useState({});
     const [age, setAge] = useState(""); // Store calculated age here
     const patientNameRef = useRef(null);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     
     useEffect(() => {
         if (show && patientNameRef.current) {
@@ -88,7 +89,7 @@ const AddPatientsModal = ({ show, handleClose, client}) => {
             owner_id: ownerId
         };
 
-        axios.post("http://localhost/api/patients.php", formData)
+        axios.post(`${API_BASE_URL}/api/patients.php", formData`)
         .then(response => {
             if (response.data.status === 1) {
                 toast.success("Pet Added Successfully");

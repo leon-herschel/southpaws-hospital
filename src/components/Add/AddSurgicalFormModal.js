@@ -28,6 +28,7 @@ function AddSurgicalFormModal({ show, handleClose, onFormAdded, selectedClient, 
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
     const [stream, setStream] = useState(null);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     const [isFormDisabled, setIsFormDisabled] = useState(false);
 
@@ -104,7 +105,7 @@ function AddSurgicalFormModal({ show, handleClose, onFormAdded, selectedClient, 
     
     const fetchImmunizationNotes = async () => {
         try {
-            const response = await axios.get('http://localhost:80/api/surgical_notes.php');
+            const response = await axios.get(`${API_BASE_URL}/api/surgical_notes.php`);
             setNotes(response.data); // Assuming the API returns an array of notes
         } catch (error) {
             console.error('Failed to fetch immunization notes:', error);
@@ -113,7 +114,7 @@ function AddSurgicalFormModal({ show, handleClose, onFormAdded, selectedClient, 
 
     const fetchSurgicalServices = async () => {
         try {
-            const response = await axios.get('http://localhost:80/api/services.php');
+            const response = await axios.get(`${API_BASE_URL}/api/services.php`);
     
             // Handle both possible response formats
             if (Array.isArray(response.data)) {
@@ -148,7 +149,7 @@ function AddSurgicalFormModal({ show, handleClose, onFormAdded, selectedClient, 
 
     const fetchOwnersAndPets = async () => {
         try {
-            const response = await axios.get('http://localhost:80/api/clients.php');
+            const response = await axios.get(`${API_BASE_URL}/api/clients.php`);
             const { clients } = response.data;
     
             if (Array.isArray(clients)) {
@@ -201,7 +202,7 @@ function AddSurgicalFormModal({ show, handleClose, onFormAdded, selectedClient, 
         }
 
         try {
-            const response = await axios.post('http://localhost:80/api/surgical.php', formDataToSend, {
+            const response = await axios.post(`${API_BASE_URL}/api/surgical.php`, formDataToSend, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             if (response.data.status === 'success') {

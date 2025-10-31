@@ -23,6 +23,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
     }]);
     const [clients, setClients] = useState([]);
     const clientNameRef = useRef(null);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     const resetForm = () => {
         setClientInputs({
@@ -81,7 +82,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
     }, [show, prefillData]);
 
     const fetchClients = () => {
-        axios.get('http://localhost:80/api/clients.php')
+        axios.get(`${API_BASE_URL}/api/clients.php`)
             .then(response => {
                 setClients(response.data.clients);
             })
@@ -220,7 +221,7 @@ const AddClientAndPatientModal = ({ show, handleClose, onCategoryAdded, prefillD
         };
     
         try {
-            const response = await axios.post('http://localhost:80/api/clients.php', formData);
+            const response = await axios.post(`${API_BASE_URL}/api/clients.php`, formData);
     
             if (response.data.status === 1) {
                 resetForm(); // ✅ Clear input fields after successful submission

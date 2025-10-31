@@ -30,7 +30,7 @@ const Product = () => {
     const [categories, setCategories] = useState([]);
     const [units, setUnits] = useState([]);
     const [errorMessage, setErrorMessage] = useState(''); 
-    
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     const navigate = useNavigate();
     const [userRole, setUserRole] = useState(null); // Add state for user role
@@ -100,7 +100,7 @@ const Product = () => {
 
     const handleShowViewDetailsModal = (productId) => {
         // Example fetch call to get product details
-        axios.get(`http://localhost:80/api/products.php?id=${productId}`)
+        axios.get(`${API_BASE_URL}/api/products.php?id=${productId}`)
             .then(response => {
                 setProductDetails(response.data.product); // Assume response.data.product contains all needed product details
                 setShowViewDetailsModal(true);
@@ -114,7 +114,7 @@ const Product = () => {
 
     const fetchCategories = () => {
         axios
-            .get('http://localhost:80/api/category.php?archived=0') // Fetch only non-archived categories
+            .get(`${API_BASE_URL}/api/category.php?archived=0`) // Fetch only non-archived categories
             .then((response) => {
                 // Check if response.data and response.data.categories exist and is an array
                 if (response.data && Array.isArray(response.data.categories)) {
@@ -135,7 +135,7 @@ const Product = () => {
 
     const fetchBrands = () => {
         axios
-            .get('http://localhost:80/api/brands.php?archived=0') // Fetch only active brands
+            .get(`${API_BASE_URL}/api/brands.php?archived=0`) // Fetch only active brands
             .then((response) => {
                 // Check if response.data and response.data.brands exist and is an array
                 if (response.data && Array.isArray(response.data.brands)) {
@@ -154,7 +154,7 @@ const Product = () => {
 
     const fetchUnits = () => {
         // Ensure the 'archived' query parameter is passed as expected (e.g., 0 for active units)
-        axios.get('http://localhost:80/api/units.php?archived=0') // Fetch only active units
+        axios.get(`${API_BASE_URL}/api/units.php?archived=0`) // Fetch only active units
             .then(response => {
                 // Check if response.data and response.data.units exist and are an array
                 if (response.data && Array.isArray(response.data.units)) {
@@ -180,7 +180,7 @@ const Product = () => {
     
     useEffect(() => {
         if (showEditModal && productIdToEdit) {
-            axios.get(`http://localhost:80/api/products.php?id=${productIdToEdit}`)
+            axios.get(`${API_BASE_URL}/api/products.php?id=${productIdToEdit}`)
                 .then(response => {
                     const productData = response.data.product;
                     if (productData && productData.id) {
@@ -203,7 +203,7 @@ const Product = () => {
         // Ensure you're only sending the relevant data (id and archived)
         console.log("Archiving product with ID:", productId);  // Debugging: Check productId value
     
-        axios.put(`http://localhost:80/api/products.php/${productId}`, { 
+        axios.put(`${API_BASE_URL}/api/products.php/${productId}`, { 
             id: productId, 
             archived: 1  // Ensure archived is correctly set to 1
         })
@@ -224,7 +224,7 @@ const Product = () => {
     };
     
     const getProducts = () => {
-        axios.get('http://localhost:80/api/products.php') // Fetch products from the API
+        axios.get(`${API_BASE_URL}/api/products.php`) // Fetch products from the API
             .then(response => {
                 if (Array.isArray(response.data.products)) {
                     // Sort products alphabetically by product_name (case insensitive)

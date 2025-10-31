@@ -16,6 +16,7 @@ const AddSupplierModal = ({ show, handleClose, onSuppliersAdded }) => {
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const supplierNameRef = useRef(null); // ✅ Create ref for input field
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     // Retrieve user ID from localStorage
     const userId = localStorage.getItem('userID');
@@ -65,7 +66,7 @@ const AddSupplierModal = ({ show, handleClose, onSuppliersAdded }) => {
             created_by: userId ? parseInt(userId) : null 
         };
     
-        axios.post('http://localhost:80/api/suppliers.php', supplierData)
+        axios.post(`${API_BASE_URL}/api/suppliers.php`, supplierData)
             .then((response) => {
                 if (response.data.status === 1) {
                     const addedSupplier = {

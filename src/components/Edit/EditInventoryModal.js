@@ -24,6 +24,7 @@ const EditInventoryModal = ({ show, handleClose, onItemUpdated, inventoryId }) =
     const [showUOMModal, setShowUOMModal] = useState(false);
     const [showSupplierModal, setShowSupplierModal] = useState(false);
     const barcodeRef = useRef(null);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         if (inventoryId && show) {
@@ -55,7 +56,7 @@ const EditInventoryModal = ({ show, handleClose, onItemUpdated, inventoryId }) =
     }, []);
 
     const fetchInventoryDetails = () => {
-        axios.get(`http://localhost:80/api/inventory.php?id=${inventoryId}`)
+        axios.get(`${API_BASE_URL}/api/inventory.php?id=${inventoryId}`)
             .then((response) => {
                 const inventoryArray = response.data.inventory;
     
@@ -103,7 +104,7 @@ const EditInventoryModal = ({ show, handleClose, onItemUpdated, inventoryId }) =
 
     const fetchSuppliers = () => {
         axios
-            .get('http://localhost:80/api/suppliers.php')
+            .get(`${API_BASE_URL}/api/suppliers.php`)
             .then((response) => {
                 setSuppliers(response.data.suppliers || []);
             })
@@ -115,7 +116,7 @@ const EditInventoryModal = ({ show, handleClose, onItemUpdated, inventoryId }) =
 
     const fetchUnitsOfMeasurement = () => {
         axios
-            .get('http://localhost:80/api/units.php')
+            .get(`${API_BASE_URL}/api/units.php`)
             .then((response) => {
                 const unitsArray = Array.isArray(response.data.unit_of_measurement) 
                     ? response.data.unit_of_measurement.map((unit) => ({
@@ -160,7 +161,7 @@ const EditInventoryModal = ({ show, handleClose, onItemUpdated, inventoryId }) =
             expiration_date: inputs.expiration_date ? inputs.expiration_date : null  // ✅ Ensure empty date is set as null
         };
     
-        axios.put(`http://localhost:80/api/inventory.php/${inventoryId}`, formattedInputs)
+        axios.put(`${API_BASE_URL}/api/inventory.php/${inventoryId}`, formattedInputs)
             .then((response) => {
                 if (response.data.status === 1) {
                     toast.success('Inventory updated successfully!');
