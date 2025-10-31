@@ -1,8 +1,5 @@
 <?php
 include 'cors.php';
-header("Content-Type: application/json");
-
-
 include 'DbConnect.php';
 $objDB = new DbConnect;
 
