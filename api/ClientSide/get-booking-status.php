@@ -1,11 +1,7 @@
 <?php
-include 'cors.php';
+include '../cors.php';
 header("Content-Type: application/json");
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
 
 include('../DbConnect.php');
 $objDB = new DbConnect;

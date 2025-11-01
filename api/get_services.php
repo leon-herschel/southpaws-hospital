@@ -1,11 +1,12 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: *");
-header("Access-Control-Allow-Methods: GET");
+include 'cors.php';
 header("Content-Type: application/json");
+
+
 
 include 'DbConnect.php';
 $objDB = new DbConnect;
+
 
 try {
     $conn = $objDB->connect();

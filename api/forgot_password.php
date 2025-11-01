@@ -1,16 +1,21 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: *");
-header("Access-Control-Allow-Methods: *");
+include 'cors.php';
 
 include 'DbConnect.php';
+$objDB = new DbConnect;
+
+try {
+    $conn = $objDB->connect();
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(["error" => "Database connection failed: " . $e->getMessage()]);
+    exit();
+}
+
 require 'vendor/autoload.php';  // Include the PHPMailer autoload file
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-
-$objDB = new DbConnect;
-$conn = $objDB->connect();
 
 $method = $_SERVER['REQUEST_METHOD'];
 

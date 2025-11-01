@@ -1,15 +1,16 @@
 <?php
 session_start(); // Start the session
-
-// Set headers for CORS and credentials
-header("Access-Control-Allow-Origin: http://localhost:3000");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Credentials: true"); // Enable sending cookies with requests
-
+include 'cors.php';
 include 'DbConnect.php';
-$objDB = new DbConnect();
-$conn = $objDB->connect();
+$objDB = new DbConnect;
+
+try {
+    $conn = $objDB->connect();
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(["error" => "Database connection failed: " . $e->getMessage()]);
+    exit();
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = json_decode(file_get_contents('php://input'));

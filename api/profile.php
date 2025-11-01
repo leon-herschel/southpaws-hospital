@@ -1,14 +1,18 @@
 <?php
 session_start();
 
-header("Access-Control-Allow-Origin: http://localhost:3000");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Credentials: true");
+include 'cors.php';
 
 include 'DbConnect.php';
 $objDB = new DbConnect;
-$conn = $objDB->connect();
+
+try {
+    $conn = $objDB->connect();
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(["error" => "Database connection failed: " . $e->getMessage()]);
+    exit();
+}
 
 $method = $_SERVER['REQUEST_METHOD'];
 

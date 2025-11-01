@@ -1,18 +1,17 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: *");
+include '../cors.php';
 header("Content-Type: application/json");
 
 include '../DbConnect.php';
 $objDB = new DbConnect;
 
-
- try {
+try {
     $conn = $objDB->connect();
- } catch (PDOException $e) {
-    echo json_encode(["status" => "error", "message" => $e->getMessage()]);
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(["error" => "Database connection failed: " . $e->getMessage()]);
     exit();
- }
+}
 
  $data = json_decode(file_get_contents("php://input"), true);
 

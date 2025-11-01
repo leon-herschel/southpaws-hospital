@@ -1,29 +1,18 @@
 <?php
-// Allow from any origin (or you can specify specific domains)
-header("Access-Control-Allow-Origin: http://localhost:3000");
+include 'cors.php';
 
-// Allow credentials (cookies, etc.) to be sent
-header("Access-Control-Allow-Credentials: true");
-
-// Allow specific methods
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
-
-// Allow specific headers (if needed)
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-
-
-// Include database connection
 include 'DbConnect.php';
 $objDB = new DbConnect;
-$conn = $objDB->connect();
+
+try {
+    $conn = $objDB->connect();
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(["error" => "Database connection failed: " . $e->getMessage()]);
+    exit();
+}
 
 $method = $_SERVER['REQUEST_METHOD'];
-
-// Handle preflight requests
-if ($method === 'OPTIONS') {
-    http_response_code(200);
-    exit;
-}
 
 switch ($method) {
 

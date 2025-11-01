@@ -1,21 +1,19 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+include 'cors.php';
 
-// Include database connection
+
 include 'DbConnect.php';
 $objDB = new DbConnect;
-$conn = $objDB->connect();
 
-$method = $_SERVER['REQUEST_METHOD'];
-
-// Handle preflight requests
-if ($method === 'OPTIONS') {
-    http_response_code(200);
-    exit;
+try {
+    $conn = $objDB->connect();
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(["error" => "Database connection failed: " . $e->getMessage()]);
+    exit();
 }
 
+$method = $_SERVER['REQUEST_METHOD'];
 switch ($method) {
     case 'GET':
         $path = explode('/', $_SERVER['REQUEST_URI']);

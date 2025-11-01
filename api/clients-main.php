@@ -1,13 +1,17 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: *");
-header("Access-Control-Allow-Methods: *");
+include 'cors.php';
 
 
 include 'DbConnect.php';
 $objDB = new DbConnect;
 
-$conn = $objDB->connect();
+try {
+    $conn = $objDB->connect();
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(["error" => "Database connection failed: " . $e->getMessage()]);
+    exit();
+}
 
 $method = $_SERVER['REQUEST_METHOD'];
 switch ($method) {

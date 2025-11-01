@@ -1,12 +1,16 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+include 'cors.php';
 
-// Include database connection
 include 'DbConnect.php';
 $objDB = new DbConnect;
-$conn = $objDB->connect();
+
+try {
+    $conn = $objDB->connect();
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(["error" => "Database connection failed: " . $e->getMessage()]);
+    exit();
+}
 
 require 'vendor/autoload.php'; // Ensure Composer autoloader is loaded
 
@@ -18,13 +22,10 @@ $dotenv->load();
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? null; // Define action parameter
 
-// Handle preflight requests (CORS)
-if ($method === 'OPTIONS') {
-    exit;
-}
 
 // ✅ Function to check if a receipt number exists
 function isReceiptDuplicate($conn, $receiptNumber) {

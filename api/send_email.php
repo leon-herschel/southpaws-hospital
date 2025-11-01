@@ -1,12 +1,15 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+include 'cors.php';
 header("Content-Type: application/json");
 
+include 'DbConnect.php';
+$objDB = new DbConnect;
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
+try {
+    $conn = $objDB->connect();
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(["error" => "Database connection failed: " . $e->getMessage()]);
     exit();
 }
 
@@ -20,9 +23,6 @@ $dotenv->load();
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-include 'DbConnect.php';
-$objDB = new DbConnect;
-$conn = $objDB->connect();
 
 // Get appointment data from React
 $data = json_decode(file_get_contents("php://input"), true);

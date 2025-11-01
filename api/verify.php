@@ -1,9 +1,18 @@
 <?php
+include 'cors.php';
+header("Content-Type: application/json");
+
+
 include 'DbConnect.php';
 $objDB = new DbConnect;
-$conn = $objDB->connect();
 
-header('Content-Type: application/json'); // Set header for JSON response
+try {
+    $conn = $objDB->connect();
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(["error" => "Database connection failed: " . $e->getMessage()]);
+    exit();
+}
 
 if (isset($_GET['token'])) {
     $token = $_GET['token'];
