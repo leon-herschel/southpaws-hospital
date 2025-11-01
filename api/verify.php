@@ -2,10 +2,16 @@
 include 'cors.php';
 header("Content-Type: application/json");
 
-
 include 'DbConnect.php';
-$objDB = new DbConnect;
+require_once 'vendor/autoload.php';
+use Dotenv\Dotenv;
 
+$dotenv = Dotenv::createImmutable(__DIR__, '.env.domain');
+$dotenv->load();
+
+$FRONTEND_URL = rtrim($_ENV['FRONTEND_URL'], '/');
+
+$objDB = new DbConnect;
 try {
     $conn = $objDB->connect();
 } catch (PDOException $e) {
@@ -25,24 +31,19 @@ if (isset($_GET['token'])) {
         $updateSql = "UPDATE internal_users SET is_verified = 1, verification_token = NULL WHERE verification_token = :token";
         $updateStmt = $conn->prepare($updateSql);
         $updateStmt->bindParam(':token', $token);
-        
+
         if ($updateStmt->execute()) {
-            // ✅ Redirect to React login page with success message
-            header("Location: https://southpaws.scarlet2.io/login?message=Verification%20Successful");
+            header("Location: {$FRONTEND_URL}/login?message=Verification%20Successful");
             exit;
         } else {
-            // ✅ Redirect with verification failure message
-            header("Location: https://southpaws.scarlet2.io/login?message=Verification%20Failed");
+            header("Location: {$FRONTEND_URL}/login?message=Verification%20Failed");
             exit;
         }
     } else {
-        // ✅ Redirect with invalid/expired token message
-        header("Location: https://southpaws.scarlet2.io/login?message=Invalid%20or%20Expired%20Token");
+        header("Location: {$FRONTEND_URL}/login?message=Invalid%20or%20Expired%20Token");
         exit;
     }
 } else {
-    // ✅ Redirect with missing token message
-    header("Location: https://southpaws.scarlet2.io/login?message=Missing%20Verification%20Token");
+    header("Location: {$FRONTEND_URL}/login?message=Missing%20Verification%20Token");
     exit;
 }
-?>

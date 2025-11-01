@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Modal, Button, Form, OverlayTrigger, Tooltip  } from "react-bootstrap";
 import { FaQuestionCircle } from "react-icons/fa";
-
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import "../../assets/add.css";
 
@@ -13,6 +14,7 @@ const AddUserModal = ({ show, handleClose, onUsersAdded }) => {
 
   const [confirmPassword, setConfirmPassword] = useState("");
   const [emailError, setEmailError] = useState(""); // State for email error
+  const [loading, setLoading] = useState(false);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const brandNameRef = useRef(null);
 
@@ -58,30 +60,32 @@ const AddUserModal = ({ show, handleClose, onUsersAdded }) => {
     event.preventDefault();
 
     if (inputs.password !== confirmPassword) {
-      alert("Password and Confirm Password do not match");
+      toast.error("Password and Confirm Password do not match");
       return;
     }
 
-    // Reset email error before sending request
     setEmailError("");
+    setLoading(true);
 
     axios
-      .post(`${API_BASE_URL}/api/internal_users.php`, inputs) // Updated API endpoint
+      .post(`${API_BASE_URL}/api/internal_users.php`, inputs)
       .then(function (response) {
         if (
           response.data.status === 0 &&
           response.data.message === "Email already exists."
         ) {
-          setEmailError("Email already exists."); // Set the error if the email already exists
+          setEmailError("Email already exists.");
+          toast.warning("Email already exists.");
         } else {
-          console.log(response.data);
           onUsersAdded();
           handleClose();
         }
       })
       .catch(function (error) {
         console.error("Error saving user:", error);
-      });
+        toast.error("Error saving user!");
+      })
+      .finally(() => setLoading(false)); 
   };
 
   return (
@@ -205,14 +209,21 @@ const AddUserModal = ({ show, handleClose, onUsersAdded }) => {
               <em>All fields are required in adding user.</em>
             </p>
           </div>
-          <div className="button-container">
+          <div className="button-container d-flex justify-content-center mt-3">
             <Button
               variant="primary"
               type="button"
-              className="button btn-gradient"
+              className="button btn-gradient d-flex align-items-center justify-content-center"
               onClick={handleSubmit}
+              disabled={loading}
             >
-              Add
+              {loading ? (
+                <>
+                  Adding...
+                </>
+              ) : (
+                "Add"
+              )}
             </Button>
           </div>
         </Form>

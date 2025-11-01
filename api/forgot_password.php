@@ -1,9 +1,28 @@
 <?php
 include 'cors.php';
-
 include 'DbConnect.php';
-$objDB = new DbConnect;
+require_once 'vendor/autoload.php'; 
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+use Dotenv\Dotenv;
+
+$dotenvDomain = Dotenv::createImmutable(__DIR__, '.env.domain');
+$dotenvDomain->load();
+
+$dotenvAcc = Dotenv::createImmutable(__DIR__, '.env.acc');
+$dotenvAcc->load();
+
+// env variables
+$FRONTEND_URL = rtrim($_ENV['FRONTEND_URL'], '/');
+$MAIL_HOST = $_ENV['MAIL_HOST'];
+$MAIL_USERNAME = $_ENV['MAIL_USERNAME'];
+$MAIL_PASSWORD = $_ENV['MAIL_PASSWORD'];
+$MAIL_PORT = $_ENV['MAIL_PORT'];
+$MAIL_FROM_NAME = $_ENV['MAIL_FROM_NAME'];
+$MAIL_FROM_ADDRESS = $_ENV['MAIL_FROM_ADDRESS'];
+
+$objDB = new DbConnect;
 try {
     $conn = $objDB->connect();
 } catch (PDOException $e) {
@@ -12,17 +31,17 @@ try {
     exit();
 }
 
-require 'vendor/autoload.php';  // Include the PHPMailer autoload file
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
 $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'POST':
         $user = json_decode(file_get_contents('php://input'));
-        $email = $user->email;
+        $email = $user->email ?? '';
+
+        if (!$email) {
+            echo json_encode(['status' => 0, 'message' => 'Email is required.']);
+            exit();
+        }
 
         // Check if the email exists in the database
         $sql = "SELECT * FROM internal_users WHERE email = :email";
@@ -33,47 +52,61 @@ switch ($method) {
 
         if ($userData) {
             // Generate a password reset token
-            $resetToken = bin2hex(random_bytes(16)); // Random token for password reset
-            $resetLink = "https://southpaws.scarlet2.io/reset-password?token=$resetToken";  // Corrected local password reset URL
+            $resetToken = bin2hex(random_bytes(16));
+            $resetLink = "{$FRONTEND_URL}/reset-password?token=$resetToken";
 
-            // Store the reset token in the database with an expiration time (optional)
+            // Store the reset token
             $sql = "UPDATE internal_users SET reset_token = :reset_token WHERE email = :email";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':reset_token', $resetToken);
             $stmt->bindParam(':email', $email);
             $stmt->execute();
 
-            // Send the password reset email using PHPMailer
+            // Send password reset email
             $mail = new PHPMailer(true);
-
             try {
                 // Server settings
                 $mail->isSMTP();
-                $mail->Host = 'smtp.gmail.com'; // Replace with your SMTP host
+                $mail->Host = $MAIL_HOST;
                 $mail->SMTPAuth = true;
-                $mail->Username = 'alfr.impas.swu@phinmaed.com';  // Replace with your Gmail address
-                $mail->Password = 'ljfy lyeb rxam wkql';  // Replace with your Gmail password or App Password
+                $mail->Username = $MAIL_USERNAME;
+                $mail->Password = $MAIL_PASSWORD;
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                $mail->Port = 587;
+                $mail->Port = $MAIL_PORT;
 
                 // Recipients
-                $mail->setFrom('alfr.impas.swu@phinmaed.com', 'SouthPaws'); // Replace with your email and name
+                $mail->setFrom($MAIL_FROM_ADDRESS, $MAIL_FROM_NAME);
                 $mail->addAddress($email);
 
-                // Content
+                // Email content
                 $mail->isHTML(true);
-                $mail->Subject = 'Password Reset Request';
-                $mail->Body = '<p>Click the link below to reset your password:</p><p><a href="' . $resetLink . '">Reset Password</a></p>';
-                $mail->AltBody = 'Click the link below to reset your password: ' . $resetLink;
+                $mail->Subject = 'Reset Your Password | South Paws Veterinary Hospital';
+                $mail->Body = '
+                    <div style="font-family: Arial, sans-serif; color: #333;">
+                        <p>Hello,</p>
+                        <p>We received a request to reset the password for your account. If this was you, please click the button below to create a new password:</p>
+                        <p style="margin: 20px 0;">
+                            <a href="' . $resetLink . '" 
+                            style="background-color: #4CAF50; color: white; padding: 10px 20px; 
+                                    text-decoration: none; border-radius: 5px; display: inline-block;">
+                            Reset My Password
+                            </a>
+                        </p>
+                        <p>If you didn’t request a password reset, you can safely ignore this email. 
+                        The link will expire soon for your security.</p>
+                        <br>
+                        <p style="font-size: 14px; color: #777;">Thank you,<br>South Paws Veterinary Hospital</p>
+                    </div>
+                ';
+                $mail->AltBody = "We received a password reset request for your account. Click this link to reset your password: $resetLink\n\nIf you didn’t request this, please ignore the email.";
 
                 $mail->send();
                 echo json_encode(['status' => 1, 'message' => 'A password reset link has been sent to your email.']);
             } catch (Exception $e) {
-                echo json_encode(['status' => 0, 'message' => 'Failed to send email. Mailer Error: ' . $mail->ErrorInfo]);
+                echo json_encode(['status' => 0, 'message' => 'Failed to send email.']);
             }
         } else {
             echo json_encode(['status' => 0, 'message' => 'Email not found.']);
         }
         break;
 }
-?>

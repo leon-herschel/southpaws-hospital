@@ -90,7 +90,7 @@ export default function ForgotPassword() {
           {/* Right Section */}
           <div className="col-md-6 d-flex flex-column justify-content-center align-items-center text-white p-5 loginForm2">
             <h3 className="fw-bold text-center">
-              SouthPaws Hospital Management Hub
+              South Paws Hospital Management Hub
             </h3>
           </div>
         </div>
