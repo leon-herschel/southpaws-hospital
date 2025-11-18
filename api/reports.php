@@ -141,74 +141,47 @@ if ($method === 'GET') {
                         exit;
                     
                     case 'appointments':
-                        $sql = "SELECT
-                                    a.name,
-                                    a.date,
-                                    a.time,
-                                    a.contact,
-                                    a.email,
-                                    a.status,
-                                    a.pet_name,
-                                    a.pet_species,
-                                    a.created_at
-                                    FROM appointments a
 
-                                    UNION ALL
+    // Base UNION of appointments + pending appointments
+    $baseQuery = "
+        SELECT * FROM (
+            SELECT
+                a.name,
+                a.date,
+                a.contact,
+                a.email,
+                a.status,
+                a.pet_name,
+                a.service,
+                a.created_at
+            FROM appointments a
 
-                                    SELECT
-                                    p.name,
-                                    p.preferred_date AS date,
-                                    p.preferred_time AS time,
-                                    p.contact,
-                                    p.email,
-                                    p.status,
-                                    p.pet_name,
-                                    p.pet_species,
-                                    p.created_at
-                                    FROM pending_appointments p
-                                    ";
-                                    
-                                    if ($fromDate && $toDate) {
-                            $sql .= " WHERE a.created_at >= :fromDate AND a.created_at < DATE_ADD(:toDate, INTERVAL 1 DAY)";
-                        }
-                    
-                        $stmt = $conn->prepare($sql);
-                    
-                        if ($fromDate && $toDate) {
-        $sql = "
-            SELECT * FROM (
-                SELECT
-                    a.name,
-                    a.date,
-                    a.time,
-                    a.contact,
-                    a.email,
-                    a.status,
-                    a.pet_name,
-                    a.pet_species,
-                    a.created_at
-                FROM appointments a
+            UNION ALL
 
-                UNION ALL
+            SELECT
+                p.name,
+                p.preferred_date AS date,
+                p.contact,
+                p.email,
+                p.status,
+                p.pet_name,
+                p.reason_for_visit AS service,
+                p.created_at
+            FROM pending_appointments p
+        ) AS combined
+    ";
 
-                SELECT
-                    p.name,
-                    p.preferred_date AS date,
-                    p.preferred_time AS time,
-                    p.contact,
-                    p.email,
-                    p.status,
-                    p.pet_name,
-                    p.pet_species,
-                    p.created_at
-                FROM pending_appointments p
-            ) AS combined
+    // Add date filtering if given
+    if ($fromDate && $toDate) {
+        $sql = $baseQuery . "
             WHERE combined.created_at >= :fromDate
               AND combined.created_at < DATE_ADD(:toDate, INTERVAL 1 DAY)
             ORDER BY combined.created_at DESC
         ";
     } else {
-        $sql .= " ORDER BY created_at DESC";
+        $sql = $baseQuery . "
+            ORDER BY combined.created_at DESC
+        ";
     }
 
     $stmt = $conn->prepare($sql);
