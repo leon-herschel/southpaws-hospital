@@ -1,126 +1,132 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useNavigate, useLocation } from 'react-router-dom';
-import '../assets/login.css'; // Use the same CSS for consistent design
-import logo from '../assets/southpawslogo.png';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate, useLocation } from "react-router-dom";
+import "../assets/login.css";
 
-const ResetPassword = () => {
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const [loading, setLoading] = useState(false);  // For loading state during API call
+export default function ResetPassword() {
   const navigate = useNavigate();
   const location = useLocation();
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-  const token = new URLSearchParams(location.search).get('token'); // Extract the token from URL
 
-  // Check if token exists, if not show an error
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const token = new URLSearchParams(location.search).get("token");
+
   useEffect(() => {
     if (!token) {
-      setErrorMessage("Invalid reset token.");
+      setErrorMessage("Invalid or missing reset token.");
     }
   }, [token]);
 
-  const handleSubmit = (e) => {
+  const handleResetPasswordSubmit = (e) => {
     e.preventDefault();
 
-    // Check if passwords match
+    if (!token) {
+      setErrorMessage("Invalid or missing reset token.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setErrorMessage("Password must be at least 6 characters long.");
+      return;
+    }
+
     if (password !== confirmPassword) {
       setErrorMessage("Passwords do not match.");
       return;
     }
 
-    // Set loading to true when starting the request
     setLoading(true);
+    setErrorMessage("");
+    setSuccessMessage("");
 
-    // Send request to backend to reset password
     axios
-      .post(`${API_BASE_URL}/api/reset_password.php`, {
-        token: token,
-        password: password,
-      }, {
-        headers: {
-          "Content-Type": "application/json" // Ensure the backend knows the request is JSON
-        }
-      })
+      .post(
+        `${API_BASE_URL}/api/reset_password.php`,
+        { token, password },
+        { headers: { "Content-Type": "application/json" } }
+      )
       .then((response) => {
-        setLoading(false); // Turn off loading
-
         if (response.data.status === 1) {
-          setSuccessMessage(response.data.message);
-          setErrorMessage('');
-
-          // After 5 seconds, navigate to the login page
-          setTimeout(() => {
-            navigate('/login'); // Redirect to the login page
-          }, 5000); // 5-second delay
+          setSuccessMessage("Password reset successful! Redirecting to login...");
+          setTimeout(() => navigate("/login"), 3000);
         } else {
-          setErrorMessage(response.data.message);
-          setSuccessMessage('');
+          setErrorMessage(response.data.message || "Reset failed. Please try again.");
         }
       })
       .catch(() => {
-        setLoading(false);
-        setErrorMessage("An error occurred while resetting the password.");
-        setSuccessMessage('');
-      });
+        setErrorMessage("An error occurred while resetting your password.");
+      })
+      .finally(() => setLoading(false));
   };
 
   return (
-    <div className="loginContainer">
-      <div className="loginLeftContainer">
-        <div className="loginForm">
-          <div className="loginTitleContainer">
-          <div style={{ fontSize: '37px', fontWeight: 500 }}>Reset Password</div>
-          <img src={logo} alt="logo" />
-          </div>
-          <form onSubmit={handleSubmit}>
-            <label htmlFor="password" className="loginLabel">New Password</label>
-            <div className="loginInputContainer">
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="loginInputBox"
-                required
-              />
+    <div className="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light">
+      <div className="card shadow-lg rounded-4 overflow-hidden w-100" style={{ maxWidth: "950px" }}>
+        <div className="row g-0">
+          {/* Left Section */}
+          <div className="col-md-6 bg-white p-5 d-flex flex-column justify-content-center">
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <h3 className="fw-semibold m-0">Reset Password</h3>
             </div>
-            <br />
-            <label htmlFor="confirmPassword" className="loginLabel">Confirm New Password</label>
-            <div className="loginInputContainer">
-              <input
-                type="password"
-                id="confirmPassword"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="loginInputBox"
-                required
-              />
-            </div>
-            <br />
-            <button className="loginInputButton" type="submit" disabled={loading}>Reset Password</button>
-          </form>
 
-          {errorMessage && <p className="loginErrorLabel">{errorMessage}</p>}
-          {successMessage && (
-            <div>
-              <p className="loginSuccessLabel">{successMessage}</p>
-              <p>Please wait while we redirect you to the login page...</p>
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="loginRightContainer">
-        <div className="loginForm2">
-          <div className="loginTitleContainer2">
-            <div>South Paws: Inventory Control Hub</div>
+            <form onSubmit={handleResetPasswordSubmit}>
+              <div className="mb-3">
+                <label htmlFor="password" className="form-label">New Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="form-control shadow-sm"
+                  placeholder="Enter new password"
+                  required
+                />
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="form-control shadow-sm"
+                  placeholder="Re-enter new password"
+                  required
+                />
+              </div>
+
+              <button
+                className="loginInputButton btn-gradient w-100 d-flex justify-content-center align-items-center"
+                type="submit"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <div className="spinner-border spinner-border-sm text-light me-2" role="status"></div>
+                    Resetting...
+                  </>
+                ) : (
+                  "Reset Password"
+                )}
+              </button>
+            </form>
+
+            {errorMessage && <p className="text-danger mt-2">{errorMessage}</p>}
+            {successMessage && <p className="text-success mt-2">{successMessage}</p>}
+          </div>
+
+          {/* Right Section */}
+          <div className="col-md-6 d-flex flex-column justify-content-center align-items-center text-white p-5 loginForm2">
+            <h3 className="fw-bold text-center">South Paws Hospital Management Hub</h3>
           </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default ResetPassword;
+}
