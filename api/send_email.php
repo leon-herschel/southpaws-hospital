@@ -75,7 +75,7 @@ $mail->Body = "
                     <h2 style='color: #004080; margin: 0;'>Appointment Confirmation</h2>
                 </td>
                 <td style='text-align: right;'>
-                    <img src='cid:cliniclogo' width='120' style='display: block;'>
+                    <img src='cid:cliniclogo' width='210' style='display: block;'>
                 </td>
             </tr>
         </table>
