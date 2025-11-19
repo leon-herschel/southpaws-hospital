@@ -66,9 +66,20 @@ $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'], $_ENV['MAIL_FROM_NAME']);
     $mail->isHTML(true);
     $mail->Subject = "Appointment Confirmation at South Paws Veterinary Hospital";
 
+    $mail->addEmbeddedImage(__DIR__ . '/public/southpawslogo.png', 'cliniclogo');
 $mail->Body = "
     <div style='font-family: Arial, sans-serif; color: #333; line-height: 1.6;'>
-        <h2 style='color: #004080;'>Appointment Confirmation</h2>
+        <table width='100%' style='margin-bottom: 20px;'>
+            <tr>
+                <td style='text-align: left;'>
+                    <h2 style='color: #004080; margin: 0;'>Appointment Confirmation</h2>
+                </td>
+                <td style='text-align: right;'>
+                    <img src='cid:cliniclogo' width='210' style='display: block;'>
+                </td>
+            </tr>
+        </table>
+        
         <p>Dear {$data['name']},</p>
         <p>
             We are pleased to confirm your appointment at <strong>South Paws Veterinary Hospital</strong>.
