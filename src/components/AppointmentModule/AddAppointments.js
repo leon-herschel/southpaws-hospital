@@ -167,8 +167,8 @@ const AddAppointments = ({ onClose, prefill }) => {
 
     setFormData((prev) => ({
       ...prev,
-      date: computedDate || prev.date,
-      time: prev.time || computedTime || prev.time,
+      date: prefill.date || computedDate || prev.date,
+      time: prefill.time || computedTime || prev.time,
       name: prefill.name || prev.name,
       contact: prefill.contact || prev.contact,
       email: prefill.email || prev.email,
