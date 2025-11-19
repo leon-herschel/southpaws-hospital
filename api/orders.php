@@ -289,6 +289,7 @@ $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'], $_ENV['MAIL_FROM_NAME']);
 
                         $mail->isHTML(true);
                         $mail->Subject = 'Order Receipt - SouthPaws';
+                        $mail->addEmbeddedImage(__DIR__ . '/public/southpawslogo.png', 'cliniclogo');
 
                         // Generate email receipt HTML
                         $emailContent = '
@@ -300,7 +301,7 @@ $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'], $_ENV['MAIL_FROM_NAME']);
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                                 <!-- Logo on the Left -->
                                 <div style="width: 100%;">
-                                    <img src="https://southpaws.scarlet2.io/southpawslogo.png" alt="Southpaws Logo" style="max-width: 300px;">
+                                    <img src="cid:cliniclogo" width="210" style="display: block;">
                                 </div>
 
                                 <!-- Receipt Details on the Right -->

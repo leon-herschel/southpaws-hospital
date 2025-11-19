@@ -36,7 +36,7 @@ try {
     }
 
     // Query Cancelled Appointments
-    $sqlCancelled = "SELECT id, status, name, date, time 
+    $sqlCancelled = "SELECT id, status, name, date, time, created_at
                      FROM appointments 
                      WHERE status = 'Cancelled' $cancelledCondition";
     $stmtCancelled = $conn->prepare($sqlCancelled);

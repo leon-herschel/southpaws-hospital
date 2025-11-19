@@ -105,6 +105,17 @@ const ReportGeneration = () => {
       );
     }
 
+    if (filter === "appointments") {
+      return (
+        item.name?.toLowerCase().includes(term) ||
+        item.email?.toLowerCase().includes(term) ||
+        item.contact?.toLowerCase()?.includes(term) ||
+        item.status?.toLowerCase().includes(term) ||
+        item.pet_name?.toLowerCase().includes(term) ||
+        item.service?.toLowerCase().includes(term) ||
+        formatDate(item.date)?.toLowerCase().includes(term)
+      );
+    }
     return false;
   });
 
@@ -161,6 +172,7 @@ const ReportGeneration = () => {
         1: "Veterinarian",
         2: "Receptionist",
         3: "Admin",
+        4: "Super Admin",
       }[userRole] || "Unknown Role"; // Default to 'Unknown Role' if role ID is invalid
 
     // ✅ Hosted logo link (Ensure it's accessible)
