@@ -41,16 +41,16 @@ export default function NotificationBell() {
       const now = new Date();
       let fetched = (res.data.notifications || [])
         .map((n) => {
-          // Normalize created_at
-          if (n.status === "Cancelled") {
-            return { ...n, created_at: new Date() };
-          }
-          if (n.date && n.time) {
-            return { ...n, created_at: new Date(`${n.date}T${n.time}`) };
-          }
+          // Use backend timestamps (do NOT override)
           if (n.created_at) {
             return { ...n, created_at: new Date(n.created_at) };
           }
+
+          // If backend still doesn't send ANY timestamp (rare)
+          if (n.date && n.time) {
+            return { ...n, created_at: new Date(`${n.date}T${n.time}`) };
+          }
+
           return n;
         })
         // Only keep last 7 days

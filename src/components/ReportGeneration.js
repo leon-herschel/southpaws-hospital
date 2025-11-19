@@ -172,6 +172,7 @@ const ReportGeneration = () => {
         1: "Veterinarian",
         2: "Receptionist",
         3: "Admin",
+        4: "Super Admin",
       }[userRole] || "Unknown Role"; // Default to 'Unknown Role' if role ID is invalid
 
     // ✅ Hosted logo link (Ensure it's accessible)
