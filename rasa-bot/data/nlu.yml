@@ -21,18 +21,10 @@ nlu:
     - yo
     - greetings
     - howdy
-    - hi there
-    - hey bot
-    - what's up
-    - yo
-    - greetings
 
 - intent: goodbye
   examples: |
     - cu
-    - good bye
-    - see you later
-    - see ya
     - good bye
     - see you later
     - see ya
@@ -41,20 +33,11 @@ nlu:
     - goodbye
     - have a nice day
     - take care
-    - take care
     - bye bye
-    - catch you later
     - catch you later
 
 - intent: thank_you
-- intent: thank_you
   examples: |
-    - thanks
-    - thank you
-    - appreciate it
-    - many thanks
-    - thanks a lot
-    - cheers
     - thanks
     - thank you
     - appreciate it
@@ -68,16 +51,12 @@ nlu:
     - great
     - amazing
     - feeling awesome
-    - feeling awesome
     - wonderful
     - I am feeling very good
     - I am great
     - I am amazing
     - super stoked
     - extremely good
-    - awesome
-    - fantastic
-    - couldn’t be better
     - awesome
     - fantastic
     - couldn’t be better
@@ -94,9 +73,6 @@ nlu:
     - unhappy
     - not good
     - not very good
-    - feeling down
-    - I feel lonely
-    - terrible day
     - feeling down
     - I feel lonely
     - terrible day
@@ -135,9 +111,6 @@ nlu:
     - how can you help me?
     - what do you know?
     - what services do you provide?
-    - are you real?
-    - are you an AI?
-    - are you alive?
 
 - intent: how_are_you
   examples: |
@@ -213,6 +186,13 @@ nlu:
     - Can I see appointments by day or week?
     - How do I switch to month view?
     - What are the calendar view options?
+
+- intent: faq/appointments_table
+  examples: |
+    - Where is the appointments table?
+    - How do I find the appointments table?
+    - Where can I see all appointments?
+    - Show me the appointments table
 
 # --- Actions ---
 - intent: list_appointments
