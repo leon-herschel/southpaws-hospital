@@ -143,7 +143,8 @@ responses:
     - text: "Feel free to call us at 0960-631-7128."
 
   utter_ask_facebook:
-    - text: "Yes! You can message us on Facebook: https://www.facebook.com/swusouthpaws/"
+    - text: "Our Facebook page is South Paws Veterinary Hospital. For easy access, the link is also in the website footer under Contact Info."
+    - text: "Feel free to reach us on Facebook at South Paws Veterinary Hospital. The link is also available at the bottom of the page."
 
 actions:
   - action_list_services

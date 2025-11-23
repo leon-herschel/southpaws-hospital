@@ -68,20 +68,11 @@ responses:
 
   utter_intro:
   - text: |
-      Hi there! I’m PawPal, your assistant for the South Paws Veterinary Hospital HMS.  
-      Here are some quick things I can help you with:
+      Hi! I’m PawPal, your assistant for the South Paws HMS. What can I help you with today?
     buttons:
-      - title: "View today’s appointments"
-        payload: "/list_appointments"
-      - title: "Retrieve a client record"
-        payload: "/retrieve_client"
-      - title: "Retrieve a patient record"
-        payload: "/retrieve_patient"
-      - title: "Retrieve an appointment"
-        payload: "/retrieve_appointment"
-      - title: "Help using appointments page"
-        payload: "/faq"
-    
+      - title: "What can you do?"
+        payload: "/what_can_you_do"
+      
   utter_greet:
     - text: "Hey! How can I help?"
     - text: "Hello! What can I help you with today?"
@@ -129,7 +120,7 @@ responses:
     - text: "To add an appointment, click the **Add Appointment** button or click an empty slot in the calendar to prefill the date and time."
 
   utter_faq/appointments_statuses:
-    - text: "The boxes show the number of appointments by status: Pending, Confirmed, Cancelled, and Done. Clicking a box opens the list for that status."
+  - text: "The boxes show the number of appointments by status: Pending, Confirmed, Cancelled, and Done. Clicking a box opens the table for that status. The numbers in these boxes also adjust based on the selected calendar view—Day, Week, or Month—so you always see counts relevant to the current view."
 
   utter_faq/appointments_tag_arrived:
     - text: "Use the **Tag as Arrived** button when a patient arrives. A modal will open for marking them as arrived."
@@ -145,6 +136,9 @@ responses:
 
   utter_faq/appointments_calendar_views:
     - text: "You can switch the calendar view to **Day, Week, or Month** to see appointments in different timeframes."
+
+  utter_faq/appointments_table:
+    - text: "You can access the tables by clicking any of the status boxes (Pending, Confirmed, Cancelled, Done) above the calendar."
 
 session_config:
   session_expiration_time: 60
