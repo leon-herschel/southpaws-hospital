@@ -61,15 +61,7 @@ if (
     exit();
 }
 
-// Time validation
-$endDateTime = strtotime("1970-01-01 $end_time");
-$latestEnd = strtotime("1970-01-01 17:00");
 
-if ($endDateTime > $latestEnd) {
-    http_response_code(400);
-    echo json_encode(["error" => "End time must not be later than 5:00 PM"]);
-    exit();
-}
 
 // Conflict check
 $checkStmt = $conn->prepare("SELECT COUNT(*) FROM appointments WHERE date = ? AND time = ? AND doctor_id = ?");
