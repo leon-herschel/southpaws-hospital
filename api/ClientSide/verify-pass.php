@@ -5,7 +5,13 @@ header("Content-Type: application/json");
 include('../DbConnect.php');
 require __DIR__ . '/../vendor/autoload.php';
 
+
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+use Dotenv\Dotenv;
+
+$dotenv = Dotenv::createImmutable(__DIR__ . '/../', '.env.domain');
 $dotenv->load();
 
 $data = json_decode(file_get_contents("php://input"), true);
@@ -16,7 +22,10 @@ if (!isset($data['passkey'])) {
 }
 
 if ($data['passkey'] === $_ENV['STAFF_PORTAL_PASS']) {
-    echo json_encode(["success" => true, "redirect" => "http://localhost:3000/login"]);
+    echo json_encode([
+        "success" => true,
+        "redirect" => $_ENV['FRONTEND_URL'] . "/login"
+    ]);
 } else {
     echo json_encode(["success" => false, "message" => "Invalid passkey"]);
 }

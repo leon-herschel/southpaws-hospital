@@ -6,11 +6,12 @@ $objDB = new DbConnect;
 $conn = $objDB->connect();
 
 require 'vendor/autoload.php';
-
 use Dotenv\Dotenv;
 
 $dotenv = Dotenv::createImmutable(__DIR__, '.env.acc');
 $dotenv->load();
+
+$API_URL = rtrim($_ENV['API_URL'], '/');
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -130,7 +131,7 @@ $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'], $_ENV['MAIL_FROM_NAME']);
                 $mail->setFrom($_ENV['MAIL_USERNAME'], 'South Paws Veterinary Hospital');
                 $mail->addAddress($user->email, $user->first_name);
 
-                $verificationLink = "http://localhost:80/api/verify.php?token=$verificationToken";
+                $verificationLink = "{$API_URL}/verify.php?token={$verificationToken}";
 
                 $mail->isHTML(true);
                 $mail->Subject = 'Verify Your Account';
@@ -140,7 +141,7 @@ $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'], $_ENV['MAIL_FROM_NAME']);
                     <p><strong>Email:</strong> {$user->email}</p>
                     <p><strong>Password:</strong> {$user->password}</p>
                     <p>To activate your account, please click the link below:</p>
-                    <a href='$verificationLink'>Verify Your Account</a>
+                    <a href='{$API_URL}/verify.php?token={$verificationToken}'>Verify Your Account</a>
                     <p><strong>Note:</strong> This link will expire in 24 hours. If it expires, you will need to request a new verification link.</p>
                     <p>For security reasons, change your password after you log in.</p>
                 ";

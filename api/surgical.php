@@ -1,4 +1,12 @@
 <?php
+require_once 'vendor/autoload.php';
+use Dotenv\Dotenv;
+
+$dotenv = Dotenv::createImmutable(__DIR__, '.env.domain');
+$dotenv->load();
+
+$API_URL = rtrim($_ENV['API_URL'], '/'); 
+
 include 'cors.php';
 
 include 'DbConnect.php';
@@ -46,7 +54,7 @@ switch ($method) {
         // Process pet images
         foreach ($result as &$row) {
             if (!empty($row['pet_image'])) {
-                $row['pet_image'] = "http://localhost/api/uploads/" . basename($row['pet_image']);
+                $row['pet_image'] = !empty($row['pet_image']) ? "{$API_URL}/uploads/" . basename($row['pet_image']) : null;
             } else {
                 $row['pet_image'] = null;
             }

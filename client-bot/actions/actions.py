@@ -7,12 +7,24 @@ import requests
 import difflib
 import random
 import re
+import os
+from dotenv import load_dotenv
+import pymysql
 
+# Load .env.domain from /api folder
+dotenv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'api', '.env.domain')
+load_dotenv(dotenv_path)
+
+# Try loading
+loaded = load_dotenv(dotenv_path)
+print("Loaded:", loaded)
+
+# Database config
 DB_CONFIG = {
-    "host": "localhost",
-    "user": "root",
-    "password": "",
-    "database": "react-crud"
+    "host": os.getenv("DB_HOST"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASS"),
+    "database": os.getenv("DB_NAME")
 }
 
 def db_query(query, params=()):
@@ -56,7 +68,8 @@ class ActionGetServicePrice(Action):
 
         try:
             # Fetch service data
-            response = requests.get("http://localhost/api/get_services.php")
+            api_url = os.getenv("API_URL")
+            response = requests.get(f"{api_url}/get_services.php")
             data = response.json()
             if not data:
                 dispatcher.utter_message(text="Sorry, I couldn’t retrieve service data right now.")
