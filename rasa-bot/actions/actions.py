@@ -5,13 +5,20 @@ from rasa_sdk.executor import CollectingDispatcher
 from datetime import datetime, date, timedelta
 import re
 import dateutil.parser
+import os
+from dotenv import load_dotenv
+import pymysql
 
+# Load .env.domain from /api folder
+dotenv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'api', '.env.domain')
+load_dotenv(dotenv_path)
 
+# Database config
 DB_CONFIG = {
-    "host": "localhost",
-    "user": "root",
-    "password": "",
-    "database": "react-crud"
+    "host": os.getenv("DB_HOST"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASS"),
+    "database": os.getenv("DB_NAME")
 }
 
 STATUS_TO_PAGE = {

@@ -1,4 +1,12 @@
 <?php
+require_once 'vendor/autoload.php';
+use Dotenv\Dotenv;
+
+$dotenv = Dotenv::createImmutable(__DIR__, '.env.domain');
+$dotenv->load();
+
+$API_URL = rtrim($_ENV['API_URL'], '/');
+
 session_start();
 include 'cors.php';
 
@@ -51,7 +59,7 @@ switch ($method) {
         // Ensure the pet_image has a proper URL prefix
         foreach ($immunizations as &$record) {
             if (!empty($record['pet_image'])) {
-                $record['pet_image'] = "http://localhost:80/api/uploads/" . basename($record['pet_image']);
+                $record['pet_image'] = "{$API_URL}/uploads/" . basename($record['pet_image']);
             }
         }
         
