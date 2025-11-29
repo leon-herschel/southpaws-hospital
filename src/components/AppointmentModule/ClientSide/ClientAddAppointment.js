@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Button, OverlayTrigger, Popover } from "react-bootstrap";
+import { Button, Popover } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { format } from "date-fns";
-import { FaQuestionCircle, FaPaw, FaUser, FaCalendarAlt, FaStethoscope, FaClipboardCheck } from "react-icons/fa";
+import { FaPaw, FaUser, FaCalendarAlt, FaStethoscope, FaClipboardCheck, FaClock, FaCheckCircle, FaPhone, FaCalendarCheck, FaCheck } from "react-icons/fa";
 import { useEffect } from "react";
+import { Modal } from "react-bootstrap";
 
 function AddAppointments() {
   const [formData, setFormData] = useState({
@@ -17,10 +18,10 @@ function AddAppointments() {
     contact: "",
     email: "",
     status: "Pending",
-    pet_name: "",
-    pet_breed: "",
-    pet_species: "",
     notes: "",
+    pets: [
+      { pet_name: "", pet_breed: "", pet_species: "" }
+    ],
   });
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const [isLoading, setIsLoading] = useState(false);
@@ -30,6 +31,8 @@ function AddAppointments() {
   const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
   const [services, setServices] = useState([]);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const handleCloseModal = () => setShowSuccessModal(false);
 
   useEffect(() => {
     axios
@@ -48,6 +51,29 @@ function AddAppointments() {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handlePetChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedPets = [...formData.pets];
+    updatedPets[index][name] = value;
+    setFormData((prev) => ({ ...prev, pets: updatedPets }));
+  };
+
+  const addPet = () => {
+    if (formData.pets.length < 4) {
+      setFormData((prev) => ({
+        ...prev,
+        pets: [...prev.pets, { pet_name: "", pet_breed: "", pet_species: "" }],
+      }));
+    } else {
+      toast.warning("Maximum 4 pets allowed per appointment.");
+    }
+  };
+
+  const removePet = (index) => {
+    const updatedPets = formData.pets.filter((_, i) => i !== index);
+    setFormData((prev) => ({ ...prev, pets: updatedPets }));
   };
 
   const handleSubmit = async (e) => {
@@ -89,10 +115,8 @@ function AddAppointments() {
       contact: formData.contact,
       email: finalEmail,
       status: formData.status,
-      pet_name: formData.pet_name,
-      pet_breed: formData.pet_breed,
-      pet_species: formData.pet_species,
       notes: formData.notes,
+      pets: formData.pets
     };
 
     try {
@@ -102,7 +126,7 @@ function AddAppointments() {
       );
 
       if (res.data.success) {
-        toast.success("Appointment request submitted! Please note that your request is still under review. Kindly monitor your phone or email for confirmation.");
+        setShowSuccessModal(true);
         setFormData({
           reason_for_visit: "",
           preferred_date: "",
@@ -140,10 +164,11 @@ function AddAppointments() {
           /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
         );
       case 2: // Step 2: Patient Details
-        return (
-          formData.pet_name.trim() !== "" &&
-          formData.pet_breed.trim() !== "" &&
-          formData.pet_species.trim() !== ""
+        return formData.pets.every(
+          (pet) =>
+            pet.pet_name.trim() !== "" &&
+            pet.pet_breed.trim() !== "" &&
+            pet.pet_species.trim() !== ""
         );
       case 3: // Step 3: Reason for Visit
         return formData.reason_for_visit.trim() !== "";
@@ -297,74 +322,88 @@ function AddAppointments() {
           <div className="step-content">
             <div className="card border-0 shadow-sm">
               <div className="card-body p-4">
-                <div className="row g-3">
-                  <div className="col-md-6">
-                    <div className="form-floating">
-                      <input
-                        type="text"
-                        id="pet_name"
-                        name="pet_name"
-                        className="form-control"
-                        value={formData.pet_name}
-                        onChange={handleChange}
-                        placeholder="Pet Name"
-                        required
-                      />
-                      <label htmlFor="pet_name" className="text-muted">
-                        Pet Name <span className="text-danger">*</span>
-                      </label>
+                {formData.pets.length > 1 && (
+                  <p className="text-muted mb-3">
+                    <strong>Note:</strong> All pets in this appointment must receive the same service. If each pet need different services, please create separate appointments.
+                  </p>
+                )}
+                {formData.pets.map((pet, index) => (
+                  <div key={index} className="mb-4 border p-3 rounded">
+                    {formData.pets.length > 1 && (
+                      <h6 className="mb-3">Pet {index + 1}</h6>
+                    )}
+                    <div className="row g-3">
+                      <div className="col-md-4">
+                        <div className="form-floating">
+                          <input
+                            type="text"
+                            name="pet_name"
+                            className="form-control"
+                            value={pet.pet_name}
+                            onChange={(e) => handlePetChange(index, e)}
+                            placeholder="Pet Name"
+                            required
+                          />
+                          <label>Pet Name <span className="text-danger">*</span></label>
+                        </div>
+                      </div>
+                      <div className="col-md-4">
+                        <div className="form-floating">
+                          <input
+                            type="text"
+                            name="pet_breed"
+                            className="form-control"
+                            list="breedOptions"
+                            value={pet.pet_breed}
+                            onChange={(e) => handlePetChange(index, e)}
+                            placeholder="Breed"
+                            required
+                          />
+                          <label>Breed <span className="text-danger">*</span></label>
+                          <datalist id="breedOptions">
+                            <option value="Siberian Husky" />
+                            <option value="Golden Retriever" />
+                            <option value="German Shepherd" />
+                            <option value="Chow Chow" />
+                            <option value="Shih Tzu" />
+                          </datalist>
+                        </div>
+                      </div>
+                      <div className="col-md-4">
+                        <div className="form-floating">
+                          <input
+                            type="text"
+                            name="pet_species"
+                            className="form-control"
+                            list="speciesOptions"
+                            value={pet.pet_species}
+                            onChange={(e) => handlePetChange(index, e)}
+                            placeholder="Species"
+                            required
+                          />
+                          <label>Species <span className="text-danger">*</span></label>
+                          <datalist id="speciesOptions">
+                            <option value="Canine" />
+                            <option value="Feline" />
+                          </datalist>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-2 text-end">
+                      {formData.pets.length > 1 && (
+                        <Button variant="danger" size="sm" onClick={() => removePet(index)}>
+                          Remove Pet
+                        </Button>
+                      )}
                     </div>
                   </div>
+                ))}
 
-                  <div className="col-md-6">
-                    <div className="form-floating">
-                      <input
-                        type="text"
-                        id="pet_breed"
-                        name="pet_breed"
-                        className="form-control"
-                        value={formData.pet_breed}
-                        list="breedOptions"
-                        onChange={handleChange}
-                        placeholder="Breed"
-                        required
-                      />
-                      <label htmlFor="pet_breed" className="text-muted">
-                        Breed <span className="text-danger">*</span>
-                      </label>
-                      <datalist id="breedOptions">
-                        <option value="Siberian Husky" />
-                        <option value="Golden Retriever" />
-                        <option value="German Shepherd" />
-                        <option value="Chow Chow" />
-                        <option value="Shih Tzu" />
-                      </datalist>
-                    </div>
-                  </div>
-
-                  <div className="col-12">
-                    <div className="form-floating">
-                      <input
-                        type="text"
-                        id="pet_species"
-                        name="pet_species"
-                        className="form-control"
-                        value={formData.pet_species}
-                        list="speciesOptions"
-                        onChange={handleChange}
-                        placeholder="Species"
-                        required
-                      />
-                      <label htmlFor="pet_species" className="text-muted">
-                        Species <span className="text-danger">*</span>
-                      </label>
-                      <datalist id="speciesOptions">
-                        <option value="Canine" />
-                        <option value="Feline" />
-                      </datalist>
-                    </div>
-                  </div>
-                </div>
+                {formData.pets.length < 4 && (
+                  <Button variant="primary" onClick={addPet}>
+                    + Add Another Pet
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -375,32 +414,54 @@ function AddAppointments() {
           <div className="step-content">
             <div className="card border-0 shadow-sm">
               <div className="card-body p-4">
-                <div className="d-flex justify-content-between align-items-center mb-2">
-                  <label htmlFor="reason_for_visit" className="text-muted">
-                    Reason for Visit <span className="text-danger">*</span>
-                  </label>
+                <label className="text-muted mb-2">
+                  Reason for Visit <span className="text-danger">*</span>
+                </label>
 
-                  <OverlayTrigger trigger="click" placement="right" overlay={servicesPopover} rootClose>
-                    <Button
-                      variant="outline-primary"
-                      size="sm"
-                      className="d-flex align-items-center gap-1"
-                    >
-                      <FaQuestionCircle />
-                      <span>Available Services</span>
-                    </Button>
-                  </OverlayTrigger>
+                {/* Services Checkboxes */}
+                <div className="mb-3 d-flex flex-wrap gap-2">
+                  {["Consultation", "Vaccination", "Deworming", "Tick & Flea", "Lab Test"].map(
+                    (service) => (
+                      <div key={service} className="form-check form-check-inline">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id={service}
+                          value={service}
+                          checked={formData.reason_for_visit.includes(service)}
+                          onChange={(e) => {
+                            const selected = e.target.value;
+                            let updatedText = formData.reason_for_visit.split(", ").filter(Boolean);
+
+                            if (e.target.checked) {
+                              updatedText.push(selected);
+                            } else {
+                              updatedText = updatedText.filter((s) => s !== selected);
+                            }
+
+                            setFormData((prev) => ({
+                              ...prev,
+                              reason_for_visit: updatedText.join(", "),
+                            }));
+                          }}
+                        />
+                        <label className="form-check-label" htmlFor={service}>
+                          {service}
+                        </label>
+                      </div>
+                    )
+                  )}
                 </div>
 
+                {/* Textarea */}
                 <textarea
                   id="reason_for_visit"
                   name="reason_for_visit"
                   className="form-control"
-                  style={{ height: "120px", borderRadius: "0.8rem"}}
-                  placeholder="Describe the reason for your visit (e.g., Annual vaccination, skin irritation, follow-up checkup)"
+                  style={{ height: "120px", borderRadius: "0.8rem" }}
+                  placeholder="Describe the reason for your visit (optional additional notes)"
                   value={formData.reason_for_visit}
                   onChange={handleChange}
-                  required
                 ></textarea>
               </div>
             </div>
@@ -501,15 +562,22 @@ function AddAppointments() {
                       <FaPaw className="me-2" />
                       Patient Details
                     </h6>
-                    <div className="row">
-                      <div className="col-md-6">
-                        <p><strong>Pet Name:</strong> {formData.pet_name}</p>
-                        <p><strong>Breed:</strong> {formData.pet_breed}</p>
+                    {formData.pets.map((pet, index) => (
+                      <div key={index} className="row mb-3">
+                        <div className="col-md-6">
+                          <p>
+                            <strong>
+                              {formData.pets.length > 1 ? `Pet ${index + 1} Name:` : "Pet Name:"}
+                            </strong>{" "}
+                            {pet.pet_name || "—"}
+                          </p>
+                          <p><strong>Breed:</strong> {pet.pet_breed || "—"}</p>
+                        </div>
+                        <div className="col-md-6">
+                          <p><strong>Species:</strong> {pet.pet_species || "—"}</p>
+                        </div>
                       </div>
-                      <div className="col-md-6">
-                        <p><strong>Species:</strong> {formData.pet_species}</p>
-                      </div>
-                    </div>
+                    ))}
                   </section>
 
                   <section className="review-section mb-4">
@@ -594,6 +662,56 @@ function AddAppointments() {
           </div>
         </div>
       </form>
+
+      <Modal
+        show={showSuccessModal}
+        onHide={handleCloseModal}
+        centered
+        backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Body className="text-center p-5">
+          <div className="mb-4">
+            <div className="success-icon-container mx-auto mb-3">
+              <FaClipboardCheck size={32} className="text-success" />
+            </div>
+            <h4 className="text-success mb-3">Appointment Request Submitted!</h4>
+            <p className="text-muted mb-4">
+              Thank you for your appointment request. We've received your information and will contact you shortly to confirm your booking.
+            </p>
+          </div>
+
+          <div className="next-steps bg-light rounded p-4 mb-4">
+            <h6 className="text-primary mb-3">
+              <FaClock className="me-2" />
+              What Happens Next?
+            </h6>
+            <ul className="list-unstyled text-start small text-muted mb-0">
+              <li className="mb-2">
+                <FaCheckCircle className="text-success me-2" />
+                We'll review your request
+              </li>
+              <li className="mb-2">
+                <FaPhone className="text-primary me-2" />
+                Contact you within 24 hours
+              </li>
+              <li className="mb-0">
+                <FaCalendarCheck className="text-info me-2" />
+                Confirm details via email or text
+              </li>
+            </ul>
+          </div>
+
+          <Button 
+            variant="success" 
+            onClick={handleCloseModal}
+            className="px-5"
+          >
+            <FaCheck className="me-2" />
+            Got It!
+          </Button>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

@@ -48,7 +48,6 @@ if (!empty($data['doctor_id'])) {
 $mail = new PHPMailer(true);
 
 try {
-    // SMTP Config (replace with your clinic's email settings)
 $mail->isSMTP();
 $mail->Host       = $_ENV['MAIL_HOST'];
 $mail->SMTPAuth   = true;
@@ -66,7 +65,13 @@ $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'], $_ENV['MAIL_FROM_NAME']);
     $mail->isHTML(true);
     $mail->Subject = "Appointment Confirmation at South Paws Veterinary Hospital";
 
-    $mail->addEmbeddedImage(__DIR__ . '/public/southpawslogo.png', 'cliniclogo');
+    $logoPath = realpath(__DIR__ . '/public/southpawslogo.png');
+        if ($logoPath && file_exists($logoPath)) {
+            $mail->addEmbeddedImage($logoPath, 'cliniclogo');
+        } else {
+            error_log("Logo not found at: " . __DIR__ . '/public/southpawslogo.png');
+        }
+    
 $mail->Body = "
     <div style='font-family: Arial, sans-serif; color: #333; line-height: 1.6;'>
         <table width='100%' style='margin-bottom: 20px;'>
