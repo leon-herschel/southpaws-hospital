@@ -30,10 +30,31 @@ $pet_species      = $data["pet_species"] ?? '';
 $notes            = $data["notes"] ?? '';
 
 // Validate required fields
-if (!$reason_for_visit || !$preferred_date || !$preferred_time || !$name || !$contact || !$email || !$pet_name || !$pet_breed || !$pet_species) {
+if (
+    !$reason_for_visit ||
+    !$preferred_date ||
+    !$preferred_time ||
+    !$name ||
+    !$contact ||
+    !$email ||
+    !isset($data['pets']) || !is_array($data['pets']) || count($data['pets']) === 0
+) {
     http_response_code(400);
     echo json_encode(["error" => "Missing required fields"]);
     exit();
+}
+
+// Validate each pet
+foreach ($data['pets'] as $pet) {
+    if (
+        empty($pet['pet_name']) ||
+        empty($pet['pet_breed']) ||
+        empty($pet['pet_species'])
+    ) {
+        http_response_code(400);
+        echo json_encode(["error" => "Each pet must have a name, breed, and species"]);
+        exit();
+    }
 }
 
 // Rate-limit check BEFORE inserting
@@ -74,7 +95,7 @@ try {
     exit();
 }
 
-// Insert appointment (only runs if allowed)
+// Insert appointment
 try {
     $stmt = $conn->prepare("
         INSERT INTO pending_appointments (
@@ -83,22 +104,30 @@ try {
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
-    $success = $stmt->execute([
-        $reason_for_visit,
-        $preferred_date,
-        $preferred_time,
-        $name,
-        $contact,
-        $status,
-        $email,
-        $pet_name,
-        $pet_breed,
-        $pet_species,
-        $notes
-    ]);
+    $allSuccess = true;
+    foreach ($data['pets'] as $pet) {
+        $success = $stmt->execute([
+            $reason_for_visit,
+            $preferred_date,
+            $preferred_time,
+            $name,
+            $contact,
+            $status,
+            $email,
+            $pet['pet_name'],
+            $pet['pet_breed'],
+            $pet['pet_species'],
+            $notes
+        ]);
 
-    if ($success) {
-        echo json_encode(["success" => true, "message" => "Pending appointment submitted"]);
+        if (!$success) {
+            $allSuccess = false;
+            break;
+        }
+    }
+
+    if ($allSuccess) {
+        echo json_encode(["success" => true, "message" => "Pending appointments submitted"]);
     } else {
         http_response_code(500);
         echo json_encode(["error" => "Insert failed"]);
