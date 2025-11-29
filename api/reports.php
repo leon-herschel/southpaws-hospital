@@ -153,8 +153,11 @@ if ($method === 'GET') {
                 a.status,
                 a.pet_name,
                 a.service,
-                a.created_at
+                a.created_at,
+                CONCAT (d.first_name, ' ', d.last_name) AS doctor_name
             FROM appointments a
+            LEFT JOIN internal_users d
+            ON a.doctor_id = d.id 
 
             UNION ALL
 
@@ -166,7 +169,8 @@ if ($method === 'GET') {
                 p.status,
                 p.pet_name,
                 p.reason_for_visit AS service,
-                p.created_at
+                p.created_at,
+                NULL AS doctor_name
             FROM pending_appointments p
         ) AS combined
     ";

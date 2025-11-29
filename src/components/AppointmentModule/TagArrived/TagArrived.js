@@ -28,9 +28,12 @@ function TagArrived({ onClose }) {
     }
 
     try {
-      const res = await axios.post(`${API_BASE_URL}/api/TagArrived/check-reference.php`, {
-        reference_number: referenceNumber,
-      });
+      const res = await axios.post(
+        `${API_BASE_URL}/api/TagArrived/check-reference.php`,
+        {
+          reference_number: referenceNumber,
+        }
+      );
 
       if (res.data.valid === true || res.data.valid === "warning") {
         if (res.data.valid === "warning") {
@@ -47,27 +50,33 @@ function TagArrived({ onClose }) {
 
   const handleExistingClient = async () => {
     try {
-      const res = await axios.post(`${API_BASE_URL}/api/TagArrived/get-client-info.php`, {
-        reference_number: referenceNumber,
-      });
+      const res = await axios.post(
+        `${API_BASE_URL}/api/TagArrived/get-client-info.php`,
+        {
+          reference_number: referenceNumber,
+        }
+      );
 
       if (res.data.client) {
         console.log("Client info from backend:", res.data.client);
         const pets = res.data.pets || [];
         const appointmentPet = {
-          name: (res.data.appointment_pet?.name || '').toLowerCase().trim(),
-          species: (res.data.appointment_pet?.species || '').toLowerCase().trim(),
-          breed: (res.data.appointment_pet?.breed || '').toLowerCase().trim()
+          name: (res.data.appointment_pet?.name || "").toLowerCase().trim(),
+          species: (res.data.appointment_pet?.species || "")
+            .toLowerCase()
+            .trim(),
+          breed: (res.data.appointment_pet?.breed || "").toLowerCase().trim(),
         };
 
-        const matchedPet = pets.find((pet) =>
-          pet?.name?.toLowerCase().trim() === appointmentPet?.name &&
-          pet?.species?.toLowerCase().trim() === appointmentPet?.species &&
-          pet?.breed?.toLowerCase().trim() === appointmentPet?.breed
+        const matchedPet = pets.find(
+          (pet) =>
+            pet?.name?.toLowerCase().trim() === appointmentPet?.name &&
+            pet?.species?.toLowerCase().trim() === appointmentPet?.species &&
+            pet?.breed?.toLowerCase().trim() === appointmentPet?.breed
         );
 
         setClientInfo({
-           id: res.data.client?.id,
+          id: res.data.client?.id,
           ...res.data.client,
           service: res.data.appointment_service,
           doctor: res.data.appointment_doctor,
@@ -91,29 +100,29 @@ function TagArrived({ onClose }) {
   };
 
   const formatDate = (dateStr) => {
-    if (!dateStr) return '—';
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    if (!dateStr) return "—";
+    const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateStr).toLocaleDateString(undefined, options);
   };
 
   const formatTime = (timeStr) => {
-    if (!timeStr) return '';
-    const [hours, minutes] = timeStr.split(':');
+    if (!timeStr) return "";
+    const [hours, minutes] = timeStr.split(":");
     const date = new Date();
     date.setHours(parseInt(hours, 10));
     date.setMinutes(parseInt(minutes, 10));
     return date.toLocaleTimeString([], {
-      hour: 'numeric',
-      minute: '2-digit',
+      hour: "numeric",
+      minute: "2-digit",
       hour12: true,
     });
   };
 
   const formatTimeRange = (start, end) => {
-    if (!start) return '—';
+    if (!start) return "—";
     const formattedStart = formatTime(start);
-    const formattedEnd = end ? formatTime(end) : '';
-    return `${formattedStart} ${formattedEnd ? `- ${formattedEnd}` : ''}`;
+    const formattedEnd = end ? formatTime(end) : "";
+    return `${formattedStart} ${formattedEnd ? `- ${formattedEnd}` : ""}`;
   };
 
   return (
@@ -130,20 +139,24 @@ function TagArrived({ onClose }) {
           <div className="button-container">
             <button type="submit" className="button btn-gradient btn-success">
               Submit
-           </button>
-          </div>  
+            </button>
+          </div>
         </form>
       )}
 
       {step === "prompt" && (
         <div className="text-center">
-          <p className="">Couldn’t find a match. Is the client new or regular?</p>
+          <p className="">
+            Couldn’t find a match. Is the client new or regular?
+          </p>
           <Button
             variant="primary"
             className="me-2 btn-lg"
             onClick={async () => {
               try {
-                const clientRes = await axios.get(`${API_BASE_URL}/api/TagArrived/get-all-clients.php`);
+                const clientRes = await axios.get(
+                  `${API_BASE_URL}/api/TagArrived/get-all-clients.php`
+                );
                 if (clientRes.data.success) {
                   setAllClients(clientRes.data.clients);
                   setClientInfo(null);
@@ -156,32 +169,38 @@ function TagArrived({ onClose }) {
           >
             Regular
           </Button>
-          <Button variant="success" className="btn-lg" onClick={async () => {
-            try {
-              const res = await axios.post(`${API_BASE_URL}/api/TagArrived/get-appointment-info.php`, {
-                reference_number: referenceNumber,
-              });
+          <Button
+            variant="success"
+            className="btn-lg"
+            onClick={async () => {
+              try {
+                const res = await axios.post(
+                  `${API_BASE_URL}/api/TagArrived/get-appointment-info.php`,
+                  {
+                    reference_number: referenceNumber,
+                  }
+                );
 
-              if (res.data && res.data.success) {
-                setPrefillInfo({
-                  name: res.data.name,
-                  contact: res.data.contact,
-                  email: res.data.email,
-                  pet_name: res.data.pet_name,
-                  pet_species: res.data.pet_species,
-                  pet_breed: res.data.pet_breed
-                });
+                if (res.data && res.data.success) {
+                  setPrefillInfo({
+                    name: res.data.name,
+                    contact: res.data.contact,
+                    email: res.data.email,
+                    pet_name: res.data.pet_name,
+                    pet_species: res.data.pet_species,
+                    pet_breed: res.data.pet_breed,
+                  });
+                }
+              } catch (err) {
+                console.error("Failed to fetch appointment info", err);
               }
 
-            } catch (err) {
-              console.error("Failed to fetch appointment info", err);
-            }
-
-            setStep("newClient");
-            setShowAddClientModal(true);
-        }}>
-          New
-        </Button>
+              setStep("newClient");
+              setShowAddClientModal(true);
+            }}
+          >
+            New
+          </Button>
         </div>
       )}
 
@@ -192,19 +211,22 @@ function TagArrived({ onClose }) {
               <>
                 <h5 className="mb-3">Select Client</h5>
                 <Select
-                  options={allClients.map(c => ({
+                  options={allClients.map((c) => ({
                     value: c.id,
                     label: c.name,
                     email: c.email,
-                    contact: c.contact
+                    contact: c.contact,
                   }))}
                   onChange={async (option) => {
                     setSelectedClient(option);
                     try {
-                      const res = await axios.post(`${API_BASE_URL}/api/TagArrived/get-client-info.php`, {
-                        client_id: option.value,
-                        reference_number: referenceNumber,
-                      });
+                      const res = await axios.post(
+                        `${API_BASE_URL}/api/TagArrived/get-client-info.php`,
+                        {
+                          client_id: option.value,
+                          reference_number: referenceNumber,
+                        }
+                      );
 
                       if (res.data.success) {
                         setClientInfo({
@@ -230,70 +252,109 @@ function TagArrived({ onClose }) {
               <>
                 <h5 className="mb-3">Client Details</h5>
                 <div className="card p-3 mb-4 shadow-sm">
-                  <p className="mb-1"><strong>Name:</strong> {clientInfo.name}</p>
-                  <p className="mb-1"><strong>Contact:</strong> {clientInfo.contact}</p>
-                  <p className="mb-1"><strong>Email:</strong> {clientInfo.email || '—'}</p>
+                  <p className="mb-1">
+                    <strong>Name:</strong> {clientInfo.name}
+                  </p>
+                  <p className="mb-1">
+                    <strong>Contact:</strong> {clientInfo.contact}
+                  </p>
+                  <p className="mb-1">
+                    <strong>Email:</strong> {clientInfo.email || "—"}
+                  </p>
                 </div>
 
                 {clientInfo.pets?.length > 0 && (
-                 <>
-                  <div className="row">
-                    {!selectedPet && (
-                      <>
-                        <p>
-                          <strong>Select which pet is receiving the service:</strong>
-                        </p>
-                        <div className="mb-3 d-flex flex-column gap-2">
-                          {clientInfo.pets.map((pet, index) => (
-                            <React.Fragment key={index}>
-                              <input
-                                type="radio"
-                                className="btn-check"
-                                name="selectedPet"
-                                id={`pet-${index}`}
-                                autoComplete="off"
-                                onChange={() => setSelectedPet(clientInfo.pets[index])}
-                              />
-                              <label
-                                className="btn btn-outline-primary"
-                                htmlFor={`pet-${index}`}
-                              >
-                                {pet.name} — {pet.species}, {pet.breed}
-                              </label>
-                            </React.Fragment>
-                          ))}
+                  <>
+                    <div className="row">
+                      {!selectedPet && (
+                        <>
+                          <p>
+                            <strong>
+                              Select which pet is receiving the service:
+                            </strong>
+                          </p>
+                          <div className="mb-3 d-flex flex-column gap-2">
+                            {clientInfo.pets.map((pet, index) => (
+                              <React.Fragment key={index}>
+                                <input
+                                  type="radio"
+                                  className="btn-check"
+                                  name="selectedPet"
+                                  id={`pet-${index}`}
+                                  autoComplete="off"
+                                  onChange={() =>
+                                    setSelectedPet(clientInfo.pets[index])
+                                  }
+                                />
+                                <label
+                                  className="btn btn-outline-primary"
+                                  htmlFor={`pet-${index}`}
+                                >
+                                  {pet.name} — {pet.species}, {pet.breed}
+                                </label>
+                              </React.Fragment>
+                            ))}
 
-                          <Button
-                            variant="outline-success"
-                            size="sm"
-                            className="w-auto mt-2"
-                            onClick={() => setShowAddPetModal(true)}
-                          >
-                            + Add New Pet
-                          </Button>
-                        </div>
-                      </>
-                    )}
+                            <Button
+                              variant="outline-success"
+                              size="sm"
+                              className="w-auto mt-2"
+                              onClick={() => setShowAddPetModal(true)}
+                            >
+                              + Add New Pet
+                            </Button>
+                          </div>
+                        </>
+                      )}
 
-                      {(selectedPet) && (
+                      {selectedPet && (
                         <div className="col-md-12">
                           <h5 className="mb-3">Patient Details</h5>
                           <div className="card p-3 mb-4 shadow-sm">
-                            <p className="mb-1"><strong>Name:</strong> {(selectedPet || clientInfo.pets[0]).name}</p>
-                            <p className="mb-1"><strong>Species:</strong> {(selectedPet || clientInfo.pets[0]).species}</p>
-                            <p className="mb-1"><strong>Breed:</strong> {(selectedPet || clientInfo.pets[0]).breed}</p>
+                            <p className="mb-1">
+                              <strong>Name:</strong>{" "}
+                              {(selectedPet || clientInfo.pets[0]).name}
+                            </p>
+                            <p className="mb-1">
+                              <strong>Species:</strong>{" "}
+                              {(selectedPet || clientInfo.pets[0]).species}
+                            </p>
+                            <p className="mb-1">
+                              <strong>Gender:</strong>{" "}
+                              {(selectedPet || clientInfo.pets[0]).gender}
+                            </p>
+
+                            <p className="mb-1">
+                              <strong>Breed:</strong>{" "}
+                              {(selectedPet || clientInfo.pets[0]).breed}
+                            </p>
                           </div>
                         </div>
                       )}
 
-                      {(selectedPet) && (
+                      {selectedPet && (
                         <div className="col-md-12">
                           <h5 className="mb-3">Appointment Details</h5>
                           <div className="card p-3 mb-4 shadow-sm">
-                            <p className="mb-1"><strong>Service:</strong> {clientInfo.service || '—'}</p>
-                            <p className="mb-1"><strong>Doctor:</strong> {clientInfo.doctor || '—'}</p>
-                            <p className="mb-1"><strong>Date:</strong> {formatDate(clientInfo.date)}</p>
-                            <p className="mb-1"><strong>Time:</strong> {formatTimeRange(clientInfo.time, clientInfo.end_time)}</p>
+                            <p className="mb-1">
+                              <strong>Service:</strong>{" "}
+                              {clientInfo.service || "—"}
+                            </p>
+                            <p className="mb-1">
+                              <strong>Doctor:</strong>{" "}
+                              {clientInfo.doctor || "—"}
+                            </p>
+                            <p className="mb-1">
+                              <strong>Date:</strong>{" "}
+                              {formatDate(clientInfo.date)}
+                            </p>
+                            <p className="mb-1">
+                              <strong>Time:</strong>{" "}
+                              {formatTimeRange(
+                                clientInfo.time,
+                                clientInfo.end_time
+                              )}
+                            </p>
                           </div>
                         </div>
                       )}
@@ -301,7 +362,7 @@ function TagArrived({ onClose }) {
                   </>
                 )}
 
-                {(selectedPet) && (
+                {selectedPet && (
                   <div className="button-container">
                     <Button
                       variant="primary"
@@ -309,7 +370,9 @@ function TagArrived({ onClose }) {
                       onClick={async () => {
                         setUpdating(true);
                         try {
-                          const res = await axios.post(`${API_BASE_URL}/api/TagArrived/mark-arrived.php`, {
+                          const res = await axios.post(
+                            `${API_BASE_URL}/api/TagArrived/mark-arrived.php`,
+                            {
                               reference_number: referenceNumber,
                               client_name: clientInfo?.name,
                               client_contact: clientInfo?.contact,
@@ -317,13 +380,16 @@ function TagArrived({ onClose }) {
                               pet_name: selectedPet?.name,
                               pet_species: selectedPet?.species,
                               pet_breed: selectedPet?.breed,
-                          });
+                            }
+                          );
 
                           if (res.data.success) {
                             toast.success("Arrival confirmed!");
                             onClose();
                           } else {
-                            toast.error(res.data.message || "Failed to update status.");
+                            toast.error(
+                              res.data.message || "Failed to update status."
+                            );
                           }
                         } catch {
                           toast.error("Server error while updating status.");
@@ -350,7 +416,7 @@ function TagArrived({ onClose }) {
           setShowAddClientModal(false);
         }}
         onCategoryAdded={async () => {
-          setShowAddClientModal(false); 
+          setShowAddClientModal(false);
 
           // Fetch client and pet info again
           await handleExistingClient();
@@ -365,16 +431,18 @@ function TagArrived({ onClose }) {
           setShowAddPetModal(false);
 
           if (newPet) {
-            setClientInfo(prev => ({
+            setClientInfo((prev) => ({
               ...prev,
-              pets: [...(prev?.pets || []), newPet]
+              pets: [...(prev?.pets || []), newPet],
             }));
             setSelectedPet(newPet);
           } else {
             await handleExistingClient();
           }
         }}
-        client={clientInfo ? { id: clientInfo.id } : { id: selectedClient?.value }} 
+        client={
+          clientInfo ? { id: clientInfo.id } : { id: selectedClient?.value }
+        }
       />
     </div>
   );
