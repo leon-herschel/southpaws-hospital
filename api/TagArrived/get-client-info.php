@@ -31,7 +31,7 @@ $client_id = $data['client_id'] ?? '';
         }
 
         // --- Fetch their pets ---
-        $stmt2 = $conn->prepare("SELECT name, species, breed FROM patients WHERE owner_id = ?");
+        $stmt2 = $conn->prepare("SELECT name, species, breed, gender FROM patients WHERE owner_id = ?");
         $stmt2->execute([$client_id]);
         $pets = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 
@@ -106,7 +106,7 @@ $client_id = $data['client_id'] ?? '';
         }
 
         $client_id = $client['id'];
-        $stmt3 = $conn->prepare("SELECT name, species, breed FROM patients WHERE owner_id = ?");
+        $stmt3 = $conn->prepare("SELECT name, species, breed, gender FROM patients WHERE owner_id = ?");
         $stmt3->execute([$client_id]);
         $pets = $stmt3->fetchAll(PDO::FETCH_ASSOC);
 

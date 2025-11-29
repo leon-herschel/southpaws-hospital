@@ -28,7 +28,8 @@ switch ($method) {
                       patients.id AS pet_id,
                       patients.owner_id AS owner_id,
                       patients.name AS pet_name, 
-                      patients.species AS pet_species, 
+                      patients.species AS pet_species,
+                      patients.gender AS pet_gender,
                       patients.breed AS pet_breed, 
                       patients.weight AS pet_weight,
                       patients.age AS pet_age, 
@@ -70,7 +71,6 @@ switch ($method) {
                     'cellnumber' => $row['cellnumber'],
                     'email' => $row['email'],
                     'age' => $row['age'],
-                    'gender' => $row['gender'],
                     'pets' => [] // Initialize an empty pets array
                 ];
             }
@@ -82,6 +82,7 @@ switch ($method) {
                     'owner_id' => $row['owner_id'], 
                     'pet_name' => $row['pet_name'],
                     'pet_species' => $row['pet_species'],
+                    'pet_gender' => $row['pet_gender'],
                     'pet_breed' => $row['pet_breed'],
                     'pet_weight' => $row['pet_weight'],
                     'pet_age' => $row['pet_age'],
@@ -110,8 +111,8 @@ switch ($method) {
             $conn->beginTransaction();
 
             // Insert client
-            $sqlClient = "INSERT INTO clients (name, address, cellnumber, email, age, gender, created_at, created_by) 
-                          VALUES (:name, :address, :cellnumber, :email, :age, :gender, :created_at, :created_by)";
+            $sqlClient = "INSERT INTO clients (name, address, cellnumber, email, age, created_at, created_by) 
+                          VALUES (:name, :address, :cellnumber, :email, :age, :created_at, :created_by)";
             $stmtClient = $conn->prepare($sqlClient);
 
             $created_at = date('Y-m-d H:i:s');
@@ -123,7 +124,6 @@ switch ($method) {
             $stmtClient->bindParam(':cellnumber', $data['cellnumber']);
             $stmtClient->bindParam(':email', $data['email']);
             $stmtClient->bindParam(':age', $age);
-            $stmtClient->bindParam(':gender', $data['gender']);
             $stmtClient->bindParam(':created_at', $created_at);
             $stmtClient->bindParam(':created_by', $data['created_by']);
 
@@ -132,8 +132,8 @@ switch ($method) {
 
                 // Insert patients if any
                 if (!empty($data['patients'])) {
-                    $sqlPatient = "INSERT INTO patients (owner_id, name, species, breed, weight, age, birthdate, distinct_features, other_details, created_by, created_at) 
-                                   VALUES (:owner_id, :name, :species, :breed, :weight, :age, :birthdate, :distinct_features, :other_details, :created_by, :created_at)";
+                    $sqlPatient = "INSERT INTO patients (owner_id, name, species, gender, breed, weight, age, birthdate, distinct_features, other_details, created_by, created_at) 
+                                   VALUES (:owner_id, :name, :species, :gender, :breed, :weight, :age, :birthdate, :distinct_features, :other_details, :created_by, :created_at)";
                     $stmtPatient = $conn->prepare($sqlPatient);
 
                     foreach ($data['patients'] as $patient) {
@@ -143,6 +143,7 @@ switch ($method) {
                         $stmtPatient->bindParam(':owner_id', $client_id);
                         $stmtPatient->bindParam(':name', $patient['name']);
                         $stmtPatient->bindParam(':species', $patient['species']);
+                        $stmtPatient->bindParam(':gender', $patient['gender']);
                         $stmtPatient->bindParam(':breed', $patient['breed']);
                         $stmtPatient->bindParam(':weight', $patient['weight']);
                         $stmtPatient->bindParam(':age', $patientAge);
@@ -187,8 +188,7 @@ switch ($method) {
                 address = :address, 
                 cellnumber = :cellnumber, 
                 email = :email, 
-                age = :age, 
-                gender = :gender
+                age = :age,
                 WHERE id = :id";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':name', $input['name']);
@@ -196,7 +196,6 @@ switch ($method) {
         $stmt->bindParam(':cellnumber', $input['cellnumber']);
         $stmt->bindParam(':email', $input['email']);
         $stmt->bindParam(':age', $input['age']);
-        $stmt->bindParam(':gender', $input['gender']);
         $stmt->bindParam(':id', $input['id']);
         if ($stmt->execute()) {
             $response = ['status' => 1, 'message' => 'Record updated successfully.'];
