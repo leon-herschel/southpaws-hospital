@@ -23,6 +23,7 @@ const PendingAppointments = () => {
   const currentUserID = localStorage.getItem("userID");
   const currentUserEmail = localStorage.getItem("userEmail");
   const location = useLocation();
+  const [selectedIds, setSelectedIds] = useState([]);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
@@ -38,6 +39,19 @@ const PendingAppointments = () => {
     } catch (err) {
       console.error("Error fetching pending appointments", err);
     }
+  };
+
+  const getRelatedRequests = (appt) => {
+    if (!appt) return [];
+    return pendingAppointments.filter(
+      (p) =>
+        p.id !== appt.id &&
+        (
+          (p.name && p.name.toLowerCase() === appt.name.toLowerCase()) ||
+          (p.contact && p.contact === appt.contact) ||
+          (p.email && appt.email && p.email.toLowerCase() === appt.email.toLowerCase())
+        )
+    );
   };
 
   useEffect(() => {
@@ -104,6 +118,80 @@ const PendingAppointments = () => {
     setPendingToDeleteId(null);
   };
 
+  // Approve all requests (opens AddAppointments for the FIRST one)
+  const approveAll = () => {
+    if (!viewingAppointment) return;
+    const group = [viewingAppointment, ...getRelatedRequests(viewingAppointment)];
+
+    // open AddAppointments with the first request
+    const first = group[0];
+    setPrefillData({
+      name: first.name,
+      contact: first.contact,
+      email: first.email || "",
+      pet_name: first.pet_name,
+      pet_breed: first.pet_breed,
+      pet_species: first.pet_species,
+      preferred_date: first.preferred_date,
+      preferred_time: first.preferred_time,
+    });
+
+    // delete pending after AddAppointments closes
+    setPendingToDeleteId(group.map((x) => x.id));
+    setShowAddAppointment(true);
+  };
+
+  // Reject all
+  const rejectAll = async () => {
+    const group = [viewingAppointment, ...getRelatedRequests(viewingAppointment)];
+    for (const g of group) {
+      await axios.delete(`${API_BASE_URL}/api/pending_appointments.php`, {
+        data: { id: g.id },
+      });
+    }
+    toast.success("All requests rejected");
+    setViewingAppointment(null);
+    fetchPending();
+  };
+
+  // Approve selected
+  const approveSelected = () => {
+    if (selectedIds.length === 0) {
+      toast.error("No requests selected");
+      return;
+    }
+
+    // open AddAppointment ONLY for main one
+    const appt = pendingAppointments.find(a => a.id === viewingAppointment?.id);
+    if (!appt) return toast.error("Something went wrong.");
+
+    setPrefillData({
+      name: appt.name,
+      contact: appt.contact,
+      email: appt.email || "",
+      pet_name: appt.pet_name,
+      pet_breed: appt.pet_breed,
+      pet_species: appt.pet_species,
+      preferred_date: appt.preferred_date,
+      preferred_time: appt.preferred_time,
+    });
+
+    setPendingToDeleteId(selectedIds);
+    setShowAddAppointment(true);
+  };
+
+  // Reject selected
+  const rejectSelected = async () => {
+    for (const id of selectedIds) {
+      await axios.delete(`${API_BASE_URL}/api/pending_appointments.php`, {
+        data: { id },
+      });
+    }
+    toast.success("Selected requests rejected");
+    setViewingAppointment(null);
+    fetchPending();
+  };
+
   // Sorting
   const handleSort = (key) => {
     let order = "asc";
@@ -145,20 +233,25 @@ const PendingAppointments = () => {
 
   const handleAddModalClose = async () => {
     setShowAddAppointment(false);
-    
-    // Delete the pending appointment
-    if (pendingToDeleteId) {
-      try {
-        await axios.delete(`${API_BASE_URL}/api/pending_appointments.php`, {
-          data: { id: pendingToDeleteId },
-        });
-      } catch (error) {
-        toast.error("Failed to remove pending appointment.");
+
+    try {
+      if (pendingToDeleteId) {
+        const ids = Array.isArray(pendingToDeleteId)
+          ? pendingToDeleteId
+          : [pendingToDeleteId];
+
+        for (const id of ids) {
+          await axios.delete(`${API_BASE_URL}/api/pending_appointments.php`, {
+            data: { id },
+          });
+        }
       }
-      setPendingToDeleteId(null);
+    } catch (error) {
+      toast.error("Failed to remove pending appointment.");
     }
 
-    fetchPending(); 
+    setPendingToDeleteId(null);
+    fetchPending();
   };
 
   return (
@@ -186,6 +279,7 @@ const PendingAppointments = () => {
             <th onClick={() => handleSort("name")} style={{ cursor: "pointer" }}>
               Name {getSortIcon("name")}
             </th>
+            <th>Pet</th>
             <th>Contact</th>
             <th onClick={() => handleSort("preferred_date")} style={{ cursor: "pointer" }}>
               Preferred Date {getSortIcon("preferred_date")}
@@ -207,6 +301,7 @@ const PendingAppointments = () => {
             currentAppointments.map((appt) => (
               <tr key={appt.id}>
                 <td>{appt.name}</td>
+                <td>{appt.pet_name}</td>
                 <td>{appt.contact}</td>
                 <td>{appt.preferred_date}</td>
                 <td>{appt.preferred_time}</td>
@@ -214,7 +309,10 @@ const PendingAppointments = () => {
                   <OverlayTrigger placement="top" overlay={<Tooltip>Review</Tooltip>}>
                     <button
                       className="btn btn-md btn-primary"
-                      onClick={() => setViewingAppointment(appt)}
+                      onClick={() => {
+                        setViewingAppointment(appt);
+                        setSelectedIds([appt.id]);
+                      }}
                     >
                       <FaSearch />
                     </button>
@@ -301,7 +399,7 @@ const PendingAppointments = () => {
             role="document"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="modal-content">
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">
                 <h4 className="modal-title">Review Appointment Request</h4>
                 <button type="button" className="btn-close" onClick={closeModal} />
@@ -353,19 +451,85 @@ const PendingAppointments = () => {
                         <p><strong>Additional Notes:</strong> {viewingAppointment.notes}</p>
                       )}
                 </section>
+                {/* OTHER REQUESTS FROM SAME CLIENT */}
+                <section>
+                  {(() => {
+                    const related = getRelatedRequests(viewingAppointment);
+                    if (related.length === 0) return null;
+
+                    return (
+                      <section className="mt-4">
+                        <h6 className="text-primary border-bottom pb-2">
+                          Other Similar Requests From This Client
+                        </h6>
+
+                        <table className="table table-hover table-bordered align-middle shadow-sm mt-3">
+                          <thead className="table-primary">
+                            <tr>
+                              <th className="text-center">Select</th>
+                              <th>Pet</th>
+                              <th>Date</th>
+                              <th>Time</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {[viewingAppointment, ...related].map((req) => (
+                              <tr key={req.id}>
+                                <td className="text-center">
+                                  <input
+                                    type="checkbox"
+                                    className="form-check-input"
+                                    checked={selectedIds.includes(req.id)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setSelectedIds((prev) => [...prev, req.id]);
+                                      } else {
+                                        setSelectedIds((prev) => prev.filter((id) => id !== req.id));
+                                      }
+                                    }}
+                                  />
+                                </td>
+
+                                <td>{req.pet_name}</td>
+                                <td>{req.preferred_date}</td>
+                                <td>{req.preferred_time}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </section>
+                    );
+                  })()}
+                </section>
               </div>
+
+              {/* Modal Footer */}
               <div className="modal-footer">
-                <button
-                  className="btn btn-success"
-                  onClick={() => confirmOne(viewingAppointment.id)}
-                > Confirm
-                </button>
-                <button
-                  className="btn btn-danger"
-                  onClick={() => handleRejectClick(viewingAppointment.id)}
-                >
-                  Reject
-                </button>
+                {selectedIds.length > 1 ? (
+                  <>
+                    <button className="btn btn-success px-3" onClick={approveSelected}>
+                      Confirm Selected
+                    </button>
+                    <button className="btn btn-danger px-3" onClick={rejectSelected}>
+                      Reject Selected
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      className="btn btn-success"
+                      onClick={() => confirmOne(viewingAppointment.id)}
+                    >
+                      Confirm
+                    </button>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => handleRejectClick(viewingAppointment.id)}
+                    >
+                      Reject
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
