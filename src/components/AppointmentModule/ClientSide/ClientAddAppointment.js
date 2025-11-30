@@ -3,7 +3,18 @@ import axios from "axios";
 import { Button, Popover } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { format } from "date-fns";
-import { FaPaw, FaUser, FaCalendarAlt, FaStethoscope, FaClipboardCheck, FaClock, FaCheckCircle, FaPhone, FaCalendarCheck, FaCheck } from "react-icons/fa";
+import {
+  FaPaw,
+  FaUser,
+  FaCalendarAlt,
+  FaStethoscope,
+  FaClipboardCheck,
+  FaClock,
+  FaCheckCircle,
+  FaPhone,
+  FaCalendarCheck,
+  FaCheck,
+} from "react-icons/fa";
 import { useEffect } from "react";
 import { Modal } from "react-bootstrap";
 
@@ -19,16 +30,15 @@ function AddAppointments() {
     email: "",
     status: "Pending",
     notes: "",
-    pets: [
-      { pet_name: "", pet_breed: "", pet_species: "" }
-    ],
+    pets: [{ pet_name: "", pet_breed: "", pet_species: "" }],
   });
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 5;
 
-  const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
+  const nextStep = () =>
+    setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
   const [services, setServices] = useState([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -47,6 +57,17 @@ function AddAppointments() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === "preferred_date") {
+      const selectedDate = new Date(value);
+      const day = selectedDate.getDay();
+
+      if (day === 0 || day === 6) {
+        toast.warning("Weekends are not allowed. Please select a weekday.");
+        return;
+      }
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -116,7 +137,7 @@ function AddAppointments() {
       email: finalEmail,
       status: formData.status,
       notes: formData.notes,
-      pets: formData.pets
+      pets: formData.pets,
     };
 
     try {
@@ -190,7 +211,10 @@ function AddAppointments() {
       <Popover.Body>
         {services.length > 0 ? (
           <div style={{ maxHeight: "200px", overflowY: "auto" }}>
-            <ul className="mb-0 ps-3 text-start" style={{ listStyleType: "disc" }}>
+            <ul
+              className="mb-0 ps-3 text-start"
+              style={{ listStyleType: "disc" }}
+            >
               {services.map((s, i) => (
                 <li key={i}>{s.name}</li>
               ))}
@@ -203,8 +227,20 @@ function AddAppointments() {
     </Popover>
   );
 
-  const stepIcons = [FaUser, FaPaw, FaStethoscope, FaCalendarAlt, FaClipboardCheck];
-  const stepTitles = ["Personal Details", "Patient Details", "Reason for Visit", "Preferred Schedule", "Review & Submit"];
+  const stepIcons = [
+    FaUser,
+    FaPaw,
+    FaStethoscope,
+    FaCalendarAlt,
+    FaClipboardCheck,
+  ];
+  const stepTitles = [
+    "Personal Details",
+    "Patient Details",
+    "Reason for Visit",
+    "Preferred Schedule",
+    "Review & Submit",
+  ];
 
   return (
     <div className="appointment-form-container">
@@ -213,16 +249,24 @@ function AddAppointments() {
         <div className="d-flex justify-content-between position-relative">
           {stepIcons.map((Icon, index) => (
             <div key={index} className="step-indicator text-center">
-              <div className={`step-circle ${currentStep > index + 1 ? 'completed' : ''} ${currentStep === index + 1 ? 'active' : ''}`}>
+              <div
+                className={`step-circle ${
+                  currentStep > index + 1 ? "completed" : ""
+                } ${currentStep === index + 1 ? "active" : ""}`}
+              >
                 <Icon size={18} className="step-icon" />
               </div>
-              <small className="step-label d-none d-md-block">{stepTitles[index]}</small>
+              <small className="step-label d-none d-md-block">
+                {stepTitles[index]}
+              </small>
             </div>
           ))}
           <div className="progress-bar-background">
-            <div 
-              className="progress-bar-fill" 
-              style={{ width: `${((currentStep - 1) / (totalSteps - 1)) * 100}%` }}
+            <div
+              className="progress-bar-fill"
+              style={{
+                width: `${((currentStep - 1) / (totalSteps - 1)) * 100}%`,
+              }}
             ></div>
           </div>
         </div>
@@ -290,7 +334,9 @@ function AddAppointments() {
                       </label>
                     </div>
                     {formData.contact && !/^\d{11}$/.test(formData.contact) && (
-                      <small className="text-danger">Contact number must be 11 digits.</small>
+                      <small className="text-danger">
+                        Contact number must be 11 digits.
+                      </small>
                     )}
                   </div>
 
@@ -324,7 +370,9 @@ function AddAppointments() {
               <div className="card-body p-4">
                 {formData.pets.length > 1 && (
                   <p className="text-muted mb-3">
-                    <strong>Note:</strong> All pets in this appointment must receive the same service. If each pet need different services, please create separate appointments.
+                    <strong>Note:</strong> All pets in this appointment must
+                    receive the same service. If each pet need different
+                    services, please create separate appointments.
                   </p>
                 )}
                 {formData.pets.map((pet, index) => (
@@ -344,7 +392,9 @@ function AddAppointments() {
                             placeholder="Pet Name"
                             required
                           />
-                          <label>Pet Name <span className="text-danger">*</span></label>
+                          <label>
+                            Pet Name <span className="text-danger">*</span>
+                          </label>
                         </div>
                       </div>
                       <div className="col-md-4">
@@ -359,7 +409,9 @@ function AddAppointments() {
                             placeholder="Breed"
                             required
                           />
-                          <label>Breed <span className="text-danger">*</span></label>
+                          <label>
+                            Breed <span className="text-danger">*</span>
+                          </label>
                           <datalist id="breedOptions">
                             <option value="Siberian Husky" />
                             <option value="Golden Retriever" />
@@ -381,7 +433,9 @@ function AddAppointments() {
                             placeholder="Species"
                             required
                           />
-                          <label>Species <span className="text-danger">*</span></label>
+                          <label>
+                            Species <span className="text-danger">*</span>
+                          </label>
                           <datalist id="speciesOptions">
                             <option value="Canine" />
                             <option value="Feline" />
@@ -391,7 +445,11 @@ function AddAppointments() {
                     </div>
                     <div className="mt-2 text-end">
                       {formData.pets.length > 1 && (
-                        <Button variant="danger" size="sm" onClick={() => removePet(index)}>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          onClick={() => removePet(index)}
+                        >
                           Remove Pet
                         </Button>
                       )}
@@ -420,37 +478,45 @@ function AddAppointments() {
 
                 {/* Services Checkboxes */}
                 <div className="mb-3 d-flex flex-wrap gap-2">
-                  {["Consultation", "Vaccination", "Deworming", "Tick & Flea", "Lab Test"].map(
-                    (service) => (
-                      <div key={service} className="form-check form-check-inline">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          id={service}
-                          value={service}
-                          checked={formData.reason_for_visit.includes(service)}
-                          onChange={(e) => {
-                            const selected = e.target.value;
-                            let updatedText = formData.reason_for_visit.split(", ").filter(Boolean);
+                  {[
+                    "Consultation",
+                    "Vaccination",
+                    "Deworming",
+                    "Tick & Flea",
+                    "Lab Test",
+                  ].map((service) => (
+                    <div key={service} className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id={service}
+                        value={service}
+                        checked={formData.reason_for_visit.includes(service)}
+                        onChange={(e) => {
+                          const selected = e.target.value;
+                          let updatedText = formData.reason_for_visit
+                            .split(", ")
+                            .filter(Boolean);
 
-                            if (e.target.checked) {
-                              updatedText.push(selected);
-                            } else {
-                              updatedText = updatedText.filter((s) => s !== selected);
-                            }
+                          if (e.target.checked) {
+                            updatedText.push(selected);
+                          } else {
+                            updatedText = updatedText.filter(
+                              (s) => s !== selected
+                            );
+                          }
 
-                            setFormData((prev) => ({
-                              ...prev,
-                              reason_for_visit: updatedText.join(", "),
-                            }));
-                          }}
-                        />
-                        <label className="form-check-label" htmlFor={service}>
-                          {service}
-                        </label>
-                      </div>
-                    )
-                  )}
+                          setFormData((prev) => ({
+                            ...prev,
+                            reason_for_visit: updatedText.join(", "),
+                          }));
+                        }}
+                      />
+                      <label className="form-check-label" htmlFor={service}>
+                        {service}
+                      </label>
+                    </div>
+                  ))}
                 </div>
 
                 {/* Textarea */}
@@ -503,8 +569,12 @@ function AddAppointments() {
                         required
                       >
                         <option value="">Select Time</option>
-                        <option value="Morning">Morning (8:00 AM - 12:00 PM)</option>
-                        <option value="Afternoon">Afternoon (1:00 PM - 5:00 PM)</option>
+                        <option value="Morning">
+                          Morning (8:00 AM - 12:00 PM)
+                        </option>
+                        <option value="Afternoon">
+                          Afternoon (1:00 PM - 5:00 PM)
+                        </option>
                       </select>
                       <label htmlFor="preferred_time" className="text-muted">
                         Preferred Time <span className="text-danger">*</span>
@@ -518,7 +588,7 @@ function AddAppointments() {
                         id="notes"
                         name="notes"
                         className="form-control"
-                        style={{ height: "100px", borderRadius: "0.8rem"}}
+                        style={{ height: "100px", borderRadius: "0.8rem" }}
                         placeholder="Additional notes or special requests"
                         value={formData.notes}
                         onChange={handleChange}
@@ -547,12 +617,20 @@ function AddAppointments() {
                     </h6>
                     <div className="row">
                       <div className="col-md-6">
-                        <p><strong>First Name:</strong> {formData.firstName}</p>
-                        <p><strong>Last Name:</strong> {formData.lastName}</p>
+                        <p>
+                          <strong>First Name:</strong> {formData.firstName}
+                        </p>
+                        <p>
+                          <strong>Last Name:</strong> {formData.lastName}
+                        </p>
                       </div>
                       <div className="col-md-6">
-                        <p><strong>Contact Number:</strong> {formData.contact}</p>
-                        <p><strong>Email:</strong> {formData.email || "N/A"}</p>
+                        <p>
+                          <strong>Contact Number:</strong> {formData.contact}
+                        </p>
+                        <p>
+                          <strong>Email:</strong> {formData.email || "N/A"}
+                        </p>
                       </div>
                     </div>
                   </section>
@@ -567,14 +645,20 @@ function AddAppointments() {
                         <div className="col-md-6">
                           <p>
                             <strong>
-                              {formData.pets.length > 1 ? `Pet ${index + 1} Name:` : "Pet Name:"}
+                              {formData.pets.length > 1
+                                ? `Pet ${index + 1} Name:`
+                                : "Pet Name:"}
                             </strong>{" "}
                             {pet.pet_name || "—"}
                           </p>
-                          <p><strong>Breed:</strong> {pet.pet_breed || "—"}</p>
+                          <p>
+                            <strong>Breed:</strong> {pet.pet_breed || "—"}
+                          </p>
                         </div>
                         <div className="col-md-6">
-                          <p><strong>Species:</strong> {pet.pet_species || "—"}</p>
+                          <p>
+                            <strong>Species:</strong> {pet.pet_species || "—"}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -598,16 +682,24 @@ function AddAppointments() {
                         <p>
                           <strong>Preferred Date:</strong>{" "}
                           {formData.preferred_date
-                            ? format(new Date(formData.preferred_date), "MMMM dd, yyyy")
+                            ? format(
+                                new Date(formData.preferred_date),
+                                "MMMM dd, yyyy"
+                              )
                             : "—"}
                         </p>
                       </div>
                       <div className="col-md-6">
-                        <p><strong>Preferred Time:</strong> {formData.preferred_time}</p>
+                        <p>
+                          <strong>Preferred Time:</strong>{" "}
+                          {formData.preferred_time}
+                        </p>
                       </div>
                       {formData.notes && (
                         <div className="col-12">
-                          <p><strong>Additional Notes:</strong> {formData.notes}</p>
+                          <p>
+                            <strong>Additional Notes:</strong> {formData.notes}
+                          </p>
                         </div>
                       )}
                     </div>
@@ -620,20 +712,31 @@ function AddAppointments() {
 
         {/* NAVIGATION BUTTONS */}
         <div className="navigation-buttons mt-4">
-          <div className={`d-flex ${currentStep === 1 ? "justify-content-end" : "justify-content-between"}`}>
+          <div
+            className={`d-flex ${
+              currentStep === 1
+                ? "justify-content-end"
+                : "justify-content-between"
+            }`}
+          >
             {currentStep > 1 && (
-              <Button variant="outline-secondary" size='lg' onClick={prevStep} className="px-5">
+              <Button
+                variant="outline-secondary"
+                size="lg"
+                onClick={prevStep}
+                className="px-5"
+              >
                 <i className="fas fa-arrow-left me-2"></i>
                 Back
               </Button>
             )}
             {currentStep < totalSteps && (
-              <Button 
-                variant="primary" 
-                onClick={nextStep} 
+              <Button
+                variant="primary"
+                onClick={nextStep}
                 disabled={!isStepValid()}
                 className="px-5"
-                size='lg'
+                size="lg"
               >
                 Next
                 <i className="fas fa-arrow-right ms-2"></i>
@@ -653,9 +756,7 @@ function AddAppointments() {
                     Submitting...
                   </>
                 ) : (
-                  <>
-                    Submit Appointment
-                  </>
+                  <>Submit Appointment</>
                 )}
               </Button>
             )}
@@ -675,9 +776,12 @@ function AddAppointments() {
             <div className="success-icon-container mx-auto mb-3">
               <FaClipboardCheck size={32} className="text-success" />
             </div>
-            <h4 className="text-success mb-3">Appointment Request Submitted!</h4>
+            <h4 className="text-success mb-3">
+              Appointment Request Submitted!
+            </h4>
             <p className="text-muted mb-4">
-              Thank you for your appointment request. We've received your information and will contact you shortly to confirm your booking.
+              Thank you for your appointment request. We've received your
+              information and will contact you shortly to confirm your booking.
             </p>
           </div>
 
@@ -702,11 +806,7 @@ function AddAppointments() {
             </ul>
           </div>
 
-          <Button 
-            variant="success" 
-            onClick={handleCloseModal}
-            className="px-5"
-          >
+          <Button variant="success" onClick={handleCloseModal} className="px-5">
             <FaCheck className="me-2" />
             Got It!
           </Button>
