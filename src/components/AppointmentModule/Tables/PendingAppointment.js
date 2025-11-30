@@ -43,14 +43,12 @@ const PendingAppointments = () => {
 
   const getRelatedRequests = (appt) => {
     if (!appt) return [];
-    return pendingAppointments.filter(
-      (p) =>
-        p.id !== appt.id &&
-        (
-          (p.name && p.name.toLowerCase() === appt.name.toLowerCase()) ||
-          (p.contact && p.contact === appt.contact) ||
-          (p.email && appt.email && p.email.toLowerCase() === appt.email.toLowerCase())
-        )
+
+    return pendingAppointments.filter((p) =>
+      p.id !== appt.id &&
+      p.name?.toLowerCase() === appt.name?.toLowerCase() &&
+      p.contact === appt.contact &&
+      p.email?.toLowerCase() === appt.email?.toLowerCase()
     );
   };
 
