@@ -44,6 +44,31 @@ const ReportGeneration = () => {
       });
   };
 
+  const sortByStatusFunction = () => {
+    if (!Array.isArray(data)) return data; // ⛔ prevents crash
+
+    const order = ["Done", "Confirmed", "Cancelled"];
+
+    return [...data].sort((a, b) => {
+      const indexA = order.indexOf(a?.status || "");
+      const indexB = order.indexOf(b?.status || "");
+      return indexA - indexB;
+    });
+  };
+
+  useEffect(() => {
+    if (filter !== "appointments") return; // Only run when appointments tab
+    if (!Array.isArray(data) || data.length === 0) return; // Data not ready
+
+    const sorted = sortByStatusFunction();
+
+    // Prevent infinite loop (only update if changed)
+    const isSame = JSON.stringify(sorted) === JSON.stringify(data);
+    if (!isSame) {
+      setData(sorted);
+    }
+  }, [filter, data]);
+
   const formatDate = (dateStr) => {
     if (!dateStr || dateStr === "000000") return "No Expiry Date";
 
@@ -113,7 +138,8 @@ const ReportGeneration = () => {
         item.status?.toLowerCase().includes(term) ||
         item.pet_name?.toLowerCase().includes(term) ||
         item.service?.toLowerCase().includes(term) ||
-        formatDate(item.date)?.toLowerCase().includes(term)
+        formatDate(item.date)?.toLowerCase().includes(term) ||
+        item.doctor_name?.toLowerCase().includes(term)
       );
     }
     return false;
