@@ -2,13 +2,35 @@ import React, { useState, useEffect, useRef } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import axios from "axios";
 import "../../assets/add.css";
-import { toast } from "react-toastify"; // Import Toastify
+import { toast } from "react-toastify";
 
-const AddPatientsModal = ({ show, handleClose, client }) => {
+const AddPatientsModal = ({ show, handleClose, client, prefillPet }) => {
   const [inputs, setInputs] = useState({});
-  const [age, setAge] = useState(""); // Store calculated age here
+  const [age, setAge] = useState("");
   const patientNameRef = useRef(null);
+  const isPrefilled = (fieldName) => {
+    return prefillPet && prefillPet[fieldName] !== undefined && prefillPet[fieldName] !== null;
+  };
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
+  useEffect(() => {
+    if (show && prefillPet) {
+      const mapped = {
+        name: prefillPet.name || "",
+        species: prefillPet.species || "",
+        breed: prefillPet.breed || "",
+        birthdate: prefillPet.birthdate || "",
+        gender: prefillPet.gender || "",
+        weight: prefillPet.weight || "",
+        distinct_features: prefillPet.distinct_features || "",
+        other_details: prefillPet.other_details || "",
+      };
+      setInputs((prev) => ({ ...prev, ...mapped }));
+      if (mapped.birthdate) {
+        setAge(calculateAge(mapped.birthdate));
+      }
+    }
+  }, [show, prefillPet]);
 
   useEffect(() => {
     if (show && patientNameRef.current) {
@@ -109,6 +131,7 @@ const AddPatientsModal = ({ show, handleClose, client }) => {
 
   const handleModalClose = () => {
     setAge("");
+    setInputs({});
     handleClose();
   };
 
@@ -133,8 +156,10 @@ const AddPatientsModal = ({ show, handleClose, client }) => {
               <Form.Control
                 type="text"
                 name="name"
-                ref={patientNameRef} // ✅ Attach ref to input field
+                ref={patientNameRef}
                 onChange={handleChange}
+                value={inputs.name || ""}
+                readOnly={isPrefilled("name")}
                 placeholder="Enter name"
                 required
               />
@@ -147,6 +172,8 @@ const AddPatientsModal = ({ show, handleClose, client }) => {
                 type="text"
                 name="species"
                 onChange={handleChange}
+                value={inputs.species || ""}
+                readOnly={isPrefilled("species")}
                 placeholder="Enter species"
                 required
               />
@@ -159,12 +186,13 @@ const AddPatientsModal = ({ show, handleClose, client }) => {
                 as="select"
                 name="gender"
                 onChange={handleChange}
+                value={inputs.gender || ""}
                 placeholder="Enter breed"
                 required
               >
                 <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
               </Form.Control>
             </Form.Group>
 
@@ -176,6 +204,8 @@ const AddPatientsModal = ({ show, handleClose, client }) => {
                 type="text"
                 name="breed"
                 onChange={handleChange}
+                value={inputs.breed || ""}
+                readOnly={isPrefilled("breed")}
                 placeholder="Enter breed"
                 required
               />
@@ -188,6 +218,7 @@ const AddPatientsModal = ({ show, handleClose, client }) => {
                 type="number"
                 name="weight"
                 onChange={handleChange}
+                value={inputs.weight || ""}
                 placeholder="Enter weight"
                 min="0" // Ensure non-negative values
                 required
@@ -203,6 +234,7 @@ const AddPatientsModal = ({ show, handleClose, client }) => {
                 type="date"
                 name="birthdate"
                 onChange={handleChange}
+                value={inputs.birthdate || ""}
                 required
                 max={new Date().toISOString().split("T")[0]} // Prevent future dates
               />
@@ -213,8 +245,8 @@ const AddPatientsModal = ({ show, handleClose, client }) => {
               <Form.Control
                 type="text"
                 name="age"
-                value={age || ""} // Set the calculated age as the value
-                readOnly // Make it read-only since it's auto-calculated
+                value={age || ""}
+                readOnly
                 placeholder="Auto-calculated age"
               />
             </Form.Group>
@@ -224,6 +256,7 @@ const AddPatientsModal = ({ show, handleClose, client }) => {
                 type="text"
                 name="distinct_features"
                 onChange={handleChange}
+                value={inputs.distinct_features || ""}
                 placeholder="Enter distinct features"
               />
             </Form.Group>
@@ -234,6 +267,7 @@ const AddPatientsModal = ({ show, handleClose, client }) => {
                 rows={3}
                 name="other_details"
                 onChange={handleChange}
+                value={inputs.other_details || ""}
                 placeholder="Enter other details"
               />
             </Form.Group>
