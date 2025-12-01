@@ -17,20 +17,23 @@ $method = $_SERVER['REQUEST_METHOD'];
 if ($method === 'GET') {
 
     try {
-
-        // Validate inputs
         if (!isset($_GET['client_id'])) {
             echo json_encode(['status' => 0, 'message' => 'Missing client_id']);
             exit;
         }
 
-        if (!isset($_GET['pet_name']) || empty($_GET['pet_name'])) {
-            echo json_encode(['status' => 0, 'message' => 'Missing pet_name']);
+        if (!isset($_GET['pet_names']) || empty($_GET['pet_names'])) {
+            echo json_encode(['status' => 0, 'message' => 'Missing pet_names']);
             exit;
         }
 
         $clientId = $_GET['client_id'];
-        $petName = $_GET['pet_name'];
+        $petNames = array_map('trim', explode(',', $_GET['pet_names'])); // clean pet names
+        $petNames = array_filter($petNames, fn($name) => $name !== ''); // remove empty strings
+        if (empty($petNames)) {
+            echo json_encode(['status' => 0, 'message' => 'No valid pet names provided.']);
+            exit;
+        }
 
         // Get client name + contact
         $stmtClient = $conn->prepare("
@@ -50,20 +53,24 @@ if ($method === 'GET') {
         $clientName = $client['name'];
         $clientContact = $client['cellnumber'];
 
-        // Fetch Arrived appointments for this specific client + pet
+        // Fetch Arrived appointments for all selected pets
+        $placeholders = implode(',', array_fill(0, count($petNames), '?'));
         $sql = "
-            SELECT service 
+            SELECT pet_name, service 
             FROM appointments 
-            WHERE name = :client_name
-            AND contact = :client_contact
+            WHERE name = ?
+            AND contact = ?
             AND status = 'Arrived'
-            AND pet_name = :pet_name
+            AND pet_name IN ($placeholders)
         ";
 
         $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':client_name', $clientName);
-        $stmt->bindParam(':client_contact', $clientContact);
-        $stmt->bindParam(':pet_name', $petName);
+        $stmt->bindValue(1, $clientName);
+        $stmt->bindValue(2, $clientContact);
+        foreach ($petNames as $i => $pet) {
+            $stmt->bindValue($i + 3, $pet); // +3 because 1 and 2 are clientName, clientContact
+        }
+
         $stmt->execute();
         $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -72,33 +79,35 @@ if ($method === 'GET') {
             exit;
         }
 
-        // Collect service names
-        $servicesList = [];
+        // Aggregate services and count duplicates
+        $serviceCounts = [];
         foreach ($appointments as $appt) {
-            $serviceArray = array_map('trim', explode(',', $appt['service']));
-            $servicesList = array_merge($servicesList, $serviceArray);
+            $services = array_map('trim', explode(',', $appt['service']));
+            foreach ($services as $service) {
+                if (!isset($serviceCounts[$service])) {
+                    $serviceCounts[$service] = 0;
+                }
+                $serviceCounts[$service]++;
+            }
         }
 
-        $servicesList = array_unique($servicesList);
-
-        // Fetch service prices
+        // Fetch prices
+        $servicesList = array_keys($serviceCounts);
         $placeholders = implode(',', array_fill(0, count($servicesList), '?'));
-        $query = "
-            SELECT name, price 
-            FROM services 
-            WHERE name IN ($placeholders)
-        ";
-
+        $query = "SELECT name, price FROM services WHERE name IN ($placeholders)";
         $stmt = $conn->prepare($query);
-
         foreach ($servicesList as $index => $name) {
             $stmt->bindValue($index + 1, $name);
         }
-
         $stmt->execute();
-        $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $servicesData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        echo json_encode(['status' => 1, 'services' => $services]);
+        // Add quantity to services
+        foreach ($servicesData as &$svc) {
+            $svc['quantity'] = $serviceCounts[$svc['name']];
+        }
+
+        echo json_encode(['status' => 1, 'services' => $servicesData]);
 
     } catch (Exception $e) {
         error_log("Error: " . $e->getMessage());

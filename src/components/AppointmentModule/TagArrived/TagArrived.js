@@ -17,6 +17,7 @@ function TagArrived({ onClose }) {
   const [allClients, setAllClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState(null);
   const [showAddPetModal, setShowAddPetModal] = useState(false);
+  const [addPetPrefill, setAddPetPrefill] = useState(null);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const handleSubmit = async (e) => {
@@ -84,6 +85,7 @@ function TagArrived({ onClose }) {
           end_time: res.data.appointment_end_time,
           pets: pets,
           date: res.data.appointment_date,
+          appointment_pet: res.data.appointment_pet || null,
         });
 
         if (matchedPet) {
@@ -299,7 +301,11 @@ function TagArrived({ onClose }) {
                               variant="outline-success"
                               size="sm"
                               className="w-auto mt-2"
-                              onClick={() => setShowAddPetModal(true)}
+                              onClick={() => {
+                                // If there's an appointment pet available, send it to the Add Pet modal.
+                                setAddPetPrefill(clientInfo?.appointment_pet || null);
+                                setShowAddPetModal(true);
+                              }}
                             >
                               + Add New Pet
                             </Button>
@@ -429,6 +435,7 @@ function TagArrived({ onClose }) {
         show={showAddPetModal}
         handleClose={async (newPet) => {
           setShowAddPetModal(false);
+          setAddPetPrefill(null);
 
           if (newPet) {
             setClientInfo((prev) => ({
@@ -440,9 +447,8 @@ function TagArrived({ onClose }) {
             await handleExistingClient();
           }
         }}
-        client={
-          clientInfo ? { id: clientInfo.id } : { id: selectedClient?.value }
-        }
+        client={clientInfo ? { id: clientInfo.id } : { id: selectedClient?.value }}
+        prefillPet={addPetPrefill}
       />
     </div>
   );

@@ -25,6 +25,8 @@ import {
   FaCheckCircle,
   FaTimesCircle,
   FaCheckDouble,
+  FaRegCopy,
+  FaCopy,
 } from "react-icons/fa";
 import Notifications from "./Notifications";
 const locales = { "en-US": enUS };
@@ -75,6 +77,7 @@ const Appointment = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState("All");
   const [prefillDate, setPrefillDate] = useState(null);
+  const [copied, setCopied] = useState(false);
   const [startTime, setStartTime] = useState("08:00");
   const [endTime, setEndTime] = useState("17:00");
   const doctorOptions = [
@@ -273,27 +276,29 @@ const Appointment = () => {
   };
 
   const eventPropGetter = (event) => {
-    if (event.status === "Cancelled") {
-      return {
-        style: {
-          backgroundColor: "#dc3545",
-          color: "white",
-          borderRadius: "5px",
-          padding: "2px",
-          border: "none",
-        },
-      };
+    let backgroundColor = "#6c757d"; // default gray
+    let color = "white";
+
+    if (event.status === "Done") {
+      backgroundColor = "#198754"; // green
+      color = "white";
+    } else if (event.status === "Cancelled") {
+      backgroundColor = "#dc3545"; // red
+      color = "white"; 
+    } else {
+      // use service color
+      const firstService = (event.service || "")
+        .split(",")[0]
+        .trim()
+        .toLowerCase();
+      backgroundColor = serviceColors[firstService] || "#6c757d";
+      color = "black";
     }
-    const firstService = (event.service || "")
-      .split(",")[0]
-      .trim()
-      .toLowerCase();
-    const backgroundColor = serviceColors[firstService] || "#6c757d";
 
     return {
       style: {
         backgroundColor,
-        color: "black",
+        color,
         borderRadius: "5px",
         padding: "2px",
         border: "none",
@@ -523,9 +528,30 @@ const Appointment = () => {
               </h6>
               <div className="row">
                 <div className="col-md-6">
-                  <p>
-                    <strong>Reference #:</strong>{" "}
-                    {selectedEvent.reference_number || "—"}
+                  <p className="d-flex align-items-center gap-2">
+                    <strong>Reference #:</strong> {selectedEvent.reference_number || "—"}
+                    {selectedEvent.reference_number && (
+                      <>
+                        {copied ? (
+                          <FaRegCopy
+                            style={{ cursor: "pointer", transition: "color 0.2s" }}
+                            size={14}
+                            title="Copied!"
+                          />
+                        ) : (
+                          <FaCopy
+                            style={{ cursor: "pointer", color: "black" }}
+                            size={14}
+                            title="Copy reference number"
+                            onClick={() => {
+                              navigator.clipboard.writeText(selectedEvent.reference_number);
+                              setCopied(true);
+                              setTimeout(() => setCopied(false), 100);
+                            }}
+                          />
+                        )}
+                      </>
+                    )}
                   </p>
                   <p>
                     <strong>Date:</strong>{" "}
