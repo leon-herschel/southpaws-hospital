@@ -68,13 +68,14 @@ switch ($method) {
         $weight            = isset($patients->weight) && is_numeric($patients->weight) ? $patients->weight : 0;
 
         // If owner exists, insert the patient record
-        $sql = "INSERT INTO patients (owner_id, name, species, breed, age, birthdate, distinct_features, other_details, weight, created_by, created_at) 
-                VALUES (:owner_id, :name, :species, :breed, :age, :birthdate, :distinct_features, :other_details, :weight, :created_by, NOW())";
+        $sql = "INSERT INTO patients (owner_id, name, species, gender, breed, age, birthdate, distinct_features, other_details, weight, created_by, created_at) 
+                VALUES (:owner_id, :name, :species, :gender, :breed, :age, :birthdate, :distinct_features, :other_details, :weight, :created_by, NOW())";
         $stmt = $conn->prepare($sql);
 
         $stmt->bindParam(':owner_id', $patients->owner_id);
         $stmt->bindParam(':name', $patients->name);
         $stmt->bindParam(':species', $patients->species);
+        $stmt->bindParam(':gender', $patients->gender);
         $stmt->bindParam(':breed', $patients->breed);
         $stmt->bindParam(':age', $patients->age);
         $stmt->bindParam(':birthdate', $patients->birthdate);
@@ -132,6 +133,7 @@ switch ($method) {
             $sql = "UPDATE patients SET
                     name = :pet_name,
                     species = :pet_species,
+                    gender = :pet_gender,
                     breed = :pet_breed,
                     weight = :pet_weight,
                     age = :pet_age,
@@ -145,6 +147,7 @@ switch ($method) {
             $stmt->bindParam(':pet_id', $patients->pet_id, PDO::PARAM_INT);  // Ensure pet_id is being used for the update
             $stmt->bindParam(':pet_name', $patients->pet_name);
             $stmt->bindParam(':pet_species', $patients->pet_species);
+            $stmt->bindParam(':pet_gender', $patients->pet_gender);
             $stmt->bindParam(':pet_breed', $patients->pet_breed);
             $stmt->bindParam(':pet_age', $patients->pet_age);
             $stmt->bindParam(':pet_birthdate', $patients->pet_birthdate);
