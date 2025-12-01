@@ -109,21 +109,24 @@ const PointofSales = () => {
 
     const handleReferenceSelect = async (clientId) => {
         try {
-            // Find the selected pet name from clientPets
-            const selectedPetName = clientPets.find(pet =>
+            // Find selected pet (match by selectedPets array)
+            const selectedPet = clientPets.find(pet =>
                 selectedPets.includes(pet.pet_id)
-            )?.pet_name;
+            );
 
-            if (!selectedPetName) {
-                console.warn("No pet name matched, skipping appointment service fetch.");
+            if (!selectedPet) {
+                console.warn("No pet selected or matched.");
                 return;
             }
 
-            // Build the URL with optional pet_name
-            const baseUrl = `${API_BASE_URL}/api/POS-Integration/getAppointmentServices.php?client_id=${clientId}`;
-            const url = selectedPetName
-                ? `${baseUrl}&pet_name=${encodeURIComponent(selectedPetName)}`
-                : baseUrl;
+            const selectedPetName = selectedPet.pet_name;
+
+            let url = `${API_BASE_URL}/api/POS-Integration/getAppointmentServices.php?client_id=${clientId}`;
+
+            // If pet name exists, attach it
+            if (selectedPetName) {
+                url += `&pet_names=${encodeURIComponent(selectedPetName)}`;
+            }
 
             const res = await axios.get(url);
 
@@ -136,12 +139,12 @@ const PointofSales = () => {
                     price: parseFloat(service.price),
                     quantity: 1,
                     isService: true,
-                    selectedPets: selectedPets, // Use selected pets if available
+                    selectedPets: selectedPets,
                 }));
 
-                setCartItems(prevCart => [...prevCart, ...newCartItems]);
+                setCartItems(prev => [...prev, ...newCartItems]);
             } else {
-                console.warn("No arrived appointment found:", res.data.message || res.data);
+                console.warn("No arrived appointment found:", res.data.message);
             }
         } catch (err) {
             console.error("Error fetching appointment services", err);
@@ -167,15 +170,6 @@ const PointofSales = () => {
             localStorage.removeItem("selectedClient");
         }
     };
-
-    useEffect(() => {
-    if (selectedClient && selectedPets.length > 0) {
-        handleReferenceSelect(selectedClient);
-    } else {
-        setCartItems([]); // Clear cart if no pets are selected
-    }
-    }, [selectedPets, selectedClient]);
-    
     
     const fetchPets = (clientId) => {
         if (clientId) {
@@ -195,16 +189,56 @@ const PointofSales = () => {
         }
     };
     
-    const handlePetSelection = (event, petId) => {
-        const isChecked = event.target.checked;
-
-        if (isChecked) {
-            setSelectedPets([petId]); // Only allow one pet
-            localStorage.setItem("selectedPets", JSON.stringify([petId]));
+    const handlePetSelection = async (e, petId, petName) => {
+        let updatedPets;
+        if (e.target.checked) {
+            updatedPets = [...selectedPets, petId];
         } else {
-            setSelectedPets([]);
-            localStorage.removeItem("selectedPets");
-            setCartItems([]); // Clear cart
+            updatedPets = selectedPets.filter(id => id !== petId);
+        }
+
+        setSelectedPets(updatedPets);
+
+        if (!e.target.checked) {
+            setCartItems(prev =>
+                prev.filter(item =>
+                    !item.isService || !item.selectedPets.includes(petId)
+                )
+            );
+            return;
+        }
+
+        try {
+            const res = await axios.get(
+                `${API_BASE_URL}/api/POS-Integration/getAppointmentServices.php`,
+                {
+                    params: {
+                        client_id: selectedClient,
+                        pet_names: petName
+                    }
+                }
+            );
+
+            if (res.data.status === 1) {
+                const newServices = res.data.services.map(s => ({
+                    ...s,
+                    id: `${s.id}-${petId}`,
+                    isService: true,
+                    quantity: 1,
+                    selectedPets: [petId],
+                }));
+
+                setCartItems(prev => {
+                    const filtered = prev.filter(
+                        item =>
+                            !(item.isService && item.selectedPets.includes(petId))
+                    );
+                    return [...filtered, ...newServices];
+                });
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Error fetching pet services");
         }
     };
     
@@ -266,7 +300,7 @@ const PointofSales = () => {
 
     useEffect(() => {
         fetchClients();
-        fetchPets();
+        if (selectedClient) fetchPets(selectedClient);
     }, []);
 
     useEffect(() => {
@@ -335,22 +369,24 @@ const PointofSales = () => {
     };
     
     const addServiceToCart = (service) => {
-        // Check if pets are selected
         if (selectedPets.length === 0) {
             toast.error('Please select a pet before adding the service to the cart.');
-            return; // Exit if no pet is selected
+            return;
         }
-    
-        // Check if the service already exists in the cart
-        const existingService = cartItems.find(item => item.id === service.id && item.isService);
-    
-        // If the service doesn't exist in the cart, add it
-        if (!existingService) {
-            setCartItems([...cartItems, { ...service, isService: true, quantity: 1, selectedPets }]);
-            toast.success(`${service.name} added to cart!`);
+
+        const existingIndex = cartItems.findIndex(item => item.id === service.id && item.isService);
+        if (existingIndex !== -1) {
+            // Merge selected pets if service already exists
+            const updatedItems = [...cartItems];
+            const existing = updatedItems[existingIndex];
+            existing.selectedPets = Array.from(new Set([...(existing.selectedPets || []), ...selectedPets]));
+            setCartItems(updatedItems);
+        } else {
+            setCartItems([...cartItems, { ...service, isService: true, quantity: 1, selectedPets: [...selectedPets] }]);
         }
+
+        toast.success(`${service.name} added to cart!`);
     };
-    
 
     const removeFromTable = (itemId, isService = false) => {
         const updatedItems = cartItems.filter(item => {
@@ -544,15 +580,33 @@ const PointofSales = () => {
                 client_id: clientId || null, // Ensure null for unregistered clients
                 unregistered_client_id: unregisteredClientIdToUse, // Corrected variable
                 pet_id: selectedPets, // Handle multiple pets
-                items: cartItems.map(item => ({
-                    name: item.name || item.product_name,
-                    sku: item.sku || '',
-                    barcode: item.barcode || '',
-                    quantity: item.isService ? 1 : item.quantity,
-                    price: item.price,
-                    total: (item.price * (item.isService ? 1 : item.quantity)).toFixed(2),
-                    type: item.isService ? 'service' : 'product',
-                })),
+                items: cartItems.flatMap(item => {
+                    if (item.isService) {
+                        // For services, create one item per selected pet
+                        const pets = item.selectedPets || [null]; // fallback to 1 if somehow empty
+                        return pets.map(petId => ({
+                            name: item.name,
+                            sku: item.sku || '',
+                            barcode: item.barcode || '',
+                            quantity: 1, // Each pet counts as 1
+                            price: item.price,
+                            total: item.price.toFixed(2),
+                            type: 'service',
+                            pet_id: petId,
+                        }));
+                    } else {
+                        return {
+                            name: item.name || item.product_name,
+                            sku: item.sku || '',
+                            barcode: item.barcode || '',
+                            quantity: item.quantity,
+                            price: item.price,
+                            total: (item.price * item.quantity).toFixed(2),
+                            type: 'product',
+                        };
+                    }
+                }),
+
                 grand_total: grandTotal.toFixed(2), // Grand total remains unchanged
                 tax_amount: taxAmount, // Tax amount calculated separately
                 subtotal: subtotal, // Subtotal = grand_total - tax_amount
@@ -569,16 +623,16 @@ const PointofSales = () => {
             if (response.data.status === 1) {
                 const generatedReceiptNumber = response.data.receipt_number || "Unknown";
 
-                // UPDATE APPOINTMENT STATUS TO DONE
-                const selectedPetName = clientPets.find(pet =>
-                    selectedPets.includes(pet.pet_id)
-                )?.pet_name;
-
-                if (selectedPetName && clientId) {
+                // Update appointment status to done
+                if (selectedPets.length > 0 && clientId) {
                     try {
+                        const petNames = clientPets
+                            .filter(pet => selectedPets.includes(pet.pet_id))
+                            .map(pet => pet.pet_name);
+
                         await axios.post(`${API_BASE_URL}/api/POS-Integration/updateAppointmentStatus.php`, {
                             client_id: clientId,
-                            pet_name: selectedPetName,
+                            pet_names: petNames,
                             status: 'Done'
                         });
                         console.log("Appointment status updated to Done.");
@@ -713,7 +767,7 @@ const PointofSales = () => {
                         variant={selectedPets.includes(pet.pet_id) ? "primary" : "outline-primary"}
                         value={pet.pet_id}
                         checked={selectedPets.includes(pet.pet_id)}
-                        onChange={(e) => handlePetSelection(e, pet.pet_id)}
+                        onChange={(e) => handlePetSelection(e, pet.pet_id, pet.pet_name)}
                     >
                         {pet.pet_name}
                     </ToggleButton>

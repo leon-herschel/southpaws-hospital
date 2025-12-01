@@ -89,7 +89,7 @@ const AddPatientsModal = ({ show, handleClose, client}) => {
             owner_id: ownerId
         };
 
-        axios.post(`${API_BASE_URL}/api/patients.php", formData`)
+        axios.post(`${API_BASE_URL}/api/patients.php`, formData)
         .then(response => {
             if (response.data.status === 1) {
                 toast.success("Pet Added Successfully");

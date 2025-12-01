@@ -371,7 +371,7 @@ function AddAppointments() {
                 {formData.pets.length > 1 && (
                   <p className="text-muted mb-3">
                     <strong>Note:</strong> All pets in this appointment must
-                    receive the same service. If each pet need different
+                    receive the same service/s. If each pet need different
                     services, please create separate appointments.
                   </p>
                 )}

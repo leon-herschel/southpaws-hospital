@@ -273,27 +273,29 @@ const Appointment = () => {
   };
 
   const eventPropGetter = (event) => {
-    if (event.status === "Cancelled") {
-      return {
-        style: {
-          backgroundColor: "#dc3545",
-          color: "white",
-          borderRadius: "5px",
-          padding: "2px",
-          border: "none",
-        },
-      };
+    let backgroundColor = "#6c757d"; // default gray
+    let color = "white";
+
+    if (event.status === "Done") {
+      backgroundColor = "#198754"; // green
+      color = "white";
+    } else if (event.status === "Cancelled") {
+      backgroundColor = "#dc3545"; // red
+      color = "white"; 
+    } else {
+      // use service color
+      const firstService = (event.service || "")
+        .split(",")[0]
+        .trim()
+        .toLowerCase();
+      backgroundColor = serviceColors[firstService] || "#6c757d";
+      color = "black";
     }
-    const firstService = (event.service || "")
-      .split(",")[0]
-      .trim()
-      .toLowerCase();
-    const backgroundColor = serviceColors[firstService] || "#6c757d";
 
     return {
       style: {
         backgroundColor,
-        color: "black",
+        color,
         borderRadius: "5px",
         padding: "2px",
         border: "none",
