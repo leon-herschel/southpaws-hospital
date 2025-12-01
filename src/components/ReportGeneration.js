@@ -91,59 +91,64 @@ const ReportGeneration = () => {
 
   const filteredData = data.filter((item) => {
     const term = searchTerm.toLowerCase();
-    if (!term) return true; // If search is empty, return all
+    let matchesSearch = true;
+    if (term) {
+      if (filter === "sales") {
+        return (
+          item.product_service?.toLowerCase().includes(term) ||
+          item.receipt_number?.toLowerCase().includes(term) ||
+          item.type?.toLowerCase().includes(term) ||
+          formatDate(item.transaction_date).toLowerCase().includes(term)
+        );
+      }
 
-    if (filter === "sales") {
-      return (
-        item.product_service?.toLowerCase().includes(term) ||
-        item.receipt_number?.toLowerCase().includes(term) ||
-        item.type?.toLowerCase().includes(term) ||
-        formatDate(item.transaction_date).toLowerCase().includes(term)
-      );
+      if (filter === "products") {
+        return (
+          item.sku?.toLowerCase().includes(term) ||
+          item.product_name?.toLowerCase().includes(term) ||
+          item.generic_name?.toLowerCase().includes(term) ||
+          item.unit_name?.toLowerCase().includes(term) ||
+          item.category_name?.toLowerCase().includes(term) ||
+          item.brand_name?.toLowerCase().includes(term) ||
+          formatDate(item.expiration_date)?.toLowerCase().includes(term) ||
+          formatDate(item.created_at).toLowerCase().includes(term)
+        );
+      }
+
+      if (filter === "services") {
+        return (
+          item.service_name?.toLowerCase().includes(term) ||
+          item.consent_form?.toLowerCase().includes(term) ||
+          formatDate(item.created_at).toLowerCase().includes(term)
+        );
+      }
+
+      if (filter === "clients") {
+        return (
+          item.name?.toLowerCase().includes(term) ||
+          item.email?.toLowerCase().includes(term) ||
+          formatDate(item.created_at).toLowerCase().includes(term)
+        );
+      }
+
+      if (filter === "appointments" && sortByStatus && sortByStatus !== "All") {
+        return (
+          item.name?.toLowerCase().includes(term) ||
+          item.email?.toLowerCase().includes(term) ||
+          item.contact?.toLowerCase()?.includes(term) ||
+          item.status?.toLowerCase().includes(term) ||
+          item.pet_name?.toLowerCase().includes(term) ||
+          item.service?.toLowerCase().includes(term) ||
+          formatDate(item.date)?.toLowerCase().includes(term) ||
+          item.doctor_name?.toLowerCase().includes(term)
+        );
+      }
+    }
+    if (filter === "appointments" && sortByStatus && sortByStatus !== "All") {
+      return matchesSearch && item.status === sortByStatus;
     }
 
-    if (filter === "products") {
-      return (
-        item.sku?.toLowerCase().includes(term) ||
-        item.product_name?.toLowerCase().includes(term) ||
-        item.generic_name?.toLowerCase().includes(term) ||
-        item.unit_name?.toLowerCase().includes(term) ||
-        item.category_name?.toLowerCase().includes(term) ||
-        item.brand_name?.toLowerCase().includes(term) ||
-        formatDate(item.expiration_date)?.toLowerCase().includes(term) ||
-        formatDate(item.created_at).toLowerCase().includes(term)
-      );
-    }
-
-    if (filter === "services") {
-      return (
-        item.service_name?.toLowerCase().includes(term) ||
-        item.consent_form?.toLowerCase().includes(term) ||
-        formatDate(item.created_at).toLowerCase().includes(term)
-      );
-    }
-
-    if (filter === "clients") {
-      return (
-        item.name?.toLowerCase().includes(term) ||
-        item.email?.toLowerCase().includes(term) ||
-        formatDate(item.created_at).toLowerCase().includes(term)
-      );
-    }
-
-    if (filter === "appointments") {
-      return (
-        item.name?.toLowerCase().includes(term) ||
-        item.email?.toLowerCase().includes(term) ||
-        item.contact?.toLowerCase()?.includes(term) ||
-        item.status?.toLowerCase().includes(term) ||
-        item.pet_name?.toLowerCase().includes(term) ||
-        item.service?.toLowerCase().includes(term) ||
-        formatDate(item.date)?.toLowerCase().includes(term) ||
-        item.doctor_name?.toLowerCase().includes(term)
-      );
-    }
-    return false;
+    return matchesSearch;
   });
 
   // Apply pagination AFTER filtering the data
@@ -365,12 +370,13 @@ const ReportGeneration = () => {
         </div>
         {filter === "appointments" && (
           <div className="d-flex align-items-center mb-3">
-            <label className="me-2 fw-bold">Sort by Status:</label>
+            <label className="me-2">Filter by Status:</label>
             <select
-              className="form-select form-select-sm w-auto"
+              className="form-select w-auto"
               value={sortByStatus}
               onChange={(e) => setSortByStatus(e.target.value)}
             >
+              <option value="All">All</option>
               <option value="Done">Done</option>
               <option value="Confirmed">Confirmed</option>
               <option value="Cancelled">Cancelled</option>

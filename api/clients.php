@@ -188,7 +188,7 @@ switch ($method) {
                 address = :address, 
                 cellnumber = :cellnumber, 
                 email = :email, 
-                age = :age,
+                age = :age
                 WHERE id = :id";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':name', $input['name']);
