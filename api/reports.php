@@ -158,20 +158,7 @@ if ($method === 'GET') {
             FROM appointments a
             LEFT JOIN internal_users d
             ON a.doctor_id = d.id 
-
-            UNION ALL
-
-            SELECT
-                p.name,
-                p.preferred_date AS date,
-                p.contact,
-                p.email,
-                p.status,
-                p.pet_name,
-                p.reason_for_visit AS service,
-                p.created_at,
-                NULL AS doctor_name
-            FROM pending_appointments p
+            WHERE a.status != 'Arrived'
         ) AS combined
     ";
 

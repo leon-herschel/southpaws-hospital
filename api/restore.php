@@ -40,7 +40,7 @@ if ($method === 'GET') {
                             LEFT JOIN suppliers s ON i.supplier_id = s.id 
                             WHERE i.archived = 1",
             "unit_of_measurement" => "SELECT u.id, 'Unit of Measurement' AS table_name, u.unit_name, u.created_at FROM unit_of_measurement u WHERE u.archived = 1",
-            "clients" => "SELECT c.id, 'Clients' AS table_name, c.name, c.address, c.cellnumber, c.email, c.gender, c.created_at
+            "clients" => "SELECT c.id, 'Clients' AS table_name, c.name, c.address, c.cellnumber, c.email, c.created_at
                             FROM clients c WHERE c.archived = 1", // ✅ Added clients
             "services" => "SELECT s.id, 'Services' AS table_name, s.name, s.price, s.consent_form, s.created_at, s.status 
                         FROM services s WHERE s.archived = 1", // ✅ Added services
