@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import AddServicesModal from "../Add/AddServicesModal";
 import AddUserModal from "../Add/AddUserModal";
 
-const AddAppointments = ({ onClose, prefill }) => {
+const AddAppointments = ({ onClose, prefill, hideMultiPet }) => {
   const [formData, setFormData] = useState({
     service: [],
     date: "",
@@ -25,6 +25,8 @@ const AddAppointments = ({ onClose, prefill }) => {
     doctor_id: "",
   });
 
+  const [repeatClient, setRepeatClient] = useState(false);
+  const [multiPet, setMultiPet] = useState(false);
   const [services, setServices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [availableSlots, setAvailableSlots] = useState([]);
@@ -415,22 +417,39 @@ const AddAppointments = ({ onClose, prefill }) => {
           toast.success("Appointment submitted successfully!");
         }
 
-        setFormData({
-          service: [""],
-          date: "",
-          time: "",
-          name: "",
-          contact: "",
-          email: "",
-          end_time: "",
-          status: "Confirmed",
-          reference_number: generateReferenceNumber(),
-          pet_name: "",
-          pet_breed: "",
-          pet_species: "",
-        });
+        // Reset logic depending on whether "repeat client" is checked
+        if (repeatClient) {
+          // Keep client & appointment details — reset only pet + service fields
+          setFormData((prev) => ({
+            ...prev,
+            pet_name: "",
+            pet_breed: "",
+            pet_species: "",
+            service: [],
+            reference_number: generateReferenceNumber(),
+          }));
 
-        if (onClose) onClose();
+        } else {
+          // Full reset
+          setFormData({
+            firstName: "",
+            lastName: "",
+            contact: "",
+            email: "",
+            pet_name: "",
+            pet_breed: "",
+            pet_species: "",
+            service: [],
+            doctor_id: "",
+            date: "",
+            time: "",
+            end_time: "",
+            reference_number: generateReferenceNumber(),
+          });
+
+          if (onClose) onClose();
+        }
+
       } else {
         toast.error(res.data.error || "Something went wrong.");
       }
@@ -880,6 +899,24 @@ const AddAppointments = ({ onClose, prefill }) => {
             value={formData.reference_number}
           />
 
+          {!hideMultiPet && (
+            <div className="form-check mb-2">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                id="multiPet"
+                checked={multiPet}
+                onChange={() => {
+                  setMultiPet(!multiPet);
+                  setRepeatClient(!multiPet);
+                }}
+              />
+              <label className="form-check-label" htmlFor="multiPet">
+                Add another appointment for this client
+              </label>
+            </div>
+          )}
+
           {/* SUBMIT BUTTON */}
           <div className="button-container">
             <Button
@@ -912,6 +949,7 @@ const AddAppointments = ({ onClose, prefill }) => {
             variant="secondary"
             disabled={isSendingEmail}
             onClick={() => {
+              setRepeatClient(multiPet);
               setShowEmailModal(false);
               handleFinalSubmit(pendingFormData, false); // save without email
             }}
@@ -922,6 +960,7 @@ const AddAppointments = ({ onClose, prefill }) => {
             variant="primary"
             disabled={isSendingEmail}
             onClick={async () => {
+              setRepeatClient(multiPet);
               setIsSendingEmail(true);
               await handleFinalSubmit(pendingFormData, true);
               setIsSendingEmail(false);

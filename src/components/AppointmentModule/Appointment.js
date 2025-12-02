@@ -295,6 +295,11 @@ const Appointment = () => {
       color = "black";
     }
 
+    let borderLeft = "none";
+    if (event.status === "Arrived") {
+      borderLeft = "4px solid #198754";
+    }
+
     return {
       style: {
         backgroundColor,
@@ -302,6 +307,7 @@ const Appointment = () => {
         borderRadius: "5px",
         padding: "2px",
         border: "none",
+        borderLeft, 
       },
     };
   };
@@ -546,7 +552,7 @@ const Appointment = () => {
                             onClick={() => {
                               navigator.clipboard.writeText(selectedEvent.reference_number);
                               setCopied(true);
-                              setTimeout(() => setCopied(false), 100);
+                              setTimeout(() => setCopied(false), 1000);
                             }}
                           />
                         )}
