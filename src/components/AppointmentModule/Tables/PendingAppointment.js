@@ -315,7 +315,9 @@ const PendingAppointments = () => {
                       <p><strong>Contact:</strong> {viewingAppointment.contact}</p>
                     </div>
                     <div className="col-md-6">
-                      <p><strong>Email:</strong> {viewingAppointment.email || "N/A"}</p>
+                      <p style={{ overflowWrap: "anywhere" }}>
+                        <strong>Email:</strong> {viewingAppointment.email || "N/A"}
+                      </p>
                     </div>
                   </div>
                 </section>
@@ -406,6 +408,7 @@ const PendingAppointments = () => {
           <AddAppointments
             onClose={handleAddModalClose}
             prefill={prefillData}
+            hideMultiPet={true}
           />
         </Modal.Body>
       </Modal>
