@@ -153,11 +153,10 @@ if ($method === 'GET') {
                 a.status,
                 a.pet_name,
                 a.service,
-                a.created_at,
                 CONCAT (d.first_name, ' ', d.last_name) AS doctor_name
             FROM appointments a
             LEFT JOIN internal_users d
-            ON a.doctor_id = d.id 
+            ON a.doctor_id = d.id
             WHERE a.status != 'Arrived'
         ) AS combined
     ";
@@ -165,13 +164,13 @@ if ($method === 'GET') {
     // Add date filtering if given
     if ($fromDate && $toDate) {
         $sql = $baseQuery . "
-            WHERE combined.created_at >= :fromDate
-              AND combined.created_at < DATE_ADD(:toDate, INTERVAL 1 DAY)
-            ORDER BY combined.created_at DESC
+            WHERE combined.date >= :fromDate
+              AND combined.date < DATE_ADD(:toDate, INTERVAL 1 DAY)
+            ORDER BY combined.date DESC
         ";
     } else {
         $sql = $baseQuery . "
-            ORDER BY combined.created_at DESC
+            ORDER BY combined.date DESC
         ";
     }
 
