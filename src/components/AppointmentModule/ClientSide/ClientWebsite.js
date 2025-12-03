@@ -23,7 +23,13 @@ import {
   FaAward,
   FaShieldAlt,
   FaArrowRight,
-  FaProcedures
+  FaProcedures,
+  FaUniversity,
+  FaUserCog,
+  FaServer,
+  FaPalette,
+  FaLinkedin,
+  FaHeadset,
 } from "react-icons/fa";
 import southpawsLogo from "../../../assets/southpawslogo-header.png";
 import southpawsLogoWhite from "../../../assets/southpawslogowhite.png";
@@ -148,6 +154,8 @@ function ClientWebsite() {
       </Routes>
 
       <StaffPortalModal />
+
+      <DevCreditsModal />
 
       <ClientChatbot />
     </div>
@@ -718,7 +726,7 @@ function WebsiteFooter({ homeRef, servicesRef, aboutRef }) {
 
         <hr className="my-4" />
 
-        {/* Credit Section */}
+         {/* Credit Section */}
         <div className="row align-items-center">
           <div className="col-md-6 text-center text-md-start">
             <small>
@@ -728,38 +736,128 @@ function WebsiteFooter({ homeRef, servicesRef, aboutRef }) {
           </div>
           <div className="col-md-6 text-center text-md-end">
             <small className="text-light opacity-75">
-              Website developed by{" "}
-              <a
-                href="https://www.linkedin.com/in/romnick-leon-herschel-677036295/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary text-decoration-none"
+              <button
+                className="btn btn-link text-primary text-decoration-none p-0 border-0 bg-transparent"
+                data-bs-toggle="modal"
+                data-bs-target="#devCreditsModal"
               >
-                Romnick Herschel
-              </a>
-              ,{" "}
-              <a
-                href="https://www.linkedin.com/in/rexer-john-anoos-76346328b/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary text-decoration-none"
-              >
-                Rexer Anoos
-              </a>
-              , and{" "}
-              <a
-                href="https://www.linkedin.com/in/jovie-anne-suzette-teofilo-49b5722a4/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary text-decoration-none"
-              >
-                Jovie Teofilo
-              </a>
+                Contact Developers
+              </button>
             </small>
           </div>
         </div>
       </div>
     </footer>
+  );
+}
+
+function DevCreditsModal() {
+  return (
+    <div 
+      className="modal fade" 
+      id="devCreditsModal" 
+      tabIndex="-1" 
+      aria-labelledby="devCreditsModalLabel" 
+      aria-hidden="true"
+    >
+      <div className="modal-dialog modal-dialog-centered modal-lg">
+        <div className="modal-content border-0 shadow">
+          <div className="modal-body p-4">
+            <div className="text-center mb-4">
+              <div className="text-center mb-4">
+                <h4 className="fw-bold mb-2">Get in Touch</h4>
+                <p className="text-muted mb-0">
+                  For technical inquiries, collaboration, or feedback, feel free to connect with our team members below.
+                </p>
+              </div>
+            </div>
+            
+            <div className="row g-4">
+              <div className="col-md-4">
+                <div className="card h-100 border-0 shadow-sm hover-lift transition-all">
+                  <div className="card-body text-center p-4">
+                    <div className="mb-3">
+                      <div className="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center p-3">
+                        <FaUserCog className="text-primary" size={36} />
+                      </div>
+                    </div>
+                    <h6 className="fw-bold mb-2">Romnick Herschel</h6>
+                    <p className="text-muted small mb-2">Lead Developer</p>
+                    <a 
+                      href="https://www.linkedin.com/in/romnick-leon-herschel-677036295/"
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="btn btn-outline-primary btn-sm"
+                      title="Connect with Romnick on LinkedIn"
+                    >
+                      <FaLinkedin className="me-2" />
+                      Connect
+                    </a>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="col-md-4">
+                <div className="card h-100 border-0 shadow-sm hover-lift transition-all">
+                  <div className="card-body text-center p-4">
+                    <div className="mb-3">
+                      <div className="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center p-3">
+                        <FaServer className="text-success" size={36} />
+                      </div>
+                    </div>
+                    <h6 className="fw-bold mb-2">Rexer Anoos</h6>
+                    <p className="text-muted small mb-2">Backend Developer</p>
+                    <a 
+                      href="https://www.linkedin.com/in/rexer-john-anoos-76346328b/"
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="btn btn-outline-success btn-sm"
+                      title="Connect with Rexer on LinkedIn"
+                    >
+                      <FaLinkedin className="me-2" />
+                      Connect
+                    </a>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="col-md-4">
+                <div className="card h-100 border-0 shadow-sm hover-lift transition-all">
+                  <div className="card-body text-center p-4">
+                    <div className="mb-3">
+                      <div className="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center p-3">
+                        <FaPalette className="text-info" size={36} />
+                      </div>
+                    </div>
+                    <h6 className="fw-bold mb-2">Jovie Teofilo</h6>
+                    <p className="text-muted small mb-2">UI/UX Designer</p>
+                    <a 
+                      href="https://www.linkedin.com/in/jovie-anne-suzette-teofilo-49b5722a4/"
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="btn btn-outline-info btn-sm"
+                      title="Connect with Jovie on LinkedIn"
+                    >
+                      <FaLinkedin className="me-2" />
+                      Connect
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="modal-footer border-top-0">
+            <button 
+              type="button" 
+              className="btn btn-outline-secondary px-4"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
