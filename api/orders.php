@@ -279,22 +279,27 @@ switch ($method) {
                     try {
                         $mail->isSMTP();
                         $mail->Host       = $_ENV['MAIL_HOST'];
-$mail->SMTPAuth   = true;
-$mail->Username   = $_ENV['MAIL_USERNAME'];
-$mail->Password   = $_ENV['MAIL_PASSWORD'];
-$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-$mail->Port       = $_ENV['MAIL_PORT'];
-$mail->setFrom($_ENV['MAIL_FROM_ADDRESS'], $_ENV['MAIL_FROM_NAME']);
+                        $mail->SMTPAuth   = true;
+                        $mail->Username   = $_ENV['MAIL_USERNAME'];
+                        $mail->Password   = $_ENV['MAIL_PASSWORD'];
+                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                        $mail->Port       = $_ENV['MAIL_PORT'];
+                        $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'], $_ENV['MAIL_FROM_NAME']);
                         $mail->addAddress($clientEmail, $clientName);
 
                         $mail->isHTML(true);
                         $mail->Subject = 'Order Receipt - SouthPaws';
-                        $mail->addEmbeddedImage(__DIR__ . '/public/southpawslogo.png', 'cliniclogo');
+                        $logoPath = __DIR__ . '/public/southpawslogo.png';
+                        $logoExists = file_exists($logoPath);
+
+                        if ($logoExists) {
+                            $mail->addEmbeddedImage($logoPath, 'cliniclogo');
+                        }
 
                         // Generate email receipt HTML
                         $emailContent = '
                         <p style="text-align: left; font-size: 14px; margin-top: 20px;">
-                            <strong>Thank you for shopping with SouthPaws!</strong>
+                            <strong>Tail wags and thanks from South Paws!</strong>
                         </p>
 
                         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd;">
@@ -350,7 +355,7 @@ $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'], $_ENV['MAIL_FROM_NAME']);
                                 <p><strong>Change:</strong> ₱' . number_format($changeAmount, 2) . '</p>
                             </div>
 
-                            <p style="text-align: center; font-size: 14px; margin-top: 20px;">Thank you for shopping with SouthPaws!</p>
+                            <p style="text-align: center; font-size: 14px; margin-top: 20px;">Looking forward to seeing you and your pets again!</p>
                         </div>';
 
                         $mail->Body = $emailContent;

@@ -26,7 +26,7 @@ const ReportGeneration = () => {
     axios
       .get(`${API_BASE_URL}/api/reports.php?action=${filter}`, { params })
       .then((response) => {
-        console.log("📥 Fetched Data:", response.data);
+        console.log("Fetched Data:", response.data);
 
         if (response.data.status === 1 && Array.isArray(response.data.data)) {
           setData(response.data.data);
@@ -131,8 +131,8 @@ const ReportGeneration = () => {
         );
       }
 
-      if (filter === "appointments" && sortByStatus && sortByStatus !== "All") {
-        return (
+      if (filter === "appointments") {
+        const matches =
           item.name?.toLowerCase().includes(term) ||
           item.email?.toLowerCase().includes(term) ||
           item.contact?.toLowerCase()?.includes(term) ||
@@ -140,14 +140,15 @@ const ReportGeneration = () => {
           item.pet_name?.toLowerCase().includes(term) ||
           item.service?.toLowerCase().includes(term) ||
           formatDate(item.date)?.toLowerCase().includes(term) ||
-          item.doctor_name?.toLowerCase().includes(term)
-        );
+          item.doctor_name?.toLowerCase().includes(term);
+
+        // If “All”, return everything that matches search
+        if (sortByStatus === "All") return matches;
+
+        // Otherwise also filter by the selected status
+        return matches && item.status === sortByStatus;
       }
     }
-    if (filter === "appointments" && sortByStatus && sortByStatus !== "All") {
-      return matchesSearch && item.status === sortByStatus;
-    }
-
     return matchesSearch;
   });
 
@@ -368,29 +369,30 @@ const ReportGeneration = () => {
             onChange={(e) => setToDate(e.target.value)}
           />
         </div>
-        {filter === "appointments" && (
-          <div className="d-flex align-items-center mb-3">
-            <label className="me-2">Filter by Status:</label>
-            <select
-              className="form-select w-auto"
-              value={sortByStatus}
-              onChange={(e) => setSortByStatus(e.target.value)}
-            >
-              <option value="All">All</option>
-              <option value="Done">Done</option>
-              <option value="Confirmed">Confirmed</option>
-              <option value="Cancelled">Cancelled</option>
-            </select>
-          </div>
-        )}
+        <div className="d-flex justify-content-between align-items-center mt-3">
+          {filter === "appointments" && (
+            <div className="d-flex align-items-center me-2">
+              <label className="me-2 mt-1">Filter by Status:</label>
+              <select
+                className="form-select form-select w-auto"
+                value={sortByStatus}
+                onChange={(e) => setSortByStatus(e.target.value)}
+              >
+                <option value="All">All</option>
+                <option value="Done">Done</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+          )}
 
-        <Button
-          onClick={handlePrint}
-          style={{ marginBottom: "-10px" }}
-          className="btn btn-primary"
-        >
-          Print Report
-        </Button>
+          <Button
+            onClick={handlePrint}
+            className="btn btn-primary"
+          >
+            Print Report
+          </Button>
+        </div>
       </div>
 
       {/* Dynamic Table */}
